@@ -68,8 +68,12 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
 
 /** The payload version every service bundle ships. BUMP on any content change — a
  *  marketplace artifact is IMMUTABLE per `(category, slug, version)`, so without a bump
- *  the catalog keeps serving the OLD payload. */
-const BUNDLE_VERSION = '1.3.3';
+ *  the catalog keeps serving the OLD payload.
+ *
+ *  1.4.0 carries the chrome the composite has been emitting since issue 291 — the
+ *  account link in the bar and the phone panel, and the legal links in the footer —
+ *  which the committed bundles had been a release behind on (issue 313). */
+const BUNDLE_VERSION = '1.4.0';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

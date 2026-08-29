@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-acupuncture-tcm",
   "name": "Acupuncture (Traditional)",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "tagline": "A warm, grounded template for acupuncture & TCM clinics — book online from day one.",
   "description": "An earthy, serene template for a traditional Chinese-medicine acupuncture clinic — warm clay and gold on a soft sand ground, with a calm serif display. Installs a working booking flow: acupuncture, cupping, herbal and fertility treatments; three licensed acupuncturists booked by name with their own hours; and two treatment rooms as bookable resources. Ships as \"Five Elements Acupuncture\", a grounded, holistic healing space rooted in TCM tradition.",
   "payload": "blueprint.ts",

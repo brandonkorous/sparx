@@ -14,7 +14,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-portfolio-illustrator',
-  version: '1.2.1',
+  version: '1.3.0',
   name: 'Illustrator Portfolio',
   summary:
     'A personality-first portfolio for an illustrator: a loud two-tone hero, a dense playful work wall of tiled pieces that tilt on hover, a warm “hi, I’m me” band, and case-study pages that walk the brief, the making and where it ran. The palette IS the brand — warm riso-cream carried by a coral primary and a cobalt accent, expressive Syne display. Shipped as Pilar Ortega.',

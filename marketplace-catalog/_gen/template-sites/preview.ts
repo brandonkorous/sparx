@@ -252,7 +252,7 @@ function runTailwind(
  *  Assert it, and say what to change when the tree moves again. */
 const SITE_APP_DIR = join(repoRoot, 'wizeworks', 'apps', 'site');
 
-function previewCssEntry(slug: string): string {
+export function previewCssEntry(slug: string): string {
   if (!existsSync(SITE_APP_DIR)) {
     throw new Error(
       `Preview CSS needs the site app at ${SITE_APP_DIR} — it is the package that resolves ` +

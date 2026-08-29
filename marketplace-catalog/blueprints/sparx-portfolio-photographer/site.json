@@ -33,7 +33,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "87552dc0-6687-4b80-933e-6ef789439639",
+                      "id": "b3550c5e-251d-4e02-aac2-12af70b82a2f",
                       "ord": "a0"
                     },
                     {
@@ -49,11 +49,11 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "2c98f0ff-4f5a-411e-8cc0-d2af86fb91e7",
+                      "id": "c897a19f-70f6-4bd8-88e8-90934bc09627",
                       "ord": "a1"
                     }
                   ],
-                  "id": "ad903e5d-2238-4aa8-89a7-b67780e39954",
+                  "id": "02bb51bf-5045-4314-bbee-6ee416ecec45",
                   "ord": "a0"
                 },
                 {
@@ -63,7 +63,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "8e4e1fca-c636-41ca-abb0-bb4b8d19435c",
+                  "id": "c51601fe-40f6-48d0-a8c6-0578f7e882d8",
                   "ord": "a1"
                 },
                 {
@@ -89,18 +89,18 @@
                             "type": "link",
                             "label": "Docs"
                           },
-                          "id": "7640d359-cf50-45a6-afaf-8c4d294b38bd",
+                          "id": "b8f70cc5-1d7f-4879-8a2a-f685445a9540",
                           "ord": "a0"
                         }
                       ],
-                      "id": "80224e76-542a-41a4-a2fd-30ec7a218cdb",
+                      "id": "68cd9940-1db2-4814-a096-fbdf18ca3240",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "a2dcc21b-175b-4ddf-879d-5c0bb6c9f8f6",
+                      "id": "678d95b3-7316-49fc-bd91-74f3817f7736",
                       "ord": "a1"
                     },
                     {
@@ -118,20 +118,27 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "39adccc0-c747-410e-ac04-41514bc84dcf",
+                          "id": "aba0d2c0-f170-45c0-b76a-ac262f51a004",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "8ce16b9a-3862-47f2-8f7b-a119949f191b",
+                      "id": "30e50b9d-18a2-406f-bbdc-07bca75525ff",
                       "ord": "a2"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.account-link",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "id": "9a97bd65-3b14-4cbc-8490-39c074f39c69",
+                      "ord": "a3"
                     }
                   ],
-                  "id": "09c14487-5f7b-4bca-b68b-e30e219bf765",
+                  "id": "5a0058d8-ddf2-4df6-be06-1037cd106256",
                   "ord": "a2"
                 }
               ],
-              "id": "31d9f3c4-de39-4983-aa82-e865c1070a34",
+              "id": "986c919b-5a13-4a82-bc27-046d3abc1955",
               "ord": "a0"
             },
             {
@@ -155,7 +162,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "f6836d60-4b25-4d07-bdfd-08d3e15af377",
+                  "id": "31952430-78ea-4ca3-af4b-352ba8b25418",
                   "ord": "a0"
                 },
                 {
@@ -171,7 +178,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "649ede52-c74a-44d0-8efe-19f7e90d4677",
+                  "id": "853ef906-aff6-4b79-b5b6-e6f9cc914f53",
                   "ord": "a1"
                 },
                 {
@@ -187,19 +194,26 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "449bd61d-777b-48a3-a38b-b897df5cf86e",
+                  "id": "21add653-512d-464d-8b62-6782e1218acd",
                   "ord": "a2"
+                },
+                {
+                  "kind": "host",
+                  "component": "site.account-link",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "id": "a7cf7906-c1d0-4c21-9082-872a0f5e731d",
+                  "ord": "a3"
                 }
               ],
               "part": "panel",
-              "id": "fada7c2c-53cf-4c06-90ee-39a7f128531d",
+              "id": "5d0b5099-d8d7-413a-ad6d-1e4913d7963a",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "d5341441-b726-4e12-8fa3-8036108f4aed",
+          "id": "9127d940-718e-4031-a2b9-2711595f0f5c",
           "ord": "a0"
         },
         {
@@ -215,7 +229,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "eadc849a-54eb-46b9-ae85-5a11e778a9c8",
+          "id": "0438462c-091f-4ed5-8e10-93dfc985823d",
           "ord": "a1"
         },
         {
@@ -245,7 +259,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "5638bea3-7ff1-4114-955a-5c45e8e5b206",
+                          "id": "74c40365-3cd6-4ce9-bf61-2dfe41161a24",
                           "ord": "a0"
                         },
                         {
@@ -261,7 +275,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "96372f63-1e1c-4573-a576-447fd1741cca",
+                          "id": "cf1af611-fe9e-4657-bc4c-b7be3c9288a9",
                           "ord": "a1"
                         },
                         {
@@ -269,11 +283,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "723f90c6-5d57-441c-b6c9-7e9bfe09a137",
+                          "id": "88d2bdf7-70dd-4a35-b137-080c3fd60c29",
                           "ord": "a2"
                         }
                       ],
-                      "id": "bb8d1d4c-032a-4f66-933c-b77cc71c8fbd",
+                      "id": "8344322d-73b1-4a74-881d-b7a3f859d30d",
                       "ord": "a0"
                     },
                     {
@@ -294,7 +308,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "902885ba-bb07-4299-9861-58ae603c33ac",
+                          "id": "4651e207-f741-4b13-bf0b-0bedfeada61d",
                           "ord": "a0"
                         },
                         {
@@ -319,11 +333,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "450bf7f6-f7e5-4f46-bfe5-926c4d278ce5",
+                                  "id": "a0a977d3-80bc-4c78-be61-88594690a0e4",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "a48777f2-1c01-4fcd-a729-8bb8981284f3",
+                              "id": "55291123-b980-4e07-acfe-b24adf5be2e9",
                               "ord": "a0"
                             },
                             {
@@ -343,11 +357,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "4bc33ee8-13ca-4ba4-85fb-461d0ce64dfd",
+                                  "id": "6239d8ba-8483-410b-910c-c23908a84920",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "e45e5589-468a-405d-bf9c-872747cc6ccd",
+                              "id": "7294b96f-085c-47e5-982c-ed6f1f21db1c",
                               "ord": "a1"
                             },
                             {
@@ -367,19 +381,19 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "590ba5dc-cde3-461c-9df6-39360024a0b9",
+                                  "id": "8f0cce76-b093-4848-aeee-4074612f239b",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "d7e48505-b3d9-4bc6-a0c9-170feca5a9f4",
+                              "id": "0e737e9c-864e-43cd-add6-c86356eaed63",
                               "ord": "a2"
                             }
                           ],
-                          "id": "e27932da-2282-4d2a-b28b-ccec409dceb9",
+                          "id": "ff66bc84-b935-4b5b-9d23-3d03f55c2be9",
                           "ord": "a1"
                         }
                       ],
-                      "id": "7a736ac2-fbf4-4934-801b-23acaf30ed20",
+                      "id": "c628113a-8963-476d-8b78-701360ab8676",
                       "ord": "a1"
                     },
                     {
@@ -392,11 +406,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "5f94d694-829d-45e2-a547-8b932b31a01d",
+                          "id": "db606b79-92ad-432b-bc03-da523a339d38",
                           "ord": "a0"
                         }
                       ],
-                      "id": "f5ecc5b1-23cc-4460-8e6e-5e543dc7112f",
+                      "id": "609a46ac-7d26-4ffc-980c-0b5b2d4728d6",
                       "ord": "a2"
                     },
                     {
@@ -420,23 +434,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "21bd8b69-5fd5-4642-aee4-aeb7fca32ca4",
+                                  "id": "50bf37cb-cc04-4e8c-ac11-226c30c8efa5",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "04bef7c1-5acb-435f-bd0b-011a653eb8c0",
+                              "id": "373a7a8c-1595-477e-9f07-517e4723f990",
                               "ord": "a0"
                             }
                           ],
-                          "id": "b35002d5-cdc0-40d3-a84a-a59a28935859",
+                          "id": "299346e4-2b12-4121-83bf-3fc28f5a8c40",
                           "ord": "a0"
                         }
                       ],
-                      "id": "382851c2-c1ff-4f14-845c-e76905e22ac6",
+                      "id": "6dc7d6f2-002d-4c0f-baf6-75124918850e",
                       "ord": "a3"
                     }
                   ],
-                  "id": "292ffa70-43a7-4c94-95b0-671061000d32",
+                  "id": "fbcd03c7-9d76-406e-9af6-b18da7a17b39",
                   "ord": "a0"
                 },
                 {
@@ -459,11 +473,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "ff94086a-0ce7-49a9-b1dc-07bf7d5b3e08",
+                          "id": "4fd59c8b-e85c-4e78-baa8-ad840b5d8c26",
                           "ord": "a0"
                         }
                       ],
-                      "id": "a8500d1a-969a-4714-adfe-7667de0ef31f",
+                      "id": "2aac6214-69d3-4708-83de-2f37ce0abf33",
                       "ord": "a0"
                     },
                     {
@@ -471,23 +485,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "3bcf59b8-c4cf-4c7d-bd24-99ad9fbd1b0b",
+                      "id": "b107175e-b9cd-4e66-a77a-039680479480",
                       "ord": "a1"
                     }
                   ],
-                  "id": "7145d14e-f665-4258-9f8f-e79a6abf704a",
+                  "id": "42c356ac-736d-480b-a855-6922e40752db",
                   "ord": "a1"
                 }
               ],
-              "id": "e627d27d-118e-4c01-af6d-86be497803a1",
+              "id": "e3553a07-4253-4caf-8cab-ff6a4e5d6e22",
               "ord": "a0"
             }
           ],
-          "id": "4b03d216-8db5-4c31-bf29-cef7c283e9a4",
+          "id": "2d9b1256-e17e-4ef2-a80e-1665f9085cfc",
           "ord": "a2"
         }
       ],
-      "id": "aacbf25b-6a75-4064-a6c2-eebd71badfec"
+      "id": "2952bc22-451b-4e62-8657-b7b385f08cda"
     }
   },
   "pages": [
@@ -501,7 +515,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "8d65ab1a-56ed-479a-9919-934d3e518e84",
+        "id": "3a78e6ef-35d8-4b91-887d-f900ad95ea26",
         "children": [
           {
             "kind": "element",
@@ -522,11 +536,11 @@
                       "alt": "A wide, still landscape at first light — a low horizon and pale, even sky",
                       "loading": "eager"
                     },
-                    "id": "a8e634b2-82c3-4ff3-b5a0-71abcdac2a54",
+                    "id": "0e8de17d-d1a6-406a-a2a8-9f92b20f9e83",
                     "ord": "a0"
                   }
                 ],
-                "id": "ac319178-f173-4706-ba2c-c01577063148",
+                "id": "d61b6b32-92d2-4c61-94de-530fa1e37863",
                 "ord": "a0"
               },
               {
@@ -544,7 +558,7 @@
                         "tag": "h1",
                         "class": "max-w-4xl text-4xl font-normal leading-tight tracking-tight text-base-content @2xl:text-6xl @5xl:text-7xl",
                         "children": ["Photographs that hold still."],
-                        "id": "9481d223-7e71-496b-939a-60a87fc99e87",
+                        "id": "9d8c511f-6295-406c-88ad-d397905e9a49",
                         "ord": "a0"
                       },
                       {
@@ -554,7 +568,7 @@
                         "children": [
                           "Mara Ilić — portrait, landscape and still-life photography, made slowly and in natural light. Selected series below; the rest are on the work page."
                         ],
-                        "id": "246a739c-4dfa-4c62-ac24-e9fa21482d38",
+                        "id": "056b4f55-cef8-4fea-909c-a5cea677fe60",
                         "ord": "a1"
                       },
                       {
@@ -574,18 +588,18 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["View the work"],
-                                "id": "18e4c7e3-8de1-4dea-b10a-79c13978b590",
+                                "id": "2d380845-d79b-4431-b748-843e7c667e18",
                                 "ord": "a0"
                               },
                               {
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["→"],
-                                "id": "396a0a31-0af2-485b-bfdc-482b41c0c72b",
+                                "id": "86e5b22c-28d9-4035-bce0-f61247b4d131",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "3e03966b-f5bf-4726-b5ba-01ad52d9a3f4",
+                            "id": "c21dcb9b-4792-493a-ada6-bade32a1a190",
                             "ord": "a0"
                           },
                           {
@@ -600,27 +614,27 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "children": ["About Mara"],
-                                "id": "6ca93b53-e9d7-4a53-bd46-15847ae35a04",
+                                "id": "3307d5f5-7e83-4b6d-be94-46bb70f81c3c",
                                 "ord": "a0"
                               }
                             ],
-                            "id": "06f3a2d8-6c69-47ef-9332-c4a60492f39f",
+                            "id": "ccb38091-2f4e-4ab7-8d00-8dd6256b6d8d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7516a34d-da6b-41b1-b52e-62a3791d5f93",
+                        "id": "4406ff8d-2395-48f5-aa1c-41a55393cf59",
                         "ord": "a2"
                       }
                     ],
-                    "id": "a36e944f-86f1-4c85-88e2-21d04098e84d",
+                    "id": "d2295d84-fd12-49c0-ad67-fba236d7b225",
                     "ord": "a0"
                   }
                 ],
-                "id": "a22c8e65-4b4d-4d99-a972-93e959dacb9c",
+                "id": "7a7a1e99-31ed-43d3-9c12-87747a465d7d",
                 "ord": "a1"
               }
             ],
-            "id": "eacf2723-3cff-4d5e-975c-227e3fa5c5ac",
+            "id": "98df391c-9bb1-48ad-8a46-5e9ca914941e",
             "ord": "a0"
           },
           {
@@ -648,7 +662,7 @@
                             "tag": "h2",
                             "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
                             "children": ["Selected series"],
-                            "id": "f297b902-cc78-4f93-b8c2-a78b8fc646a0",
+                            "id": "bdf44107-3fd9-457e-9982-8eecf814c111",
                             "ord": "a0"
                           },
                           {
@@ -658,15 +672,15 @@
                             "children": [
                               "Three bodies of work made over the last few years — the coast, the rooms, and the people who live by them."
                             ],
-                            "id": "decd8411-fdeb-4853-a161-a08ce8279862",
+                            "id": "05e0e996-507c-435e-99bc-72431f685ea4",
                             "ord": "a1"
                           }
                         ],
-                        "id": "488bb82b-fcf8-47a7-af56-95fd466c3cef",
+                        "id": "09571e32-b1ea-4350-a9f8-3ed6438d4416",
                         "ord": "a0"
                       }
                     ],
-                    "id": "b962d3c8-3a87-430e-95c1-c6483f18e1d2",
+                    "id": "2d7e335e-135c-4c84-a471-fb67d0aec1a4",
                     "ord": "a0"
                   },
                   {
@@ -691,11 +705,11 @@
                               "alt": "The line where a grey sea meets wet sand at low tide, redrawn by the water",
                               "loading": "lazy"
                             },
-                            "id": "c2638111-9c97-4094-9609-b2a30e4fd209",
+                            "id": "efe3715a-6492-4cf8-a5f0-3289a8a8ae01",
                             "ord": "a0"
                           }
                         ],
-                        "id": "65c92e18-2950-46b0-9e82-417431add02b",
+                        "id": "4e945867-09c8-4fc5-a6ff-f6352493248f",
                         "ord": "a0"
                       },
                       {
@@ -718,7 +732,7 @@
                                     "tag": "h3",
                                     "class": "text-2xl font-normal tracking-tight text-base-content @2xl:text-3xl",
                                     "children": ["Tideline"],
-                                    "id": "d1a1ddf0-f2f2-463f-be3f-eb9fcf262175",
+                                    "id": "3b91f4ee-11e7-4660-9bb8-0b2f33ca409c",
                                     "ord": "a0"
                                   },
                                   {
@@ -728,11 +742,11 @@
                                     "children": [
                                       "One winter along a northern coast, photographed at the hour the light arrives."
                                     ],
-                                    "id": "26cd4ea2-2920-48f7-af05-2659b10750ef",
+                                    "id": "daa1e192-0d23-405e-bb96-8fb0b8af69e8",
                                     "ord": "a1"
                                   }
                                 ],
-                                "id": "910e5137-2fe3-4187-b9b2-948736ca2799",
+                                "id": "1320a557-4b40-4bdd-bbae-78c9bf5ef964",
                                 "ord": "a0"
                               },
                               {
@@ -747,30 +761,30 @@
                                     "kind": "element",
                                     "tag": "span",
                                     "children": ["View series"],
-                                    "id": "b9ee1376-6259-4d05-a802-db29a05197db",
+                                    "id": "3a5e6296-f12c-419b-9b4f-6cea3dbc7618",
                                     "ord": "a0"
                                   },
                                   {
                                     "kind": "element",
                                     "tag": "span",
                                     "children": ["→"],
-                                    "id": "b42e50cb-52d6-4c4b-9800-67f3aafc7a76",
+                                    "id": "af07b3ad-1a28-4911-9142-484082f39567",
                                     "ord": "a1"
                                   }
                                 ],
-                                "id": "360ba753-daf8-4043-832b-4c992e2cb7a7",
+                                "id": "109f6001-b4bb-482c-8f9c-4ffc48052ed9",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "65175baa-7b8e-415b-b0c0-93a3dd819bce",
+                            "id": "b042696e-3c31-4089-83c8-f68925063b92",
                             "ord": "a0"
                           }
                         ],
-                        "id": "d8daf7ff-89ce-4d61-940b-00d040304228",
+                        "id": "9166bef7-3404-4ed0-8db6-dae766069780",
                         "ord": "a1"
                       }
                     ],
-                    "id": "7095154b-a2ca-4d45-8d5f-05cd0b42dd79",
+                    "id": "2b3fdf2e-ea1c-4350-ae9e-e29a69647c96",
                     "ord": "a1"
                   },
                   {
@@ -795,11 +809,11 @@
                               "alt": "A still life of ordinary objects on a windowsill in soft, raking domestic light",
                               "loading": "lazy"
                             },
-                            "id": "aaf4673a-81a9-4c6a-907e-9256d3780f03",
+                            "id": "d49934d1-1398-411e-9b77-caf129856c40",
                             "ord": "a0"
                           }
                         ],
-                        "id": "70fbea42-0a12-498a-b167-e3d6426b7c3d",
+                        "id": "b1f15232-5f62-4177-9b2a-6196bac80174",
                         "ord": "a0"
                       },
                       {
@@ -822,7 +836,7 @@
                                     "tag": "h3",
                                     "class": "text-2xl font-normal tracking-tight text-base-content @2xl:text-3xl",
                                     "children": ["Quiet Rooms"],
-                                    "id": "a9932d58-caa9-4376-9cf6-da3555272fd6",
+                                    "id": "2f8a9342-a4fe-4660-97b0-58caedeb8127",
                                     "ord": "a0"
                                   },
                                   {
@@ -832,11 +846,11 @@
                                     "children": [
                                       "Still lifes made in borrowed houses, from the things people leave behind."
                                     ],
-                                    "id": "6281bfe7-173b-4397-9232-8408a085f80b",
+                                    "id": "5f7d647a-fe86-44fd-a693-102fbd1eb33b",
                                     "ord": "a1"
                                   }
                                 ],
-                                "id": "d2395fca-bc8d-4dbc-b292-da79b065a362",
+                                "id": "5b33f957-4b4a-42f2-9b53-c0dc371bfe40",
                                 "ord": "a0"
                               },
                               {
@@ -851,30 +865,30 @@
                                     "kind": "element",
                                     "tag": "span",
                                     "children": ["View series"],
-                                    "id": "8f90bf51-462b-4dc3-a4dd-d3714fae7bf4",
+                                    "id": "929fe121-8c7d-4f4e-a1dd-5450fbf5d338",
                                     "ord": "a0"
                                   },
                                   {
                                     "kind": "element",
                                     "tag": "span",
                                     "children": ["→"],
-                                    "id": "7a487097-b59b-4573-9f2b-b5c1606c4239",
+                                    "id": "308e630b-b249-4b13-9cd5-80e8c8b0400f",
                                     "ord": "a1"
                                   }
                                 ],
-                                "id": "4ba395c0-6820-4f96-af66-8cd7709dc445",
+                                "id": "aff56d41-d19e-4f95-a996-e8003e0339d3",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f03fa281-9d21-449d-b5e5-4f9f5d1d54ae",
+                            "id": "f2dba11a-af20-47af-9877-ae2a493072f9",
                             "ord": "a0"
                           }
                         ],
-                        "id": "c7800487-2892-4343-a568-a09224ce165d",
+                        "id": "4b97f8cf-b42a-48fb-9443-eafa6263b220",
                         "ord": "a1"
                       }
                     ],
-                    "id": "f46185a8-6632-40ab-8e23-467b3720c635",
+                    "id": "e9b7cd93-c6d3-47e0-a059-f07d44d4730d",
                     "ord": "a2"
                   },
                   {
@@ -899,11 +913,11 @@
                               "alt": "A weathered portrait of a person who works outdoors, looking just off camera",
                               "loading": "lazy"
                             },
-                            "id": "55a9ec1b-c2ae-4536-b146-d364404e43d6",
+                            "id": "0510cd8e-3f7d-4012-977b-23808937874a",
                             "ord": "a0"
                           }
                         ],
-                        "id": "de535145-76b3-44d8-8435-4deb77527b0d",
+                        "id": "33c4c767-33df-42fb-ac4f-02db3739d0a5",
                         "ord": "a0"
                       },
                       {
@@ -926,7 +940,7 @@
                                     "tag": "h3",
                                     "class": "text-2xl font-normal tracking-tight text-base-content @2xl:text-3xl",
                                     "children": ["North Faces"],
-                                    "id": "d3f55b12-6bf2-4a57-a448-f26914ea0dad",
+                                    "id": "7ae10833-de59-4b3d-b90b-100fb7da41bf",
                                     "ord": "a0"
                                   },
                                   {
@@ -936,11 +950,11 @@
                                     "children": [
                                       "Portraits of people who work outdoors, made where they work, in the weather they work in."
                                     ],
-                                    "id": "eb39ecb1-0ff0-46c9-ba0a-5fd7eec45233",
+                                    "id": "d7ab7168-8827-4981-a7c7-1d93abb6b446",
                                     "ord": "a1"
                                   }
                                 ],
-                                "id": "c7e8f622-ce25-4673-b227-f34e9703ecd6",
+                                "id": "22538b33-8ab4-41e3-9c62-cd1ff9bf3124",
                                 "ord": "a0"
                               },
                               {
@@ -955,38 +969,38 @@
                                     "kind": "element",
                                     "tag": "span",
                                     "children": ["View series"],
-                                    "id": "f1c812b1-e277-4331-abb5-2101ca421e54",
+                                    "id": "53fe342d-03bc-4ffa-a1ce-8e86db3e28fc",
                                     "ord": "a0"
                                   },
                                   {
                                     "kind": "element",
                                     "tag": "span",
                                     "children": ["→"],
-                                    "id": "269aa8a5-4446-47a0-aad6-82289780cc41",
+                                    "id": "212c2f7d-5d3d-436e-9096-97d02533b711",
                                     "ord": "a1"
                                   }
                                 ],
-                                "id": "85a3cf23-3f80-4dea-8df8-c48f209943f5",
+                                "id": "c5086555-22e8-4e67-acaa-03e433ba55ff",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "a6a8340b-6cd6-4b3d-bd9e-f99cae031c50",
+                            "id": "53c5c88f-2f32-4901-9d7f-6a6220464eb7",
                             "ord": "a0"
                           }
                         ],
-                        "id": "2e5937aa-18a9-422c-b8b6-72b7d2a3a3e7",
+                        "id": "9022cfc5-1760-4353-843c-acb4a6aa7358",
                         "ord": "a1"
                       }
                     ],
-                    "id": "33193aa8-c8e9-4039-8347-01488cf59808",
+                    "id": "ef9fc072-14b1-469f-b72f-54871ff63c60",
                     "ord": "a3"
                   }
                 ],
-                "id": "d3b5b6b7-517c-471f-b4fe-ba722cf2c90d",
+                "id": "13412e07-0982-453e-8e96-b0aa36633763",
                 "ord": "a0"
               }
             ],
-            "id": "9eb8591d-f9ef-4999-9846-a29af5d29def",
+            "id": "5f93dd77-8699-4d87-a842-79db8b0e1032",
             "ord": "a1"
           },
           {
@@ -1006,15 +1020,15 @@
                     "children": [
                       "I photograph slowly, in the light that is already there — and I wait for the moment a thing goes quiet enough to hold still."
                     ],
-                    "id": "de7602cb-2cf6-410b-8ffa-86124eac25ae",
+                    "id": "e40588d1-a317-4018-a8a1-1f4d8268b8b0",
                     "ord": "a0"
                   }
                 ],
-                "id": "64b660b6-600a-43d9-86e6-c91cb88a0754",
+                "id": "93a3241d-c964-4f6f-a56a-20f88fd11086",
                 "ord": "a0"
               }
             ],
-            "id": "1b545074-bca0-461a-b19b-570b51a6764a",
+            "id": "b2d690e0-b003-4244-8c40-c66215f62de0",
             "ord": "a2"
           },
           {
@@ -1034,7 +1048,7 @@
                     "children": [
                       "Commissions and print sales by request — portraits, editorial, and a small edition of archival prints from each series."
                     ],
-                    "id": "a7a0b8ba-206e-4691-9fc3-b27f5075013a",
+                    "id": "046025f0-b2f3-4055-a3fa-46b637ec996f",
                     "ord": "a0"
                   },
                   {
@@ -1049,26 +1063,26 @@
                         "kind": "element",
                         "tag": "span",
                         "children": ["Enquire about a commission or a print"],
-                        "id": "860bacb0-f253-4a69-9220-3a2f6f1f9ea9",
+                        "id": "8ed1b10d-c656-4a7c-b6d5-d8c5f8ce4eec",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
                         "tag": "span",
                         "children": ["→"],
-                        "id": "3b278604-de06-4ee2-8252-17a246242b8a",
+                        "id": "777fd8a0-0374-49cf-a32f-1488e774a54a",
                         "ord": "a1"
                       }
                     ],
-                    "id": "f46973fa-3498-4a55-a382-43e44b276ad9",
+                    "id": "3a4f9571-164a-4935-b975-1232e194ab6a",
                     "ord": "a1"
                   }
                 ],
-                "id": "ae84be98-10ba-4592-b65d-ea81e005ee5c",
+                "id": "8ccc7e82-7b24-46b6-a1d3-43d3629b14c2",
                 "ord": "a0"
               }
             ],
-            "id": "5f4235b3-b951-4e6d-ae37-e2cec534b6ba",
+            "id": "850cf6f5-b166-4f73-b671-5404e42309a3",
             "ord": "a3"
           }
         ]
@@ -1085,7 +1099,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "797dd3b1-6b78-4c3e-b5d2-e15508eb7d9f",
+        "id": "45921155-ee35-4b98-b8cc-b5189dd680c5",
         "children": [
           {
             "kind": "element",
@@ -1102,7 +1116,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-normal leading-none tracking-tight text-base-content @3xl:text-7xl",
                     "children": ["Series"],
-                    "id": "b95017f6-5b3a-4452-96d2-7c8eaf1d6ce6",
+                    "id": "6690d633-857d-4883-b79c-0a9dd3466861",
                     "ord": "a0"
                   },
                   {
@@ -1112,15 +1126,15 @@
                     "children": [
                       "Complete bodies of work — landscape, still life and portrait. Each opens to the full series and a short note on where it was made."
                     ],
-                    "id": "6d7f8732-6017-4fbd-a446-c0a37cb8d641",
+                    "id": "0e807aa9-4e48-4885-b658-ae9489124a83",
                     "ord": "a1"
                   }
                 ],
-                "id": "e4dd1c26-0a8d-43df-a28a-360d5ffcf8f9",
+                "id": "60dc9c7d-5251-48a8-ad1a-0646b4106270",
                 "ord": "a0"
               }
             ],
-            "id": "9f175964-1be8-4ffe-8e9e-c487c863641b",
+            "id": "9952fec9-60c8-4f6e-869c-e37c54741ace",
             "ord": "a0"
           },
           {
@@ -1158,7 +1172,7 @@
                               "kind": "value",
                               "ref": "featuredImage"
                             },
-                            "id": "ccd4e25b-192e-4426-aa8c-39d31b49977f",
+                            "id": "4b9ce927-a689-4d7c-b650-865ce90a2db9",
                             "ord": "a0"
                           },
                           {
@@ -1170,7 +1184,7 @@
                               "kind": "value",
                               "ref": "date"
                             },
-                            "id": "fcc919d5-a0b8-4bcf-bdb5-4caba3bf047d",
+                            "id": "095841a7-07ce-4f4e-80c8-6b4f9fe2466e",
                             "ord": "a1"
                           },
                           {
@@ -1182,7 +1196,7 @@
                               "kind": "value",
                               "ref": "title"
                             },
-                            "id": "ca2bfe93-6893-4d1a-b17f-24256f38b3a4",
+                            "id": "d4fa33ff-c207-4cdd-b4cc-e1a75f1c51fb",
                             "ord": "a2"
                           },
                           {
@@ -1194,7 +1208,7 @@
                               "kind": "value",
                               "ref": "excerpt"
                             },
-                            "id": "b02a3128-83ee-4ec2-8d8f-275687c262f0",
+                            "id": "4946397b-3935-4a57-861a-dfc656461093",
                             "ord": "a3"
                           }
                         ],
@@ -1203,23 +1217,37 @@
                           "ref": "url",
                           "attr": "href"
                         },
-                        "id": "97702b4a-abac-4419-9b1f-e99d1766ed59",
+                        "id": "675ef62f-2c63-479c-9be4-4840ce0ed838",
                         "ord": "a0"
                       }
                     ],
                     "data": {
                       "kind": "collection",
-                      "ref": "cms.blog_post"
+                      "ref": "cms.blog_post",
+                      "omitWhenEmpty": true
                     },
-                    "id": "c4fc711b-a381-42d6-b89f-2f2d82feae9d",
+                    "id": "20170c33-702f-47bf-a0a6-04b011db0afa",
                     "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "py-8 text-center text-base-content",
+                    "children": ["No posts yet. Check back soon."],
+                    "data": {
+                      "kind": "visible",
+                      "ref": "cms.blog_post",
+                      "negate": true
+                    },
+                    "id": "7d903a8a-841a-4071-b399-96fe23a9842c",
+                    "ord": "a1"
                   }
                 ],
-                "id": "5b853196-6069-4422-b5d3-0d32db176405",
+                "id": "564ef177-53ee-4916-b875-193d9483c88b",
                 "ord": "a0"
               }
             ],
-            "id": "c6b54b71-6f8d-4092-8c5a-6ce368f8a268",
+            "id": "a0dc725e-9342-433c-8cb2-e93b5ea7fff8",
             "ord": "a1"
           }
         ]
@@ -1236,7 +1264,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "2313ac3e-7f50-4e17-87c3-17aea36d8338",
+        "id": "ccbce586-015f-4158-955c-19b08e3a78cd",
         "children": [
           {
             "kind": "element",
@@ -1258,7 +1286,7 @@
                         "tag": "h1",
                         "class": "text-5xl font-normal tracking-tight text-base-content @2xl:text-6xl",
                         "children": ["About Mara"],
-                        "id": "b9f76ee5-bc5b-42ff-8948-8c8a937a639a",
+                        "id": "d551f609-afe1-459d-bfbd-9f370355cfe7",
                         "ord": "a0"
                       },
                       {
@@ -1268,7 +1296,7 @@
                         "children": [
                           "I am a photographer working in portrait, landscape and still life. I make pictures slowly and in the light that is already there — I would rather wait an hour for the weather than change it afterwards."
                         ],
-                        "id": "90c5cbbd-85ba-4206-92a8-ebcbb3187c9a",
+                        "id": "1726db1c-9824-4c69-be3d-97f74fe50104",
                         "ord": "a1"
                       },
                       {
@@ -1278,7 +1306,7 @@
                         "children": [
                           "My work moves between the coast and the studio: long series made outdoors over a season, and quieter still lifes built from ordinary things on a windowsill. Whatever the subject, I am after the same moment — when a scene settles and goes still enough to hold."
                         ],
-                        "id": "7c2f9be3-d8ec-4f9d-bab4-3a98126bff40",
+                        "id": "ed72c56c-9bc5-4966-9bb7-93987b3bd9f6",
                         "ord": "a2"
                       },
                       {
@@ -1288,11 +1316,11 @@
                         "children": [
                           "I shoot on film and digital, print in editions, and take on a small number of portrait and editorial commissions each year. Work has appeared in independent journals and gallery shows across the north."
                         ],
-                        "id": "eae8727e-5e32-46e4-8985-1e48951cb76f",
+                        "id": "ce63e2ca-7627-461e-b26a-a354175bd955",
                         "ord": "a3"
                       }
                     ],
-                    "id": "e68dc807-e3cb-49ff-bc48-57f668ecf52d",
+                    "id": "0d480973-13e1-48f4-a649-504b3154fd4b",
                     "ord": "a0"
                   },
                   {
@@ -1309,7 +1337,7 @@
                           "alt": "Portrait of Mara Ilić, photographer, in even studio light",
                           "loading": "lazy"
                         },
-                        "id": "7a5463b5-9a88-4f29-b295-0a84070a55c7",
+                        "id": "6dfb174d-b986-4c7c-967e-ccf77b396759",
                         "ord": "a0"
                       },
                       {
@@ -1322,7 +1350,7 @@
                             "tag": "span",
                             "class": "text-sm font-semibold uppercase tracking-wide text-secondary",
                             "children": ["Working in"],
-                            "id": "3a95d3a2-b143-4121-91af-99d6757bc6fb",
+                            "id": "d1a1cfa2-1eac-4a05-9dee-94343d1296d6",
                             "ord": "a0"
                           },
                           {
@@ -1332,23 +1360,23 @@
                             "children": [
                               "Portraiture, landscape and still life — on film and digital, in natural light. Archival pigment prints in small editions."
                             ],
-                            "id": "6ee75977-a14e-4ac0-8f8b-35da35381f05",
+                            "id": "83758651-9031-4207-94c5-1bfe0a4cefe3",
                             "ord": "a1"
                           }
                         ],
-                        "id": "45353525-66df-4e00-811f-6d7fe0502598",
+                        "id": "73bb2a70-4606-47d5-8606-323f34271c36",
                         "ord": "a1"
                       }
                     ],
-                    "id": "efa488c9-0090-494d-916d-0b04041f8310",
+                    "id": "dba17fa4-9347-4f92-84b4-51f5ebc43c27",
                     "ord": "a1"
                   }
                 ],
-                "id": "9773c0d5-f45c-4dbf-9b35-0b331e1ed4db",
+                "id": "b9fba39c-3307-4d95-8720-cfa1207d4ecc",
                 "ord": "a0"
               }
             ],
-            "id": "f2f87b0b-b0cf-4d53-b2f5-5159db6e5119",
+            "id": "b6840364-e748-4222-a3d2-e2787228c86c",
             "ord": "a0"
           }
         ]
@@ -1365,7 +1393,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "49f4222b-e109-4e30-88f1-97c5c33e0dce",
+        "id": "2cc673a8-fec5-4230-a64d-fae6617c0360",
         "children": [
           {
             "kind": "element",
@@ -1387,7 +1415,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Commissions & prints"],
-                        "id": "87b20c7f-a9df-4bb8-8f6a-6fd5eac8b51d",
+                        "id": "8c1ad064-ed6b-44d2-a62f-e868be97a104",
                         "ord": "a0"
                       },
                       {
@@ -1397,7 +1425,7 @@
                         "children": [
                           "I take on a few portrait and editorial commissions a year, and sell a small edition of archival prints from each series. Tell me a little about what you have in mind — the subject, roughly when, and where — and I will write back."
                         ],
-                        "id": "8f71dd2e-83b1-414a-ac42-bd269203432d",
+                        "id": "0603d0ea-f86b-4277-84d4-03eac711de02",
                         "ord": "a1"
                       },
                       {
@@ -1407,11 +1435,11 @@
                         "children": [
                           "By appointment, on the north coast. Print orders ship worldwide."
                         ],
-                        "id": "f1a6e51d-e5da-4b53-834b-ea8153621e50",
+                        "id": "c0873414-6ca3-441b-9a3f-5616a6c08ac4",
                         "ord": "a2"
                       }
                     ],
-                    "id": "df078d6f-7487-4d0e-afbb-7089132ea1c8",
+                    "id": "2075e517-779b-4b41-b584-bb351372bc50",
                     "ord": "a0"
                   },
                   {
@@ -1424,7 +1452,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Call us"],
-                        "id": "743aad3e-564e-4fcd-a750-9bef59dc5175",
+                        "id": "4c70d3ae-45d2-4a37-839e-3f3443306148",
                         "ord": "a0"
                       },
                       {
@@ -1440,7 +1468,7 @@
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "8132db64-4455-4fc5-84ff-84b25eef3807",
+                            "id": "bdb224ae-5ed4-4c5b-8d19-0618f23e69c9",
                             "ord": "a0"
                           }
                         ],
@@ -1449,7 +1477,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "ca4630a2-318f-4a77-b728-af3644a1f019",
+                        "id": "bd7714ae-33a8-44b5-8f60-e1a46460d2d7",
                         "ord": "a1"
                       }
                     ],
@@ -1457,7 +1485,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "9c2c7647-4237-408d-bd70-6881e686b8ac",
+                    "id": "23e72d1e-0e56-4808-8f7e-a4d3e6ed101f",
                     "ord": "a1"
                   },
                   {
@@ -1470,7 +1498,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Email us"],
-                        "id": "779487d3-6d85-4eb3-a03d-3d3a43d40bac",
+                        "id": "094076e2-593a-42ea-be0c-58c80eeca538",
                         "ord": "a0"
                       },
                       {
@@ -1486,7 +1514,7 @@
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "b2e12aad-d3e8-4871-a315-2f98f5d363d7",
+                            "id": "cefa88c7-c1da-4fc6-8d9a-4884d382b1fd",
                             "ord": "a0"
                           }
                         ],
@@ -1495,7 +1523,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "5913331e-bb63-4912-aec2-a5aa6520070b",
+                        "id": "60ad735c-b675-4d42-a2f3-6dd2c64ae422",
                         "ord": "a1"
                       }
                     ],
@@ -1503,7 +1531,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "32b369dd-11fc-40f4-b366-5f62cc815fa6",
+                    "id": "d494a56e-c4e9-4e13-a1c5-447163597732",
                     "ord": "a2"
                   },
                   {
@@ -1516,7 +1544,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Visit us"],
-                        "id": "3f588f10-30d8-4ee9-9e91-1c215991ae68",
+                        "id": "8d8ddecc-cb48-45c7-b443-aaa5ab457295",
                         "ord": "a0"
                       },
                       {
@@ -1528,7 +1556,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "56c42398-faa1-4de6-b203-491ffd6b674a",
+                        "id": "a876f8e4-31f6-4fc3-a247-836b74f82699",
                         "ord": "a1"
                       }
                     ],
@@ -1536,7 +1564,7 @@
                       "kind": "visible",
                       "ref": "site.identity.address"
                     },
-                    "id": "b97c9bd9-2ea1-4a23-8160-ada83026b7b0",
+                    "id": "543a190d-d096-4388-adfd-22f0fb746f0f",
                     "ord": "a3"
                   },
                   {
@@ -1554,7 +1582,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Your name"],
-                            "id": "6cfd566c-5ee8-4fdc-80eb-82af64bc2f40",
+                            "id": "f0fd42ec-d8d4-4594-85c2-34ed6a784b9c",
                             "ord": "a0"
                           },
                           {
@@ -1566,11 +1594,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "84208197-83bb-4e5c-b9c7-d62ffc2e933f",
+                            "id": "251e3db7-a5ad-4d8d-9862-a2671b1c7562",
                             "ord": "a1"
                           }
                         ],
-                        "id": "abaf2587-4628-46a5-8822-8ca50bc36b1d",
+                        "id": "d3c12e14-6624-4af3-9a0f-895df8c67ec9",
                         "ord": "a0"
                       },
                       {
@@ -1583,7 +1611,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Email address"],
-                            "id": "171137e1-3e0a-4c64-97e7-a31fc5458f99",
+                            "id": "3b481d8a-0766-4adb-ae16-e574e6f65325",
                             "ord": "a0"
                           },
                           {
@@ -1595,11 +1623,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "07c3edfa-5308-4229-aed5-98cc8c842a56",
+                            "id": "978bf982-fa71-45e8-9c34-524f6a8be7f1",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ecb44a35-db72-4913-8ba4-e30219004773",
+                        "id": "cb3db2b7-eff8-4db0-a929-a78ad4d48289",
                         "ord": "a1"
                       },
                       {
@@ -1612,7 +1640,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["How can we help?"],
-                            "id": "563d351f-9fdd-46ca-8ab3-54e63f953b48",
+                            "id": "d8a72523-c887-4a43-bd80-2aa5ee82c7ff",
                             "ord": "a0"
                           },
                           {
@@ -1622,11 +1650,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "25e87752-42f3-46c2-b420-0a4da124f853",
+                            "id": "1a53d0bb-356c-4b67-9bec-bf1ca97b1843",
                             "ord": "a1"
                           }
                         ],
-                        "id": "21cd0f35-9b5f-4a06-81a9-e9715f3f1292",
+                        "id": "fe3901a9-10f9-4b74-beea-db4d121e606a",
                         "ord": "a2"
                       },
                       {
@@ -1642,7 +1670,7 @@
                               "type": "submit"
                             },
                             "children": ["Write to the studio"],
-                            "id": "463e616e-e303-40c9-92f0-0d8fd6bd67a1",
+                            "id": "73820b30-de65-4f3e-9fc5-3776664667b1",
                             "ord": "a0"
                           },
                           {
@@ -1653,11 +1681,11 @@
                               "href": "/work"
                             },
                             "children": ["See the series first"],
-                            "id": "944c8d9c-52e0-4081-8de2-2f7bef5418fa",
+                            "id": "671a746a-fa6d-4c5c-b9b3-abb4ea7bed2c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b11e493b-2e74-4a6f-b417-5601649bc575",
+                        "id": "ed197082-43f0-4bec-89fa-4aea13f2dbf9",
                         "ord": "a3"
                       }
                     ],
@@ -1668,15 +1696,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "d27a3855-f824-4f44-9eaf-98b4d6826791",
+                    "id": "9529bae2-2f52-40df-aa99-d06516d43404",
                     "ord": "a4"
                   }
                 ],
-                "id": "abcd1bab-6eea-4cf7-b1ea-46c2b9fa6d3c",
+                "id": "8955a40f-3ae9-4abb-8dd9-7fe2741548a9",
                 "ord": "a0"
               }
             ],
-            "id": "8fb64d31-7246-454c-8d61-99562ae63a9f",
+            "id": "f96a4a78-e581-4d4d-8f13-65911d75b6d6",
             "ord": "a0"
           }
         ]
@@ -1721,18 +1749,18 @@
                             "kind": "element",
                             "tag": "span",
                             "children": ["←"],
-                            "id": "588e286d-b4c8-4680-b37a-5eed1b294940",
+                            "id": "8e419d28-4525-49f8-9ccf-6b655b9df38f",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "span",
                             "children": ["All series"],
-                            "id": "f7a01793-0604-4bd7-831b-3b08090347a3",
+                            "id": "aec7faaa-72c7-4cda-8657-8b84134ca140",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5a1ca6fc-8862-45e6-83d9-b4132ea4cc8a",
+                        "id": "91596f0c-78a6-40e9-b308-eb3e3086cba0",
                         "ord": "a0"
                       },
                       {
@@ -1744,7 +1772,7 @@
                           "kind": "visible",
                           "ref": "category"
                         },
-                        "id": "3f45b856-7958-48d7-8d7a-a760c5fd38be",
+                        "id": "8433cf38-785d-4df5-a961-9105fb42a74e",
                         "ord": "a1"
                       },
                       {
@@ -1756,7 +1784,7 @@
                           "kind": "value",
                           "ref": "title"
                         },
-                        "id": "7d67bd8a-f784-43b9-a69f-d3bfb2560a1a",
+                        "id": "f3b13f93-160a-476b-976b-330ccc0cd9e5",
                         "ord": "a2"
                       },
                       {
@@ -1768,7 +1796,7 @@
                           "kind": "value",
                           "ref": "excerpt"
                         },
-                        "id": "5599a0d6-f7f8-46c4-9296-0efbf6e51a2f",
+                        "id": "9dbf80c2-d77a-4a61-b1df-73704f0bf62b",
                         "ord": "a3"
                       },
                       {
@@ -1788,7 +1816,7 @@
                               "kind": "visible",
                               "ref": "authorAvatar"
                             },
-                            "id": "b1078fb6-5c34-456e-8e2c-8c16b6271515",
+                            "id": "c7db2dd6-9c39-4dc1-b370-8d5ec9f4bcaf",
                             "ord": "a0"
                           },
                           {
@@ -1805,7 +1833,7 @@
                                   "kind": "visible",
                                   "ref": "authorName"
                                 },
-                                "id": "ac455469-c927-41a1-bc3a-ce387a4c3828",
+                                "id": "b6b2976f-f7dd-4a71-970f-65e0a49f6b45",
                                 "ord": "a0"
                               },
                               {
@@ -1817,23 +1845,23 @@
                                   "kind": "value",
                                   "ref": "date"
                                 },
-                                "id": "54cb4e0a-c67b-4cf0-9204-bc528aea039b",
+                                "id": "5fd268fa-f894-47e1-9141-5a8f5c6edccd",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "051ab3f4-8691-49f2-abd7-d928d1d421e3",
+                            "id": "e0994892-6fba-4387-80de-963c21f6c45a",
                             "ord": "a1"
                           }
                         ],
-                        "id": "037ec6c2-73b7-4c52-b385-fb06184e80f6",
+                        "id": "3b30d463-54ed-4236-b549-274243965c65",
                         "ord": "a4"
                       }
                     ],
-                    "id": "f8c95804-5901-4526-a105-902673220159",
+                    "id": "b3f17be9-4995-4bdd-9260-e12c523256d6",
                     "ord": "a0"
                   }
                 ],
-                "id": "194db454-1966-41f6-9ef9-7916c70778d3",
+                "id": "88478b64-ea47-4ec6-8976-a44c7e2a75f7",
                 "ord": "a0"
               },
               {
@@ -1858,19 +1886,19 @@
                           "kind": "value",
                           "ref": "featuredImage"
                         },
-                        "id": "79614a86-2ec0-4d3f-9ef4-4f0a95d387b8",
+                        "id": "bca47ca4-f80b-4b82-a26f-57c2b7c10fd8",
                         "ord": "a0"
                       }
                     ],
-                    "id": "f20c05eb-9bf8-415f-8e0a-562deb04214a",
+                    "id": "1732b2fa-21e7-4021-8c5a-fee192d9fa13",
                     "ord": "a0"
                   }
                 ],
-                "id": "506a90bd-f864-459f-8c29-45bdcad77953",
+                "id": "29713f6f-ea3e-4396-a858-f7748f60e7d5",
                 "ord": "a1"
               }
             ],
-            "id": "103a805f-971b-4431-ae7c-b9a77095b38e",
+            "id": "cb2f8485-f856-4044-8aae-48ccc1f26456",
             "ord": "a0"
           },
           {
@@ -1888,15 +1916,15 @@
                     "component": "cms.article-body",
                     "class": "w-full",
                     "locked": "host",
-                    "id": "3b924111-da7b-47df-9a7b-536361c66933",
+                    "id": "da06a704-7258-49a7-89b2-0b9656ddb2fa",
                     "ord": "a0"
                   }
                 ],
-                "id": "552c3aa2-9625-46cd-b4dc-2cb49d2097b9",
+                "id": "ac8f51b3-fc00-4bfd-aed8-9ac081c82139",
                 "ord": "a0"
               }
             ],
-            "id": "3cee7657-5d6c-4518-884c-fb213d5ebde9",
+            "id": "3de626c6-880a-454f-8c35-f9a7acf9e657",
             "ord": "a1"
           },
           {
@@ -1926,7 +1954,7 @@
                           "kind": "visible",
                           "ref": "authorAvatar"
                         },
-                        "id": "3fa73fc1-720d-4ec7-94a5-62990d9a1f0d",
+                        "id": "995b8400-f802-41d4-986d-52eeae11d426",
                         "ord": "a0"
                       },
                       {
@@ -1943,7 +1971,7 @@
                               "kind": "value",
                               "ref": "authorName"
                             },
-                            "id": "48dfa32a-32c5-47bc-872e-22ba42568392",
+                            "id": "4ef89167-e33f-48b3-a36b-9c6470099a71",
                             "ord": "a0"
                           },
                           {
@@ -1955,11 +1983,11 @@
                               "kind": "value",
                               "ref": "authorBio"
                             },
-                            "id": "a5453bec-ee52-4765-b7f8-63e97fa9837f",
+                            "id": "ec8bf9d2-cb3b-44a3-a5fd-57581dbdd744",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5680a28e-d4f4-4290-83dc-9e3ef29a1818",
+                        "id": "a91f32bf-ed9f-4262-8c1b-e825bf25a3b9",
                         "ord": "a1"
                       }
                     ],
@@ -1967,15 +1995,15 @@
                       "kind": "visible",
                       "ref": "authorBio"
                     },
-                    "id": "8d08f982-a464-44c0-9c64-2d3a6506ac2a",
+                    "id": "813fcbe4-2e30-4bc2-8483-d750ddc67636",
                     "ord": "a0"
                   }
                 ],
-                "id": "aed479fd-c341-4c93-8ae7-ba793e47b6b3",
+                "id": "80a22bc3-b8b7-43e7-9ef1-29697e03561b",
                 "ord": "a0"
               }
             ],
-            "id": "848e2c80-6b08-456b-878d-69d05e959e0d",
+            "id": "4c602ce3-4263-4b2b-a565-180e55186bca",
             "ord": "a2"
           },
           {
@@ -1998,7 +2026,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl",
                         "children": ["Keep reading"],
-                        "id": "b4969ba0-9509-4f62-8835-1212c7b946ba",
+                        "id": "cac4ce85-cbd7-4bff-bda0-00161c2d44a1",
                         "ord": "a0"
                       },
                       {
@@ -2013,23 +2041,23 @@
                               "href": "/work"
                             },
                             "children": ["More stories"],
-                            "id": "2f76a420-bf26-43a9-b152-8c4f08ba49f4",
+                            "id": "39872892-dc5d-4763-a43a-2df85d148fa1",
                             "ord": "a0"
                           }
                         ],
-                        "id": "c197ef5c-647a-46c9-b44a-e43beb20b337",
+                        "id": "361ff9a9-37da-4a6b-a057-326704e7b71b",
                         "ord": "a1"
                       }
                     ],
-                    "id": "ad7a3565-583c-4837-9db3-492ccbf25f71",
+                    "id": "b5ec2921-8a45-4d7b-ac53-a26ef493c6e3",
                     "ord": "a0"
                   }
                 ],
-                "id": "6062e06b-b11e-4ce9-90ec-c68d244d3239",
+                "id": "02dccfbb-49e2-4eff-88a1-1cc83b9366cf",
                 "ord": "a0"
               }
             ],
-            "id": "8b50b4ed-eff0-481c-93b5-f834703c7733",
+            "id": "3dbf4f16-67b9-4ae6-9bc8-7068b10ab872",
             "ord": "a3"
           }
         ],
@@ -2037,7 +2065,7 @@
           "kind": "collection",
           "ref": "blog_post"
         },
-        "id": "b18b12e3-9dda-4680-ba11-4d6b90e8e76b"
+        "id": "27694e86-f4aa-4a12-98a7-f636406afe74"
       }
     }
   ],

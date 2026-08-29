@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "d7d5b502-ec1e-4d47-b18a-700a9b7baba1",
+                  "id": "56a4aec2-58e5-42d7-b5e8-e0f429da5958",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "90dc4050-a725-4f5b-8eae-5471b5141bc5",
+                      "id": "ce183dfc-4dd7-49d5-9f38-07cec3e1171d",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "4aafd106-80bf-42d5-a4ef-a11a4a926c9e",
+                      "id": "1fcb2a20-04bd-4ef4-8dd3-84dafacfa4ff",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "4c4bf651-386f-4d99-a141-df75aabab8d4",
+                      "id": "2a549631-bb0b-4cfc-ada5-188a621fe754",
                       "ord": "a2"
                     }
                   ],
-                  "id": "375ba373-c0a2-4d06-aecf-c56c3a8d5d05",
+                  "id": "812f1e78-faaf-42f3-b9ee-67541b9f79b5",
                   "ord": "a1"
                 },
                 {
@@ -88,26 +88,17 @@
                   "class": "ml-auto flex items-center gap-3",
                   "children": [
                     {
-                      "kind": "element",
-                      "tag": "a",
+                      "kind": "host",
+                      "component": "site.account-link",
                       "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
-                      "attrs": {
-                        "href": "/account/login"
-                      },
-                      "children": ["Sign in"],
-                      "slot": {
-                        "name": "secondary",
-                        "type": "link",
-                        "label": "Secondary link"
-                      },
-                      "id": "fd8c7a8f-80a8-4556-9b12-0d4d74bc368f",
+                      "id": "3c6eae8d-993f-4c5c-a23c-d61b58741834",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "890d71ae-58cd-4265-833e-1277b109153a",
+                      "id": "3e10dc71-aa28-4f11-ae1a-d4791c0cdd06",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +114,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "ebab3624-a2b0-4cd5-b1a4-6f7b4593345e",
+                      "id": "59e8e80d-737a-41a8-a4e0-0cf782b778bc",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +132,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "56969a41-9f54-4489-971c-8bc43b8ef64c",
+                          "id": "8ac3e13a-a6ea-4766-b646-c5c95214c94d",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "525a2aea-fc72-4e96-b9e0-2c384759c7d7",
+                      "id": "a76aacc1-ae1d-430f-befc-c5dfffc085ba",
                       "ord": "a3"
                     }
                   ],
-                  "id": "053f921f-52f5-4b85-b903-d04075f96b64",
+                  "id": "6374c8e5-4d46-436a-a89b-00bce24438e5",
                   "ord": "a2"
                 }
               ],
-              "id": "6deb7500-d7b8-40db-a6e7-c7bd3d548a3e",
+              "id": "5f269694-d7dd-4a14-8715-79375434d610",
               "ord": "a0"
             },
             {
@@ -178,7 +169,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "5365a6d3-a86d-41f8-ba1a-b033690b501f",
+                  "id": "5eac904d-4c67-4f83-b0cb-c8d62d2b959f",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +185,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "24844947-e19a-44d7-862a-205074c145de",
+                  "id": "49dd94ea-f19a-44d7-b1ea-c9d65857443b",
                   "ord": "a1"
                 },
                 {
@@ -210,23 +201,14 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "5a66594a-ef98-4c10-b54c-dedbac3edbf9",
+                  "id": "6d23f113-9c39-4d36-b775-b8852540edf6",
                   "ord": "a2"
                 },
                 {
-                  "kind": "component",
-                  "component": "Button",
+                  "kind": "host",
+                  "component": "site.account-link",
                   "class": "btn btn-ghost btn-sm mt-2 w-full",
-                  "props": {
-                    "label": "Sign in",
-                    "href": "/account/login"
-                  },
-                  "slot": {
-                    "name": "secondary",
-                    "type": "link",
-                    "label": "Secondary link"
-                  },
-                  "id": "8922d5eb-d5e9-4781-9299-1a4b34620e0c",
+                  "id": "120628cd-9d5c-4494-a4e5-83884b83a474",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +224,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "d564c50c-9541-47ad-a12f-f08d1e72139f",
+                  "id": "4e8f8093-05af-44a6-9273-6d81a38b5d18",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "56e7ed44-49c5-46e3-a838-ee040f151c95",
+              "id": "629a0793-d45e-44ec-91ed-3cc02c5a4236",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "d1ea8eba-cd04-49ad-97e8-2ddbbb03c3e1",
+          "id": "41ac76c1-0105-4788-b83d-6c260c0de026",
           "ord": "a0"
         },
         {
@@ -270,7 +252,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "99b7aeca-83a6-4c6c-9227-868fb3c29100",
+          "id": "773eef6a-a46d-4f4b-b1ac-59c08330e45f",
           "ord": "a1"
         },
         {
@@ -300,7 +282,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "dc6840da-e32a-4e31-9162-b5ac2605aa29",
+                          "id": "6b0ed60e-b888-4ce2-ae28-1ee8e0dd1bc0",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +298,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "28e47c03-9d20-4db8-a398-c7ae6029e3af",
+                          "id": "c0564c8e-1358-452e-bc4f-602c29652c46",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +306,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "a6cd0f04-2b00-41c4-b1f5-52ebe4f69897",
+                          "id": "8ac01937-f97f-4320-a0d1-c925b980380f",
                           "ord": "a2"
                         }
                       ],
-                      "id": "d70d3fb3-21c8-4594-9e2c-93739e8462c3",
+                      "id": "20a456b3-2e72-4f0c-a68f-bdcec6050ba6",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +331,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "0f11347b-8149-4851-b119-2569b20ee7c5",
+                          "id": "dec31b0b-08c0-4037-8513-8de1e61a1d5a",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +356,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "c98d8135-c248-4af4-ae65-7cd6109c9e4b",
+                                  "id": "8b55863b-8d0b-41dc-a4ae-aacf4cd04b2d",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "5cb3e9ab-74bb-4410-8f3f-bbc72682bec9",
+                              "id": "85e10d31-e2a9-444a-b92b-edf982377ca8",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +380,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "ff2f9ff4-70ca-4827-81b7-3007bd9d6954",
+                                  "id": "65a766db-1ee5-4aa3-973e-15543b00ffdb",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "29f48b6b-3cee-4c73-a19f-2f3ace6a03a8",
+                              "id": "852d1f84-1ecf-479c-b92d-777c3eeececf",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +404,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "3e43483f-2914-42ad-af7b-2f4b9c7e7a0b",
+                                  "id": "2940e726-8f2f-4459-bfed-acc985d19633",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "77f2b774-0c5b-447d-b58d-c1f79c9e24fd",
+                              "id": "eebd734c-6f9e-4c81-8713-b7b856335ce1",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +428,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "a98655d1-62e1-41db-86bc-c6443d7485a9",
+                                  "id": "4e18efef-1ac1-4ac2-8938-b95c71377300",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "e4e2826b-b17d-4f89-a2a3-7c532fb32ba0",
+                              "id": "7eae9b5d-8e35-4552-a656-022f3bbae451",
                               "ord": "a3"
                             }
                           ],
-                          "id": "ec5f8c39-5d6f-4ab7-b617-170406b3b9f1",
+                          "id": "97249454-1798-4adc-acdb-00d74de1864b",
                           "ord": "a1"
                         }
                       ],
-                      "id": "46c626a8-45d7-4a7c-8914-50e8f7c11116",
+                      "id": "de5cb6dc-ba6a-4e1c-ad7f-874306990cb4",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +453,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "ec4939a7-2fbe-40e7-8181-4b25d3088697",
+                          "id": "9d1c53d6-3ffb-465c-9413-3bce2234f693",
                           "ord": "a0"
                         }
                       ],
-                      "id": "c71f4c27-e8ce-4ef6-af7b-88488fdb21d6",
+                      "id": "ee036923-0e15-4386-a970-e88ec4891cfe",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +481,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "b100395e-038c-4212-8f10-dc778c8fe145",
+                                  "id": "7e87c586-a983-4015-908b-3e5ab293dc7c",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "7dd6b168-1785-4005-bb3d-f6fcdc09f073",
+                              "id": "82ce2dc3-30f9-4477-ab48-99f4334a851a",
                               "ord": "a0"
                             }
                           ],
-                          "id": "6e645f68-4597-4891-aa37-2e8d49446ad4",
+                          "id": "85520c65-09cd-4960-8ad3-6142cb973c43",
                           "ord": "a0"
                         }
                       ],
-                      "id": "f271259b-c191-469b-87b6-09e30ea65aac",
+                      "id": "cee7c780-f30b-4fb4-be47-f4a02f315c0f",
                       "ord": "a3"
                     }
                   ],
-                  "id": "56c373c8-61e6-4851-9a9a-704af6d9f1ad",
+                  "id": "e2a71418-318a-4465-8154-d0596399501f",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +520,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "1b93a0b5-749d-485e-9f37-71489327bb5f",
+                          "id": "adc55d4a-ae91-40cd-8f33-a47c6924742b",
                           "ord": "a0"
                         }
                       ],
-                      "id": "75a47045-75ae-4ef6-b6aa-7b720c02bdcf",
+                      "id": "82fb7d16-2e59-4cfb-b8ee-1f7552e8ba52",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +532,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "75036cc4-8e8d-4c48-b8f0-518c6f7e09f2",
+                      "id": "1f78276a-7f36-4fb2-949e-d9edd7b909c8",
                       "ord": "a1"
                     }
                   ],
-                  "id": "8cd31fb0-15f1-4e76-8cbd-3f50bff76bcc",
+                  "id": "8a103438-d7f6-4daf-a165-4f3e0d84c4f6",
                   "ord": "a1"
                 }
               ],
-              "id": "fa2cdf11-5e7a-4a13-bf80-1fee3cd249f9",
+              "id": "91d9beaf-29c7-4932-afbc-b67fc4c3fc59",
               "ord": "a0"
             }
           ],
-          "id": "5b0aa539-f3d3-4c5d-8aa8-2c53c408e9d4",
+          "id": "ebd6a661-547f-4b05-b254-b05d7060a54d",
           "ord": "a2"
         }
       ],
-      "id": "f8f51934-eb7c-42b5-aec3-9f78bf0211c0"
+      "id": "b793dec3-e3ca-4edc-96e7-9681211f4999"
     }
   },
   "pages": [
@@ -580,7 +562,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "c6be0fec-aa4f-40ed-a8e6-57038d496c06",
+        "id": "a9c0d8ba-b271-4a20-8728-a70394259c30",
         "children": [
           {
             "kind": "element",
@@ -596,14 +578,14 @@
                   "alt": "A happy dog resting a paw on a caring veterinarian during a check-up",
                   "loading": "eager"
                 },
-                "id": "b4915739-6e99-426e-a1ff-b0da4e8ccff7",
+                "id": "f3d9d314-2155-4126-9cf3-e789744eb062",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/50",
-                "id": "33f72921-8647-411a-ba94-6c57e84e58ec",
+                "id": "557be37c-e115-4d93-8613-5ae04db520d5",
                 "ord": "a1"
               },
               {
@@ -616,7 +598,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Your pet’s second family"],
-                    "id": "17c6ca06-23e5-4ce2-969c-20a67fd1e60b",
+                    "id": "58dc93b8-65fc-49ba-9590-b7167d3bb222",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +608,7 @@
                     "children": [
                       "A friendly neighborhood clinic for dogs and cats — wellness, vaccines, sick visits, dental and senior care, all under one warm roof."
                     ],
-                    "id": "e180b324-b3c8-45ce-9c8b-4a415a08e19c",
+                    "id": "5611775f-758c-499c-a422-5ca0f1736340",
                     "ord": "a1"
                   },
                   {
@@ -642,7 +624,7 @@
                           "href": "/book"
                         },
                         "children": ["Book an appointment"],
-                        "id": "e982c48b-f384-40ba-86d8-2c2372d77666",
+                        "id": "52425bf4-d3e1-480b-9cc2-295d56f93453",
                         "ord": "a0"
                       },
                       {
@@ -653,19 +635,19 @@
                           "href": "/book"
                         },
                         "children": ["See our services"],
-                        "id": "fd775901-b788-41b1-bfc5-a343bebec1fa",
+                        "id": "2553dbe2-82bf-4eae-aef7-64c25ccafb77",
                         "ord": "a1"
                       }
                     ],
-                    "id": "a73af691-f434-405e-b6d5-d1a1bff90a21",
+                    "id": "7bff7ba4-05af-42f9-956a-0f59a4aa9d39",
                     "ord": "a2"
                   }
                 ],
-                "id": "cbde10ff-2139-4184-a76a-ce67dca346fb",
+                "id": "46e68c44-d3b0-45e6-b1e7-fe7aa73211bb",
                 "ord": "a2"
               }
             ],
-            "id": "c63d7e1e-5b07-4e8d-9580-3aaef5c33ed8",
+            "id": "71072455-f4e2-43f7-b031-98a8cf822855",
             "ord": "a0"
           },
           {
@@ -693,7 +675,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Compassionate care"],
-                            "id": "05c2aba3-e6da-4ec1-88df-4c8ab90074e3",
+                            "id": "74ac4edd-7b62-4d34-a3ad-444b3722d766",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +685,11 @@
                             "children": [
                               "Gentle hands, calm rooms and all the time your pet needs. We treat every animal like our own — because to us, they are."
                             ],
-                            "id": "55609ef6-0f09-4f3e-80a6-806b0b793184",
+                            "id": "9649c6a2-d3f1-4fe7-bfd1-5907e47ac53c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5d790dc3-3bae-4539-ac8c-4356c0c1c668",
+                        "id": "a03077f0-aae9-47af-9f3d-405dd0bc988e",
                         "ord": "a0"
                       },
                       {
@@ -720,7 +702,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Same-day sick visits"],
-                            "id": "91683bbf-b9b1-4085-be1f-a6bb77fab87d",
+                            "id": "a1401a21-4700-44be-80fa-81b4225e4e99",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +712,11 @@
                             "children": [
                               "When something’s off, you shouldn’t have to wait days. We hold room every morning for pets who need to be seen now."
                             ],
-                            "id": "38df761b-cda5-4147-b54f-3b1052eadcc5",
+                            "id": "ebf8ec9e-21dc-4760-9c7d-225f5f40f616",
                             "ord": "a1"
                           }
                         ],
-                        "id": "06ae8cbe-f83c-40e3-8581-e5df6b65b21b",
+                        "id": "3e37f6a8-4f99-4617-8593-10baf22d9c56",
                         "ord": "a1"
                       },
                       {
@@ -747,7 +729,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Dogs & cats welcome"],
-                            "id": "e621b2b1-db6a-4dee-8645-9dfad21f408f",
+                            "id": "cb29447b-61a1-47ee-aec8-4faad51a06aa",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +739,11 @@
                             "children": [
                               "From a wiggly new puppy to a wise old cat, we care for the whole family — and keep the visit as low-stress as we can."
                             ],
-                            "id": "9b9a2869-b106-45f7-9cb3-a713d7e679bf",
+                            "id": "4d4bab96-e82e-42f0-894b-bd31710941ce",
                             "ord": "a1"
                           }
                         ],
-                        "id": "8ba8c6b9-c79b-445c-bc34-206fd2cf7e9a",
+                        "id": "454e54b5-d068-472b-958a-2824fc4ce936",
                         "ord": "a2"
                       },
                       {
@@ -774,7 +756,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Clear, honest pricing"],
-                            "id": "52f33b25-6cd3-4f5b-a48e-e82794dc3904",
+                            "id": "fd3075e4-016e-44a4-ae61-0b4997980e8e",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +766,23 @@
                             "children": [
                               "You’ll always know the cost before we begin. No surprises, no upsells — just straight answers and fair prices."
                             ],
-                            "id": "6ea67ec9-a501-462b-a3dd-8eb70732fd24",
+                            "id": "2a8dcd76-4778-407e-9ea9-dcb268e7f9f7",
                             "ord": "a1"
                           }
                         ],
-                        "id": "35cde33f-6c88-4d33-b78f-efa7d722b333",
+                        "id": "b5b7aca0-e07d-4f55-9184-d39ede1acaea",
                         "ord": "a3"
                       }
                     ],
-                    "id": "1af6ab80-91d9-41c7-bdf6-02cbc6a7b80c",
+                    "id": "44fe5713-2d60-4149-b4e5-335ef071bbc0",
                     "ord": "a0"
                   }
                 ],
-                "id": "20caa2cc-a23f-41f3-877c-ef2879c65616",
+                "id": "4175c8b8-68fd-4be2-a2e6-d326ff392f97",
                 "ord": "a0"
               }
             ],
-            "id": "303e6afa-993b-4c4c-9a91-38e8bed0c62d",
+            "id": "381f6c35-1d5e-4631-bc7b-e670f65da654",
             "ord": "a1"
           },
           {
@@ -823,7 +805,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Ways we can help"],
-                        "id": "ea802b00-c89c-4097-88a4-4b95597e65ed",
+                        "id": "2a47696e-88da-4c58-8ab7-048a81bfe9f5",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +815,11 @@
                         "children": [
                           "A few of the appointments we book most. Full prices and live openings are on the booking page."
                         ],
-                        "id": "ec4e5382-e8e8-4008-a30c-6d8fd24c918a",
+                        "id": "e1fe608a-4cd1-4966-82de-eda1df4a0021",
                         "ord": "a1"
                       }
                     ],
-                    "id": "cb6c9816-ba71-44a3-89ea-da81a6b2887c",
+                    "id": "6bbab47f-4df1-49c6-8554-84ba607a5f82",
                     "ord": "a0"
                   },
                   {
@@ -863,7 +845,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Wellness exam"],
-                                "id": "6af298d1-5037-4081-a081-f39e86309c98",
+                                "id": "e01ce9e7-47ac-4e68-9257-ae9e2affff2a",
                                 "ord": "a0"
                               },
                               {
@@ -871,11 +853,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$65"],
-                                "id": "c5d22a50-6362-43c7-9b5c-ee82873c999c",
+                                "id": "49be22ea-2312-404c-b65e-fbc5063c7de3",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "1df34394-2794-4df2-aa96-806fbf12d4eb",
+                            "id": "46167a35-617a-42bf-81ce-7fcde93258ac",
                             "ord": "a0"
                           },
                           {
@@ -883,7 +865,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["30 min"],
-                            "id": "eeb23b9c-dea9-49d1-80e8-2fb4775b28db",
+                            "id": "cdea896a-9829-47a3-9daa-3026cdfd4712",
                             "ord": "a1"
                           },
                           {
@@ -893,11 +875,11 @@
                             "children": [
                               "A head-to-tail check-up to keep them feeling their best."
                             ],
-                            "id": "db2bb537-04a2-4d1c-a6fd-529c378ce2b6",
+                            "id": "0c4e462d-effd-4a2f-b43b-0e74879e8ad4",
                             "ord": "a2"
                           }
                         ],
-                        "id": "e2ef4a40-c826-4312-9ab2-1014ddb8b552",
+                        "id": "f6358eb7-21db-4928-9c07-e28a16a914cc",
                         "ord": "a0"
                       },
                       {
@@ -918,7 +900,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Vaccination visit"],
-                                "id": "62888be9-5da1-4799-a468-fe259b534a1a",
+                                "id": "b4a522a0-00ca-41ae-b8e6-3fd663e9bb36",
                                 "ord": "a0"
                               },
                               {
@@ -926,11 +908,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$45"],
-                                "id": "8de7c217-09a0-4278-a3d3-9c51887a0c64",
+                                "id": "245a35ce-c066-43fd-b0eb-6c88989bc59f",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "8614d8f8-dadc-4b79-9540-5d415c199138",
+                            "id": "cd039360-9e16-4257-b14c-9a23f30f75e0",
                             "ord": "a0"
                           },
                           {
@@ -938,7 +920,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["20 min"],
-                            "id": "cc06f81d-dde2-400c-a4bf-c3698e217490",
+                            "id": "aded981a-275b-40a5-bca4-619c7dabef49",
                             "ord": "a1"
                           },
                           {
@@ -946,11 +928,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Core and lifestyle vaccines, given gently."],
-                            "id": "8b8ea79f-c465-4872-b0cd-a7c5becfbe57",
+                            "id": "1901022f-3753-49cc-990a-839364a63350",
                             "ord": "a2"
                           }
                         ],
-                        "id": "bbb8252e-6d75-435b-8ed7-b5e706177237",
+                        "id": "4c7f8ed0-b40a-4b3a-96f4-54d0badc35aa",
                         "ord": "a1"
                       },
                       {
@@ -971,7 +953,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Sick visit"],
-                                "id": "817d022e-f0af-4b64-ad80-6ecb3c8e035a",
+                                "id": "884f7362-cbc4-4a0b-b86c-e8c75a14a4c6",
                                 "ord": "a0"
                               },
                               {
@@ -979,11 +961,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$80"],
-                                "id": "a033d06b-96a4-418e-8493-93986a63f26c",
+                                "id": "8aa91e3a-a62c-4838-bfcb-8f8dc5fe9043",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "a1baefeb-c97d-4f67-9ea4-d4180290d0a6",
+                            "id": "1e487364-f035-4a5f-904b-b1722af41b23",
                             "ord": "a0"
                           },
                           {
@@ -991,7 +973,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["30 min"],
-                            "id": "8975e490-499a-4aac-9277-257e77eab3a2",
+                            "id": "a00fff6d-e67d-4617-bd50-6e1d47800f7d",
                             "ord": "a1"
                           },
                           {
@@ -999,11 +981,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Same-day help when your pet isn’t themselves."],
-                            "id": "7024b1e9-95b8-4990-984d-94d430259047",
+                            "id": "0172e832-cf0b-4492-8b72-6e6263562d02",
                             "ord": "a2"
                           }
                         ],
-                        "id": "388587b8-8d48-40e5-8081-aedb1cae127b",
+                        "id": "d4b8cdd7-18f0-496a-b1b4-e63040666424",
                         "ord": "a2"
                       },
                       {
@@ -1024,7 +1006,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Senior wellness"],
-                                "id": "fb48fb10-9a09-4b59-bcf6-a94146570bc2",
+                                "id": "ba557d9d-89f6-41ca-8a02-9529e7879581",
                                 "ord": "a0"
                               },
                               {
@@ -1032,11 +1014,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$120"],
-                                "id": "6491eff1-cec1-4f68-b3c3-3acdbb5c1e9f",
+                                "id": "b3506888-cea4-4193-b073-0685ef621b9e",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b180c2ad-6408-4bd0-8643-f86125bed013",
+                            "id": "9312d83d-81ca-4a59-bbb5-7c4bb314c2a7",
                             "ord": "a0"
                           },
                           {
@@ -1044,7 +1026,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "b4e5b1cf-a824-4319-b69d-ab3ffc877f64",
+                            "id": "99e98b08-3697-4524-b754-8c1a784fd412",
                             "ord": "a1"
                           },
                           {
@@ -1052,15 +1034,15 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Thorough, gentle care for older pets."],
-                            "id": "6b0d2b8c-7fe5-44ef-a0bc-87d6904fd946",
+                            "id": "0361c8d4-0815-4e74-905d-2cf867862a2e",
                             "ord": "a2"
                           }
                         ],
-                        "id": "d435b7f7-7f3d-4225-af83-7fd91fc54595",
+                        "id": "fe988345-56ed-4647-a8f3-83dcd232ea0c",
                         "ord": "a3"
                       }
                     ],
-                    "id": "710e6e74-e2dd-4caf-a5fd-cc167628b7f0",
+                    "id": "bfd9a398-1bd6-442e-a698-55468a834768",
                     "ord": "a1"
                   },
                   {
@@ -1076,19 +1058,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "c0d1d5a9-b47d-41f4-9a7a-655c32e8f107",
+                        "id": "36aa5f94-0143-4671-971b-b54f17ede086",
                         "ord": "a0"
                       }
                     ],
-                    "id": "e797480c-065d-4b85-9f28-f40097e06a8e",
+                    "id": "9385e4a4-2313-4992-8a97-f218a269963c",
                     "ord": "a2"
                   }
                 ],
-                "id": "2ca41d93-a50c-4520-92da-9941abdb8455",
+                "id": "fd72ce15-3d34-44ac-b9d7-2a8f45ee516c",
                 "ord": "a0"
               }
             ],
-            "id": "7185cb58-6ff1-4e32-9ac1-41a6b6dd35ba",
+            "id": "c13dd133-eac1-40de-8828-9221cdd12973",
             "ord": "a2"
           },
           {
@@ -1110,7 +1092,7 @@
                       "alt": "A veterinarian gently holding a cat in a bright, calm exam room",
                       "loading": "lazy"
                     },
-                    "id": "c5f19154-8a7c-4c4e-acdf-b648d340437e",
+                    "id": "6d12399c-12a6-4790-86fb-e8fa6a2bd821",
                     "ord": "a0"
                   },
                   {
@@ -1123,7 +1105,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Care that starts with listening"],
-                        "id": "77319da5-b2f6-4dca-a62f-f8335d481289",
+                        "id": "3ecb1d9b-1d22-4b89-8f58-a6f60c4d02b8",
                         "ord": "a0"
                       },
                       {
@@ -1133,7 +1115,7 @@
                         "children": [
                           "Cedar Paws is a neighborhood clinic, not a rush-you-through hospital. We keep the day unhurried so every visit gets a real conversation — about your pet, your worries, and what will actually help."
                         ],
-                        "id": "6daa88d8-1d09-480c-9622-352cd39c607e",
+                        "id": "27e46616-238b-490c-a7e1-59ff4b0b71eb",
                         "ord": "a1"
                       },
                       {
@@ -1143,7 +1125,7 @@
                         "children": [
                           "You’ll see doctors and techs who remember your pet’s name, know their history, and explain everything in plain language. That’s the whole idea: fewer surprises, more trust, and a team that’s genuinely on your side."
                         ],
-                        "id": "e424edfd-2858-4936-80dd-81bc15867058",
+                        "id": "a39b0b2c-f7e0-4151-a3d4-e4ead9b61742",
                         "ord": "a2"
                       },
                       {
@@ -1159,23 +1141,23 @@
                               "href": "/book"
                             },
                             "children": ["Book an appointment"],
-                            "id": "a40a26fc-f98e-465a-8807-d7c9a68c3132",
+                            "id": "84fba5d0-707a-4791-b6b2-a630f2544f4d",
                             "ord": "a0"
                           }
                         ],
-                        "id": "425d77be-0ecd-4921-9ba5-a81f7635443f",
+                        "id": "334801e5-8926-4521-a1eb-b026a75d79a6",
                         "ord": "a3"
                       }
                     ],
-                    "id": "25452de2-3a94-4533-a56c-52cd36ec4ab3",
+                    "id": "802dc2df-6e2a-4672-b801-ba80f4c6969d",
                     "ord": "a1"
                   }
                 ],
-                "id": "022b2f3d-98ca-4dad-942b-8c808d899118",
+                "id": "08ee2f49-5425-4f38-b303-c2ea4e27761f",
                 "ord": "a0"
               }
             ],
-            "id": "b42a9175-5824-44a1-9971-97e7bc09f0df",
+            "id": "952fa315-d438-4895-a368-f5794d5d4345",
             "ord": "a3"
           },
           {
@@ -1198,7 +1180,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Meet the team"],
-                        "id": "9a702ae5-5a91-45f2-b34f-30c2a239343c",
+                        "id": "4b8e29bc-bda5-4928-bd78-52f67778dc2b",
                         "ord": "a0"
                       },
                       {
@@ -1206,11 +1188,11 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": ["The doctors and techs who’ll get to know your pet by name."],
-                        "id": "b899a624-8e51-458f-b069-e881b885d64d",
+                        "id": "d0e5e85f-18df-439e-a84b-c6c22964a0bc",
                         "ord": "a1"
                       }
                     ],
-                    "id": "097e051d-8a15-4274-8b78-d106aa40220c",
+                    "id": "bbb24428-8ace-4d4c-bd82-dc211b4917f6",
                     "ord": "a0"
                   },
                   {
@@ -1232,7 +1214,7 @@
                               "alt": "Dr. Maya Ellison, veterinarian",
                               "loading": "lazy"
                             },
-                            "id": "44e4cf05-8863-4723-9fff-84bee795f1b4",
+                            "id": "9807bb43-1fbd-4e09-af01-7c20f80dfe90",
                             "ord": "a0"
                           },
                           {
@@ -1245,7 +1227,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Dr. Maya Ellison"],
-                                "id": "987d78fb-10cd-4be9-879a-e5849fea32ed",
+                                "id": "5fde1243-719e-495b-be23-fd289589048c",
                                 "ord": "a0"
                               },
                               {
@@ -1253,7 +1235,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Veterinarian"],
-                                "id": "4b17bfdc-d85d-4591-8e80-95e7bc5c3109",
+                                "id": "682d74a9-20b7-41d2-9362-efb79f1330c1",
                                 "ord": "a1"
                               },
                               {
@@ -1263,15 +1245,15 @@
                                 "children": [
                                   "Surgery, dentistry and everyday wellness. Maya founded Cedar Paws to do medicine slowly and kindly."
                                 ],
-                                "id": "ef05f2ee-ebd2-4a10-9f85-448fc621146e",
+                                "id": "5c299634-2efb-4381-87dc-92fd29ca390e",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "ae1c6846-8279-4232-95ea-16d024189b82",
+                            "id": "84bcc290-48bb-4152-83b9-68eb7d5dc7c8",
                             "ord": "a1"
                           }
                         ],
-                        "id": "06e12b22-827e-4cb4-b562-5b19a1803c2d",
+                        "id": "206cfc96-df5d-4143-aa2c-b049a3536739",
                         "ord": "a0"
                       },
                       {
@@ -1288,7 +1270,7 @@
                               "alt": "Dr. Sam Reyes, veterinarian",
                               "loading": "lazy"
                             },
-                            "id": "0363bbd3-bd6e-414a-a77f-e57b1d9c3558",
+                            "id": "48eb87b4-71c6-4d8e-b693-5dacd8e4a0d6",
                             "ord": "a0"
                           },
                           {
@@ -1301,7 +1283,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Dr. Sam Reyes"],
-                                "id": "66066281-995d-4fe1-879a-15c757eb984c",
+                                "id": "a70893fa-760c-47ca-a7ca-2b98133f5965",
                                 "ord": "a0"
                               },
                               {
@@ -1309,7 +1291,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Veterinarian"],
-                                "id": "ca83ca33-66a2-4ea1-9046-72400ded237a",
+                                "id": "ae7514bf-acbc-4273-810f-a72fc0b6791c",
                                 "ord": "a1"
                               },
                               {
@@ -1319,15 +1301,15 @@
                                 "children": [
                                   "A soft spot for senior pets and the anxious ones — the cats who hide and the dogs who shake."
                                 ],
-                                "id": "93965004-5aed-4654-a3cb-e10970617d21",
+                                "id": "501ed2cf-4dce-4548-8eda-94c49a0f3a20",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "81e22e96-19ff-4785-a657-af498ec0d276",
+                            "id": "f0bb67db-9a81-41b5-bfeb-8849e0232eb3",
                             "ord": "a1"
                           }
                         ],
-                        "id": "0b66c105-a39b-482c-9119-ec7d8a701506",
+                        "id": "0bdd8010-a589-4bac-8597-a549fb9db97a",
                         "ord": "a1"
                       },
                       {
@@ -1344,7 +1326,7 @@
                               "alt": "Jordan Blake, veterinary technician",
                               "loading": "lazy"
                             },
-                            "id": "2e29deca-98ec-4bb8-8be7-82a608b65ba0",
+                            "id": "1c7c846e-8933-4421-a864-7ad882697ecf",
                             "ord": "a0"
                           },
                           {
@@ -1357,7 +1339,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Jordan Blake"],
-                                "id": "9d4c3a6f-8d50-41db-86f7-0e6cb6eb81e5",
+                                "id": "042159b4-a5a3-453e-83e2-f203b8734b03",
                                 "ord": "a0"
                               },
                               {
@@ -1365,7 +1347,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Veterinary technician"],
-                                "id": "5a665c60-5198-43e6-a6b6-c059a3051f30",
+                                "id": "1002a7fb-55fa-4cb1-938a-2a4aff1cc659",
                                 "ord": "a1"
                               },
                               {
@@ -1375,27 +1357,27 @@
                                 "children": [
                                   "Vaccines, nail trims and treat-forward visits. Jordan makes the hard days a little easier."
                                 ],
-                                "id": "9e9155c8-0771-437d-9aa4-94d6498dcf48",
+                                "id": "ea392c26-c2c8-40ae-b0b8-8ee148760f17",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "69ca9451-bb98-4e88-933a-a554661ce85b",
+                            "id": "d8853d02-3d1f-48dd-8780-e842a04b421e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4ef68b50-b664-42a3-9972-f712cec2e843",
+                        "id": "0d9f25dc-0ce5-4647-b16b-90a3e91a8a81",
                         "ord": "a2"
                       }
                     ],
-                    "id": "aedc0a94-0661-45e8-a768-d757d7f2836d",
+                    "id": "923246c8-dad6-48ea-9601-3df3834091f1",
                     "ord": "a1"
                   }
                 ],
-                "id": "bb509691-b1f8-4187-a392-f693bc86acee",
+                "id": "833ea4de-bbbd-494f-b43b-f799ea7013ff",
                 "ord": "a0"
               }
             ],
-            "id": "ac33ba93-e56d-47f1-8a92-852262cd5bb1",
+            "id": "659a3cf0-3b04-4c23-964a-480e58eb0512",
             "ord": "a4"
           },
           {
@@ -1415,7 +1397,7 @@
                     "children": [
                       "“My old lab was terrified of the vet until we found Cedar Paws. They sat on the floor with him, took their time, and caught his kidney issue early. I don’t know where we’d be without them.”"
                     ],
-                    "id": "01e0017e-9eee-4237-b775-9b73adbc246b",
+                    "id": "f71a8bb8-c119-4b9d-a576-552742a937be",
                     "ord": "a0"
                   },
                   {
@@ -1423,15 +1405,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["Dana & Barkley, clients since 2022"],
-                    "id": "eb528a79-5fd7-4b18-92a5-15833ad64b4a",
+                    "id": "ca07a286-6d7e-4ec8-ba6b-85a7f7d0ec94",
                     "ord": "a1"
                   }
                 ],
-                "id": "2a9d140d-1b28-4829-8efb-a11a61b3cccf",
+                "id": "932f8aff-f676-40a2-88ce-cf8f7a41f806",
                 "ord": "a0"
               }
             ],
-            "id": "d805710d-8ef8-40f2-9b12-a7ea3ffc69ae",
+            "id": "e54bfa58-a4e6-4079-b413-a8121e9bf071",
             "ord": "a5"
           },
           {
@@ -1449,7 +1431,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Ready to book your pet’s visit?"],
-                    "id": "467a1fd5-d243-4a39-88a8-0fa99a1232d7",
+                    "id": "a3fa472c-4c2b-4199-9b35-5213b8d37c1c",
                     "ord": "a0"
                   },
                   {
@@ -1459,7 +1441,7 @@
                     "children": [
                       "Pick an appointment type, choose your doctor and see live openings. It takes about a minute."
                     ],
-                    "id": "94badb37-8792-4ff0-b36d-809c75872183",
+                    "id": "a14ebf4c-8ea6-429c-9f0e-7ccee2098a00",
                     "ord": "a1"
                   },
                   {
@@ -1470,15 +1452,15 @@
                       "href": "/book"
                     },
                     "children": ["Book an appointment"],
-                    "id": "51859ad3-3782-415d-acdc-e0937e3e62dc",
+                    "id": "9486fa3a-5464-488b-9cfd-ecb173d57879",
                     "ord": "a2"
                   }
                 ],
-                "id": "26b47d0f-f0e6-4379-ab05-e49bb576b58b",
+                "id": "c6f24638-741e-45ae-9d1b-e8d63738487e",
                 "ord": "a0"
               }
             ],
-            "id": "c9f3346e-823b-4eb3-b4ee-69aeef1f191b",
+            "id": "833e7497-d794-4f9a-93f3-53d9045e18d0",
             "ord": "a6"
           }
         ]
@@ -1495,7 +1477,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "5c0f1bda-1f1a-4ccd-9573-495834415b57",
+        "id": "8da13c19-ae66-4b78-9789-dd1e743079fc",
         "children": [
           {
             "kind": "element",
@@ -1511,14 +1493,14 @@
                   "alt": "A veterinarian gently holding a cat in a bright, calm exam room",
                   "loading": "eager"
                 },
-                "id": "f11821cc-fecb-4473-b94d-59a1e54937d7",
+                "id": "997ca23b-ba3e-4350-9031-e1042297634b",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "1c8896c8-f001-425c-ade9-1d59ff540fcc",
+                "id": "7a53b254-02b5-4b5e-b994-e92a224c54c0",
                 "ord": "a1"
               },
               {
@@ -1531,7 +1513,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book your pet’s appointment"],
-                    "id": "1e7288ff-0e8a-47ae-8cdb-729b8f6dd48a",
+                    "id": "6f01e8b5-5242-49a9-b926-7132a3fd4b23",
                     "ord": "a0"
                   },
                   {
@@ -1541,7 +1523,7 @@
                     "children": [
                       "Choose an appointment type to see prices and live openings, then pick your doctor and a time that works."
                     ],
-                    "id": "e0f95ea3-e3e3-460d-a2ac-292c8324f2fd",
+                    "id": "eed3a49b-584c-4642-8b99-d652ed7fc525",
                     "ord": "a1"
                   },
                   {
@@ -1557,27 +1539,31 @@
                           "href": "/book"
                         },
                         "children": ["See appointment types below"],
-                        "id": "405fbb85-290b-4a70-a66b-ab8a4ca10ff1",
+                        "id": "bb2cb0b0-9447-4a02-8f89-49c5e97dd578",
                         "ord": "a0"
                       }
                     ],
-                    "id": "b37aa18c-6ff3-48ee-9a75-b7777b572f3c",
+                    "id": "9bc9c261-5310-498e-9e2f-a8be79df5661",
                     "ord": "a2"
                   }
                 ],
-                "id": "80595626-d950-4c52-acc2-771ed9091c87",
+                "id": "85530752-d74e-4acb-9942-a798c9cf325a",
                 "ord": "a2"
               }
             ],
-            "id": "29e59584-6f3b-4df1-aae3-b5e31acdaa6d",
+            "id": "a7fa36ae-96a6-4b6d-ab68-7c173f33cfd6",
             "ord": "a0"
           },
           {
             "kind": "host",
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "props": {
+              "heading": "Book with us",
+              "subheading": "Choose a service to see open times and reserve your spot."
+            },
             "locked": "host",
-            "id": "a3328834-74e9-4195-9d83-586685091847",
+            "id": "495a0941-a543-4092-8715-9b250df5c40a",
             "ord": "a1"
           },
           {
@@ -1600,7 +1586,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Good to know"],
-                        "id": "e900f005-fe74-4920-9915-406e0c97670a",
+                        "id": "2bb57dce-a1ab-4710-a0ce-160eb9ca7bda",
                         "ord": "a0"
                       },
                       {
@@ -1610,11 +1596,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "458dfde6-7b1c-4c3b-a0c4-df5420bc1e72",
+                        "id": "4cf247ae-a2ab-4ac3-9521-21fed61f4d29",
                         "ord": "a1"
                       }
                     ],
-                    "id": "3dd3211f-9264-48be-a2c5-a79e8720a407",
+                    "id": "782e4718-b87c-4996-9bae-b6ca098f61ff",
                     "ord": "a0"
                   },
                   {
@@ -1632,7 +1618,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Standard appointment"],
-                            "id": "32fae776-f47f-478a-a850-62dbfe7d5bf3",
+                            "id": "e77a1f66-95c9-4639-9250-8e89194c225e",
                             "ord": "a0"
                           },
                           {
@@ -1642,7 +1628,7 @@
                             "children": [
                               "Please give us at least 24 hours’ notice to change or cancel so we can offer the time to another pet family. We’ll text and email a reminder the day before and two hours ahead."
                             ],
-                            "id": "b899a242-487f-4a0b-a0de-10211d88b87b",
+                            "id": "807dc475-9ea1-413b-9873-7a97bbd662c3",
                             "ord": "a1"
                           },
                           {
@@ -1652,11 +1638,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "0bbbe562-3e68-4ee2-b12f-802088c851ca",
+                            "id": "be2bc605-8114-4cd9-ab1b-b282a1dff9da",
                             "ord": "a2"
                           }
                         ],
-                        "id": "e7f06dd6-7ae7-404a-82a7-1bda4b6dd490",
+                        "id": "5d03057c-9873-4463-ab69-c145d2f5274a",
                         "ord": "a0"
                       },
                       {
@@ -1669,7 +1655,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Reserved-time hold"],
-                            "id": "93c160c9-28ff-4d60-8770-6d42e94d79b3",
+                            "id": "839a14ba-b417-46dd-801f-e1df8dfd87ff",
                             "ord": "a0"
                           },
                           {
@@ -1679,7 +1665,7 @@
                             "children": [
                               "Longer appointments hold a card on file to reserve the room and the doctor’s time. You’re only charged for a same-day cancellation or a no-show — otherwise the hold is released after your visit."
                             ],
-                            "id": "68cdedfc-38e0-487e-84a0-eac274750d94",
+                            "id": "4149b271-5759-4bc7-bf4a-92a6cb028fa6",
                             "ord": "a1"
                           },
                           {
@@ -1687,23 +1673,23 @@
                             "tag": "p",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Change or cancel free up to 24 hours before."],
-                            "id": "fb1dbc1b-386d-49b4-8097-edaaf2f7315d",
+                            "id": "68cdf4c0-814e-4e11-89c8-5c8abbefdc82",
                             "ord": "a2"
                           }
                         ],
-                        "id": "83b8225d-1feb-4ef9-b7b2-fb5fbbac9ca0",
+                        "id": "358e8daa-59db-474a-a0fc-4cbefb053f21",
                         "ord": "a1"
                       }
                     ],
-                    "id": "61609e33-0978-4c93-a35c-dbfd2b714dff",
+                    "id": "316ae0cc-dc09-42b7-9377-bfee7df8e0c9",
                     "ord": "a1"
                   }
                 ],
-                "id": "37499353-3676-4241-bf91-95b07db13a64",
+                "id": "f46d1d91-c9f0-42e0-822d-72bcf7942caf",
                 "ord": "a0"
               }
             ],
-            "id": "ce00b622-5c2a-4e57-928d-fed73f702230",
+            "id": "4cbcab4e-28f1-476c-a8b9-86d55bfef732",
             "ord": "a2"
           }
         ]
@@ -1720,7 +1706,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "ce4daf59-7031-41df-9f1a-7b1cccf194cc",
+        "id": "34868a7c-1377-42e3-bde0-8a4c763c57df",
         "children": [
           {
             "kind": "element",
@@ -1741,7 +1727,7 @@
                       "alt": "A happy dog resting a paw on a caring veterinarian during a check-up",
                       "loading": "lazy"
                     },
-                    "id": "9604ec1c-25b2-40e9-a874-243056d68a0f",
+                    "id": "3fbedb59-80e1-4d90-9966-d908c2be110e",
                     "ord": "a0"
                   },
                   {
@@ -1754,7 +1740,7 @@
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About Cedar Paws"],
-                        "id": "20bb97b0-51b5-42fc-a43f-b12bdf66b8c5",
+                        "id": "a2c22656-cc59-4edd-bab3-e1586209b5b8",
                         "ord": "a0"
                       },
                       {
@@ -1764,7 +1750,7 @@
                         "children": [
                           "We opened Cedar Paws to be the kind of clinic we’d want for our own pets — warm, unhurried, and honest. A place where you’re greeted by name, where the exam room feels calm, and where nobody makes you feel rushed or talked-down-to."
                         ],
-                        "id": "3cdf0f54-7f61-40a7-9960-3148cf35b25f",
+                        "id": "9ea55c90-a3b4-4069-9056-241b408e84e0",
                         "ord": "a1"
                       },
                       {
@@ -1774,7 +1760,7 @@
                         "children": [
                           "We’re a full-service neighborhood practice for dogs and cats: wellness and vaccines, sick and same-day visits, dentistry, surgery and gentle senior care. Whatever your pet needs, we’ll walk through it together."
                         ],
-                        "id": "90da4fd0-ae1a-4be1-a174-abcd75726185",
+                        "id": "836ef4f9-47d4-417a-bb2f-36449523e326",
                         "ord": "a2"
                       },
                       {
@@ -1790,23 +1776,23 @@
                               "href": "/book"
                             },
                             "children": ["Book an appointment"],
-                            "id": "e2b2abbc-8994-45aa-8623-dde8a6f3de78",
+                            "id": "645941b9-dc73-438e-80c0-9c98c8004a4a",
                             "ord": "a0"
                           }
                         ],
-                        "id": "30cfbb38-4558-4030-a5fe-77dc712bac1f",
+                        "id": "18347264-cd0d-4a7a-be11-af25088437d3",
                         "ord": "a3"
                       }
                     ],
-                    "id": "88286103-f29a-47c8-b00f-b407dd3e0d28",
+                    "id": "c7e01096-157f-42ef-a58b-2920c0e11c47",
                     "ord": "a1"
                   }
                 ],
-                "id": "4d64a1f9-c0b4-4362-a53c-271f0c4526bd",
+                "id": "6753e500-8ff3-48f6-b815-5a09c35791ee",
                 "ord": "a0"
               }
             ],
-            "id": "e2f08d58-1484-4afc-9bb3-1a39ede9b0c9",
+            "id": "09e9f858-598e-40cd-b339-dbdbc5e90a02",
             "ord": "a0"
           },
           {
@@ -1824,7 +1810,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["How we care"],
-                    "id": "2a66a544-088b-48ea-b9f6-1e5782c9b5fc",
+                    "id": "ca5fa9e8-7040-40e4-a3ee-9386c20bd55f",
                     "ord": "a0"
                   },
                   {
@@ -1842,7 +1828,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Low-stress by design"],
-                            "id": "2df2de4d-6b4a-4896-88d1-007e498e3a72",
+                            "id": "37c615a0-b4eb-4695-9a1a-e91b927e3837",
                             "ord": "a0"
                           },
                           {
@@ -1852,11 +1838,11 @@
                             "children": [
                               "Quiet rooms, gentle handling and treats on hand — we work at your pet’s pace to make the visit easier on everyone."
                             ],
-                            "id": "977438ee-98ae-4b09-9ee0-1559f88a8b42",
+                            "id": "5b7c5b50-0afb-4747-8d7c-48838b9f06ce",
                             "ord": "a1"
                           }
                         ],
-                        "id": "cc7ae1b6-b358-413b-85f0-dd88b5f9396a",
+                        "id": "0dd2ba4d-be33-4c10-9f58-83b95e770ebc",
                         "ord": "a0"
                       },
                       {
@@ -1869,7 +1855,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Plain-language answers"],
-                            "id": "6aaa9d79-8a77-4b56-9d0d-17242971851d",
+                            "id": "e8d21c75-8dd2-479f-bbd2-ab930809249e",
                             "ord": "a0"
                           },
                           {
@@ -1879,11 +1865,11 @@
                             "children": [
                               "We explain what we see, what it means and what your options are — no jargon, no pressure, just clear guidance you can trust."
                             ],
-                            "id": "864d337c-e39d-4085-9dc5-f277b37f5031",
+                            "id": "f66b41b1-a65f-4b00-8404-d53f5d05684b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a7b426bb-b110-47fc-a7c3-8b82ffb3fb87",
+                        "id": "6b543dc7-5d7f-4576-826e-d7968158a5ba",
                         "ord": "a1"
                       },
                       {
@@ -1896,7 +1882,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Here for the long haul"],
-                            "id": "4747e01f-0d64-4183-ac1a-93421094834c",
+                            "id": "7e4a7374-8020-4af0-b4bd-c95d5d036156",
                             "ord": "a0"
                           },
                           {
@@ -1906,23 +1892,23 @@
                             "children": [
                               "From first puppy shots to the tender senior years, we’re the steady team that knows your pet through every stage of life."
                             ],
-                            "id": "54da04eb-c352-44ad-bfdf-2888e668646f",
+                            "id": "88e7591c-7753-4c18-a5e6-79539df887c8",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5f3d7b5d-bf9a-4fd8-bd80-101b04d2bfc0",
+                        "id": "2b1010d8-95e6-4560-b04a-d4119263ac48",
                         "ord": "a2"
                       }
                     ],
-                    "id": "dcf202e1-5cbc-4d03-bf8f-15310db389eb",
+                    "id": "34b59d0f-bda4-430d-99ba-9e7d66519dc0",
                     "ord": "a1"
                   }
                 ],
-                "id": "2391ede4-4cf0-46da-ab5b-1bbbb934c060",
+                "id": "e78581c9-3d60-4ea5-b9ee-0fa194c75188",
                 "ord": "a0"
               }
             ],
-            "id": "0d39115e-bb75-4085-a335-f3b4a804fa84",
+            "id": "a81820e3-41f1-435d-b961-f397d0638270",
             "ord": "a1"
           }
         ]
@@ -1939,7 +1925,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "fa3127dc-9c91-437e-bc2a-54296ebaa21a",
+        "id": "7386f8e8-379b-48fb-a8e4-3ebd0c0cb56f",
         "children": [
           {
             "kind": "element",
@@ -1961,7 +1947,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Get in touch"],
-                        "id": "2fd8e4aa-2ef0-4f69-a348-a329a6ee411a",
+                        "id": "35a1fa80-b666-448c-bd74-24051f423948",
                         "ord": "a0"
                       },
                       {
@@ -1971,11 +1957,11 @@
                         "children": [
                           "Questions before you book? Send a note and Cedar Paws Veterinary will get back to you — usually the same day."
                         ],
-                        "id": "c167a39a-6509-4306-9b23-3d42d04926d6",
+                        "id": "cadda553-5a8e-489a-a556-1a32d725ace8",
                         "ord": "a1"
                       }
                     ],
-                    "id": "50042082-c90e-4620-b044-ff40cbadec5d",
+                    "id": "6cd8b397-d978-405c-a10e-aed49f121f23",
                     "ord": "a0"
                   },
                   {
@@ -1988,7 +1974,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Call us"],
-                        "id": "69ca6622-991f-4dad-9b2e-09ff37eb1eb5",
+                        "id": "d2db91d4-932e-49f2-a946-416546062962",
                         "ord": "a0"
                       },
                       {
@@ -2004,7 +1990,7 @@
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "666b8855-2d7e-4bdb-8ba6-6f4759307aa5",
+                            "id": "c3687b8b-8429-495a-9527-7f60e8e06c35",
                             "ord": "a0"
                           }
                         ],
@@ -2013,7 +1999,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "b8b46a3d-71bb-40dc-8857-8d82b4765754",
+                        "id": "80b96483-7d5e-4615-b777-1fdec88059b0",
                         "ord": "a1"
                       }
                     ],
@@ -2021,7 +2007,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "00486644-eecb-441a-acba-e290b650c854",
+                    "id": "107e0767-4da3-4f0f-8480-2c64b98f3a64",
                     "ord": "a1"
                   },
                   {
@@ -2034,7 +2020,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Email us"],
-                        "id": "733c8c76-bd53-4b54-a277-4143b91c5430",
+                        "id": "a9c18934-ece9-437b-8484-46d95bf991a4",
                         "ord": "a0"
                       },
                       {
@@ -2050,7 +2036,7 @@
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "7f1429be-76fd-499b-8de4-da470bcef618",
+                            "id": "83529ba4-028a-42de-b4d6-0102960c150f",
                             "ord": "a0"
                           }
                         ],
@@ -2059,7 +2045,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "7ccddfd3-30fb-47d6-849c-e0e0f8f19a60",
+                        "id": "334801aa-2561-499a-a7cf-e7f95426db10",
                         "ord": "a1"
                       }
                     ],
@@ -2067,7 +2053,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "7c792ea4-a39b-4dbc-9018-a7db180b714f",
+                    "id": "d36d7384-e75c-4577-bea7-a707455e84ba",
                     "ord": "a2"
                   },
                   {
@@ -2085,7 +2071,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Your name"],
-                            "id": "57e50fe6-53fe-438d-b5cc-ba33c3bbc950",
+                            "id": "5d9d24fc-7812-44e1-862b-73f28a3eabcb",
                             "ord": "a0"
                           },
                           {
@@ -2097,11 +2083,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "bc52e1a1-b156-4d35-8c79-180fb1bcb1c1",
+                            "id": "8d327e74-2a3b-4286-91dd-e6233f3db806",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4a56cf7e-c5e5-417c-96bf-54f597cd7e4c",
+                        "id": "b4bc323b-3bc9-40dc-9e57-2cbb429b4be3",
                         "ord": "a0"
                       },
                       {
@@ -2114,7 +2100,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Email address"],
-                            "id": "d4d7c04a-f176-4bc5-87c4-50ed18e5e8d0",
+                            "id": "4578752c-fafc-4b73-bba3-27693d05038d",
                             "ord": "a0"
                           },
                           {
@@ -2126,11 +2112,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "808f6d11-9f74-41f4-a6eb-e7ce6e4f940e",
+                            "id": "5e5687f3-2679-4f42-a330-facf886296d6",
                             "ord": "a1"
                           }
                         ],
-                        "id": "22402c15-03e7-4c94-a72b-4590751458eb",
+                        "id": "f34a67ca-2054-4ffc-8f87-d44aa1883155",
                         "ord": "a1"
                       },
                       {
@@ -2143,7 +2129,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Phone number"],
-                            "id": "4ac7d259-fc92-4e5d-9d78-016dbcc547d3",
+                            "id": "56591d07-96f1-49d7-9a99-d4c054635562",
                             "ord": "a0"
                           },
                           {
@@ -2154,11 +2140,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "531275fb-383e-4a1c-8d6b-8402ff09f630",
+                            "id": "e5f316c3-1998-4a30-8e84-866bf4183fd8",
                             "ord": "a1"
                           }
                         ],
-                        "id": "9f193c04-9dab-4644-aabc-a4532d0df7ca",
+                        "id": "a187e003-be11-444e-8bba-a02f30f4b228",
                         "ord": "a2"
                       },
                       {
@@ -2171,7 +2157,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["How can we help?"],
-                            "id": "602fc5c9-4cd8-4524-8d54-f01138244841",
+                            "id": "13447102-052a-4602-987f-e92ed4a82e39",
                             "ord": "a0"
                           },
                           {
@@ -2181,11 +2167,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "4aebe9fd-876f-4de7-9515-94ac227d5e43",
+                            "id": "beacf21e-e989-4ce5-9d9e-8b84cec5ce54",
                             "ord": "a1"
                           }
                         ],
-                        "id": "badba704-5089-4656-a340-fb0f55e5e9c3",
+                        "id": "538149cf-174e-402d-b69f-ed527fd8ac7f",
                         "ord": "a3"
                       },
                       {
@@ -2201,11 +2187,11 @@
                               "type": "submit"
                             },
                             "children": ["Send my request"],
-                            "id": "5d5c83d0-cf38-4bf6-b258-d662386b921d",
+                            "id": "d67d7443-ce9c-47c4-aff8-ad77c641de5d",
                             "ord": "a0"
                           }
                         ],
-                        "id": "f696dc59-65ba-4b1e-adf3-3a8aa652ca7f",
+                        "id": "259cf8cf-5486-4edb-9ea3-520d9729c814",
                         "ord": "a4"
                       }
                     ],
@@ -2216,15 +2202,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "4f44f295-400b-405b-aa97-62a9d5a069c3",
+                    "id": "f1e23122-ac58-46ba-b6c2-0ad0055f133e",
                     "ord": "a3"
                   }
                 ],
-                "id": "2fdd0b93-cf0e-4fce-ab04-cbfb64980397",
+                "id": "974df8f6-0bab-4ca5-b586-52317e01ed68",
                 "ord": "a0"
               }
             ],
-            "id": "cb9431c2-a6d2-41ea-8a0b-5a5005ca5954",
+            "id": "2a31d86e-04cd-44fb-bff1-da07b5cb39f1",
             "ord": "a0"
           },
           {
@@ -2247,7 +2233,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Visit the clinic"],
-                        "id": "41c9e16b-38ac-49ae-8377-e153dbcc6f8f",
+                        "id": "7dd959b1-3851-4d92-b222-edfe9fea946c",
                         "ord": "a0"
                       },
                       {
@@ -2259,7 +2245,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "f85dd3f6-8b6b-4936-97cb-1f653e49593e",
+                        "id": "422583ff-c7cb-459e-864c-faafba4fce44",
                         "ord": "a1"
                       },
                       {
@@ -2277,7 +2263,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday – Friday"],
-                                "id": "b73122b1-3b71-4bb8-a126-5d683fb72b3c",
+                                "id": "e7c99caa-9e36-4fd3-88f7-a7d87a1533d6",
                                 "ord": "a0"
                               },
                               {
@@ -2285,11 +2271,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["8:00 – 6:00"],
-                                "id": "5f00b3bd-d51c-49b4-a4f4-0194247e6dff",
+                                "id": "31422097-77fe-4f83-9b7c-0c14a0c2acb0",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "c412e04c-b845-4d0d-a1cf-96f6a7da99f6",
+                            "id": "5c711e91-2e86-44ab-876a-e5a70a8f8be4",
                             "ord": "a0"
                           },
                           {
@@ -2302,7 +2288,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "860c92b0-0b41-496a-96cf-e98a97c77d45",
+                                "id": "4248177c-e2a9-4db5-963b-3ab88e2926e8",
                                 "ord": "a0"
                               },
                               {
@@ -2310,11 +2296,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 2:00"],
-                                "id": "9c06d75e-970d-4d87-b6a1-6a040b78f0c9",
+                                "id": "0b3b6a24-6c20-4e54-920c-aad662edf424",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "55752666-6379-4a1f-8a54-fa3a86445df8",
+                            "id": "6228f8ad-20a0-4bc4-a1b1-394da01ca1e3",
                             "ord": "a1"
                           },
                           {
@@ -2327,7 +2313,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "7655834e-83a6-4a2d-a623-0db4d0c7f727",
+                                "id": "b27402f9-882c-47c9-a1eb-15b9730bbfea",
                                 "ord": "a0"
                               },
                               {
@@ -2335,19 +2321,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Closed"],
-                                "id": "babdcead-ad9d-48ad-8441-9a87bf58bcc3",
+                                "id": "564ca663-168a-4cd0-a6c4-1bce44d237e1",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ebf7e12a-93fe-4f85-b299-684895cadb7c",
+                            "id": "87745ff9-1816-48d2-aa78-835cc9b9ca1e",
                             "ord": "a2"
                           }
                         ],
-                        "id": "5ef84f6c-465f-4e8a-b3f9-0e9067d21d6f",
+                        "id": "d358c3da-5501-4590-abbc-2943deed40c6",
                         "ord": "a2"
                       }
                     ],
-                    "id": "d202d233-9185-401e-abbc-db160f2d0985",
+                    "id": "8fc9f65c-681f-4c13-9d51-977f6c2065c8",
                     "ord": "a0"
                   },
                   {
@@ -2360,15 +2346,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "abdc6b42-0ab3-4c83-8b48-d3bb144476bf",
+                    "id": "a890e0ad-92ce-43c6-993d-91d1e1843133",
                     "ord": "a1"
                   }
                 ],
-                "id": "a7e50f60-b9dc-4b6d-bc42-6bfa010138db",
+                "id": "17856c67-6ee2-4b17-a837-e29a784a793d",
                 "ord": "a0"
               }
             ],
-            "id": "7b8de254-6b5d-4e18-af93-ee84405d32ee",
+            "id": "8aa2f8a3-3575-43d5-8df7-7a4215241e00",
             "ord": "a1"
           },
           {
@@ -2386,7 +2372,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than call?"],
-                    "id": "cf1e9666-8317-44eb-9283-d02fd035a48c",
+                    "id": "0f588d54-f69f-42e2-b725-bd17f794cc29",
                     "ord": "a0"
                   },
                   {
@@ -2396,7 +2382,7 @@
                     "children": [
                       "See live openings and reserve your pet’s time online — no phone tag, no hold music."
                     ],
-                    "id": "903a97b7-a5e1-4add-bb8d-110610fb9c48",
+                    "id": "a8feab37-13f1-4f20-9a6f-618a3a358358",
                     "ord": "a1"
                   },
                   {
@@ -2407,15 +2393,15 @@
                       "href": "/book"
                     },
                     "children": ["Book an appointment"],
-                    "id": "4f98991c-2614-420b-8373-37fadfd2733f",
+                    "id": "ba63d9f6-1179-42ee-b19f-46b2e232515e",
                     "ord": "a2"
                   }
                 ],
-                "id": "5d94c409-3b37-4f92-bd2b-7bec57326f5d",
+                "id": "66dfd2b6-fb59-49a6-96bb-fa114246afcf",
                 "ord": "a0"
               }
             ],
-            "id": "ce2ce23c-eb19-46bd-99b9-00439ecef384",
+            "id": "7f4df78a-db7c-47a6-a601-a79d40846c51",
             "ord": "a2"
           }
         ]

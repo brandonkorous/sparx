@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-culture-bold',
-  version: '1.4.3',
+  version: '1.5.0',
   name: 'Culture Bold',
   summary:
     'A loud music & pop-culture magazine — a full-bleed feature lead over a dense feed, a signature ranked “most read” countdown, and a bespoke bylined article page, on a near-black ground with one hot crimson-magenta accent and heavy condensed display type. Modelled on the bold-culture-magazine archetype; shipped as Static. Ships a light store (vinyl + merch) to demonstrate content + commerce together.',

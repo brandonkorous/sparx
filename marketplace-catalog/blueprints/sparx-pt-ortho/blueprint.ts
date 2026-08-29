@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-pt-ortho',
-  version: '1.3.3',
+  version: '1.4.0',
   name: 'Physical Therapy (Ortho & Sports)',
   summary:
     'An active, results-driven orthopedic & sports physical therapy site — a confident teal palette with an energetic orange accent on a crisp near-white ground. Installs a working booking flow: evaluations, follow-ups, sports rehab, manual therapy, dry needling and post-op rehab, with three therapists AND treatment rooms as multi-requirement resources. Ships as "Momentum Physical Therapy", an ortho & sports rehab clinic that books evaluations online from day one.',

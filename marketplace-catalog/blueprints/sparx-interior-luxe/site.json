@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "48500b88-931d-4ffc-835b-baacad50f18b",
+                  "id": "51606cc8-475a-4d05-b11c-ca2b69005045",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "f47b48d2-8f2f-446a-8780-3fb25e08544b",
+                      "id": "8894ba2f-76e8-45af-a7d6-be45ef4372c9",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "b53ed0dd-141f-4425-9712-1eeac1738cf9",
+                      "id": "ccc0d02c-23a2-4366-aa11-bc228e375844",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "6fe6033a-5c30-48ff-9ebf-e53654e8660d",
+                      "id": "61bb2733-041c-47f2-b9c6-1272270eb16e",
                       "ord": "a2"
                     }
                   ],
-                  "id": "fde693e3-b2a4-44b8-be60-b89016223c52",
+                  "id": "fa2fdb61-2970-4e15-bcbd-76d0bc212c34",
                   "ord": "a1"
                 },
                 {
@@ -88,26 +88,17 @@
                   "class": "ml-auto flex items-center gap-3",
                   "children": [
                     {
-                      "kind": "element",
-                      "tag": "a",
+                      "kind": "host",
+                      "component": "site.account-link",
                       "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
-                      "attrs": {
-                        "href": "/account/login"
-                      },
-                      "children": ["Sign in"],
-                      "slot": {
-                        "name": "secondary",
-                        "type": "link",
-                        "label": "Secondary link"
-                      },
-                      "id": "dce92cef-fa45-4dd3-8d50-f6be190bd836",
+                      "id": "3392bf61-9184-48c8-8a91-bfac0cc8f328",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "6ee00616-8f67-4320-bf2f-6ddf01cf86a0",
+                      "id": "63cbceae-f115-4330-a615-445001dc082d",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +114,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "ed6d10b9-9abf-436c-9301-25ff24e5b242",
+                      "id": "0f7f88f5-166e-4e7e-8bf0-92ac15761488",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +132,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "99066dfc-165a-465a-8096-7d3b13b4a87a",
+                          "id": "b7eff4cb-e7e3-4084-a5fb-5d6dd9ea141f",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "c2a00f8a-078d-4ae7-a969-bc01dec1f8b7",
+                      "id": "d7993379-4121-497a-9eca-98706f562705",
                       "ord": "a3"
                     }
                   ],
-                  "id": "73f651e2-4c82-4ff1-b220-374299c82707",
+                  "id": "89509d73-0d2a-44ba-92c3-e235a3ced434",
                   "ord": "a2"
                 }
               ],
-              "id": "9ee6cd39-3247-485a-9483-ccb39a721fc5",
+              "id": "3d95c245-a39c-466f-b00f-ae65c475f274",
               "ord": "a0"
             },
             {
@@ -178,7 +169,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "6baa9eb3-64c7-4cb4-b1b9-28ed48d4bb99",
+                  "id": "fe7ce3a0-d15e-481e-87ee-44931c697e8f",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +185,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "39e6e1e9-1ffc-4b7c-8c29-43eea40de3c3",
+                  "id": "bf862e07-61e5-472f-b64e-8585b6019d52",
                   "ord": "a1"
                 },
                 {
@@ -210,23 +201,14 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "8908d267-6e49-43e9-b31d-793dce2bb644",
+                  "id": "ffac412e-7d87-4b56-b744-15c49840b9ca",
                   "ord": "a2"
                 },
                 {
-                  "kind": "component",
-                  "component": "Button",
+                  "kind": "host",
+                  "component": "site.account-link",
                   "class": "btn btn-ghost btn-sm mt-2 w-full",
-                  "props": {
-                    "label": "Sign in",
-                    "href": "/account/login"
-                  },
-                  "slot": {
-                    "name": "secondary",
-                    "type": "link",
-                    "label": "Secondary link"
-                  },
-                  "id": "9bb85c0a-363f-4080-bb82-bf373a4ed6cd",
+                  "id": "56c4f6b3-a5f9-4686-8eba-e325c83e519f",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +224,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "9bfe66a1-fe29-40da-a242-5e2a6d495699",
+                  "id": "e8a0a2be-d786-42e1-80ae-a64339399f9f",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "fb85b6fb-f5eb-4c02-a84a-d2fb3f26f316",
+              "id": "0c8ab736-77c9-4911-9330-2a8a156784f6",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "5641919c-6365-4e45-b835-30da704eabee",
+          "id": "7146b068-1d6a-48ee-89d6-ce76cfcbb0a5",
           "ord": "a0"
         },
         {
@@ -270,7 +252,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "9444046a-4b91-4b32-80e9-7e6b00bad6cd",
+          "id": "1fed84d9-927f-4656-b90e-ac6a35cdf1ba",
           "ord": "a1"
         },
         {
@@ -300,7 +282,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "b2bf9f1f-213d-4ea4-b7b3-d845cd74ecb9",
+                          "id": "295852e0-77dc-45db-abec-ffed6489c927",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +298,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "b4916816-d0b3-4172-8414-9902a3ca27ed",
+                          "id": "a305148d-0c9b-4a0e-84f5-a46d916882d3",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +306,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "4e4455db-0717-4e7a-a456-ac1c40a5035b",
+                          "id": "9b2ef28e-f421-4811-bbae-19fad3ad687f",
                           "ord": "a2"
                         }
                       ],
-                      "id": "02687f16-4b2d-4965-a1dc-05893e1a594a",
+                      "id": "3f1d8ccb-b869-4f90-92c5-e740ce695bf0",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +331,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "a52383fd-a58d-4311-bbe4-1c6be103ab7e",
+                          "id": "6c3cba17-cfa3-4004-8dac-10aecb65234c",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +356,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "90330bcf-6bc2-4558-8256-a9458f1a741d",
+                                  "id": "5edee2d6-a911-4c21-ae03-45a212c428c9",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "6772a5f9-b893-4e26-bfde-9f7b5c66bdcf",
+                              "id": "cb9cc7ce-a794-4ab7-a323-fd5613ccae48",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +380,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "806fd8a4-61f2-4bc8-974f-3045810733eb",
+                                  "id": "60bc0f52-b60f-43cb-891e-2c537c79616e",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "684775c7-a8e4-4ba2-b3c5-aa70448117de",
+                              "id": "d45da722-046a-4847-a86f-09595ca1838c",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +404,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "c9c66bc1-2973-4e4f-81ca-5df37c6ac8ad",
+                                  "id": "fca8b104-0547-4ede-a9da-17e2f3ae8429",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "f13b39bf-0b81-4050-b02e-379d0eb8f1d4",
+                              "id": "4eab8f08-c392-4bf5-a5cb-2fedb31833c8",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +428,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "3928908e-bb48-4bdf-b431-11ed553a9669",
+                                  "id": "be744d5b-ee05-4381-a25d-b0d5f4771c03",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "6a2dbbc6-1aab-4670-8dc3-a003f1c8f0b7",
+                              "id": "b348752b-1966-4095-ae17-5e09f7d6fa21",
                               "ord": "a3"
                             }
                           ],
-                          "id": "76e83e33-abf4-4634-8e56-7c46c946230f",
+                          "id": "33344e99-7b90-45ae-ab4b-5b085a0fba42",
                           "ord": "a1"
                         }
                       ],
-                      "id": "55b016b2-5351-4a97-b975-2f79c7bbcb6a",
+                      "id": "8f2ac775-4c71-4dd1-8ebc-618e802a5b2e",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +453,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "0ce7b8d6-d4ec-48a8-9c7c-ae0a545dc0c5",
+                          "id": "5bde45d7-e062-4f30-827e-66dc7200da4b",
                           "ord": "a0"
                         }
                       ],
-                      "id": "12f653fe-ea27-4db1-9488-b758ae46088d",
+                      "id": "25193c21-e096-4062-bd46-ae16d9f70daf",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +481,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "9debf865-a7f0-42d1-9029-37eb788b9043",
+                                  "id": "e76c2484-e3ec-4075-997f-d313c1e9d591",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "6c02ef72-c419-4d9b-adc5-491a9955bd94",
+                              "id": "44322661-3124-446f-9279-855b8a55645a",
                               "ord": "a0"
                             }
                           ],
-                          "id": "c60e1e92-9332-4cee-95d5-496d65cf148e",
+                          "id": "be95c13d-20fa-48f4-b37d-7eceab8b6395",
                           "ord": "a0"
                         }
                       ],
-                      "id": "08bc8361-203c-4616-a356-f673f8a57715",
+                      "id": "d8558b6c-e0b3-435f-959a-6ea7e88b2ff3",
                       "ord": "a3"
                     }
                   ],
-                  "id": "a5b46b43-e01d-40cc-b0e1-ad3d26d0909a",
+                  "id": "d5d2720c-4f95-4b02-b7ce-7a99d3fcadbe",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +520,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "85f1fdcb-c222-4a33-82d0-198333be1d89",
+                          "id": "37079ca0-6b94-42bd-b3ec-ef5e0c59a3c6",
                           "ord": "a0"
                         }
                       ],
-                      "id": "3a2f931f-736c-4525-8e0f-6d46de78c496",
+                      "id": "203346bd-697b-4290-8f14-c07ba5d3c57a",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +532,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "904b5dea-fc69-440c-95eb-8e1d852eae30",
+                      "id": "787d5cbe-c9fc-4a50-9b04-125e8ab17c2f",
                       "ord": "a1"
                     }
                   ],
-                  "id": "7be2791d-b266-464e-bd80-0cfdbd2dfbfc",
+                  "id": "806a474d-0c3b-4781-9f47-902c9f80b392",
                   "ord": "a1"
                 }
               ],
-              "id": "520c51f4-dc9a-4e22-b7bb-cffd6603c273",
+              "id": "179469a9-f36f-4d1f-8403-120cd412ce84",
               "ord": "a0"
             }
           ],
-          "id": "b16ab054-9d3a-4a7c-a4cb-90e8ff2ec53e",
+          "id": "3982f55e-12a1-41dc-a7d5-166dbb76b20a",
           "ord": "a2"
         }
       ],
-      "id": "53299521-ad1e-4df8-8a8f-97598464c590"
+      "id": "5c600e7f-09e6-4ce0-954a-2cb907570f08"
     }
   },
   "pages": [
@@ -580,7 +562,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "713e258e-206b-45a0-a803-8fe91bb98dfd",
+        "id": "ef972f7e-73d7-4837-9745-91c7dce43ba9",
         "children": [
           {
             "kind": "element",
@@ -596,14 +578,14 @@
                   "alt": "A serene living room in warm neutrals with considered furniture and soft daylight",
                   "loading": "eager"
                 },
-                "id": "9a91198f-32a3-413b-bda3-3bd90e16be00",
+                "id": "10ae5975-be37-4d7f-be11-3af85c1fa41a",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/50",
-                "id": "97f5d995-6d3b-4e3e-b785-f3fb509eed45",
+                "id": "d8ae78c7-bf79-4b59-a05c-b2920e549879",
                 "ord": "a1"
               },
               {
@@ -616,7 +598,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Interiors made for the way you live"],
-                    "id": "37758f65-1a95-4fbf-bf12-95c8ad5a154a",
+                    "id": "f417ad0c-7f77-4e1d-9f22-58a4c5cb4766",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +608,7 @@
                     "children": [
                       "Atelier Nord is a full-service residential design studio — considered rooms, careful renovations and pieces sourced with intention. Book a consultation to begin."
                     ],
-                    "id": "1cb817da-1ee9-495a-9134-6f148ef236d7",
+                    "id": "3007f638-03df-4eb1-8922-82ce4cdc59bf",
                     "ord": "a1"
                   },
                   {
@@ -642,7 +624,7 @@
                           "href": "/book"
                         },
                         "children": ["Book a consultation"],
-                        "id": "0f4f5f94-21dc-4698-829c-1a5db7d93fd3",
+                        "id": "1acabdb8-5197-47b0-97bb-9ebed7e7cb27",
                         "ord": "a0"
                       },
                       {
@@ -653,19 +635,19 @@
                           "href": "/book"
                         },
                         "children": ["See our services"],
-                        "id": "100c14c6-9ae3-43c0-8376-c6b71e163cdf",
+                        "id": "a41cd46e-5d50-4db2-918c-28448ff24a78",
                         "ord": "a1"
                       }
                     ],
-                    "id": "4adcd7f2-eaaa-4d8f-b70c-c490518ea121",
+                    "id": "c18868ec-aa4d-4380-a8d5-31743c664fd2",
                     "ord": "a2"
                   }
                 ],
-                "id": "cdc0a349-c4ca-424c-b77c-0b4cbb7af5e3",
+                "id": "7d09c0df-1a40-4e5f-ae2f-97471e21459c",
                 "ord": "a2"
               }
             ],
-            "id": "68e1593a-5954-4bc1-af04-f4eac8f6450b",
+            "id": "631a281f-ee63-46f4-ac6b-8575919c7f38",
             "ord": "a0"
           },
           {
@@ -693,7 +675,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Full-service, start to finish"],
-                            "id": "48009818-6e46-4bb2-b5fd-df73c85d2adb",
+                            "id": "8aa623e7-c0fb-43d3-b7f7-01e16167692b",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +685,11 @@
                             "children": [
                               "From the first sketch to the final cushion, we design, manage and install — so you live with the result, not the logistics."
                             ],
-                            "id": "073e51f1-cdba-47db-8fa5-e96652d3db6e",
+                            "id": "705b23a6-0c03-4dbf-bd3b-698ba0727e88",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4acd4b4a-60da-4b2b-945d-c83cce91ffcb",
+                        "id": "6eceaf9f-ddb9-4793-b2c9-fa4a400a25ee",
                         "ord": "a0"
                       },
                       {
@@ -720,7 +702,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Trade-only sourcing"],
-                            "id": "e35af6b6-e2b1-42f1-9ffd-b99fdc78d4f8",
+                            "id": "d0242104-fc25-461d-9bc1-ece031628e99",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +712,11 @@
                             "children": [
                               "We open doors you can’t: to-the-trade fabrics, furniture and finishes, specified and priced with our accounts working in your favour."
                             ],
-                            "id": "0020278b-b260-4d64-b7c0-4902264cf9bc",
+                            "id": "81a49691-085b-49b5-b320-82d01ecc16cf",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1f439988-616a-4ad0-bc35-7ceaebe56ec1",
+                        "id": "87acf3e8-886b-4008-9714-85c296490313",
                         "ord": "a1"
                       },
                       {
@@ -747,7 +729,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Project management included"],
-                            "id": "6e1030a1-bfd0-4f8f-8b10-95efc9d4296b",
+                            "id": "6823e361-ec8d-48e3-9b46-05e20bd988f4",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +739,11 @@
                             "children": [
                               "We hold the trades, the timeline and the budget together, so a renovation runs on schedule and the surprises stay small."
                             ],
-                            "id": "4f1d189c-5a6b-4688-bd7d-d18f3ac1ceea",
+                            "id": "b439daa6-9906-4fae-aa06-d45c8cebbc60",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c11d4a51-8da3-483b-86ca-ab0a894eb4c9",
+                        "id": "2e6debd6-2352-45f3-b9f3-2887a27f30ef",
                         "ord": "a2"
                       },
                       {
@@ -774,7 +756,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Tailored to your life"],
-                            "id": "f7ca4c26-4a59-40e3-b61a-6b46e108c613",
+                            "id": "22cd4064-d300-4480-890e-01867c671c14",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +766,23 @@
                             "children": [
                               "No house style stamped onto your home. We design around how you actually use each room, and who you share it with."
                             ],
-                            "id": "9430120d-02a0-4c3d-a8c8-7b79097633ef",
+                            "id": "ab5cfbcd-61c9-4ab6-9eaf-8403aaebad79",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5f24f895-4e08-40e1-8f87-64e734433a74",
+                        "id": "2a6b3fa8-7f60-4bf5-9079-e92052572d7e",
                         "ord": "a3"
                       }
                     ],
-                    "id": "d3ee4d50-6a03-4d7a-bebf-5850a6e27d67",
+                    "id": "1e0da968-04fe-4b1c-afdd-07651a45905b",
                     "ord": "a0"
                   }
                 ],
-                "id": "7934615d-03aa-4577-a26a-16170d893ec7",
+                "id": "d1948327-2477-4a6e-8529-01bfa0b1967d",
                 "ord": "a0"
               }
             ],
-            "id": "f797a0bc-5027-4af2-9c10-4c3324d91524",
+            "id": "86cb3ed7-9e00-4e42-bd2f-eff0a267080a",
             "ord": "a1"
           },
           {
@@ -823,7 +805,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Ways to work with us"],
-                        "id": "7a392a6e-e537-4613-9105-6ee58fa60321",
+                        "id": "430d5138-f4c8-4e5f-ade3-79d60167e7a1",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +815,11 @@
                         "children": [
                           "Every project starts with a conversation. Here are a few of the ways in — full prices and live availability are on the booking page."
                         ],
-                        "id": "00fc69c2-e004-424b-950f-b1fd0f70d2e4",
+                        "id": "220876c7-d465-4b85-b0e3-a0e46521df78",
                         "ord": "a1"
                       }
                     ],
-                    "id": "61427b73-70d4-4d9c-850e-d8cce9f2f993",
+                    "id": "58a1bfa7-ba9e-4e97-8736-671ffc558d2e",
                     "ord": "a0"
                   },
                   {
@@ -863,7 +845,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Discovery call"],
-                                "id": "eba8f168-b3ff-4843-8081-fe355ef08252",
+                                "id": "6d793608-4ce1-4001-b342-31d419b9f20a",
                                 "ord": "a0"
                               },
                               {
@@ -871,11 +853,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$0"],
-                                "id": "844c9885-031d-4e70-8958-2c09cb489493",
+                                "id": "9075c841-f7f8-4250-9895-2c546d5584a8",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "7d015dfb-7e8a-492d-aeda-9cc018c87c8d",
+                            "id": "cb388220-1273-4be3-bec1-2611d06436ec",
                             "ord": "a0"
                           },
                           {
@@ -883,7 +865,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["30 min"],
-                            "id": "e20c764e-5a68-4aa3-950d-5ea8946d2921",
+                            "id": "f388bf1a-7494-494a-af36-3077b464b01f",
                             "ord": "a1"
                           },
                           {
@@ -893,11 +875,11 @@
                             "children": [
                               "A complimentary call to talk through your space and how we can help."
                             ],
-                            "id": "413679d0-796d-4370-9de2-26ee16e5a73f",
+                            "id": "b8f93f13-90a2-471b-ac18-b22fc5c7a0a6",
                             "ord": "a2"
                           }
                         ],
-                        "id": "83039160-8cfa-49ca-afde-e48ab5e59185",
+                        "id": "800d442d-83bd-4e3f-9aa4-c5e82f6e4e6c",
                         "ord": "a0"
                       },
                       {
@@ -918,7 +900,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Design consultation"],
-                                "id": "cd54e129-259c-45df-a406-0af29c62bc39",
+                                "id": "babf3bdd-1737-4047-81bd-f628d3485e67",
                                 "ord": "a0"
                               },
                               {
@@ -926,11 +908,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$150"],
-                                "id": "60eeabf6-3f3f-49cd-b461-3a1589080c8e",
+                                "id": "3d2d84d3-9395-47fb-8c0b-f3e65acc3311",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "7099654e-e81c-4337-a360-0eb03c83cb39",
+                            "id": "aa2551d0-6b92-4866-8660-b2b2ff7d3036",
                             "ord": "a0"
                           },
                           {
@@ -938,7 +920,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "f6c056a0-768b-450c-accc-287645736d53",
+                            "id": "a4a09a9d-d6a3-4faa-90c4-e7ec1f3c30ab",
                             "ord": "a1"
                           },
                           {
@@ -948,11 +930,11 @@
                             "children": [
                               "A focused session on your rooms, your goals and a plan to get there."
                             ],
-                            "id": "b4915627-762f-43fc-86ff-1fb67fa76b86",
+                            "id": "7ca52881-b356-456e-8509-e25e7e5f1e78",
                             "ord": "a2"
                           }
                         ],
-                        "id": "7770a69e-71fb-43f5-b296-4a5ee914a713",
+                        "id": "c44e4d92-d0a9-4290-9b44-5ec1d8c47048",
                         "ord": "a1"
                       },
                       {
@@ -973,7 +955,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Full-service design"],
-                                "id": "8bd837b1-aa02-43be-a117-03a06225ada4",
+                                "id": "5a0bb6f6-3946-4109-b79e-9d3438743d42",
                                 "ord": "a0"
                               },
                               {
@@ -981,11 +963,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$250"],
-                                "id": "f44aa370-bd98-4971-9dce-0b1e695f7446",
+                                "id": "e5f0560d-890e-44d2-96e5-03faabf58a33",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f321986f-14d0-48d5-a52c-64d8b8cd57f2",
+                            "id": "d245ff4c-857f-4e9a-8f32-2565498faba8",
                             "ord": "a0"
                           },
                           {
@@ -993,7 +975,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr 30 min"],
-                            "id": "4d9c614e-1513-4a84-8a5e-c609afc57e2e",
+                            "id": "a4d1dc34-b178-48dd-824e-36d3af0ba52e",
                             "ord": "a1"
                           },
                           {
@@ -1003,11 +985,11 @@
                             "children": [
                               "The starting consultation for a complete, managed design project."
                             ],
-                            "id": "6ace02d4-1a24-45de-b65d-56da5e59d198",
+                            "id": "4726ecb8-97dd-4a05-b87d-1865e7767717",
                             "ord": "a2"
                           }
                         ],
-                        "id": "126324cb-cbf9-48c3-928e-caf929b6b782",
+                        "id": "6808f343-57bc-496a-9b31-ac97c71da483",
                         "ord": "a2"
                       },
                       {
@@ -1028,7 +1010,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["In-home consultation"],
-                                "id": "f88e54b1-0500-4c35-9904-9cd0f2fe1fbf",
+                                "id": "e0b3cf13-0e87-428c-8f64-6d15718673e4",
                                 "ord": "a0"
                               },
                               {
@@ -1036,11 +1018,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$300"],
-                                "id": "a74979f9-8211-4196-a422-fc32266f396b",
+                                "id": "4836e53f-e75d-4048-b5fa-b5733c9adab8",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "79fd8a74-6a33-4499-90a5-f81fd62d73c1",
+                            "id": "4dbf38e7-1ac5-4f84-b269-5d069224a9c2",
                             "ord": "a0"
                           },
                           {
@@ -1048,7 +1030,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr 30 min"],
-                            "id": "926c377b-b52f-4282-bfaf-09aec04a112c",
+                            "id": "f85a2ab4-4f81-425e-98b7-01066a9bb0ef",
                             "ord": "a1"
                           },
                           {
@@ -1058,15 +1040,15 @@
                             "children": [
                               "We come to you — walk the space together and map the possibilities."
                             ],
-                            "id": "c59d0e78-e959-46a6-915b-403073f8fba4",
+                            "id": "052dfe23-4ec2-4161-9c8e-b10239446988",
                             "ord": "a2"
                           }
                         ],
-                        "id": "047279b1-200e-4686-b1f7-7aac3d5ca5f2",
+                        "id": "10187a2e-cb07-4315-92ca-9777714d991e",
                         "ord": "a3"
                       }
                     ],
-                    "id": "84063477-e6e1-44fc-8b94-8492957446d5",
+                    "id": "4155cf48-b03f-4f5d-8cb9-0a7422d0d567",
                     "ord": "a1"
                   },
                   {
@@ -1082,19 +1064,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "8ed7d465-29d3-4af1-92b0-5904b3ba1ce4",
+                        "id": "3b81ec74-a32f-4e0b-9109-e3e2f3e21821",
                         "ord": "a0"
                       }
                     ],
-                    "id": "9b6be5ad-46bc-41d5-a3c2-3d9f9d879b8f",
+                    "id": "673c299f-ce55-4054-995b-911aa7adfadf",
                     "ord": "a2"
                   }
                 ],
-                "id": "4cd95ab0-6966-4f13-9186-00ee451b7064",
+                "id": "410b34d8-33bc-493d-ad78-5d2d65ee9081",
                 "ord": "a0"
               }
             ],
-            "id": "ea13a28f-89ec-4a9a-8ddf-1e33666da8c6",
+            "id": "84538c62-961e-4888-ba9f-9e3a700f6855",
             "ord": "a2"
           },
           {
@@ -1116,7 +1098,7 @@
                       "alt": "A designer’s table with fabric swatches, floor plans and material samples",
                       "loading": "lazy"
                     },
-                    "id": "f806f69b-4fba-402e-9366-d23053b4da2a",
+                    "id": "fd80d8c8-942a-4d1b-a08a-d2830f52c61a",
                     "ord": "a0"
                   },
                   {
@@ -1129,7 +1111,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["How a project unfolds"],
-                        "id": "4754b863-9860-43a1-a7c7-154910dba709",
+                        "id": "dc16f88b-ffbe-443e-a662-4dcf748ee06a",
                         "ord": "a0"
                       },
                       {
@@ -1139,7 +1121,7 @@
                         "children": [
                           "We begin with a conversation and a walk-through, then a considered concept — floor plans, palettes and the pieces that bring a room together, presented so you can picture the whole before a single thing is ordered."
                         ],
-                        "id": "c671e2c7-c0a6-4de2-81f9-66d649e23a1e",
+                        "id": "3d94066a-3e60-4a7c-96e8-710923552e52",
                         "ord": "a1"
                       },
                       {
@@ -1149,7 +1131,7 @@
                         "children": [
                           "From there we source, manage the trades and handle the install, revealing rooms that feel finished, personal and entirely yours."
                         ],
-                        "id": "da853021-8907-4354-b5b1-96cfd5efa3d7",
+                        "id": "43ab057a-e6cc-4854-a7bf-de148043620a",
                         "ord": "a2"
                       },
                       {
@@ -1165,23 +1147,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a consultation"],
-                            "id": "e7af4905-792f-40a6-82e2-58ad09643851",
+                            "id": "9db1285c-69f1-4d9b-838d-049625021c44",
                             "ord": "a0"
                           }
                         ],
-                        "id": "1e5a0316-0376-4b95-b8be-b75cf464f16e",
+                        "id": "2143cab7-6d04-4d62-88a0-0306569a45c0",
                         "ord": "a3"
                       }
                     ],
-                    "id": "05b938a4-c8ff-4fd9-a941-26544b40ff3c",
+                    "id": "55d206e7-ff39-4fe5-8659-6ab9818e276c",
                     "ord": "a1"
                   }
                 ],
-                "id": "93383ff7-255f-415a-8b19-a6779497164c",
+                "id": "47e38c46-4361-4af4-9d8b-11ba4b0e3228",
                 "ord": "a0"
               }
             ],
-            "id": "bc089eb3-d6ae-4f3c-a054-766554f61bb5",
+            "id": "9aec8f09-320f-4d95-9c59-dc9175fabe90",
             "ord": "a3"
           },
           {
@@ -1199,7 +1181,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Selected interiors"],
-                    "id": "a8c906b9-3cf0-45eb-8a9a-7d220a2e1050",
+                    "id": "77e9a15e-ad48-46ed-bb97-f9a3e6ad5e42",
                     "ord": "a0"
                   },
                   {
@@ -1216,7 +1198,7 @@
                           "alt": "A styled sitting room with a sculptural sofa and warm brass accents",
                           "loading": "lazy"
                         },
-                        "id": "f94d4dda-ceb8-4524-a6fd-f2b484840174",
+                        "id": "3ad107f8-2e92-46a5-a3c2-112aa61a6f0e",
                         "ord": "a0"
                       },
                       {
@@ -1228,7 +1210,7 @@
                           "alt": "A renovated kitchen in muted stone and timber",
                           "loading": "lazy"
                         },
-                        "id": "4b118ed7-d1e7-418b-aad8-dd12d9ab4585",
+                        "id": "be2f1a22-23f1-469b-9ba4-28364825ea2f",
                         "ord": "a1"
                       },
                       {
@@ -1240,7 +1222,7 @@
                           "alt": "A restful bedroom in soft greige with tailored linen",
                           "loading": "lazy"
                         },
-                        "id": "a4a7c6e7-6da4-44ec-8683-327ca4bcd726",
+                        "id": "e55381cb-f09e-4713-beea-7bae0a1846c7",
                         "ord": "a2"
                       },
                       {
@@ -1252,19 +1234,19 @@
                           "alt": "A dining space with a considered mix of vintage and modern pieces",
                           "loading": "lazy"
                         },
-                        "id": "80e42cd1-f096-4238-860b-d6f4efef91eb",
+                        "id": "10724726-2a5d-450d-9b65-526b83b4bef3",
                         "ord": "a3"
                       }
                     ],
-                    "id": "2aa45e84-a583-4f50-8511-6b453b8b35db",
+                    "id": "b6bcd397-6115-47eb-ae69-d345d218fc9e",
                     "ord": "a1"
                   }
                 ],
-                "id": "c358e235-73ff-40bc-90cc-95a479bf8274",
+                "id": "2266320d-0db8-4367-99f4-2248970a8645",
                 "ord": "a0"
               }
             ],
-            "id": "de2b0799-d4c7-4acc-a759-fa193766fa07",
+            "id": "301895c6-a69e-4ff7-9657-eb0068116e01",
             "ord": "a4"
           },
           {
@@ -1284,7 +1266,7 @@
                     "children": [
                       "“They listened before they designed. Every room feels like us, only more considered — and they handled a full renovation without a single sleepless night.”"
                     ],
-                    "id": "20ac0e46-4a19-48a6-9cdd-77b580ebf071",
+                    "id": "5779c116-1988-48d4-b38a-9562a0b835f3",
                     "ord": "a0"
                   },
                   {
@@ -1292,15 +1274,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["The Halvorsen family, whole-home project"],
-                    "id": "e6a4fa08-a990-4b20-91da-4f4db552d004",
+                    "id": "996a9631-dcfd-4300-ae83-c0a3e53469ed",
                     "ord": "a1"
                   }
                 ],
-                "id": "05d300da-390e-41a0-949a-92a5388a4482",
+                "id": "32a40b55-eafb-42a6-aa36-33fe318827a9",
                 "ord": "a0"
               }
             ],
-            "id": "479d0737-a4bc-4d2f-a577-334166cc63b2",
+            "id": "9e369cba-df95-42cb-9771-bf49f44c4883",
             "ord": "a5"
           },
           {
@@ -1318,7 +1300,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Ready to reimagine your home?"],
-                    "id": "6a22991e-f25f-4c37-aae5-f88805bf0488",
+                    "id": "cf346048-5a05-4258-9646-a96ca3751bc8",
                     "ord": "a0"
                   },
                   {
@@ -1328,7 +1310,7 @@
                     "children": [
                       "Start with a consultation — choose a designer, see live availability and pick a time that suits you."
                     ],
-                    "id": "4cebf430-7a71-4646-99a8-4392853c1b30",
+                    "id": "fb4fd29e-f8eb-49b9-902e-bdea9d4dbb95",
                     "ord": "a1"
                   },
                   {
@@ -1339,15 +1321,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a consultation"],
-                    "id": "91f7d0b9-46a5-4bb4-8483-32db4c5cc5ae",
+                    "id": "78c3f2d3-9051-4f37-85e0-5cb3062e55fe",
                     "ord": "a2"
                   }
                 ],
-                "id": "d0307950-fac2-4bf2-980f-da0840fd1901",
+                "id": "5f268dac-925d-443c-b3f7-69133695595e",
                 "ord": "a0"
               }
             ],
-            "id": "d41c4ce0-da37-4a87-9b8c-153ffaebab52",
+            "id": "975c1609-7ee5-4d87-9375-5a0d822fb24f",
             "ord": "a6"
           }
         ]
@@ -1364,7 +1346,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "be2e2092-a20c-49d7-b1cd-a1ffc475502d",
+        "id": "cb141410-3558-496e-ba51-23f544dee782",
         "children": [
           {
             "kind": "element",
@@ -1380,14 +1362,14 @@
                   "alt": "A designer’s table with fabric swatches, floor plans and material samples",
                   "loading": "eager"
                 },
-                "id": "c97f0ca1-4c90-41a3-a8cb-15d48742f753",
+                "id": "19c5831a-1219-4697-a250-98182f8d963a",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "c0244301-a504-44e8-bf04-c6d319a71e61",
+                "id": "96d6b7f0-b2f5-4657-9440-ce1fce4ad840",
                 "ord": "a1"
               },
               {
@@ -1400,7 +1382,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book a consultation"],
-                    "id": "0e779b91-b10b-4f5d-abff-5f38ae5b1516",
+                    "id": "c90d31b8-33d6-45db-96c7-382e8fc4215e",
                     "ord": "a0"
                   },
                   {
@@ -1410,7 +1392,7 @@
                     "children": [
                       "Choose the kind of session that fits your project to see availability, then pick your designer and time."
                     ],
-                    "id": "73e43987-0e61-49e5-95f4-5806b2183280",
+                    "id": "5c728164-ec09-4fd2-adf8-1e291f258c51",
                     "ord": "a1"
                   },
                   {
@@ -1426,27 +1408,31 @@
                           "href": "/book"
                         },
                         "children": ["See consultations below"],
-                        "id": "a1f3e08c-7b9e-4549-9e8d-7b9da3152b64",
+                        "id": "87f32aa6-1801-4f3c-9652-5a9af77805db",
                         "ord": "a0"
                       }
                     ],
-                    "id": "670d8b5c-a1ef-4598-bd74-dde890e99071",
+                    "id": "d7a044ad-7256-41a0-8ce3-d1f39b8e3093",
                     "ord": "a2"
                   }
                 ],
-                "id": "a9a41057-07c1-4a43-8154-5dc745d6b9e2",
+                "id": "5b447efc-87c7-445a-b4e2-673bd421f747",
                 "ord": "a2"
               }
             ],
-            "id": "d567c96b-2a52-441b-ba15-049fd50c640e",
+            "id": "cb5c2b7e-9201-4cb0-9e33-b4b0ded83992",
             "ord": "a0"
           },
           {
             "kind": "host",
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "props": {
+              "heading": "Book with us",
+              "subheading": "Choose a service to see open times and reserve your spot."
+            },
             "locked": "host",
-            "id": "27a10597-b65b-4441-adb8-47dfebbafcea",
+            "id": "3000b181-b45e-49b2-ac69-75bec8cdda48",
             "ord": "a1"
           },
           {
@@ -1469,7 +1455,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Good to know"],
-                        "id": "a53d97e2-e470-4240-b1d5-4cbdd0a2202f",
+                        "id": "44d109c8-9bcd-44b2-ac1c-348e85089ea2",
                         "ord": "a0"
                       },
                       {
@@ -1479,11 +1465,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "b3f12e61-b63e-4cad-a5b5-ef27339516ce",
+                        "id": "d65bbe4e-633e-42b0-bb1d-acd8ab76a010",
                         "ord": "a1"
                       }
                     ],
-                    "id": "0310bbf4-dbd3-466f-9233-8d74f05ddd26",
+                    "id": "c6f8818d-dca7-48c8-b2ea-d0b07031bd81",
                     "ord": "a0"
                   },
                   {
@@ -1501,7 +1487,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Standard booking"],
-                            "id": "beaffa1f-513a-4583-920e-1956bd2ed510",
+                            "id": "e5496f00-2808-4d41-a223-0f8883a65d56",
                             "ord": "a0"
                           },
                           {
@@ -1511,7 +1497,7 @@
                             "children": [
                               "Please give us at least 48 hours’ notice to change or cancel your consultation. We send a reminder two days before and two hours ahead."
                             ],
-                            "id": "d2803c48-ac89-41ce-a0a0-808c62fa7f32",
+                            "id": "338d20e1-71ee-4d19-bf82-d802b2a528d3",
                             "ord": "a1"
                           },
                           {
@@ -1521,11 +1507,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 2 days before."
                             ],
-                            "id": "da118e17-8790-4246-a38a-c7d03b4c18d0",
+                            "id": "91580263-1958-4b67-b5c8-814bd88237f2",
                             "ord": "a2"
                           }
                         ],
-                        "id": "eb6effe2-1cc4-43a6-9f89-1e8c1d25cf2a",
+                        "id": "e25e302b-e531-4d78-8455-2c0700210470",
                         "ord": "a0"
                       },
                       {
@@ -1538,7 +1524,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Design deposit"],
-                            "id": "0a2e18d2-e7fc-4681-bbb5-b125eb9c32ee",
+                            "id": "8b2df04b-76ed-42ac-8806-e084733f0737",
                             "ord": "a0"
                           },
                           {
@@ -1548,7 +1534,7 @@
                             "children": [
                               "Full-service and in-home consultations hold a $100 deposit that is credited toward your project. Reschedule with 48 hours’ notice and it carries over."
                             ],
-                            "id": "b74c5e36-e3f6-4e74-8142-2fe2c625a20e",
+                            "id": "64c62e56-cd92-4729-b7f5-5a7c9c567a0d",
                             "ord": "a1"
                           },
                           {
@@ -1558,23 +1544,23 @@
                             "children": [
                               "A $100 deposit holds your place. Change or cancel free up to 2 days before."
                             ],
-                            "id": "4ee507f4-c614-4c3c-add3-2e0897dcf14b",
+                            "id": "e157795c-e7d0-4703-b422-206713127775",
                             "ord": "a2"
                           }
                         ],
-                        "id": "bf48bf50-7816-43e1-87a6-fd026a3800d6",
+                        "id": "d6b65ca0-af2b-4bdc-949d-88b2eeb31643",
                         "ord": "a1"
                       }
                     ],
-                    "id": "e88e78a0-f21f-4e90-a155-757adc6d10ce",
+                    "id": "87e8b04c-e3c4-4520-b2ec-c193b2fa54b6",
                     "ord": "a1"
                   }
                 ],
-                "id": "8b94a59c-b941-4a6b-9f97-faae42c44922",
+                "id": "bc2dd71d-8d23-4df8-b560-a15492fdc3f5",
                 "ord": "a0"
               }
             ],
-            "id": "8b188617-06d1-4003-8806-e1d9478d3981",
+            "id": "64fb1829-ba6f-4f39-ab54-cc233ba02f89",
             "ord": "a2"
           }
         ]
@@ -1591,7 +1577,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "c1a498bb-a40e-49b3-98dc-defd8915b25b",
+        "id": "a92a4ac6-0016-41e3-b8b8-19fcc0283dc3",
         "children": [
           {
             "kind": "element",
@@ -1612,7 +1598,7 @@
                       "alt": "A calm, light-filled interior with layered textures and natural materials",
                       "loading": "lazy"
                     },
-                    "id": "3537307d-a913-4ea6-ac40-78cbc844b881",
+                    "id": "1cb72d2f-edee-4a26-af80-cca5f480c45f",
                     "ord": "a0"
                   },
                   {
@@ -1625,7 +1611,7 @@
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About Atelier Nord"],
-                        "id": "c9bb4d15-fe9e-4f29-934a-fd5974221f4c",
+                        "id": "d1142356-be1a-4e0b-9af7-3250992d78e3",
                         "ord": "a0"
                       },
                       {
@@ -1635,7 +1621,7 @@
                         "children": [
                           "Atelier Nord began with a simple belief: a home should be designed around the people who live in it, not a trend or a template. We work with a small number of residential clients at a time, so every project gets the attention it deserves."
                         ],
-                        "id": "d5e87d92-5c7d-4e33-9d98-9e4bc8ebe354",
+                        "id": "488af4e3-a543-4fc1-8de5-ace075c59dac",
                         "ord": "a1"
                       },
                       {
@@ -1645,7 +1631,7 @@
                         "children": [
                           "From single rooms to whole-home renovations, we bring the same care — honest advice, considered design, and a calm hand on every detail from concept to install."
                         ],
-                        "id": "d045fa4c-86fe-40c5-a8c8-d883ea846f62",
+                        "id": "071bd739-1102-42fd-93b2-8a704b94edf7",
                         "ord": "a2"
                       },
                       {
@@ -1661,23 +1647,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a consultation"],
-                            "id": "a45d99f7-d8ab-40ca-ac97-296166b6aa8b",
+                            "id": "e1a0c155-535b-465d-b3ad-ecfad5fb23a4",
                             "ord": "a0"
                           }
                         ],
-                        "id": "c10fc0bc-304b-45ef-9cfb-601821291438",
+                        "id": "63184b95-ebfc-4097-b44a-ced885d079fc",
                         "ord": "a3"
                       }
                     ],
-                    "id": "c14d10d0-520c-49bd-b90e-f0a37da4ba04",
+                    "id": "b9e76e90-8f96-4484-8a9b-0d2f426f8a10",
                     "ord": "a1"
                   }
                 ],
-                "id": "2667a340-3647-4515-9acb-1e93d717b08a",
+                "id": "d69800e3-466e-4ab2-bcd6-03e968e166f0",
                 "ord": "a0"
               }
             ],
-            "id": "5b2fba24-e200-418c-960d-4a2afaf76f5b",
+            "id": "f1eababc-dd5a-4166-87a8-946378c91fbd",
             "ord": "a0"
           },
           {
@@ -1695,7 +1681,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["How we work"],
-                    "id": "a8f6d48a-8c3e-47d0-80a7-5bff14adaa3c",
+                    "id": "4fd4cbc4-52b5-4c05-a9c3-fc7db0d1023f",
                     "ord": "a0"
                   },
                   {
@@ -1713,7 +1699,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["A considered pace"],
-                            "id": "6102cccf-eb8d-47e7-b506-449ebcf0de51",
+                            "id": "3dda5d26-494f-4333-800d-642809729b53",
                             "ord": "a0"
                           },
                           {
@@ -1723,11 +1709,11 @@
                             "children": [
                               "We take on a handful of projects at once. That’s deliberate: it’s how each room gets the thought, sourcing and management it needs."
                             ],
-                            "id": "d2524c5a-64a9-47fc-95d4-f344ccc19f5a",
+                            "id": "afde526e-7bc7-4e60-aca4-eaec085956f5",
                             "ord": "a1"
                           }
                         ],
-                        "id": "98c30421-4f82-4442-bcb7-854a846467f3",
+                        "id": "0445d77d-7a83-436a-92d5-a05d321ef967",
                         "ord": "a0"
                       },
                       {
@@ -1740,7 +1726,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Honest about budget"],
-                            "id": "49483650-5843-4c5e-b218-c2659a55d6ad",
+                            "id": "02db8352-66c5-4b4a-a1d3-375f0d8d6ffd",
                             "ord": "a0"
                           },
                           {
@@ -1750,11 +1736,11 @@
                             "children": [
                               "We plan to your budget from the first meeting and keep it visible throughout — no creeping numbers, no awkward surprises at the end."
                             ],
-                            "id": "772d0ecb-ce55-4bd7-be5b-89138858e244",
+                            "id": "ddbf3ade-975c-4e9c-8506-84ba20c569ab",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4705033f-531a-4ce1-b4a9-54a317479486",
+                        "id": "77472ef4-b438-4b16-b358-28c7b2a11971",
                         "ord": "a1"
                       },
                       {
@@ -1767,7 +1753,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Yours, not ours"],
-                            "id": "4e1451a5-8a60-42b5-a334-efb87c481616",
+                            "id": "47f69286-5d2f-494c-a9ee-fc196d95a7bf",
                             "ord": "a0"
                           },
                           {
@@ -1777,23 +1763,23 @@
                             "children": [
                               "The best compliment we get is that a home looks like the people in it. We design to your life, then step back so it’s entirely yours."
                             ],
-                            "id": "fce19571-126b-4018-829c-2edd55d41d8a",
+                            "id": "b25feaad-89c9-4942-9be6-2f129d6a83cc",
                             "ord": "a1"
                           }
                         ],
-                        "id": "481ac4de-e9bf-45c7-abbb-07c3c1adc79c",
+                        "id": "19192a8b-9473-42ee-bbb9-8329424ae68a",
                         "ord": "a2"
                       }
                     ],
-                    "id": "8b988217-973e-4271-b6fe-239747281f63",
+                    "id": "1421a7fa-dc48-48e1-bfc3-12957611ff70",
                     "ord": "a1"
                   }
                 ],
-                "id": "a588e355-edf6-45bd-ab08-f0c3489576fd",
+                "id": "e0d8852a-61b4-4ee1-8ea8-df0a368344c0",
                 "ord": "a0"
               }
             ],
-            "id": "1d710412-66f8-4224-a0c7-f94fc0b01abf",
+            "id": "4a793540-1e0f-484f-9c1e-295b579ac75b",
             "ord": "a1"
           }
         ]
@@ -1810,7 +1796,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "eccb04b6-fa81-4cb4-8c5d-8c6fa82910d7",
+        "id": "0e2bb43e-0b66-4814-be2a-7e82d2973ecb",
         "children": [
           {
             "kind": "element",
@@ -1832,7 +1818,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Get in touch"],
-                        "id": "ff90ffd0-b021-4f16-8d01-fd1f255d8227",
+                        "id": "084f5a0c-b101-4e38-b757-c4240bc924c9",
                         "ord": "a0"
                       },
                       {
@@ -1842,11 +1828,11 @@
                         "children": [
                           "Questions before you book? Send a note and Atelier Nord will get back to you — usually the same day."
                         ],
-                        "id": "fc015bc4-ac7b-4b8e-9d4a-b0c1be152c38",
+                        "id": "ebcc1e1e-7c08-4521-9fe7-bc930615158e",
                         "ord": "a1"
                       }
                     ],
-                    "id": "c0e9ac7a-7861-403f-8b74-df3ff6cf342a",
+                    "id": "81a6c9aa-69df-430b-adab-6926123c62a1",
                     "ord": "a0"
                   },
                   {
@@ -1859,7 +1845,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Call us"],
-                        "id": "84c1f843-19e2-4081-8a4e-c96c473e7c2e",
+                        "id": "5064b5c3-8e86-4554-b1dd-c1c1243f7fc1",
                         "ord": "a0"
                       },
                       {
@@ -1875,7 +1861,7 @@
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "c15b1005-9618-4794-8233-773d11989c94",
+                            "id": "60c5b6aa-cb7c-4bfc-9b29-a7e993db51fa",
                             "ord": "a0"
                           }
                         ],
@@ -1884,7 +1870,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "da238ab9-a0fc-41ec-a858-613ba193e25f",
+                        "id": "f43635a5-017c-4a6b-a647-53b0dc599758",
                         "ord": "a1"
                       }
                     ],
@@ -1892,7 +1878,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "c291dba8-d23c-4ed3-8c4e-0cb1c1ffea87",
+                    "id": "e2b3a806-d5f8-4d31-922f-c6043064d0d2",
                     "ord": "a1"
                   },
                   {
@@ -1905,7 +1891,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Email us"],
-                        "id": "d8ebefa7-609f-4c23-b38a-b77314485b96",
+                        "id": "2a4b603d-3218-48e2-b784-4da7f5146bc6",
                         "ord": "a0"
                       },
                       {
@@ -1921,7 +1907,7 @@
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "2963acf6-f20a-473f-be4d-2d949481416f",
+                            "id": "953acc02-4a83-41ca-883f-cfe82d795527",
                             "ord": "a0"
                           }
                         ],
@@ -1930,7 +1916,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "d90f795b-8825-4904-9bd9-992dd5f67a90",
+                        "id": "ac2e8e9e-2bbc-431c-b567-6ac101d6e453",
                         "ord": "a1"
                       }
                     ],
@@ -1938,7 +1924,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "58451051-a0b2-45b0-85ee-207a166a4968",
+                    "id": "12ab1544-855d-4e78-8108-29b0ededc5df",
                     "ord": "a2"
                   },
                   {
@@ -1956,7 +1942,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Your name"],
-                            "id": "b36697cd-5651-4e4c-b1be-2f18904a2fc7",
+                            "id": "6b4d3ce4-cbe0-497b-91aa-e5a1313bd055",
                             "ord": "a0"
                           },
                           {
@@ -1968,11 +1954,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "fd6fa0b4-e80d-4dd8-be45-6c279a384312",
+                            "id": "7adc6215-3d0c-43e1-b894-23d53276a8fe",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d0d8b364-06ff-4eac-871e-5ab26e06be96",
+                        "id": "eac5c948-65b4-4145-9775-32428ca8dc5b",
                         "ord": "a0"
                       },
                       {
@@ -1985,7 +1971,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Email address"],
-                            "id": "a2d9202c-e8b1-4ed0-a79f-e17da6387941",
+                            "id": "dcd8facf-1234-486d-9fd4-47f011fab07d",
                             "ord": "a0"
                           },
                           {
@@ -1997,11 +1983,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "14b3dc60-496d-4091-b60c-d4022d3c486c",
+                            "id": "5d3daf53-b28e-4656-8f8c-2d4f7d9fbcbd",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d7a71e6a-a332-492e-a548-3fed4de9d231",
+                        "id": "fdd3d824-efc8-4d50-ac74-90bfc39d3431",
                         "ord": "a1"
                       },
                       {
@@ -2014,7 +2000,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Phone number"],
-                            "id": "b786a5a2-4470-4ef0-b984-3666b136df4f",
+                            "id": "57c266a9-0f98-43eb-9784-dba757c5c607",
                             "ord": "a0"
                           },
                           {
@@ -2025,11 +2011,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "691754cb-0184-4be9-8725-7ec1fe8d724d",
+                            "id": "817a6e20-25f3-4f42-8799-25e1c146a87a",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2940bf1a-3915-4fb4-b44f-cbfce4becceb",
+                        "id": "782ffa50-db89-4acf-a8ad-61a7f9e35aca",
                         "ord": "a2"
                       },
                       {
@@ -2042,7 +2028,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["How can we help?"],
-                            "id": "0eee7233-a059-4e41-8213-fd95af27d31e",
+                            "id": "14e264fc-1f6b-4493-9eb5-4fc0f0f36f25",
                             "ord": "a0"
                           },
                           {
@@ -2052,11 +2038,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "94157f46-169f-47bb-9e57-9d52ee2d4519",
+                            "id": "7ca4c04e-4218-448a-ad05-0a9c0a6f43c3",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f02e99f5-4d70-4170-87ed-c0c70968a243",
+                        "id": "449ca186-4cb2-4a65-b7e6-89af43a8793e",
                         "ord": "a3"
                       },
                       {
@@ -2072,11 +2058,11 @@
                               "type": "submit"
                             },
                             "children": ["Send my request"],
-                            "id": "1abb0ba5-8604-4ef0-aa14-2f7eea6e77bd",
+                            "id": "4c19a2e2-8e56-4985-bc4a-3ad0b9f74eff",
                             "ord": "a0"
                           }
                         ],
-                        "id": "3202959c-0124-4d98-bc75-1e58871b84be",
+                        "id": "24636fcd-0865-4881-829e-f97e6f735d2b",
                         "ord": "a4"
                       }
                     ],
@@ -2087,15 +2073,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "05a4b311-27dc-43e3-94d8-123dd7665f48",
+                    "id": "e6ae7536-1d69-4e90-874a-815525af34c9",
                     "ord": "a3"
                   }
                 ],
-                "id": "aa16d998-9393-466b-ad3c-bef95468efb3",
+                "id": "94adec6f-8408-48ec-8176-1bc937e62e99",
                 "ord": "a0"
               }
             ],
-            "id": "e99edc46-fcba-47e7-89de-176a36cebdc8",
+            "id": "57b643c7-f283-4a81-aeff-df725358c5b6",
             "ord": "a0"
           },
           {
@@ -2118,7 +2104,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Visit the studio"],
-                        "id": "83012bbc-4294-46a6-b60a-a846462fe6d0",
+                        "id": "1946933e-4a7f-4373-b5e3-b08f186a2343",
                         "ord": "a0"
                       },
                       {
@@ -2132,7 +2118,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "11718763-bdc7-45a0-a241-23f5d2415056",
+                        "id": "3bf5c3ed-2e4f-43f0-b233-9548547ef891",
                         "ord": "a1"
                       },
                       {
@@ -2150,7 +2136,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday – Friday"],
-                                "id": "38247c8d-2fe0-4dc2-a758-be5f07df33c6",
+                                "id": "b7c03c2d-56cb-45a5-b043-ad3c6a0572ce",
                                 "ord": "a0"
                               },
                               {
@@ -2158,11 +2144,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 6:00"],
-                                "id": "0a1d2496-dbe2-4ec0-a4f7-81ac549b306e",
+                                "id": "19d3528a-3061-42b9-be4c-6340c2dc7f84",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "dde4021d-3da9-4e9a-b9e5-780e48fe78d5",
+                            "id": "13d394b4-22ae-4eb1-91b4-54c4b3cec736",
                             "ord": "a0"
                           },
                           {
@@ -2175,7 +2161,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "4ee22acb-cdff-4311-a7b7-6a76e4cb022f",
+                                "id": "e1af6ea0-d69a-4bf8-89a2-8e5d8eecd92b",
                                 "ord": "a0"
                               },
                               {
@@ -2183,11 +2169,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["By appointment"],
-                                "id": "03ba32fd-0c37-47c8-9608-52e4d091516a",
+                                "id": "09554dc9-878b-4a7d-9897-c2e531389d35",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "c909900c-473a-49a8-9ba6-63ba43822e69",
+                            "id": "5cb8e471-28aa-45e1-bd96-98bb485785e2",
                             "ord": "a1"
                           },
                           {
@@ -2200,7 +2186,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "eb8d4298-2336-46d2-97f2-6d906b5cee14",
+                                "id": "ab67b530-82dc-4595-a774-8f16f9046193",
                                 "ord": "a0"
                               },
                               {
@@ -2208,19 +2194,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Closed"],
-                                "id": "74a118b6-cc2a-44ef-991e-8a460707a9f0",
+                                "id": "384710cf-8e69-45ce-a058-19838ce79731",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "eff612fd-6217-4fe7-ba04-47e2d4f81077",
+                            "id": "4c3f54e3-fa5b-4f44-aefa-51f426850a2c",
                             "ord": "a2"
                           }
                         ],
-                        "id": "93759d58-dd29-42dd-9a45-26eb8007d2bc",
+                        "id": "09b92e52-6569-4e42-84e6-5020b22ef5aa",
                         "ord": "a2"
                       }
                     ],
-                    "id": "1d6ef032-11ba-4252-a306-66db699f2e58",
+                    "id": "75ff7df7-9db9-431d-bb48-ef122e23c127",
                     "ord": "a0"
                   },
                   {
@@ -2233,15 +2219,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "4a047ddf-31f6-432f-8c8e-7af3a6c0fe93",
+                    "id": "f57dfb13-a078-4bc9-895a-c28ade131082",
                     "ord": "a1"
                   }
                 ],
-                "id": "8aaea6e5-45f0-4b8b-ae90-b041156ea133",
+                "id": "8d55454e-d544-4e67-badc-f15da3aad958",
                 "ord": "a0"
               }
             ],
-            "id": "c17afd9b-8592-4d5e-a119-cfddad41ea5c",
+            "id": "5fb75310-b960-44bd-988a-a58e9cccde82",
             "ord": "a1"
           },
           {
@@ -2259,7 +2245,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than call?"],
-                    "id": "3aff44a1-a352-42b9-9af2-261949dddea5",
+                    "id": "8deeeb0e-6bf3-4435-8288-6c82202d157c",
                     "ord": "a0"
                   },
                   {
@@ -2269,7 +2255,7 @@
                     "children": [
                       "See live availability and reserve your consultation online — no phone tag."
                     ],
-                    "id": "b1b571dd-0467-4030-96f7-9185742effb8",
+                    "id": "8a668d86-d5be-41cb-9bab-818cbd56d503",
                     "ord": "a1"
                   },
                   {
@@ -2280,15 +2266,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a consultation"],
-                    "id": "649d7437-259c-4f02-9726-b1bc99ded6b8",
+                    "id": "4c6a2f38-d0b3-4039-a40f-5bfd5d04ae72",
                     "ord": "a2"
                   }
                 ],
-                "id": "f47b413f-d8c3-4809-a0cc-f74217c63e98",
+                "id": "df34cc3b-f048-4926-a546-b11baf6234ba",
                 "ord": "a0"
               }
             ],
-            "id": "18126919-4429-44af-9a3c-05de130d9c3f",
+            "id": "97770fd7-4198-4528-98f4-f394e1ee8e2f",
             "ord": "a2"
           }
         ]

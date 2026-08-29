@@ -14,7 +14,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-portfolio-writer',
-  version: '1.2.1',
+  version: '1.3.0',
   name: 'Writer Portfolio',
   summary:
     'A read-me portfolio for a working writer: a type-only editorial masthead, selected writing as a hairline-ruled index (not cards), reading pages that give an essay room, and a plain about + contact. The words are the work — warm-paper page, serif across, one oxblood on rubrics and links. Shipped as Iris Bellamy.',

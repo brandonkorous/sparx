@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-longform-literary',
-  version: '1.4.3',
+  version: '1.5.0',
   name: 'Longform Literary',
   summary:
     'A serif, reading-first front page for a literary magazine — a single ranked lead essay over a contents rail, a live journal, a curated "in this issue" table of contents, magazine departments, and a bespoke serif article page tuned for reading an essay end to end, in a warm-paper one-red theme. Modelled on the literary-longform archetype; shipped as The Meridian. Ships a light store (a print membership, an anthology, merch) to demonstrate content + commerce together.',

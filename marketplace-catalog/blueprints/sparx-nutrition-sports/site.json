@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "653f5166-440d-476b-8ab5-5f6d209f2c1b",
+                  "id": "fea9486a-0290-43e7-8bad-f79236c172ab",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "8d63f211-3785-49ee-bd7c-f1c858e77523",
+                      "id": "abd3c3d0-2457-47d6-b191-e909bf85c8f8",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "ae4551d3-bfe7-4517-a259-00bc6b12d96c",
+                      "id": "87b7b285-7202-4e88-a71b-a6fe47f446c4",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "3397f069-4066-4b50-9fee-3b998be4c8b3",
+                      "id": "e16e929f-a6cf-454e-bf91-5da78110f9e2",
                       "ord": "a2"
                     }
                   ],
-                  "id": "778aceed-5ded-42ed-b954-d6598c6b88fd",
+                  "id": "64524e03-6170-4afb-b31c-76a5a184ff05",
                   "ord": "a1"
                 },
                 {
@@ -88,26 +88,17 @@
                   "class": "ml-auto flex items-center gap-3",
                   "children": [
                     {
-                      "kind": "element",
-                      "tag": "a",
+                      "kind": "host",
+                      "component": "site.account-link",
                       "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
-                      "attrs": {
-                        "href": "/account/login"
-                      },
-                      "children": ["Sign in"],
-                      "slot": {
-                        "name": "secondary",
-                        "type": "link",
-                        "label": "Secondary link"
-                      },
-                      "id": "e7a8fd0a-a2af-42d7-9622-f03d28cf3380",
+                      "id": "0e7690c5-7cbd-4401-a25e-332ef08ecd9e",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "99736c3d-a2f8-4e3e-8f0d-e330089ddbd7",
+                      "id": "58f0dc0c-82b3-4c52-9b4d-de45d90bf02f",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +114,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "192ac285-194e-42ec-950a-bb31cf1faae0",
+                      "id": "56a9d5f0-a99f-47b0-9436-9d206bf49f84",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +132,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "0c65c367-cd54-4e6f-9746-90e59bd1bd26",
+                          "id": "45e2043b-3f84-4d2f-ac6f-6135190c305a",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "30049390-9a6f-44d5-bcf8-449d6a2b163b",
+                      "id": "722b52c9-ecb2-49a6-8fa9-6e62d75b5c45",
                       "ord": "a3"
                     }
                   ],
-                  "id": "96994249-022f-4537-8d38-fc0dd0aadc7f",
+                  "id": "fad1e3e6-7b5d-4cf9-822b-8671b372098f",
                   "ord": "a2"
                 }
               ],
-              "id": "772e30a9-abf6-4bc5-9cbe-38c6036f24af",
+              "id": "b5948e94-ca70-4182-a8e6-d05f1b5c06cd",
               "ord": "a0"
             },
             {
@@ -178,7 +169,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "d3043db1-2ec7-4f56-8b2a-489b2b96cde7",
+                  "id": "a1437ea5-037c-40e4-8db5-55c3ba005bf9",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +185,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "4164546e-7471-4b40-8437-f3efa48d1161",
+                  "id": "17829a40-e424-4dfa-8d5f-d81b1025db1d",
                   "ord": "a1"
                 },
                 {
@@ -210,23 +201,14 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "9b00591e-4cf8-47e0-952e-d84734f73070",
+                  "id": "a13866cb-353c-40b8-99be-4261288a6ca6",
                   "ord": "a2"
                 },
                 {
-                  "kind": "component",
-                  "component": "Button",
+                  "kind": "host",
+                  "component": "site.account-link",
                   "class": "btn btn-ghost btn-sm mt-2 w-full",
-                  "props": {
-                    "label": "Sign in",
-                    "href": "/account/login"
-                  },
-                  "slot": {
-                    "name": "secondary",
-                    "type": "link",
-                    "label": "Secondary link"
-                  },
-                  "id": "51453fd4-f05a-4112-913a-5c4815231e79",
+                  "id": "bc9ca54e-70da-4ed8-afcd-7abd373cfe52",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +224,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "dcdf5eac-1bc2-4148-a178-cfdea4da2e57",
+                  "id": "58e942c3-363d-4955-b2af-f0ace42c638f",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "7a5bf1ea-54e7-4aba-b289-8e38a005f5dc",
+              "id": "27ef9797-5885-4c7b-88b9-f15847e3a583",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "90380885-ed02-423e-b0c9-83f596039814",
+          "id": "24b7715a-25b8-47e1-9cc1-a6836e59103b",
           "ord": "a0"
         },
         {
@@ -270,7 +252,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "c24f6ecf-d962-4cf9-a889-030f97046b41",
+          "id": "e898bdcc-0ed1-42d7-a8f5-0ab2ec2c4d73",
           "ord": "a1"
         },
         {
@@ -300,7 +282,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "0aaf41ce-01ed-45e0-91eb-07c8961a8334",
+                          "id": "d3ccfce3-99d2-4341-9173-04470ec0bcb4",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +298,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "4dd7e27e-f439-41f3-8c1d-097f71f7e06b",
+                          "id": "ddd4b3f9-0780-4c14-a316-8dc0acaf4551",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +306,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "84f8992a-f7d4-479b-b021-e991baff663f",
+                          "id": "23303d39-3ecd-499e-8028-a4b0f6715f8b",
                           "ord": "a2"
                         }
                       ],
-                      "id": "f8fad566-5b90-4b0a-a1bf-d924fdef9b2d",
+                      "id": "ccfa420d-8957-4ede-b8a5-86e2046bacc0",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +331,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "1f555dfe-8a93-4df5-95bc-705c1c58d156",
+                          "id": "9d96b79b-d7c0-4c5e-b342-448d389525af",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +356,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "b9a68d0e-9609-4164-b4ab-b685a7ce0bdb",
+                                  "id": "8e280ba4-9b2e-4259-9fe6-26d2fafff425",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "2ea9cd07-a423-4e78-baec-3db6ffe12473",
+                              "id": "0b2c9f5e-88fd-4d4c-b674-29e02f37ccab",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +380,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "27df618f-f422-4f64-9031-2af0e7f85a7c",
+                                  "id": "1c1c4d63-cf48-496e-b072-f74350921d16",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "31d10972-c062-48a1-91b7-f5dd769bed0c",
+                              "id": "b59b2339-c9b3-49fa-99c4-8037f7e11fad",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +404,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "486fbb6c-5cba-4bdb-8634-e307a180717a",
+                                  "id": "e510de8a-c630-471a-a3e2-57f4f6ae7d30",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "38c5f1ec-f8bf-418a-a2d9-62a5012dbd8c",
+                              "id": "5416667e-aab6-4cfb-bce3-24a0057eb6bd",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +428,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "3aebb38a-e67f-4f85-8a87-919815237b7c",
+                                  "id": "5ebad1d0-84be-4c40-8291-1dd767cbae96",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "ca0bb7a5-1f14-4f82-9a1a-d2b1ce4660c7",
+                              "id": "c5805f8e-a799-4cb8-a47f-3ab51fae5f10",
                               "ord": "a3"
                             }
                           ],
-                          "id": "307fb207-1bc0-4a4c-9b65-a93cbe676576",
+                          "id": "73ef31c2-71dc-42b8-99e6-b66675521e60",
                           "ord": "a1"
                         }
                       ],
-                      "id": "dcf8eb18-d650-47fa-9a10-e69a2fa95dd2",
+                      "id": "17c637de-4aad-4730-a508-ec00dea367de",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +453,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "c53bb425-6c11-47e5-841e-8d9a1fac3262",
+                          "id": "c8ee1d9f-d3c7-46cc-a09c-cca538196376",
                           "ord": "a0"
                         }
                       ],
-                      "id": "b341abce-19d5-4c36-b893-f195dec670d8",
+                      "id": "48973361-4bfb-40d1-b3a8-df908fb5dd37",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +481,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "44c07be3-0007-4efc-a27a-8b303a75c828",
+                                  "id": "6144778f-5ae2-4073-b071-9b265df8f1b0",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "3873c6f1-43b9-4b87-bfca-eebe662916eb",
+                              "id": "4ede041d-1022-4e2b-8c15-04dfe62282eb",
                               "ord": "a0"
                             }
                           ],
-                          "id": "d8e2c2f8-653f-45c7-9519-b63eba2bea08",
+                          "id": "695481a4-0f0f-4e3e-9795-e5046781cd71",
                           "ord": "a0"
                         }
                       ],
-                      "id": "025a9368-06e0-4338-8b84-07a4485b4aee",
+                      "id": "afbf8af1-58cc-46a3-a0cd-fabc68b0964a",
                       "ord": "a3"
                     }
                   ],
-                  "id": "f08339be-1b6f-4a20-8337-5c7b243e6d6d",
+                  "id": "220ac823-8d8a-4240-a4cf-fccde2c66a57",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +520,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "5f747990-8265-4d6a-a2d8-b16e72391efa",
+                          "id": "218490f3-5b1e-444c-9dec-15ddda8d79e0",
                           "ord": "a0"
                         }
                       ],
-                      "id": "104895d9-d126-4140-bb0d-af4ddcff5e62",
+                      "id": "45e79592-77ed-4c29-b5d7-bea16dd42ad2",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +532,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "d8ae3793-d2a7-44f9-a94e-d3e57ef89486",
+                      "id": "a6aad635-2c90-46d1-9321-ffa736490bfd",
                       "ord": "a1"
                     }
                   ],
-                  "id": "d6f6cd6f-b196-4e52-a6a7-9d30475431b9",
+                  "id": "00728ba0-9f99-4435-ac35-0f5cc0ee110a",
                   "ord": "a1"
                 }
               ],
-              "id": "2822d441-35c3-4043-9877-f5851ecd2e76",
+              "id": "8c8afb79-32c3-4214-926a-d19eb0ef024e",
               "ord": "a0"
             }
           ],
-          "id": "f1e5de2f-5330-442f-8934-11164edc629d",
+          "id": "86d9d005-bdc9-449b-9d52-4ee947ab8d36",
           "ord": "a2"
         }
       ],
-      "id": "a0591455-e2f3-4847-a62e-7a6afb80668f"
+      "id": "5429fb90-fb11-4b59-b9d4-9af306d46aa3"
     }
   },
   "pages": [
@@ -580,7 +562,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "3aac9e50-ea61-4e0f-b946-da944c52afe8",
+        "id": "9a39e093-8726-4eed-85a6-4d6b7b01cbf3",
         "children": [
           {
             "kind": "element",
@@ -596,14 +578,14 @@
                   "alt": "An endurance athlete refueling mid-training under stadium light",
                   "loading": "eager"
                 },
-                "id": "1ea3fdb1-a91d-403c-90f2-176a919c7118",
+                "id": "d01c30b7-96bc-4a45-a862-6688a78be6e9",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "2f2e1db9-3c4d-4d76-b42a-9d37063825fc",
+                "id": "b00c9c3e-eb17-47be-a75c-312e4f06a839",
                 "ord": "a1"
               },
               {
@@ -616,7 +598,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Fuel like your results depend on it"],
-                    "id": "8a0a48a2-e6db-4453-8ff8-c04aef22b510",
+                    "id": "9d431328-581d-42a6-a6df-5f214ef07576",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +608,7 @@
                     "children": [
                       "Sports dietitians who turn how you eat into how you perform — data-driven fueling built around your sport, your training load and your next start line."
                     ],
-                    "id": "63bef080-dbd5-42a1-9e84-0fafcaaed22a",
+                    "id": "6547f2a0-53f6-4754-9554-0fa1222d91af",
                     "ord": "a1"
                   },
                   {
@@ -642,7 +624,7 @@
                           "href": "/book"
                         },
                         "children": ["Book a consultation"],
-                        "id": "81e4e5a9-1142-4245-9944-3022b33c62ce",
+                        "id": "e002fc9a-f9e8-4174-b380-b3cac8172423",
                         "ord": "a0"
                       },
                       {
@@ -653,19 +635,19 @@
                           "href": "/book"
                         },
                         "children": ["See the consults"],
-                        "id": "8cdd795d-5433-4e23-b5fa-585aafd1b301",
+                        "id": "b92d8351-fe37-45ba-ac06-d1f2e6203183",
                         "ord": "a1"
                       }
                     ],
-                    "id": "78a567fc-cd67-4da1-9c70-a7eb141ca6ee",
+                    "id": "1518d505-f13d-4050-9339-211214930f45",
                     "ord": "a2"
                   }
                 ],
-                "id": "6896c655-3347-4506-a98e-d4ae80831bf5",
+                "id": "39986732-4b7b-4ff2-a945-0c83d63f43b7",
                 "ord": "a2"
               }
             ],
-            "id": "8ce2b837-95cf-4de0-b1dd-2b922f6e2033",
+            "id": "9993ba8a-644b-46ca-8f0f-8a235aac33e6",
             "ord": "a0"
           },
           {
@@ -693,7 +675,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Sports-certified dietitians"],
-                            "id": "923c233c-c1d4-4851-8b4a-371a1b60cf7e",
+                            "id": "796f9135-8076-4d3f-a27b-96456406fe54",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +685,11 @@
                             "children": [
                               "Board-certified specialists in sports nutrition — not influencers or apps. Real credentials, real practice, working with athletes at every level."
                             ],
-                            "id": "4e59c22d-e866-4e14-a3d8-3a5986909f5c",
+                            "id": "0cfe63a5-a263-4c51-be82-acd908d77833",
                             "ord": "a1"
                           }
                         ],
-                        "id": "fe5d046f-d694-452d-bd5a-d5e4c95dabfa",
+                        "id": "2f4b9bda-0dbf-4c2b-977d-88736ab1cae8",
                         "ord": "a0"
                       },
                       {
@@ -720,7 +702,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Data-driven fueling plans"],
-                            "id": "2707e0bc-17b9-4063-bff1-bef0e3a35252",
+                            "id": "fbd394c3-aa17-414e-83ad-5ac51a3ab20a",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +712,11 @@
                             "children": [
                               "We build off your numbers: training load, intake, body composition and race calendar. The plan is measured, not guessed, and it moves with your season."
                             ],
-                            "id": "37a87ed5-a7d0-4e39-a2b9-92c9821fec9d",
+                            "id": "e20b47a3-d5ee-4ebb-873c-d32125016f15",
                             "ord": "a1"
                           }
                         ],
-                        "id": "15a13afe-4329-4230-8fe9-6701642fa250",
+                        "id": "bc6ea717-ea6b-4a34-a84a-514685b6c254",
                         "ord": "a1"
                       },
                       {
@@ -747,7 +729,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Built for your sport"],
-                            "id": "e64de40f-dc82-4ada-a423-449b7385fb84",
+                            "id": "f56cf1db-42e1-4aef-8b80-97d75118a32a",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +739,11 @@
                             "children": [
                               "Endurance, strength or team — the fueling changes completely. You get a protocol for how you actually train and compete, not a one-size handout."
                             ],
-                            "id": "85a9e725-e7d4-43c1-a23c-c1697a458ce9",
+                            "id": "83b4f6d9-5910-4ee9-ac57-fe74c026b197",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b45f71b8-8a72-4c2c-bb69-3d5f6c3ec039",
+                        "id": "b4e12076-6f1f-4925-8822-1a63608d5cd3",
                         "ord": "a2"
                       },
                       {
@@ -774,7 +756,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Accountability that sticks"],
-                            "id": "d8bb847b-7631-4b8d-913a-83f52a07fa8e",
+                            "id": "a5d43677-f271-4106-92ea-e7db853381c1",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +766,23 @@
                             "children": [
                               "Check-ins that read the data, adjust the plan and keep you on it. Progress you can see, not a plan that dies in week two."
                             ],
-                            "id": "45ea4d0a-c6d7-4a94-a2ab-88135632df05",
+                            "id": "7d1c190d-b2fe-4a6d-ae9e-3a9b06256454",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7f04128c-2b1c-4b02-9831-0936c4fb06a0",
+                        "id": "6e89e31b-441e-47c7-93c9-35766c9e381e",
                         "ord": "a3"
                       }
                     ],
-                    "id": "1f8733ba-06a2-4f9d-bf06-d7a23fd3126a",
+                    "id": "a5743ab1-4ab4-4474-92f1-fc060d1a8a4d",
                     "ord": "a0"
                   }
                 ],
-                "id": "b0bbd4d0-cca3-4fc7-85dc-0c8e9d21680c",
+                "id": "f748f3b9-bed9-4e4c-a544-3c7dac46da71",
                 "ord": "a0"
               }
             ],
-            "id": "2403f9c1-087f-4e55-a8d8-62d409211cbd",
+            "id": "4239a89e-28b5-45a3-8230-6ef12c28fac3",
             "ord": "a1"
           },
           {
@@ -823,7 +805,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["The consults"],
-                        "id": "3e088704-df21-46c3-9609-11557d53bfc2",
+                        "id": "a4cd70cd-711d-4fc7-bbe0-d0faf62de117",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +815,11 @@
                         "children": [
                           "Start with a free strategy call, or go straight to the session your goal calls for. Full pricing and live availability are on the booking page."
                         ],
-                        "id": "0b5b407e-c3cc-4358-b07d-69a97b2598f6",
+                        "id": "ac55f774-9eb0-445b-9cb8-0c3787aac789",
                         "ord": "a1"
                       }
                     ],
-                    "id": "07b90223-1745-4caf-97e4-6d63afb4a918",
+                    "id": "ec474475-3431-4001-8f7c-28e62f5127fc",
                     "ord": "a0"
                   },
                   {
@@ -863,7 +845,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Free strategy call"],
-                                "id": "1d8077c9-dd33-4039-a96a-fd9768687780",
+                                "id": "66718821-b002-4b26-bcbd-bd6c40b27f4a",
                                 "ord": "a0"
                               },
                               {
@@ -871,11 +853,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$0"],
-                                "id": "a7b7921a-e255-468b-9ed5-09760d2b76d6",
+                                "id": "079e290e-3130-460a-8f87-7b7d685901ab",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "bf69fe8d-9e5c-46a9-b9b5-3df6c7d5b607",
+                            "id": "182e22ce-4d50-4011-ac06-23f26a60c6ad",
                             "ord": "a0"
                           },
                           {
@@ -883,7 +865,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["20 min"],
-                            "id": "9905d638-019e-445b-bb0f-b0f36493e2a1",
+                            "id": "e2c36097-763a-46ff-a75e-2e82fb7c11b4",
                             "ord": "a1"
                           },
                           {
@@ -891,11 +873,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Twenty minutes to map your first move."],
-                            "id": "44d147aa-ce4d-429b-9a39-db535358530f",
+                            "id": "2e3fb6e4-bce2-4616-91f9-8d1d7cfba88d",
                             "ord": "a2"
                           }
                         ],
-                        "id": "bcec8822-d33d-4a26-93c4-55ed48f383b6",
+                        "id": "c1377471-11ab-4831-86c0-31618f9812e6",
                         "ord": "a0"
                       },
                       {
@@ -916,7 +898,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Initial performance assessment"],
-                                "id": "3dd0f50f-a851-4906-8cc5-86326a959397",
+                                "id": "296bad0e-a2c9-4a92-bcac-e360ec00de03",
                                 "ord": "a0"
                               },
                               {
@@ -924,11 +906,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$165"],
-                                "id": "139435ab-5c38-4e75-91fb-6545838c61a8",
+                                "id": "52a02b17-ee11-4dfb-95de-fdcbf5cfa98f",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "395a2c28-a6b7-4996-bbd8-79e6ce5b87b1",
+                            "id": "80023e95-aa74-4c49-9af6-eca7dc89a0af",
                             "ord": "a0"
                           },
                           {
@@ -936,7 +918,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "19b3cea2-7b11-4215-8392-687cb9afb12d",
+                            "id": "ce57c7b2-f379-456b-82ff-9fb55e6d3ea7",
                             "ord": "a1"
                           },
                           {
@@ -944,11 +926,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Your full baseline and plan of attack."],
-                            "id": "7ba9d5b1-c7bc-43de-a6ae-f36061820021",
+                            "id": "e1c8556c-8565-4c23-b69a-5d5ae9486fec",
                             "ord": "a2"
                           }
                         ],
-                        "id": "00182a3c-3738-4502-ad02-3896f1fff135",
+                        "id": "ec0a6ada-d5e3-4a1e-b996-8dd85d7725ae",
                         "ord": "a1"
                       },
                       {
@@ -969,7 +951,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Fueling plan consult"],
-                                "id": "edcf3c75-d712-410c-8bc6-be2c2a71b9dd",
+                                "id": "c7a89950-09fa-4177-b9a4-06fc3d491892",
                                 "ord": "a0"
                               },
                               {
@@ -977,11 +959,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$120"],
-                                "id": "b01415d3-186f-41b6-8735-ca3471838e49",
+                                "id": "489b2719-9718-48cc-b13c-e7783704e168",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "c39ed0a0-5d5f-4e9d-b20e-93915742d79b",
+                            "id": "9a274c19-7dc3-48a5-8b81-69cc3adddbe7",
                             "ord": "a0"
                           },
                           {
@@ -989,7 +971,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "96d71ae5-cecd-4c7b-9927-3a472488cbbf",
+                            "id": "7f3147c2-05d7-4686-91fa-8a3c0e9ac917",
                             "ord": "a1"
                           },
                           {
@@ -997,11 +979,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["The day-to-day plan, dialed to your schedule."],
-                            "id": "e685bd2b-ffe6-41c1-8ee5-6d72ea383474",
+                            "id": "9c8bb057-8db2-480a-aa3f-b34faa90a5a7",
                             "ord": "a2"
                           }
                         ],
-                        "id": "29b912c6-f315-4005-a6b9-7971271b2bef",
+                        "id": "f6bc46cf-ab70-4533-9698-16a387296ef4",
                         "ord": "a2"
                       },
                       {
@@ -1022,7 +1004,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Endurance nutrition session"],
-                                "id": "ac90fc86-dd14-4a54-a6ca-a2e760c3226f",
+                                "id": "55a2eb5a-9569-4eaf-a1b6-34dfbb7af3ad",
                                 "ord": "a0"
                               },
                               {
@@ -1030,11 +1012,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$140"],
-                                "id": "8904f041-bb3c-46ed-bcf5-216caaf6690a",
+                                "id": "bc81357f-8feb-42d7-b374-fab11b984d23",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "7423bf82-3b8a-4386-86f5-42417b6a99e9",
+                            "id": "d8639ce1-515d-43e2-8845-6cb70564c27b",
                             "ord": "a0"
                           },
                           {
@@ -1042,7 +1024,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "a1ce2ffa-9a31-4603-8835-4ebbcbeb6478",
+                            "id": "ac4f73a0-8ec7-4e09-8a2c-63f7e81b3f93",
                             "ord": "a1"
                           },
                           {
@@ -1050,11 +1032,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Carb loading, in-session fuel, race-week protocol."],
-                            "id": "9690ab49-5930-48d0-a61c-982f0a5e91b8",
+                            "id": "021965be-fd8f-4f5f-b7d5-6872fc2dccf5",
                             "ord": "a2"
                           }
                         ],
-                        "id": "7e6c6b87-b3df-4c07-a821-cc513162b515",
+                        "id": "5cb89d13-6a3e-4b03-9b40-5a6ba3772356",
                         "ord": "a3"
                       },
                       {
@@ -1075,7 +1057,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Strength nutrition session"],
-                                "id": "51aca934-3ccc-4b7e-ad65-5d7ff3b196dd",
+                                "id": "e4862800-68c0-420a-a17f-b04bc8173bc3",
                                 "ord": "a0"
                               },
                               {
@@ -1083,11 +1065,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$140"],
-                                "id": "a29b52d7-4aab-455e-9f1a-93a831b306ff",
+                                "id": "401711c4-5879-4b5f-9f8e-97cd56e4b6c8",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "8ec8d554-2f30-45d2-b987-af12f36beeb1",
+                            "id": "08059496-a896-409c-ae13-d388d688bfe4",
                             "ord": "a0"
                           },
                           {
@@ -1095,7 +1077,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "45a1a2f5-d300-4eb1-bde1-bc966d198e8f",
+                            "id": "2af71c6a-a06a-4cea-9779-66581e90f5d1",
                             "ord": "a1"
                           },
                           {
@@ -1103,11 +1085,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Protein timing and eating that backs heavy blocks."],
-                            "id": "781d1ffb-0b3e-45a2-adbf-5930850b2e95",
+                            "id": "c50a485d-8acd-4988-84e8-af5368e3caf4",
                             "ord": "a2"
                           }
                         ],
-                        "id": "1b5402de-c346-48fd-b166-28d77a81e74d",
+                        "id": "f888a776-a9f1-4e14-b571-2630a37e37c7",
                         "ord": "a4"
                       },
                       {
@@ -1128,7 +1110,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Body-composition consult"],
-                                "id": "db3a1a73-de3e-4ad8-bdcb-6ffa22603837",
+                                "id": "c982f506-081c-47ed-bfcd-92dab14cb150",
                                 "ord": "a0"
                               },
                               {
@@ -1136,11 +1118,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$125"],
-                                "id": "26fba960-deae-4608-8492-2ac79986f4d4",
+                                "id": "75fef381-b721-4f45-99e3-e1fe8443ea9a",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "56afca00-304b-46eb-a1a6-fb86260200ad",
+                            "id": "da5ca3da-3c89-404f-992a-3c3db72c2df6",
                             "ord": "a0"
                           },
                           {
@@ -1148,7 +1130,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "dbf8297c-56dd-4425-9d17-8114232ef8d2",
+                            "id": "734726d1-938a-4bec-9245-c22c7cd2750b",
                             "ord": "a1"
                           },
                           {
@@ -1156,15 +1138,15 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Real measurement, then a target that performs."],
-                            "id": "000abbe6-cc47-4925-b74a-39a08c4b8767",
+                            "id": "4a66f0bc-7c15-473c-b637-b82af3097dff",
                             "ord": "a2"
                           }
                         ],
-                        "id": "4beb1105-b036-4f62-8d27-97290e764ff7",
+                        "id": "abad5616-6092-43ed-8cf9-1994dc406c23",
                         "ord": "a5"
                       }
                     ],
-                    "id": "888d8d43-60ad-4098-9ce7-74414545b362",
+                    "id": "57240649-e335-440c-a79b-da9bbf8da5ce",
                     "ord": "a1"
                   },
                   {
@@ -1180,19 +1162,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "e7b4b43a-5264-4abe-9afa-a28c852c18cc",
+                        "id": "e02af998-7f69-4b51-bcba-24edb742ea9f",
                         "ord": "a0"
                       }
                     ],
-                    "id": "b525cdc4-3f0f-40f0-8e93-b1abcbd73170",
+                    "id": "f199a04f-b81b-48ae-80c5-3d9ea7b65476",
                     "ord": "a2"
                   }
                 ],
-                "id": "f08a83a7-62f9-48c8-b2f2-1c0600bcbc15",
+                "id": "dd17ebf2-dfca-45e5-a668-444b9c656e84",
                 "ord": "a0"
               }
             ],
-            "id": "53077dae-2e86-4d6a-b6d3-ef13e393d2e1",
+            "id": "7a1b9f5f-f9d2-46a6-901f-ae209c298195",
             "ord": "a2"
           },
           {
@@ -1214,7 +1196,7 @@
                       "alt": "A dietitian reviewing performance and fueling data on a tablet",
                       "loading": "lazy"
                     },
-                    "id": "8711d691-6927-4796-a025-7907723b0cef",
+                    "id": "9ea05042-8cf5-47c1-a108-bfa2eac2e6dd",
                     "ord": "a0"
                   },
                   {
@@ -1227,7 +1209,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["The performance-fueling method"],
-                        "id": "6d71d1a3-3511-4655-840e-9c51e905e257",
+                        "id": "9a8698e4-6313-47e1-8638-10fff886f958",
                         "ord": "a0"
                       },
                       {
@@ -1237,7 +1219,7 @@
                         "children": [
                           "We start with measurement — training load, current intake, body composition and your competition calendar — because a plan built on guesses fails at exactly the wrong moment."
                         ],
-                        "id": "14c19d64-6a7b-4cd8-bb81-87c4fa46bc37",
+                        "id": "d008ce20-863d-492a-b65d-f91e1ad6021f",
                         "ord": "a1"
                       },
                       {
@@ -1247,7 +1229,7 @@
                         "children": [
                           "From there it’s a protocol you can execute: carbs matched to session type, protein and recovery timed to your blocks, hydration and race-day fueling rehearsed before it matters. Then we check the data and adjust — every season is an experiment we run with you."
                         ],
-                        "id": "1f3c421e-4481-48d5-a373-01ac08a8b897",
+                        "id": "d3d1844f-bb7c-4304-8ab8-3e67328a447a",
                         "ord": "a2"
                       },
                       {
@@ -1263,23 +1245,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a consultation"],
-                            "id": "5c8f8451-2b85-4499-98ec-5e214050bfe1",
+                            "id": "cc9d700a-b7a1-4ae3-9149-3446d0c35b58",
                             "ord": "a0"
                           }
                         ],
-                        "id": "31729111-1e3d-417e-86ee-79ecd88ea6bc",
+                        "id": "0016795c-dc2d-433e-9c6f-7c59f23a7e76",
                         "ord": "a3"
                       }
                     ],
-                    "id": "3f064649-e5ee-4179-86dd-4bd95cb3f81c",
+                    "id": "b304e9c5-9348-43c0-9892-610ecd73e412",
                     "ord": "a1"
                   }
                 ],
-                "id": "c423830a-fe7e-4232-82d1-df3e886d5b4a",
+                "id": "089f99ad-d484-4c48-a5a6-208cebe3090b",
                 "ord": "a0"
               }
             ],
-            "id": "d3c2af34-8165-443a-8023-5327fc994c7c",
+            "id": "44819623-0e86-48eb-92ab-a18cd63227cf",
             "ord": "a3"
           },
           {
@@ -1302,7 +1284,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Your dietitians"],
-                        "id": "b0e9aab6-c7a7-49bd-ad2a-9413bc83e99f",
+                        "id": "e507ca7d-f679-4571-abf2-be86df2eeb78",
                         "ord": "a0"
                       },
                       {
@@ -1312,11 +1294,11 @@
                         "children": [
                           "Book by name — the specialist who fits your sport, one-to-one, every session."
                         ],
-                        "id": "c1156510-5d1f-4f97-b526-7891a463a35c",
+                        "id": "7ccaef4d-5c5d-4339-9fc1-5eb54e8f7eaf",
                         "ord": "a1"
                       }
                     ],
-                    "id": "5b55edca-ade7-495e-b38d-1064dc00ab21",
+                    "id": "951e3534-e4f2-4079-b4b4-6ce6d631d173",
                     "ord": "a0"
                   },
                   {
@@ -1338,7 +1320,7 @@
                               "alt": "Casey Nolan, endurance sports dietitian",
                               "loading": "lazy"
                             },
-                            "id": "58e1e61d-8f09-4cc8-8d49-f98b466c4aa5",
+                            "id": "a93b0415-89e7-402a-9187-be7441a1a4b7",
                             "ord": "a0"
                           },
                           {
@@ -1351,7 +1333,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Casey Nolan"],
-                                "id": "569a0f48-50b8-4989-b3a0-dd3baf6743e7",
+                                "id": "4b8a4b21-afa0-4dc3-8526-7a1860e7bf30",
                                 "ord": "a0"
                               },
                               {
@@ -1359,7 +1341,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Endurance dietitian"],
-                                "id": "d93096ab-969c-4fd9-b0f9-f8540c802c9f",
+                                "id": "2c67c847-84dd-42c1-ab8e-0d8725816f48",
                                 "ord": "a1"
                               },
                               {
@@ -1369,15 +1351,15 @@
                                 "children": [
                                   "Marathoners, cyclists and triathletes. Carb strategy, gut training and race-week protocols that hold up on the day."
                                 ],
-                                "id": "d91e9b87-72ee-4966-b804-d82c58a965e5",
+                                "id": "0e607e05-92d5-45fb-b36e-802862b2068c",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "42907bf2-4979-4f25-b947-551d1fa634f2",
+                            "id": "a0566273-30d6-4c4a-bc1e-6805fffb16ba",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a10a8367-cd93-4b77-8914-08af69688281",
+                        "id": "1650c186-b664-4e86-909b-9ca36530a36f",
                         "ord": "a0"
                       },
                       {
@@ -1394,7 +1376,7 @@
                               "alt": "Jordan Reyes, strength & body-composition dietitian",
                               "loading": "lazy"
                             },
-                            "id": "11bc26dc-adb9-4bee-962c-39267fdafb5d",
+                            "id": "f14b9c4f-1827-49d8-be4c-d5ce2069e61c",
                             "ord": "a0"
                           },
                           {
@@ -1407,7 +1389,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Jordan Reyes"],
-                                "id": "ac8628df-a41b-4e2c-819c-457f2d8460df",
+                                "id": "d1fea9b4-6587-4c81-ab8e-cd28ae28896e",
                                 "ord": "a0"
                               },
                               {
@@ -1415,7 +1397,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Strength & body-comp dietitian"],
-                                "id": "8128c39f-fbe2-47ca-80bc-14fa41f2d122",
+                                "id": "3b29f700-b201-471e-b698-118edf2604c1",
                                 "ord": "a1"
                               },
                               {
@@ -1425,15 +1407,15 @@
                                 "children": [
                                   "Lifters and field athletes. Lean-gain and cut plans, protein timing and body composition tracked with real data."
                                 ],
-                                "id": "1830b444-8b79-4a30-81dc-f256daa5e8db",
+                                "id": "9397bd48-a017-4ddb-8b4c-d6552fe9e477",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "a66aeaa0-b5c9-4bcc-a7a6-0e5aa0bb8ab0",
+                            "id": "b43b0595-1692-4459-a972-f5cc050aeacc",
                             "ord": "a1"
                           }
                         ],
-                        "id": "fc11118e-8866-44b5-ab7f-957fd6dda231",
+                        "id": "8396de87-63a4-4a83-9a78-1caff8a0609c",
                         "ord": "a1"
                       },
                       {
@@ -1450,7 +1432,7 @@
                               "alt": "Sam Whitfield, team & general sports dietitian",
                               "loading": "lazy"
                             },
-                            "id": "7f1561c8-fca1-48ce-9c63-a2996cc0fdcf",
+                            "id": "62942827-dfcf-4675-9b5f-d84cd05205fa",
                             "ord": "a0"
                           },
                           {
@@ -1463,7 +1445,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Sam Whitfield"],
-                                "id": "1fdbb932-4cd1-4b17-bd0e-8848a56a3c80",
+                                "id": "c58c5bed-4b49-4d30-beae-0bd12e912082",
                                 "ord": "a0"
                               },
                               {
@@ -1471,7 +1453,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Team & general dietitian"],
-                                "id": "3942b3f4-7522-4ede-bc7c-2d18952dedf6",
+                                "id": "376ab296-3a9a-412f-9458-beaaaa0a1418",
                                 "ord": "a1"
                               },
                               {
@@ -1481,27 +1463,27 @@
                                 "children": [
                                   "Team-sport athletes and everyday competitors. Practical fueling that fits training, travel and a real schedule."
                                 ],
-                                "id": "eef6cfaf-a6d1-4553-a99c-c6025e6bc074",
+                                "id": "2bf903c2-b664-4d8a-a72a-a8c510461a15",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "21c58d77-3f1a-4214-9c42-35bcd76f68eb",
+                            "id": "fde7d6de-8496-4902-ae9d-286842104475",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1567e8ad-3bc1-4a33-9216-546304cc637b",
+                        "id": "f756b906-9265-4220-9375-6770c77bb4c0",
                         "ord": "a2"
                       }
                     ],
-                    "id": "b7b70aaf-88c9-4337-b33a-2ddcb3a86d60",
+                    "id": "e5099bae-512a-4233-84b5-709535a2c8cc",
                     "ord": "a1"
                   }
                 ],
-                "id": "dcaaee6f-411a-4d7e-9b73-3088d5adc9b5",
+                "id": "08327be3-f69e-468c-97c5-ea1d6d017d08",
                 "ord": "a0"
               }
             ],
-            "id": "cfe89c23-0659-4181-b283-82b61cd5b68b",
+            "id": "3cfaef22-3046-467a-aedd-f9125fecf351",
             "ord": "a4"
           },
           {
@@ -1521,7 +1503,7 @@
                     "children": [
                       "“I bonked every long run and blamed my legs. Casey rebuilt my fueling around the actual numbers and I took nine minutes off my marathon PR — first time I ever finished strong. Turns out it was never my legs.”"
                     ],
-                    "id": "0a270697-e1a9-4886-9dda-b8556d07b117",
+                    "id": "0921db54-b247-44ac-a503-13f18724e911",
                     "ord": "a0"
                   },
                   {
@@ -1529,15 +1511,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["Priya M., marathoner"],
-                    "id": "20c398e8-333e-462c-ba94-f9e274230684",
+                    "id": "f658f421-7e5f-48da-ad30-eee472f4543c",
                     "ord": "a1"
                   }
                 ],
-                "id": "e1668325-a1bb-48e1-9a8f-cca479234ba0",
+                "id": "5ffa66c9-e081-46e8-9ce0-e8cc9f6bba96",
                 "ord": "a0"
               }
             ],
-            "id": "9e82963a-820f-4928-be82-8b7ee6e14988",
+            "id": "76cd05be-8702-484e-848c-cfc2ed0f7c33",
             "ord": "a5"
           },
           {
@@ -1555,7 +1537,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Your next PR starts with a plan"],
-                    "id": "b6c71ee7-fb12-45c0-a0bf-c80420ffb442",
+                    "id": "42150c34-4055-41cf-967e-e19dec3ef97b",
                     "ord": "a0"
                   },
                   {
@@ -1565,7 +1547,7 @@
                     "children": [
                       "Book the free strategy call, meet your dietitian and map the first move. It takes about a minute."
                     ],
-                    "id": "fa87e6c5-5832-45d5-9cd5-a33a737e3b87",
+                    "id": "4bd0ed5b-607a-417e-9b12-3d58855f743b",
                     "ord": "a1"
                   },
                   {
@@ -1576,15 +1558,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a consultation"],
-                    "id": "cc9cf5c0-ffbe-475a-992d-09e7c39c29c5",
+                    "id": "5fffd204-61b0-4b78-90f7-87eaffa49d95",
                     "ord": "a2"
                   }
                 ],
-                "id": "aba529d8-daf6-4e2a-a1d4-4c6080d7585e",
+                "id": "dc2b2c79-2600-4cb3-bba4-13de805ea0ce",
                 "ord": "a0"
               }
             ],
-            "id": "d963f34a-4dd8-4cff-88b0-7c34cf2097fe",
+            "id": "c5d3e380-9fd3-4005-8e4a-bbdcc13b164b",
             "ord": "a6"
           }
         ]
@@ -1601,7 +1583,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "6a2a0bda-7851-440a-b4e8-ea0603cd6b28",
+        "id": "a5015136-c51b-4a27-b22c-71aefefdca6d",
         "children": [
           {
             "kind": "element",
@@ -1617,14 +1599,14 @@
                   "alt": "A dietitian reviewing performance and fueling data on a tablet",
                   "loading": "eager"
                 },
-                "id": "f6412580-b11e-4ffa-be73-b9d229388b1f",
+                "id": "71454762-4045-48dc-87a8-95dc59b19e15",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "1faaee65-d262-4a8b-abf5-87a24ec7819e",
+                "id": "fc38692e-44c4-425f-839c-dad0bf400cb9",
                 "ord": "a1"
               },
               {
@@ -1637,7 +1619,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book your consultation"],
-                    "id": "be2e4b5b-c201-4de4-85fe-26b9c0f7004e",
+                    "id": "a7616e1b-a049-4658-955d-835c546ab6f8",
                     "ord": "a0"
                   },
                   {
@@ -1647,7 +1629,7 @@
                     "children": [
                       "Choose a consult to see pricing and live availability, then pick your dietitian and time. New here? Start with the free strategy call."
                     ],
-                    "id": "38812a4a-b58a-492a-87fc-278927807c74",
+                    "id": "ed7811f3-0683-4e09-9b48-63fac636a56b",
                     "ord": "a1"
                   },
                   {
@@ -1663,27 +1645,31 @@
                           "href": "/book"
                         },
                         "children": ["See the consults below"],
-                        "id": "b8a36ae4-74a1-4659-b741-4770578e6cb9",
+                        "id": "d64c660a-5fab-48ab-9d88-e0d3f88950af",
                         "ord": "a0"
                       }
                     ],
-                    "id": "868e8371-8f54-4a83-8b9d-5dfe7f8d9261",
+                    "id": "9492d823-de94-4075-9f68-587139bb804d",
                     "ord": "a2"
                   }
                 ],
-                "id": "a003aceb-2887-4209-a777-e569aae80d23",
+                "id": "8db4cd8b-1d93-4e19-8bf3-b2c7f37c4c47",
                 "ord": "a2"
               }
             ],
-            "id": "a679db6f-48e5-478c-aa40-f9a36a11007c",
+            "id": "b6821e63-5ea2-475a-9cea-d2c720038e41",
             "ord": "a0"
           },
           {
             "kind": "host",
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "props": {
+              "heading": "Book with us",
+              "subheading": "Choose a service to see open times and reserve your spot."
+            },
             "locked": "host",
-            "id": "df959502-28dd-44e8-86e3-4141104455bc",
+            "id": "99f11f52-a0b0-463c-b39c-fad50fa2f998",
             "ord": "a1"
           },
           {
@@ -1706,7 +1692,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Good to know"],
-                        "id": "2db65c1f-449a-427b-8a17-34d0714029a2",
+                        "id": "a618c4e6-d721-4ddc-8be4-2d3ee7caebd0",
                         "ord": "a0"
                       },
                       {
@@ -1716,11 +1702,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "30fc7d1b-0f78-4deb-9142-1c5876d2f1f8",
+                        "id": "a0f6bab5-1d53-4449-ac09-0cc45283b6dc",
                         "ord": "a1"
                       }
                     ],
-                    "id": "0bf5d63a-b09d-4f4e-8478-3f48ac08ab3f",
+                    "id": "00f3271e-82ca-4c11-93e5-e59bcf565913",
                     "ord": "a0"
                   },
                   {
@@ -1738,7 +1724,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Standard consultation"],
-                            "id": "14875a6e-ee5e-435c-a08f-38d3563f5200",
+                            "id": "f075f8d0-b16f-4b1f-a486-3eaa4190fe83",
                             "ord": "a0"
                           },
                           {
@@ -1748,7 +1734,7 @@
                             "children": [
                               "Reschedule or cancel with at least 24 hours’ notice — plans move, and we get it. We send a reminder the day before and two hours ahead so nothing slips."
                             ],
-                            "id": "65111932-a22c-4645-b4dc-99e6a402f5e2",
+                            "id": "31d06e9c-1089-4882-8a78-5a05c1e80d80",
                             "ord": "a1"
                           },
                           {
@@ -1758,11 +1744,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "a12ba01a-78ac-465b-8b21-cd54c9475452",
+                            "id": "305c0a35-144d-4969-8c2e-25bdf89c7d6d",
                             "ord": "a2"
                           }
                         ],
-                        "id": "4d49de25-9425-400b-a4f4-e954334beafb",
+                        "id": "2496da90-23f2-450d-b185-caef79be1512",
                         "ord": "a0"
                       },
                       {
@@ -1775,7 +1761,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Late-cancel & no-show"],
-                            "id": "ae4a971d-16f1-4023-b3eb-e4175d681df6",
+                            "id": "04aa5483-77b3-4483-a47a-53e5619f70ab",
                             "ord": "a0"
                           },
                           {
@@ -1785,7 +1771,7 @@
                             "children": [
                               "Your dietitian blocks the full session for you. Cancel inside 24 hours or miss it without notice and a no-show fee applies — one heads-up, then it’s the policy for everyone’s time."
                             ],
-                            "id": "540b7bd2-bc83-495b-ba39-d59a5413433b",
+                            "id": "e4dba87e-a83a-45b6-8e88-493ff91b7124",
                             "ord": "a1"
                           },
                           {
@@ -1795,23 +1781,23 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "e4b26789-c1fd-4eba-ae61-2f51ff1e0ee9",
+                            "id": "e0300325-e739-4c40-be87-31b01dd61a17",
                             "ord": "a2"
                           }
                         ],
-                        "id": "8e5297de-90c4-4280-97cb-0e2f49282a98",
+                        "id": "cc6ad056-1335-4763-9dc4-d75eb641c131",
                         "ord": "a1"
                       }
                     ],
-                    "id": "09b096be-80b8-44ce-b20a-3f3cb61a9a08",
+                    "id": "41be2f6e-fea8-494f-a147-b9cc270caa81",
                     "ord": "a1"
                   }
                 ],
-                "id": "40878b6a-ec2f-43f0-89ac-1f16494e565d",
+                "id": "62c32417-bb39-47bf-a5ac-0febaef8883a",
                 "ord": "a0"
               }
             ],
-            "id": "27e97ba8-6fdc-4aa5-83b3-ade9794983bf",
+            "id": "13891156-0889-40f3-aae3-976191dd7ad6",
             "ord": "a2"
           }
         ]
@@ -1828,7 +1814,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "a35c045b-ffac-4a9f-8a65-dc105ad4017d",
+        "id": "705f7bdc-aafa-4f43-a8e9-84f82ee8ca1a",
         "children": [
           {
             "kind": "element",
@@ -1849,7 +1835,7 @@
                       "alt": "An endurance athlete refueling mid-training under stadium light",
                       "loading": "lazy"
                     },
-                    "id": "e5707b0e-991e-43d2-9855-b230d0f177b5",
+                    "id": "e64d4ce3-dfa0-4aa4-ba4b-fe26eedec7dd",
                     "ord": "a0"
                   },
                   {
@@ -1862,7 +1848,7 @@
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About Fuel Performance Nutrition"],
-                        "id": "a8434901-8ada-4ddc-879c-5518c76b483e",
+                        "id": "3009f20a-813c-4060-9be2-28cdfbbfbd8b",
                         "ord": "a0"
                       },
                       {
@@ -1872,7 +1858,7 @@
                         "children": [
                           "We started Fuel because too many athletes train like professionals and eat like an afterthought — leaving real performance on the table for want of a plan built on evidence."
                         ],
-                        "id": "4841207c-dad1-4dc5-a0b8-dd57eb960eb5",
+                        "id": "7d238317-081c-4059-b874-2705f14c1a19",
                         "ord": "a1"
                       },
                       {
@@ -1882,7 +1868,7 @@
                         "children": [
                           "So we do it the other way around: measure first, build a protocol you can execute, then track the data and adjust. No fad diets, no guilt, no generic handouts — just fueling engineered for how you actually train and compete."
                         ],
-                        "id": "8ffeb3c2-53d6-4d07-b6ce-e38ba4e7a228",
+                        "id": "2e32ec8f-5927-45bd-b01f-590a49cc5e44",
                         "ord": "a2"
                       },
                       {
@@ -1898,23 +1884,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a consultation"],
-                            "id": "e020c93f-2bc6-49f2-af51-5357bea512ec",
+                            "id": "d175100b-e160-41f7-8a15-b69b468107ba",
                             "ord": "a0"
                           }
                         ],
-                        "id": "ce686ec5-91c2-4505-8659-d21b3ff477a0",
+                        "id": "18881fa2-f674-4ecd-8cc3-63740e8babe2",
                         "ord": "a3"
                       }
                     ],
-                    "id": "8a839a97-190b-4ecc-a99b-f3085ca96b67",
+                    "id": "cdc1ec83-6d17-4a7e-addd-925c31a4be75",
                     "ord": "a1"
                   }
                 ],
-                "id": "992d5b6f-f923-4008-8aff-efa7f61a6a55",
+                "id": "0bc3571d-8eb5-4d0f-82ef-11cd9f801351",
                 "ord": "a0"
               }
             ],
-            "id": "b342b0f5-7a5e-4204-bf6a-a1fe05a27f2d",
+            "id": "3d264f0f-d481-47ee-a596-c1c206300198",
             "ord": "a0"
           },
           {
@@ -1932,7 +1918,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["How we work"],
-                    "id": "aea05690-20c0-4818-8de5-e76c44e22d99",
+                    "id": "51466e26-80a5-4442-a719-eab70425c233",
                     "ord": "a0"
                   },
                   {
@@ -1950,7 +1936,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Measure, then plan"],
-                            "id": "ba927729-0ce8-4af8-a717-522110248ab2",
+                            "id": "621ff663-c593-4e67-91ea-a6cf2126c60c",
                             "ord": "a0"
                           },
                           {
@@ -1960,11 +1946,11 @@
                             "children": [
                               "Every athlete starts with a real baseline — training load, intake, body composition and calendar. The plan comes from your numbers, not a template."
                             ],
-                            "id": "fc058158-36d0-4fb4-ac34-1e9dc8c8390d",
+                            "id": "fe60c2e2-0ebb-43ac-b961-888d27bea4fc",
                             "ord": "a1"
                           }
                         ],
-                        "id": "eb944de3-dc3b-4d21-8359-39e436558506",
+                        "id": "2d8672ec-6eb3-48f9-944a-f41554eddd55",
                         "ord": "a0"
                       },
                       {
@@ -1977,7 +1963,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Evidence over trends"],
-                            "id": "d5c4f046-2bcc-4029-8fc9-fe0f7efeb76b",
+                            "id": "901a5ca1-bf87-4661-98c8-74bccdbc080f",
                             "ord": "a0"
                           },
                           {
@@ -1987,11 +1973,11 @@
                             "children": [
                               "Board-certified sports dietitians working from the science, not the latest diet. If it doesn’t move your performance, it doesn’t make the plan."
                             ],
-                            "id": "74b94623-050f-42fd-8323-2220f76b2fca",
+                            "id": "dfcd27dd-3804-4b3b-8649-26c0aab1638f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7484fbff-3d9c-4520-88c5-dc39d568edc3",
+                        "id": "d6c6dcc3-2706-4ba8-8c56-a1ea72e57026",
                         "ord": "a1"
                       },
                       {
@@ -2004,7 +1990,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Adjust every season"],
-                            "id": "990d14d5-ad02-4649-bc3a-17ab13d26ade",
+                            "id": "e03c45e8-b012-4baf-99ff-2059bdabd13f",
                             "ord": "a0"
                           },
                           {
@@ -2014,23 +2000,23 @@
                             "children": [
                               "We read the data at each check-in and change what the results tell us to. Your fueling evolves as your training and goals do."
                             ],
-                            "id": "47fa512b-0b89-4a8d-9f87-06f6a911b619",
+                            "id": "0f86790c-4b36-4545-a29e-ee8d6ee85c78",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1da1a426-e362-46ab-aa7e-2d309d7e2144",
+                        "id": "4e2492e3-a09e-4373-9dd7-ac05f22cccc3",
                         "ord": "a2"
                       }
                     ],
-                    "id": "b7d3f352-6da6-4632-a101-574dca6f92f9",
+                    "id": "4d240d34-de07-407c-8f9e-2923f37d502e",
                     "ord": "a1"
                   }
                 ],
-                "id": "87db5cc9-0686-4960-badc-f989c3597bad",
+                "id": "6b2c0890-2c14-42b5-92e1-6209ee0b0695",
                 "ord": "a0"
               }
             ],
-            "id": "e3fa0a9c-1fd0-43b5-bdb6-5bd1db821686",
+            "id": "66c70f73-b094-4436-9efb-df097c3e9817",
             "ord": "a1"
           }
         ]
@@ -2047,7 +2033,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "9770111f-9d2e-4b60-8da3-c9b1ca3d4fed",
+        "id": "9851bd20-6949-4f00-8d41-f1505433f407",
         "children": [
           {
             "kind": "element",
@@ -2069,7 +2055,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Get in touch"],
-                        "id": "f6fb7248-1ccd-4dde-906b-b3d77c9f1dc0",
+                        "id": "d598be79-55f4-473d-8418-829c18f4d14d",
                         "ord": "a0"
                       },
                       {
@@ -2079,11 +2065,11 @@
                         "children": [
                           "Questions before you book? Send a note and Fuel Performance Nutrition will get back to you — usually the same day."
                         ],
-                        "id": "8e50ff5c-2582-4d40-ba88-cb46e9ebb22d",
+                        "id": "8c2bc831-29cc-4bac-a244-c1c7c43f8118",
                         "ord": "a1"
                       }
                     ],
-                    "id": "ed492a79-a011-4c90-b357-4fceffed678e",
+                    "id": "62b08164-a6a3-46d4-861d-9b1383dde87b",
                     "ord": "a0"
                   },
                   {
@@ -2096,7 +2082,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Call us"],
-                        "id": "bb677848-ff84-4c70-bf70-45a14c86a801",
+                        "id": "55e1335f-7a4c-4c33-a07d-2868352b1636",
                         "ord": "a0"
                       },
                       {
@@ -2112,7 +2098,7 @@
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "a673802b-1a82-4919-8ecd-09a1172ceaad",
+                            "id": "f6803df7-16bf-4d03-8e71-b8aabbb8e52e",
                             "ord": "a0"
                           }
                         ],
@@ -2121,7 +2107,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "7291e7b6-7255-4d06-a551-31945f144e2e",
+                        "id": "9a598523-ef2b-4943-8f88-8a7ec85abad4",
                         "ord": "a1"
                       }
                     ],
@@ -2129,7 +2115,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "a9fed718-4c4a-4efb-bc2d-00fbfb36689c",
+                    "id": "da6d0558-73a1-42ea-bd48-5d8b23ad776a",
                     "ord": "a1"
                   },
                   {
@@ -2142,7 +2128,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Email us"],
-                        "id": "c6540442-7ccb-449c-a7c0-a1b7d791f39f",
+                        "id": "43594b35-9a7f-4148-a490-a2e021be4a87",
                         "ord": "a0"
                       },
                       {
@@ -2158,7 +2144,7 @@
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "39d47f96-df27-4647-9e35-65b04cc9daf4",
+                            "id": "4841460c-bf3e-4cf2-b4e3-f73ff7c501a2",
                             "ord": "a0"
                           }
                         ],
@@ -2167,7 +2153,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "54d6a995-f830-4a39-9c5d-120e106409d4",
+                        "id": "d9cab8b3-57be-421a-bf7a-631c4f8840a2",
                         "ord": "a1"
                       }
                     ],
@@ -2175,7 +2161,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "c221521d-6e21-4255-8973-fbde3ffa5019",
+                    "id": "a1705342-6cf6-4278-90b4-fc29d2b9ef18",
                     "ord": "a2"
                   },
                   {
@@ -2193,7 +2179,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Your name"],
-                            "id": "a32ce0cd-8871-4ded-8c75-623a7b024001",
+                            "id": "86b3d2fb-f354-409d-88d0-1ddb5cdc39d0",
                             "ord": "a0"
                           },
                           {
@@ -2205,11 +2191,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "00fb5f15-7de1-4b1a-b373-713b72bd6fcd",
+                            "id": "57b9195c-7e6c-4ec2-90cc-1ca2924d282e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "eccaa1b9-70a0-4ae2-b6b5-f51747a29dfd",
+                        "id": "f2c11354-806f-493f-b791-aed415575144",
                         "ord": "a0"
                       },
                       {
@@ -2222,7 +2208,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Email address"],
-                            "id": "bbd0bb2b-937a-4d52-a805-d7e0e7dd82c4",
+                            "id": "fe7c9643-693a-4c34-836d-4990a01492e4",
                             "ord": "a0"
                           },
                           {
@@ -2234,11 +2220,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "8a9418ff-188b-41fe-86cd-554e4234e591",
+                            "id": "cb94b3f6-7e4d-42de-a9c8-1d4b0b2dd651",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d4c03499-d0e7-4fb3-9e59-7a4ba4b3999a",
+                        "id": "cda54502-f057-441c-8c2d-55879f90b0a9",
                         "ord": "a1"
                       },
                       {
@@ -2251,7 +2237,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Phone number"],
-                            "id": "af5a1eaf-bee5-4191-bbd5-7a35ec09b344",
+                            "id": "1d7984b8-804a-4513-b536-de15c13be70e",
                             "ord": "a0"
                           },
                           {
@@ -2262,11 +2248,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "379c2b39-6ca4-4896-a148-cb1882d9f0ef",
+                            "id": "1739f908-b625-45fb-9948-a22fcea5fe65",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7d025202-fadd-4655-a339-484dbbbf1198",
+                        "id": "dc3dd975-cb7a-46c2-a491-2f7c2b0bd99b",
                         "ord": "a2"
                       },
                       {
@@ -2279,7 +2265,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["How can we help?"],
-                            "id": "42f78c60-7f6e-418b-a02e-d8da9628cc6b",
+                            "id": "d320e7d3-db37-4475-bc3e-474dc75beede",
                             "ord": "a0"
                           },
                           {
@@ -2289,11 +2275,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "bb62411d-0217-486e-8a32-520d6b24b2d1",
+                            "id": "b397e51f-c237-401d-9ec6-7f6c1b53f264",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d8fe9a49-1c41-4047-945f-154656165d19",
+                        "id": "ddd2bac3-623b-4142-8ebb-671501cc907f",
                         "ord": "a3"
                       },
                       {
@@ -2309,11 +2295,11 @@
                               "type": "submit"
                             },
                             "children": ["Send my request"],
-                            "id": "a1ce5191-f1ba-40f1-ae96-431d84a82785",
+                            "id": "bb3d13a3-e1f2-48e4-ba19-1d50b8cd1b19",
                             "ord": "a0"
                           }
                         ],
-                        "id": "a86a1554-f82e-4d37-937b-b422ef7c746c",
+                        "id": "da7e2053-8e73-4e39-97ab-ff4dbb95d3f5",
                         "ord": "a4"
                       }
                     ],
@@ -2324,15 +2310,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "e0267290-548a-4dad-9422-ed36e70c065b",
+                    "id": "de4ed18e-4aec-40a9-9d61-9204ed16c24c",
                     "ord": "a3"
                   }
                 ],
-                "id": "b064350f-ce94-4a73-a831-c3af45dfb173",
+                "id": "bf9bb7b9-2904-4692-8d3b-9659d6158c4b",
                 "ord": "a0"
               }
             ],
-            "id": "899fcdbe-f40f-4c67-94bb-d05730ca65dc",
+            "id": "4c817c20-82a8-43d9-af05-2b51fb4a876e",
             "ord": "a0"
           },
           {
@@ -2355,7 +2341,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Visit the practice"],
-                        "id": "744ff2fb-a2dc-45a2-beb3-2890ed03e7b5",
+                        "id": "94e3e825-f148-4597-90c6-281c4a06e428",
                         "ord": "a0"
                       },
                       {
@@ -2369,7 +2355,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "3db73e0a-cd74-4614-a88f-22dc1a9e3dfe",
+                        "id": "47d64f61-ba77-4e80-8ebf-30dfd6caae78",
                         "ord": "a1"
                       },
                       {
@@ -2387,7 +2373,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday – Friday"],
-                                "id": "b9c88aec-2ad4-43d9-97e0-ad72287bbc78",
+                                "id": "292e1d40-ffd0-4998-855e-7f905222cdc0",
                                 "ord": "a0"
                               },
                               {
@@ -2395,11 +2381,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["6:00 – 20:00"],
-                                "id": "cfd52bf7-2433-43db-b4f6-fb61379f380c",
+                                "id": "5d791330-87fa-4833-8095-ebf1d76ed9fa",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "439d55cc-6cd7-4c16-b3cb-c576d2a484ab",
+                            "id": "a0538f63-40ed-4d6b-83e2-764ce7f1584b",
                             "ord": "a0"
                           },
                           {
@@ -2412,7 +2398,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "1c0d8b48-182f-4bed-a5e8-c99be06c4278",
+                                "id": "6875bd84-aea3-4261-9893-42db7215b417",
                                 "ord": "a0"
                               },
                               {
@@ -2420,11 +2406,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 13:00"],
-                                "id": "5e29b978-4a83-4d54-9cec-8cb12598ec77",
+                                "id": "c231c200-20fe-4317-bb7b-0f3702bb2472",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b3efc146-6f91-4b17-b8f6-2d201231847e",
+                            "id": "4ec7e915-1ad0-4671-b1a2-8f136f4252de",
                             "ord": "a1"
                           },
                           {
@@ -2437,7 +2423,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "378b33b5-659d-4c09-9df6-9e49a6a5d966",
+                                "id": "4190611b-0678-4ee8-87cf-39567c345440",
                                 "ord": "a0"
                               },
                               {
@@ -2445,11 +2431,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Closed"],
-                                "id": "6c733923-84c4-4b96-972c-f38b3c5431f8",
+                                "id": "78489e54-8473-4030-aa16-343150340e6e",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "de8a458a-3f12-449d-8966-f6faaf4ee81f",
+                            "id": "0da0f501-7ac3-47fa-bf8f-78b69e7d0916",
                             "ord": "a2"
                           },
                           {
@@ -2462,7 +2448,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Virtual sessions"],
-                                "id": "2b517735-3613-4b76-819b-630d04cd323a",
+                                "id": "ac38217b-ff86-45c8-bdfc-15a129ad1988",
                                 "ord": "a0"
                               },
                               {
@@ -2470,19 +2456,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Available nationwide"],
-                                "id": "b41654dd-8eb6-4ac9-b076-cc2ea447bba0",
+                                "id": "4eae6271-7798-4487-9dca-be72925c1d41",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "613ca79b-743a-4261-87d3-f54fad928655",
+                            "id": "b9eebd9c-1a40-4501-9689-e272183ae869",
                             "ord": "a3"
                           }
                         ],
-                        "id": "a596fad7-7ec3-4927-abb6-07dccdb80e26",
+                        "id": "19385da4-2419-485a-ac37-59acd71e5c60",
                         "ord": "a2"
                       }
                     ],
-                    "id": "c1f2945f-7cf2-4a69-aa7f-97eed25da5b4",
+                    "id": "1a6a8901-0310-4c6f-8f8d-426450720ee7",
                     "ord": "a0"
                   },
                   {
@@ -2495,15 +2481,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "ed2f0f54-1e09-4dd6-be71-270d7209b0d6",
+                    "id": "a23326f6-c87e-404a-982b-556fb34d42e9",
                     "ord": "a1"
                   }
                 ],
-                "id": "eab758df-392e-4077-b31d-0cd7bcc9e73c",
+                "id": "5d233689-ddf6-4160-b093-00ebc6fd1bcf",
                 "ord": "a0"
               }
             ],
-            "id": "9443e055-b8b0-4499-8c1a-c02d2f7d8525",
+            "id": "6aef1ac5-89fb-4a9c-833d-8acd00a09243",
             "ord": "a1"
           },
           {
@@ -2521,7 +2507,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than call?"],
-                    "id": "9af222a3-c1ad-40be-a58e-f5eebf2daa6b",
+                    "id": "06e34919-cb80-474d-acd7-029676d9f56f",
                     "ord": "a0"
                   },
                   {
@@ -2531,7 +2517,7 @@
                     "children": [
                       "See live availability and reserve your consult online — in person in Austin or virtual anywhere. No phone tag."
                     ],
-                    "id": "896541b0-28f1-472c-ae40-7cf64b48bc42",
+                    "id": "b44d7148-7f59-448c-82b9-a7ef6f9f7f28",
                     "ord": "a1"
                   },
                   {
@@ -2542,15 +2528,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a consultation"],
-                    "id": "fefc8606-933d-4f7a-8bdd-abe4402bc9f6",
+                    "id": "4ac6333c-f3e8-4eec-89f1-393012f1b18e",
                     "ord": "a2"
                   }
                 ],
-                "id": "612b8d16-6746-44b8-bcd3-f3cbb5575ddb",
+                "id": "01cb6f08-6a7a-49bd-a695-c9dfa536189c",
                 "ord": "a0"
               }
             ],
-            "id": "c3b796d6-28a0-4b83-96e3-e2f9ce5985e1",
+            "id": "87756062-fdfa-48bf-a6c7-c7d91ce9636e",
             "ord": "a2"
           }
         ]

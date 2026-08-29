@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "dfc4e8c0-10a6-47a6-b38f-efd91db72fc6",
+                  "id": "2d024d30-1930-463d-ae68-aee0542da940",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "f16412fd-f75f-4d81-b7f8-a8406971afef",
+                      "id": "53271d5e-085a-4564-91c1-c245961b8e90",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "c49660fe-aa57-4e1e-92c1-047f6c973316",
+                      "id": "88e7c70f-e1da-4120-887e-65eb3b7a21b1",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "d1d01df0-aa4b-4784-8918-795560393b92",
+                      "id": "ab108001-7488-456a-b44a-3e4763fe7096",
                       "ord": "a2"
                     }
                   ],
-                  "id": "19cd193f-2959-42e7-8df3-f36f7f1590d4",
+                  "id": "27077afe-f2dc-4594-be80-3ed1ca16e74e",
                   "ord": "a1"
                 },
                 {
@@ -88,26 +88,17 @@
                   "class": "ml-auto flex items-center gap-3",
                   "children": [
                     {
-                      "kind": "element",
-                      "tag": "a",
+                      "kind": "host",
+                      "component": "site.account-link",
                       "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
-                      "attrs": {
-                        "href": "/account/login"
-                      },
-                      "children": ["Sign in"],
-                      "slot": {
-                        "name": "secondary",
-                        "type": "link",
-                        "label": "Secondary link"
-                      },
-                      "id": "cf9cd361-6dcc-4d32-9ae2-3a4e11c829fb",
+                      "id": "2f1b9b26-7570-4df8-bdc8-9b8b9c34b31e",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "f229c43d-6ff8-4c44-bf6e-97005d5081e7",
+                      "id": "527dbe51-7e62-453e-bc93-ae3ded78a5c0",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +114,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "8d45c745-fd77-48a3-8d15-468a998d6ba5",
+                      "id": "7d0e2f19-7529-4bd9-b2ef-c1c472f43174",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +132,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "72e9757d-38f0-4898-a4c7-11c5b40a5d8e",
+                          "id": "033e7dfc-0be6-4e0b-9575-106d58c400c5",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "9e90325d-4496-4344-934b-05d8667b766d",
+                      "id": "75af7e2b-2f09-4f66-ab04-27667782ced4",
                       "ord": "a3"
                     }
                   ],
-                  "id": "9e718a2a-d0bb-4dd3-a63c-6196440617ab",
+                  "id": "481c3faf-950e-49cd-9332-da5ab3550b22",
                   "ord": "a2"
                 }
               ],
-              "id": "e8ec06a7-23ef-44f8-86e2-1e682b756932",
+              "id": "7c7afaf3-1d23-4e8e-843b-37f193818726",
               "ord": "a0"
             },
             {
@@ -178,7 +169,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "d8488692-33e2-420c-8d1f-85335374d971",
+                  "id": "abae43bb-d6c4-4d92-bdeb-6aae11de727c",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +185,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "43eb3313-ec4d-45df-b984-1a31d177761c",
+                  "id": "c6ec2a75-f21e-4622-932b-3f2fcc6ef92a",
                   "ord": "a1"
                 },
                 {
@@ -210,23 +201,14 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "406d28c0-c7b8-43bf-aa11-ca83235d8ba7",
+                  "id": "e1d64d3a-9c6e-40a9-9886-89826abdbb53",
                   "ord": "a2"
                 },
                 {
-                  "kind": "component",
-                  "component": "Button",
+                  "kind": "host",
+                  "component": "site.account-link",
                   "class": "btn btn-ghost btn-sm mt-2 w-full",
-                  "props": {
-                    "label": "Sign in",
-                    "href": "/account/login"
-                  },
-                  "slot": {
-                    "name": "secondary",
-                    "type": "link",
-                    "label": "Secondary link"
-                  },
-                  "id": "d761f11d-c6b9-4bcb-bc1d-34299de48e9d",
+                  "id": "f19095fa-c1f6-4506-8167-ba6762870a11",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +224,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "3468556f-3302-4aed-b872-7bb854804d9d",
+                  "id": "0a9e5b6c-1b86-436b-9295-4a5939c0cbd4",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "a17998e3-7fe9-4ecc-9e00-dd3c7859717c",
+              "id": "4e43989b-c210-4500-bbdb-c52c31584299",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "cf206dae-23ae-456f-b365-4610b1d1cad3",
+          "id": "167c1f8f-b0a7-4bd8-b689-3301de7acb5c",
           "ord": "a0"
         },
         {
@@ -270,7 +252,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "fcc84927-6be5-4a50-b2f8-e23fe3330cfc",
+          "id": "78f77e05-37cb-422a-bf4e-ceb461c0b8b9",
           "ord": "a1"
         },
         {
@@ -300,7 +282,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "30df7f1a-05da-4ead-9f91-94031cffe3ee",
+                          "id": "7d4a9954-e19d-418a-8293-a0ea566f4e13",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +298,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "353fa6fd-3c38-4cd2-8dc5-2a4249f35aef",
+                          "id": "7abe33f5-5780-4a96-9a29-417c6f374f5e",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +306,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "e022808d-80f9-4c1c-bbe2-12f579d799a8",
+                          "id": "827fe9e8-9ebd-4a2d-8265-4527f31ba495",
                           "ord": "a2"
                         }
                       ],
-                      "id": "01f385d8-5735-44cf-af2f-f08f45868fed",
+                      "id": "70a46bd1-3790-4742-9ae6-7c85f828a7ad",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +331,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "2aa60b0a-07ec-470c-8549-5e56882e5175",
+                          "id": "3ca01786-f11d-4725-8e3d-872abdca143e",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +356,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "3fb8ef5b-eec5-45cc-bdde-906790bdbfe5",
+                                  "id": "4abfb406-c48f-4ffe-9570-f1ab2895f81b",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "9ab59887-9a6c-4fc9-886c-55ebba4a892a",
+                              "id": "98546c81-ab58-4937-a718-434c43de4973",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +380,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "5b1cd36a-250e-41bd-adc4-13e80d70e9a7",
+                                  "id": "9d939a8b-bf37-4a86-a083-62299edae028",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "faa7df4c-e161-49b3-88ee-b74a7c848aef",
+                              "id": "3d7a2318-a58f-4111-b971-17f7a95f8e32",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +404,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "14ee2a90-b515-49d6-8bd4-c0a284d18d2f",
+                                  "id": "d7245b36-2d03-4acc-af2a-9e1bd33e021a",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "4327d863-7737-4f97-93e6-94fd79fee258",
+                              "id": "9b1d84a8-f388-4add-81b0-3083669e8c94",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +428,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "7a123f43-ce54-42e7-b9ea-6ea0c3c82ea5",
+                                  "id": "e82c8e62-10ab-44c1-a861-5366110c188d",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "61384544-bd3a-43ce-abc7-3c7cd06b8b32",
+                              "id": "afd31b7c-822c-43d4-8cfd-c497dd3eb407",
                               "ord": "a3"
                             }
                           ],
-                          "id": "ee3f4fa3-a347-413e-969d-bb5f6afa30e2",
+                          "id": "01df3c53-9773-4c19-9e4d-36cb8eccc63b",
                           "ord": "a1"
                         }
                       ],
-                      "id": "f5d737b0-b95b-4743-859d-0d543b291543",
+                      "id": "f0294600-1bb0-47fe-9def-e059b9bc1cfb",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +453,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "f4e1cf38-a8fe-4618-bb49-83515bdc2313",
+                          "id": "29ef1033-d40a-43bc-b2e0-cdbfca66e380",
                           "ord": "a0"
                         }
                       ],
-                      "id": "a01a9db5-b90c-40e0-aa07-f8fe93eb0d41",
+                      "id": "33a1206f-3513-45e5-a112-68884ed879ef",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +481,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "60d9dfdb-f0b2-438a-a8e7-4a6bb44d02b9",
+                                  "id": "ee184707-f5bf-4c26-b3f3-7a949ff21693",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "aebadb63-133d-45ac-bc24-b5884dfc9d96",
+                              "id": "e850a0de-a2aa-40cb-843d-6b63ed16de4b",
                               "ord": "a0"
                             }
                           ],
-                          "id": "77910b11-b8ab-45f2-9ff9-2e19723ed160",
+                          "id": "4fb7e5b6-2330-4c1a-a3ee-b21d93844235",
                           "ord": "a0"
                         }
                       ],
-                      "id": "b57673fa-bac8-435c-bc62-fff82468d26b",
+                      "id": "ed5691b4-2f94-4f8c-bf8a-27de0be5acf7",
                       "ord": "a3"
                     }
                   ],
-                  "id": "fcda1e97-9e36-4cb0-965a-8fbf8e1cd2ca",
+                  "id": "9e57ae6d-8deb-43cd-b880-70db69978e2a",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +520,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "f39cc5dc-2207-4726-8b94-3e31ddf25b12",
+                          "id": "2618d491-1e0e-4aa0-9ccc-3f24f09f80fa",
                           "ord": "a0"
                         }
                       ],
-                      "id": "ea14d71f-b3b3-4f9b-a7b1-cee0b8ce6a1a",
+                      "id": "c0e6d414-797f-4126-ab83-0ff9cf0a84ad",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +532,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "511d766d-783f-4ea9-9e0b-db1e8dbf3cfe",
+                      "id": "4c41bb44-ca7e-4ee0-97c0-cff275feda6d",
                       "ord": "a1"
                     }
                   ],
-                  "id": "67857a62-4f20-4d08-a261-6e5b79615de9",
+                  "id": "4e92fd05-cc4d-4e72-8d05-d0824988c044",
                   "ord": "a1"
                 }
               ],
-              "id": "c56f27eb-75df-45d9-aa5b-0c5471336bb1",
+              "id": "20d15bf4-0f78-435e-ad1d-478518200791",
               "ord": "a0"
             }
           ],
-          "id": "fa00f851-0ba2-4855-a16e-086218d44c23",
+          "id": "1734a338-570f-4eb1-adbe-30a43422796f",
           "ord": "a2"
         }
       ],
-      "id": "f6b1fecc-8a59-4f97-bb3c-ccdefac9fd60"
+      "id": "45e58ae0-8007-4b76-baf8-33bd0d4fa1ed"
     }
   },
   "pages": [
@@ -580,7 +562,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "4a9460cd-283d-420d-a1ec-003ff0dc7cde",
+        "id": "5a837a0b-80d3-4ff4-9b07-537fdf16b422",
         "children": [
           {
             "kind": "element",
@@ -597,7 +579,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
                     "children": ["Take charge of where your career goes"],
-                    "id": "e18e48fa-3d9f-4891-949d-1573154b9c32",
+                    "id": "1b27969d-62e5-485f-bbbc-804351a649af",
                     "ord": "a0"
                   },
                   {
@@ -607,7 +589,7 @@
                     "children": [
                       "One-to-one coaching for ambitious professionals — sharpen your executive presence, navigate the next move, and get promoted on purpose. It starts with one honest conversation."
                     ],
-                    "id": "40a74a54-21a0-43c0-b54e-bcb8521f98fd",
+                    "id": "154cc52e-ec4d-4e75-8d98-d021caa8e3db",
                     "ord": "a1"
                   },
                   {
@@ -623,7 +605,7 @@
                           "href": "/book"
                         },
                         "children": ["Book a discovery call"],
-                        "id": "ffc8be6b-d9b8-45d1-9670-9b226dba1374",
+                        "id": "1aee154a-4b9e-40a8-b1ca-0d7c022d597f",
                         "ord": "a0"
                       },
                       {
@@ -634,19 +616,19 @@
                           "href": "/book"
                         },
                         "children": ["See how it works"],
-                        "id": "fc80d56b-2c9c-4abb-a1cc-a3c8a85b5993",
+                        "id": "f0a87225-9c1e-4ac3-9060-f70a5ab7d37d",
                         "ord": "a1"
                       }
                     ],
-                    "id": "d58ba955-7d39-4ad0-97cc-ea740a19b0eb",
+                    "id": "e09c4183-489a-4130-bbaa-c94c3eafc619",
                     "ord": "a2"
                   }
                 ],
-                "id": "207b306f-a720-4e68-83fc-9e57e56d96f6",
+                "id": "bea653e5-8c90-4ac3-9bb0-a1ef8a19416b",
                 "ord": "a0"
               }
             ],
-            "id": "b44769a0-8c77-4a1e-8ecb-a38916d1a864",
+            "id": "2da1d3ec-78e1-4d3f-a9cf-71b0b6a04bc3",
             "ord": "a0"
           },
           {
@@ -664,7 +646,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Why professionals choose Ascend"],
-                    "id": "9c0a195b-7fd7-419d-abcc-cb25946ccce3",
+                    "id": "4d67901d-6a36-4618-922a-d0a51718998b",
                     "ord": "a0"
                   },
                   {
@@ -682,7 +664,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Certified executive coaches"],
-                            "id": "7597a7af-f1d5-49e5-8eb9-d59ca502e34c",
+                            "id": "f8241477-a5ba-4c79-9b64-2e381f60b562",
                             "ord": "a0"
                           },
                           {
@@ -692,11 +674,11 @@
                             "children": [
                               "Work with credentialed coaches who’ve sat in the leadership seat — not theorists, but practitioners who’ve led teams and hired for the roles you want."
                             ],
-                            "id": "1f54359c-a392-4637-ad5f-a79510c675ef",
+                            "id": "5fd75371-656f-4176-8b9d-8b4a0b6ebc71",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2ed300d0-48db-4f81-9010-77ec01c5dcf4",
+                        "id": "a763483a-a69a-4823-9c2c-e06719014b57",
                         "ord": "a0"
                       },
                       {
@@ -709,7 +691,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Proven frameworks"],
-                            "id": "ffdabf28-a063-4400-876c-4e2c6ec36988",
+                            "id": "f4aa399d-4791-4d7f-9c12-74e5d96aaa90",
                             "ord": "a0"
                           },
                           {
@@ -719,11 +701,11 @@
                             "children": [
                               "Every session runs on tested models for goal-setting, executive presence and decision-making — structure you can put to work the moment the call ends."
                             ],
-                            "id": "de5b051b-56ba-4955-94c7-d0ac97061055",
+                            "id": "416af830-1d51-42fb-898b-c3eb39409031",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ca7314e7-c86e-458b-868f-c77bad84f3c9",
+                        "id": "95c7f997-41ce-4a3e-8ec5-1b05f0ab2bf2",
                         "ord": "a1"
                       },
                       {
@@ -736,7 +718,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Career & leadership focus"],
-                            "id": "24c213e2-5e19-4ee7-8823-721962cdd36c",
+                            "id": "b7309dc6-c492-4ee8-af8d-10b5e798727a",
                             "ord": "a0"
                           },
                           {
@@ -746,11 +728,11 @@
                             "children": [
                               "This is coaching built for professionals on the rise — transitions, promotions, first-time leadership and the jump to the executive table."
                             ],
-                            "id": "d7b69039-2f61-4956-93ca-0200f39fd9de",
+                            "id": "717d06c6-4545-4aa5-b53a-d3dd474eefab",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7dda086f-c01f-49ad-a8fb-49f10948029c",
+                        "id": "f93884ed-d93d-45b3-b6c3-075238371431",
                         "ord": "a2"
                       },
                       {
@@ -763,7 +745,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Flexible virtual sessions"],
-                            "id": "f3d8404e-eb75-403c-92c3-c2bea5cdee99",
+                            "id": "edad1a67-9e57-41ab-bc72-4d04322cdae8",
                             "ord": "a0"
                           },
                           {
@@ -773,23 +755,23 @@
                             "children": [
                               "Meet by secure video around a real schedule — early mornings and evenings included, so your momentum never waits for a free afternoon."
                             ],
-                            "id": "e0cfff3f-8dd7-47a5-84ca-c1b1c2668c13",
+                            "id": "b9686ca1-aaf8-4e36-9fde-30b32abd06c3",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d16e7ec8-f457-44f7-9216-09522aa6553e",
+                        "id": "d044924c-7552-449f-b258-7fcc22345859",
                         "ord": "a3"
                       }
                     ],
-                    "id": "df5c21bd-4ab3-4b4f-8842-37377a2032d9",
+                    "id": "e2c0cdf4-cfa1-4ebb-be78-d0c699f49b67",
                     "ord": "a1"
                   }
                 ],
-                "id": "2917a731-7836-460e-a87f-8069bf5794b7",
+                "id": "6c3f99c6-43a5-480c-a757-0d8bd7d07ab0",
                 "ord": "a0"
               }
             ],
-            "id": "5551fd94-0c7b-4c62-9d78-38747b1bfd10",
+            "id": "5936716f-9c1d-489b-bf0d-2e45c8d886e1",
             "ord": "a1"
           },
           {
@@ -812,7 +794,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Ways to work together"],
-                        "id": "4e229db0-b391-437a-aba7-465a53bf053e",
+                        "id": "344ed54b-c1a0-4a49-a4e1-ec0fb7e8ac58",
                         "ord": "a0"
                       },
                       {
@@ -822,11 +804,11 @@
                         "children": [
                           "Every engagement opens with a free discovery call. From there, choose a single focused session or an ongoing package. Full fees and live availability are on the booking page."
                         ],
-                        "id": "aa75c772-4a97-4e33-95fd-b79d3e1254bb",
+                        "id": "7ff82bd1-3c24-45fb-bfe3-f7ca4f3e4daa",
                         "ord": "a1"
                       }
                     ],
-                    "id": "5c6d7530-a1ce-4be0-8c2a-16a936b9fbb7",
+                    "id": "befb85d1-8935-4f63-92c2-0fb95ae78374",
                     "ord": "a0"
                   },
                   {
@@ -852,7 +834,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Discovery call"],
-                                "id": "258e52ef-a988-4b64-aa31-02e3ec4e8807",
+                                "id": "4498a95d-e021-471b-a237-da50efb657fc",
                                 "ord": "a0"
                               },
                               {
@@ -860,11 +842,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$0"],
-                                "id": "025c4237-e8ad-4e84-87b7-72e9c90ad64f",
+                                "id": "2c517dd4-76d4-48ad-b240-7b73300a4acf",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "88284c41-1c0a-4d16-99bb-ad036c0da030",
+                            "id": "df095fbf-8a59-4e10-b569-1673824d0ede",
                             "ord": "a0"
                           },
                           {
@@ -872,7 +854,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["30 min"],
-                            "id": "2f321a63-9c6f-4f66-ac64-6260357f8166",
+                            "id": "105faacf-8b1e-47e5-beb0-af541548a7a3",
                             "ord": "a1"
                           },
                           {
@@ -882,11 +864,11 @@
                             "children": [
                               "A free, no-pressure call to map your goals and find your fit."
                             ],
-                            "id": "8f586198-dc2a-4454-9422-d08250b65b7b",
+                            "id": "547b2742-92c3-4a91-ab47-7d8960efa923",
                             "ord": "a2"
                           }
                         ],
-                        "id": "dec7fba3-7ea4-41e9-a015-35f01f592364",
+                        "id": "6e29f14d-ffce-499a-8fd2-f9b6f49acff9",
                         "ord": "a0"
                       },
                       {
@@ -907,7 +889,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Career strategy session"],
-                                "id": "f1bbe5be-c6ab-4364-85bb-fc672e5c713a",
+                                "id": "98e026af-92ac-4a1c-805e-dcedf7ea3655",
                                 "ord": "a0"
                               },
                               {
@@ -915,11 +897,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$200"],
-                                "id": "ec42b75e-ff69-4515-9652-4e21fdf5665b",
+                                "id": "c3e68d35-b02f-41f4-8e10-1fa10e0767f1",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "a0b8fba0-8d9c-4bb9-a810-7bbdf162a34b",
+                            "id": "d2896928-e91f-4f8f-af34-1e25e0847999",
                             "ord": "a0"
                           },
                           {
@@ -927,7 +909,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "4d0813b3-3f9d-4c70-9bc5-d539ac546c5a",
+                            "id": "cc2dd765-4554-4d70-81f4-f301fdcad36e",
                             "ord": "a1"
                           },
                           {
@@ -935,11 +917,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Build a clear, deadline-backed plan for your next move."],
-                            "id": "290dd41e-3c4e-4798-af23-7ad81485f1fb",
+                            "id": "cf92512c-6c14-4289-a9c4-2e894e4c8ca6",
                             "ord": "a2"
                           }
                         ],
-                        "id": "fdef343d-e5e8-4100-9025-e73361234971",
+                        "id": "47a8ba0f-fb6c-4bbe-8ba9-f6392b924bb9",
                         "ord": "a1"
                       },
                       {
@@ -960,7 +942,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Executive coaching session"],
-                                "id": "cddd7286-d3b7-42e6-ad16-572bd00256a4",
+                                "id": "a9ebb29e-e967-4e7f-a506-ab9cd9791089",
                                 "ord": "a0"
                               },
                               {
@@ -968,11 +950,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$250"],
-                                "id": "3e8d621d-aa00-4b30-a938-7557e6961981",
+                                "id": "f99c8b6c-1e35-4927-9034-b04aa5b07a63",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f601edc9-a539-4ca6-ba80-270160655867",
+                            "id": "fdae8d56-f73e-4283-b47f-30bf3ceb26a9",
                             "ord": "a0"
                           },
                           {
@@ -980,7 +962,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "f0ffd096-38ed-4112-b38b-a436ca484c73",
+                            "id": "203da7fa-6309-4f92-a1aa-4fa80d5df752",
                             "ord": "a1"
                           },
                           {
@@ -990,11 +972,11 @@
                             "children": [
                               "Sharpen presence, influence and decision-making at the top."
                             ],
-                            "id": "703c1b57-9217-4370-a8eb-3e8b7fda8d56",
+                            "id": "e758bd3e-a18a-4e58-8594-6938e4b6d215",
                             "ord": "a2"
                           }
                         ],
-                        "id": "08f2aa1a-4475-42ea-ba80-a091123e5dcd",
+                        "id": "6d3b6346-5a4a-4182-9ff8-c350afab0034",
                         "ord": "a2"
                       },
                       {
@@ -1015,7 +997,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Interview prep session"],
-                                "id": "97e1e167-7764-482d-ae3b-2405422e7e2d",
+                                "id": "5f2b3b6e-1827-4ce0-ac8d-8dcee4958d2d",
                                 "ord": "a0"
                               },
                               {
@@ -1023,11 +1005,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$180"],
-                                "id": "bbcb9cc9-ae9e-4c21-a0a5-d24e6114acdd",
+                                "id": "cdbcf21d-8f36-414b-8006-1e609b3d24b8",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "4455274b-8126-48eb-8c19-d2129f8534ec",
+                            "id": "11d05469-6826-4f45-b94e-3ac7dfb310af",
                             "ord": "a0"
                           },
                           {
@@ -1035,7 +1017,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "1f38a0d6-7d05-42de-805b-24eacfe079d2",
+                            "id": "3785cda2-7e9a-494f-a07a-95b408a29f88",
                             "ord": "a1"
                           },
                           {
@@ -1045,15 +1027,15 @@
                             "children": [
                               "Walk in ready — positioning, stories and the hard questions."
                             ],
-                            "id": "1413474f-c375-4502-b9b2-150b6f51da18",
+                            "id": "08470774-2400-4057-8664-abde4fcfc5c8",
                             "ord": "a2"
                           }
                         ],
-                        "id": "bf5f89a4-1e84-44a6-b563-fa1d74608683",
+                        "id": "97116ab9-08be-45cd-8f9b-00ffc25d1579",
                         "ord": "a3"
                       }
                     ],
-                    "id": "95ac72c5-c5f7-44f5-b9dc-73ecebef33ea",
+                    "id": "53ab3cb6-d6e6-40ae-badf-fdb928c15c44",
                     "ord": "a1"
                   },
                   {
@@ -1069,19 +1051,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "85443bdb-3482-4825-a591-aafb3492f797",
+                        "id": "220ef3af-b546-4a6d-98b7-e6246509c4ce",
                         "ord": "a0"
                       }
                     ],
-                    "id": "ba190a96-5875-4ec8-aa53-92a8d22ed17c",
+                    "id": "aa40953d-dce4-4733-93c0-8a1ffb694264",
                     "ord": "a2"
                   }
                 ],
-                "id": "fac9c439-5ddb-4269-ae3b-9bcb6b5a25d8",
+                "id": "6cff069c-3eae-4293-b426-2c955bd2bb4f",
                 "ord": "a0"
               }
             ],
-            "id": "4397cb7d-cd93-4670-a57d-015c6150d52f",
+            "id": "8fab74f8-e41e-41a7-b232-a5bf6dc1899d",
             "ord": "a2"
           },
           {
@@ -1103,7 +1085,7 @@
                       "alt": "A focused professional mapping out a career plan on a whiteboard",
                       "loading": "lazy"
                     },
-                    "id": "1dafeb83-1183-4c51-a8dd-db8140107173",
+                    "id": "9ce6a3bc-5d82-4c0d-b6d7-723b460c2ec0",
                     "ord": "a0"
                   },
                   {
@@ -1116,7 +1098,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["A method that turns ambition into offers"],
-                        "id": "68cd4dec-0090-414a-a816-833cbd121610",
+                        "id": "d7f41fce-d3bf-44cc-99bb-82431e9cd8e2",
                         "ord": "a0"
                       },
                       {
@@ -1126,7 +1108,7 @@
                         "children": [
                           "Motivation fades; a system doesn’t. Every engagement starts by naming exactly where you want to be in six months, then reverse-engineers the moves — the conversations, the visibility, the skills — that get you there."
                         ],
-                        "id": "c483d5e6-82f1-4c50-8d57-9111b8bb256f",
+                        "id": "f0caf253-bf8a-422f-b48b-38e59bcc5171",
                         "ord": "a1"
                       },
                       {
@@ -1136,7 +1118,7 @@
                         "children": [
                           "You leave each session with specific actions and a way to measure them, so progress is something you can see on a calendar, not just feel. The result is fewer sideways years and more deliberate, well-timed leaps."
                         ],
-                        "id": "b024780f-e509-4e7d-81ab-84b7330ed2b3",
+                        "id": "1a031a4c-7f6a-48d0-9a70-19d602fa6dff",
                         "ord": "a2"
                       },
                       {
@@ -1152,23 +1134,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a discovery call"],
-                            "id": "474a950b-4f2e-458c-a019-d07d2402d61e",
+                            "id": "7a067488-973a-4185-95e0-06240ec7a968",
                             "ord": "a0"
                           }
                         ],
-                        "id": "ee22f965-c4fd-4a5e-aca1-71cf06c1c5d3",
+                        "id": "fe69c9d4-40ee-434f-a8bd-e1f94d111d9b",
                         "ord": "a3"
                       }
                     ],
-                    "id": "2cccdb21-4172-4b44-909e-7a9162efca2c",
+                    "id": "a5f815ca-e2c7-421d-a040-79f31f8ba097",
                     "ord": "a1"
                   }
                 ],
-                "id": "1bbc2c97-3170-495d-9e60-5a8637fc5d09",
+                "id": "59209f01-135d-4c80-b8eb-970303eef165",
                 "ord": "a0"
               }
             ],
-            "id": "d4d59837-0802-42ba-ba00-44b7345070d4",
+            "id": "8e5e8ab2-362f-4052-918c-fc814f85c47c",
             "ord": "a3"
           },
           {
@@ -1191,7 +1173,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Meet your coaches"],
-                        "id": "74de0c1a-5293-4cff-9384-682c9907d85f",
+                        "id": "43d60c7a-52cf-491c-982b-5392b2696fdc",
                         "ord": "a0"
                       },
                       {
@@ -1201,11 +1183,11 @@
                         "children": [
                           "Book by name — you’ll work with the same coach throughout, someone who learns your goals and holds you to them."
                         ],
-                        "id": "15b9d810-e8ac-4cce-a543-1084ecb628a8",
+                        "id": "24f58918-b42d-403c-8122-b503a9222c9f",
                         "ord": "a1"
                       }
                     ],
-                    "id": "cab32f95-555f-416c-a3d2-469e9da39f39",
+                    "id": "15cd736e-db71-46f0-9749-97ac8725ab20",
                     "ord": "a0"
                   },
                   {
@@ -1227,7 +1209,7 @@
                               "alt": "Daniela Reyes, executive and leadership coach",
                               "loading": "lazy"
                             },
-                            "id": "02afbda9-10ae-40bb-a99e-99d671e8b703",
+                            "id": "b1af97e1-3df0-41ea-b428-b8dcd16f8fb1",
                             "ord": "a0"
                           },
                           {
@@ -1240,7 +1222,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Daniela Reyes"],
-                                "id": "3b51d0f0-04fb-4b0f-be25-37e7ba058ef3",
+                                "id": "ac1e22a3-4e0e-40df-90c6-eb68e744ee0c",
                                 "ord": "a0"
                               },
                               {
@@ -1248,7 +1230,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Executive & leadership coach"],
-                                "id": "0d3be0a2-3e4f-44c5-9037-5173bd707b50",
+                                "id": "6a1848bf-d779-4a28-9db5-94ef44536a09",
                                 "ord": "a1"
                               },
                               {
@@ -1258,15 +1240,15 @@
                                 "children": [
                                   "Fifteen years leading operations at scale. Daniela coaches senior leaders on presence and the executive jump."
                                 ],
-                                "id": "fc0b75b0-eec9-4433-b2fb-d9eefa3ce79e",
+                                "id": "5576ef59-f4ec-454b-ad13-c8f68cae686f",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "bac0f2eb-e9ba-4817-bf9a-8728208ad8b5",
+                            "id": "961dc040-bda4-4826-aed3-2ac6a40f3368",
                             "ord": "a1"
                           }
                         ],
-                        "id": "09304003-f3fc-439e-b16d-ea444ba1a6ce",
+                        "id": "b733277c-00fb-459b-8f37-1c1e7b7d3839",
                         "ord": "a0"
                       },
                       {
@@ -1283,7 +1265,7 @@
                               "alt": "Marcus Bell, career and leadership coach",
                               "loading": "lazy"
                             },
-                            "id": "ed066924-dfd4-443c-ade9-0bdcd550a39b",
+                            "id": "e312f88c-1e49-4ac4-93cc-a5d0f8d94a7a",
                             "ord": "a0"
                           },
                           {
@@ -1296,7 +1278,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Marcus Bell"],
-                                "id": "e131eb13-c30f-41b7-addc-f84a9cd6fd6d",
+                                "id": "6ed430e1-faec-48ee-a7ca-e1b83ac19e36",
                                 "ord": "a0"
                               },
                               {
@@ -1304,7 +1286,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Career & leadership coach"],
-                                "id": "ad62374d-a288-42c8-8237-9e90c6f78cff",
+                                "id": "878888d2-4672-453f-80ac-2309286000ce",
                                 "ord": "a1"
                               },
                               {
@@ -1314,15 +1296,15 @@
                                 "children": [
                                   "A former hiring director who coaches ambitious professionals through promotions and first-time leadership."
                                 ],
-                                "id": "07308d65-e3e7-4ba9-a66f-5442c3cb6f42",
+                                "id": "d525860a-4dc8-4f82-b2d9-8fb720781884",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "0ea7a513-38ab-495b-afff-0b0db3a4aaad",
+                            "id": "0fe94792-dc48-4159-ad36-be6c1c828fe6",
                             "ord": "a1"
                           }
                         ],
-                        "id": "cc4223cb-69ab-4080-91de-00ee08201bb4",
+                        "id": "1c7e0f0a-6410-4d06-acdc-3a74ee32c2fa",
                         "ord": "a1"
                       },
                       {
@@ -1339,7 +1321,7 @@
                               "alt": "Priya Anand, career transition and interview coach",
                               "loading": "lazy"
                             },
-                            "id": "8acd96b0-f290-452c-8288-c5dba3d8ee38",
+                            "id": "0feb1cf5-5e77-496c-89a2-eb37f7a2d7b8",
                             "ord": "a0"
                           },
                           {
@@ -1352,7 +1334,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Priya Anand"],
-                                "id": "d14b0864-6d64-4aee-bc75-c3ec5b871cb1",
+                                "id": "5c0d1fe0-fe43-4820-ad99-e0152f323b21",
                                 "ord": "a0"
                               },
                               {
@@ -1360,7 +1342,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Transition & interview coach"],
-                                "id": "2c3a1e17-27b9-455a-90d2-034ed64f9e9f",
+                                "id": "8d078fba-7411-4a83-87db-27e9dc75d1bb",
                                 "ord": "a1"
                               },
                               {
@@ -1370,27 +1352,27 @@
                                 "children": [
                                   "Career pivots and interview prep. Priya turns a messy job search into a focused, confident campaign."
                                 ],
-                                "id": "f35bf695-1a5d-4f97-81b9-b5e434d96469",
+                                "id": "9178bddc-1203-4913-bff3-7dcca7e4bff5",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "9b0b109c-11cc-412c-a19e-9f0f52b50016",
+                            "id": "d6996570-8ce0-43ca-85b2-4d893f627177",
                             "ord": "a1"
                           }
                         ],
-                        "id": "0c671300-8b60-485d-8f31-a135c3056166",
+                        "id": "e7cb942e-dc10-490d-b268-dd0b002da773",
                         "ord": "a2"
                       }
                     ],
-                    "id": "be1f9c9c-f68c-41e9-ad21-aabc2c34ac7d",
+                    "id": "ecb89c6a-76fb-4a41-b16a-cf76ecee11f6",
                     "ord": "a1"
                   }
                 ],
-                "id": "afcd05b1-a60e-4e9d-827a-afd46abd1725",
+                "id": "12f0280f-00d1-418b-8011-38bea8a02805",
                 "ord": "a0"
               }
             ],
-            "id": "4afcca29-41c8-4080-a2d4-e2a03c6dd284",
+            "id": "dfaca2bd-b21d-4056-b7eb-6c15b12471a1",
             "ord": "a4"
           },
           {
@@ -1410,7 +1392,7 @@
                     "children": [
                       "“Six months in, I went from passed over to promoted to director — with a raise I’d never have asked for on my own. The plan made the ask obvious.”"
                     ],
-                    "id": "39c94df3-bb15-47db-9c2a-981fcd9427ee",
+                    "id": "e2ac9e51-fe21-4654-92dd-5c86310a2f2f",
                     "ord": "a0"
                   },
                   {
@@ -1418,15 +1400,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["Rachel M., Director of Operations"],
-                    "id": "0e54d592-ed84-4b00-a419-dcdab47173f3",
+                    "id": "c09a2a9c-282a-4209-a674-9337b62f0ab3",
                     "ord": "a1"
                   }
                 ],
-                "id": "651742de-8d21-4a25-b125-6af0d1378005",
+                "id": "872aef07-f082-456b-8cf4-d77e005bce37",
                 "ord": "a0"
               }
             ],
-            "id": "ccc0e37b-fa38-4481-9472-b893c9eeba8c",
+            "id": "23499beb-8eae-430d-beab-3e85062fe66f",
             "ord": "a5"
           },
           {
@@ -1444,7 +1426,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Your next move is a conversation away"],
-                    "id": "694744e1-6640-49c4-b346-5135d471c720",
+                    "id": "9cc20a2f-362d-4142-b1a1-c700c18bc0d6",
                     "ord": "a0"
                   },
                   {
@@ -1454,7 +1436,7 @@
                     "children": [
                       "Start with a free 30-minute discovery call — no cost, no pitch, just a clear read on where you are and where you could be. It takes about a minute to book."
                     ],
-                    "id": "f7db2aeb-954e-4dd3-b34b-52a0e61ae222",
+                    "id": "c7222118-9bea-4c51-8ef9-1513b83e073d",
                     "ord": "a1"
                   },
                   {
@@ -1465,15 +1447,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a discovery call"],
-                    "id": "47c91f00-13bd-40c1-b701-f1824bf9534b",
+                    "id": "bd062246-d3ed-4f7e-aa07-ae220e865aea",
                     "ord": "a2"
                   }
                 ],
-                "id": "ac588dab-8424-418e-be02-c2317bb64c05",
+                "id": "509b5815-7307-4f33-affb-599c013897c8",
                 "ord": "a0"
               }
             ],
-            "id": "7dbee744-b2db-4341-9078-0bcf659869bc",
+            "id": "bc0de98f-63f0-4c64-99f8-83fd7a1f174a",
             "ord": "a6"
           }
         ]
@@ -1490,7 +1472,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "f64cc14b-0def-4e7c-a045-cd8104d80d98",
+        "id": "54204e94-fbb0-4785-8b57-cb4372ce7675",
         "children": [
           {
             "kind": "element",
@@ -1507,7 +1489,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
                     "children": ["Book your discovery call"],
-                    "id": "dbe00743-b362-4852-83c3-cbb81bdb1302",
+                    "id": "bf690492-12c5-443b-bf40-8330cdbee5e9",
                     "ord": "a0"
                   },
                   {
@@ -1517,7 +1499,7 @@
                     "children": [
                       "Choose a session to see live availability, then pick your coach and a time that works for you. New here? Start with the free discovery call — it’s the right first step."
                     ],
-                    "id": "18f8f3f3-73be-4951-8f0c-c1c89545a639",
+                    "id": "d86152d4-da99-4eca-a3b9-d75e1994f60a",
                     "ord": "a1"
                   },
                   {
@@ -1533,27 +1515,31 @@
                           "href": "/book"
                         },
                         "children": ["See sessions below"],
-                        "id": "436225c7-9256-4da7-bf28-97c8e0ec8df5",
+                        "id": "9d97d91f-4a02-4c81-a6ef-6575fde70a44",
                         "ord": "a0"
                       }
                     ],
-                    "id": "b298dc56-7059-4671-be5d-7b1908e92f66",
+                    "id": "574806c3-1041-4903-ad29-d52f7850828f",
                     "ord": "a2"
                   }
                 ],
-                "id": "1e3a0ba1-8029-4063-b4d5-8b3d3255ee46",
+                "id": "f3edddaf-af5e-488c-af15-bfc7e958cfe1",
                 "ord": "a0"
               }
             ],
-            "id": "09ab70b8-d190-400b-9c7a-4559b93766e5",
+            "id": "2ca8eb28-3349-4e72-b21e-effbed66da53",
             "ord": "a0"
           },
           {
             "kind": "host",
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "props": {
+              "heading": "Book with us",
+              "subheading": "Choose a service to see open times and reserve your spot."
+            },
             "locked": "host",
-            "id": "b6600bfc-3d3d-4e5a-bbec-70f5b03a91f3",
+            "id": "523f1ebd-8de7-45ff-a15b-6da6556bfc8e",
             "ord": "a1"
           },
           {
@@ -1576,7 +1562,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Good to know"],
-                        "id": "3a36c3db-4724-41a1-b289-0c0bfec1179f",
+                        "id": "8f68eab5-dfab-43a3-928e-fbe420470daa",
                         "ord": "a0"
                       },
                       {
@@ -1586,11 +1572,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "04d0a1bb-b704-4aa5-8c22-259293f3b27a",
+                        "id": "416d363a-14e0-43cb-b12c-a33bc4bad53d",
                         "ord": "a1"
                       }
                     ],
-                    "id": "5f165953-2012-4de9-9ecd-1006f66e8e01",
+                    "id": "222466dc-a976-4ee8-a66d-f1ab0640e27e",
                     "ord": "a0"
                   },
                   {
@@ -1608,7 +1594,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Standard booking"],
-                            "id": "2a1e97e7-6a4c-43d0-93fc-fa19c4d2fe96",
+                            "id": "a356263e-a9ae-4acb-83bf-ebfb2b75080b",
                             "ord": "a0"
                           },
                           {
@@ -1618,7 +1604,7 @@
                             "children": [
                               "Please give at least 24 hours’ notice to reschedule or cancel — no charge when you let us know in time. We send a reminder the day before and two hours ahead."
                             ],
-                            "id": "52fc8bea-dbad-4b78-b695-749be3ad6950",
+                            "id": "6340259c-583c-4fa5-b253-2e29230dc14d",
                             "ord": "a1"
                           },
                           {
@@ -1628,11 +1614,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "e5c3baed-5fb3-4cb1-a47e-2be30380db93",
+                            "id": "dbcb6c16-fa4f-493d-8960-566b95203ed0",
                             "ord": "a2"
                           }
                         ],
-                        "id": "ff4c6d7a-9fb8-42d4-a07a-cbddcf1d63b9",
+                        "id": "3b3e8c55-6742-4301-bedd-29dd89471cfe",
                         "ord": "a0"
                       },
                       {
@@ -1645,7 +1631,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Session hold"],
-                            "id": "9adfdd30-a15f-48d4-a409-26be8d2870a4",
+                            "id": "a0ac4411-6609-4d0b-9cba-3aa87851959e",
                             "ord": "a0"
                           },
                           {
@@ -1655,7 +1641,7 @@
                             "children": [
                               "Booked sessions are time held just for you. Reschedule with 24 hours’ notice at no cost; a missed session or a same-day cancellation is billed as the full fee so your coach’s time is respected."
                             ],
-                            "id": "7e8c2b74-055b-4010-9434-0dad28bae60d",
+                            "id": "b2689890-9c1e-495d-b916-be12c88a6f32",
                             "ord": "a1"
                           },
                           {
@@ -1665,23 +1651,23 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "9e3ceac6-b013-4733-9322-38712c093e64",
+                            "id": "7c601ebb-0c93-480b-9c7a-ae013c4928b7",
                             "ord": "a2"
                           }
                         ],
-                        "id": "3ec1c549-1c6d-4779-a837-5ad022d7e7e1",
+                        "id": "789cd7c8-7b2f-4f93-9dfa-eebcdf6ae6ce",
                         "ord": "a1"
                       }
                     ],
-                    "id": "43cb1229-b118-42c7-8b53-f027a55c8f87",
+                    "id": "bd0435c4-5b12-45f5-8dac-a168713c7884",
                     "ord": "a1"
                   }
                 ],
-                "id": "cfc0e273-3fdb-4e70-aedb-c9b47cbe8144",
+                "id": "5c0c379c-bedc-4406-88f6-077db2c37027",
                 "ord": "a0"
               }
             ],
-            "id": "a73ec486-932d-48be-b70b-3d474653c4f8",
+            "id": "c10689bb-d2a0-408b-bfd3-01f1b01d4b24",
             "ord": "a2"
           }
         ]
@@ -1698,7 +1684,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "b90598a5-0809-4258-8b5a-02ec7f071fcb",
+        "id": "20ecd4e5-6aa4-4074-a371-31f567c4ee8b",
         "children": [
           {
             "kind": "element",
@@ -1719,7 +1705,7 @@
                       "alt": "A confident one-to-one coaching conversation over video",
                       "loading": "lazy"
                     },
-                    "id": "6e77d01d-0177-4f1d-9986-9a8b06f6ec3c",
+                    "id": "0b89e537-1faa-4347-95fa-8da14f26b9a3",
                     "ord": "a0"
                   },
                   {
@@ -1732,7 +1718,7 @@
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About Ascend Coaching"],
-                        "id": "3f61efc4-c8c7-42b1-9648-5260ed792989",
+                        "id": "47a2a917-9311-4e66-b5c2-ad042d3fc0b7",
                         "ord": "a0"
                       },
                       {
@@ -1742,7 +1728,7 @@
                         "children": [
                           "Ascend exists for the professionals who know they’re capable of more and are done leaving the next move to chance. We pair ambition with a plan — and a coach who’s been there — so the growth you want stops being someday and starts being scheduled."
                         ],
-                        "id": "401ab561-9e95-4822-8d8f-3891f5e07c3a",
+                        "id": "b8519217-0efb-4970-8f6d-982937232f73",
                         "ord": "a1"
                       },
                       {
@@ -1752,7 +1738,7 @@
                         "children": [
                           "No fluff, no motivational posters. Just clear goals, honest feedback and a structured path to the role, the raise and the confidence you’re after. Your ambition is the fuel; our job is the map and the accountability."
                         ],
-                        "id": "c936f51f-d30e-4d20-8a6c-655f134aded9",
+                        "id": "e4a5f997-570f-47d1-bd54-41d33c819f49",
                         "ord": "a2"
                       },
                       {
@@ -1768,23 +1754,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a discovery call"],
-                            "id": "9d56e911-6b00-425f-8815-5f35f311570b",
+                            "id": "33b81b3c-2e43-430c-9797-5cb5ba26fd3f",
                             "ord": "a0"
                           }
                         ],
-                        "id": "3edb1b54-061a-45a9-9c8d-263978bac597",
+                        "id": "ae1e79f1-cb42-45d0-8305-f1968726e16a",
                         "ord": "a3"
                       }
                     ],
-                    "id": "1edb06d0-1c4d-40e9-9c5e-7b51fa8fa023",
+                    "id": "28c205ea-c302-4a4b-bd8f-27d3f60ba490",
                     "ord": "a1"
                   }
                 ],
-                "id": "c6e681fb-e704-49e3-bc37-18dae90ef411",
+                "id": "c8f1d722-ff1b-4b6a-98a0-00a8099f1a9b",
                 "ord": "a0"
               }
             ],
-            "id": "58176b4d-57cc-45aa-b4e8-7109ed69515b",
+            "id": "81c95716-bf05-431f-a676-1902ec41aa48",
             "ord": "a0"
           },
           {
@@ -1802,7 +1788,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["What we believe"],
-                    "id": "934b1ff6-a069-4f1d-a8f4-90411fc98207",
+                    "id": "a6a57da4-9093-4527-94f3-4463485ba18b",
                     "ord": "a0"
                   },
                   {
@@ -1820,7 +1806,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Careers are built, not waited for"],
-                            "id": "dace9f32-1d65-42db-986c-925a2e169d96",
+                            "id": "fe61c407-feea-47aa-959a-621b5c8546e3",
                             "ord": "a0"
                           },
                           {
@@ -1830,11 +1816,11 @@
                             "children": [
                               "The best moves rarely happen by luck. A clear plan and a few deliberate actions beat years of hoping to be noticed."
                             ],
-                            "id": "5535d62e-aff4-4f83-be0d-4efa77df0727",
+                            "id": "13e1f2ad-ba21-4b9c-8891-f448f8f25ec1",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c7374442-8b09-42ff-ba84-58aa447d0c38",
+                        "id": "e536ad9d-353f-4165-952d-58d4383e6bc8",
                         "ord": "a0"
                       },
                       {
@@ -1847,7 +1833,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Feedback is a gift"],
-                            "id": "e175fde9-8518-438f-8cef-414b9e242cd0",
+                            "id": "15bd4605-e9d0-4cf1-a4be-cc00bc615f33",
                             "ord": "a0"
                           },
                           {
@@ -1857,11 +1843,11 @@
                             "children": [
                               "Growth needs someone who’ll tell you the truth — kindly, directly, and with a way forward. That honesty is the whole point."
                             ],
-                            "id": "bfd60020-4664-4775-9b03-cfe92b4531a0",
+                            "id": "974066bc-a25e-4866-aa6b-a8bfaf282914",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d2a114cd-cc98-471d-95c9-7c80e2649489",
+                        "id": "806d7523-55bc-40e8-aa8c-5418dd861ce6",
                         "ord": "a1"
                       },
                       {
@@ -1874,7 +1860,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Momentum compounds"],
-                            "id": "2fb587ea-0b25-40c2-b974-712d2187b9dd",
+                            "id": "a81b77ca-dcae-42fa-814e-fe9e56d53398",
                             "ord": "a0"
                           },
                           {
@@ -1884,23 +1870,23 @@
                             "children": [
                               "Small, consistent wins stack into big leaps. We measure progress every session so you can see it, not just feel it."
                             ],
-                            "id": "9ea59f2f-8dbc-46b4-854a-7ebfe83032d2",
+                            "id": "69d36cee-6e0f-4113-b7b4-a65426c94e5c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "af702016-f0eb-4937-9eff-94df4e6706c7",
+                        "id": "068d134f-6526-46ce-8b8a-5ccd5cff583a",
                         "ord": "a2"
                       }
                     ],
-                    "id": "f4c022e3-e063-4f98-acf9-0901f1e3cc15",
+                    "id": "cc40765a-e546-4c6e-a28c-a9c2cf10ead1",
                     "ord": "a1"
                   }
                 ],
-                "id": "641d07e8-7ec2-4e21-b167-97f5d3257e34",
+                "id": "11c6490a-3587-40a6-bc6a-76c82846b853",
                 "ord": "a0"
               }
             ],
-            "id": "3ec397a4-8c6f-4078-a048-0aa8b0f6007d",
+            "id": "7dd453f8-d0bd-4fbc-a1b8-0a731b9cfa5a",
             "ord": "a1"
           }
         ]
@@ -1917,7 +1903,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "aa1c025c-75ef-44c9-b73b-3abb951a6f3b",
+        "id": "e0646b22-75cc-4bad-80a1-7f58333c8117",
         "children": [
           {
             "kind": "element",
@@ -1939,7 +1925,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Get in touch"],
-                        "id": "bd6201e9-059b-4da2-8e8b-b793b4c3f7ae",
+                        "id": "91a9d07f-f699-40e4-ba1c-79ad4c65b801",
                         "ord": "a0"
                       },
                       {
@@ -1949,11 +1935,11 @@
                         "children": [
                           "Questions before you book? Send a note and Ascend Coaching will get back to you — usually the same day."
                         ],
-                        "id": "57545452-d6a1-428d-9215-bce6600afb4d",
+                        "id": "50b04f6a-164b-48cb-ab5e-827bbd8906b0",
                         "ord": "a1"
                       }
                     ],
-                    "id": "6888ef7e-6913-4fe1-9e68-a013032e7108",
+                    "id": "e1952765-2451-4ca4-bf8b-b88d0adb196a",
                     "ord": "a0"
                   },
                   {
@@ -1966,7 +1952,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Call us"],
-                        "id": "ee001f18-c765-40f9-a97a-8c96e9378821",
+                        "id": "e260230f-c4ce-4ccc-9c03-5afd9d858aa1",
                         "ord": "a0"
                       },
                       {
@@ -1982,7 +1968,7 @@
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "b496e2dd-5542-4ec9-b350-c0fac3311664",
+                            "id": "cae95308-8c05-4e69-851d-7141023552af",
                             "ord": "a0"
                           }
                         ],
@@ -1991,7 +1977,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "cfac3725-e108-442f-b282-c5393ff3565a",
+                        "id": "2edcbbe9-1f9d-4f97-941a-b80f5b12dd76",
                         "ord": "a1"
                       }
                     ],
@@ -1999,7 +1985,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "8c50d869-c8fc-48fc-99e7-a8ef31ab5bdd",
+                    "id": "66dc9d20-2f4d-4afc-be06-173f68c9a5b9",
                     "ord": "a1"
                   },
                   {
@@ -2012,7 +1998,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Email us"],
-                        "id": "ce878f57-2378-46c9-a213-e86066b05d92",
+                        "id": "ceb68ec6-88cf-4ae2-a088-144bb7d3f0e3",
                         "ord": "a0"
                       },
                       {
@@ -2028,7 +2014,7 @@
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "b6e603a1-2438-4074-9df7-2ff70a57f46b",
+                            "id": "453b260d-c5f4-4f7d-980c-38be6c5655fe",
                             "ord": "a0"
                           }
                         ],
@@ -2037,7 +2023,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "c798af79-ee84-473b-8e7c-694ddd110e63",
+                        "id": "e50e312e-df92-482d-8eca-019df4875fe3",
                         "ord": "a1"
                       }
                     ],
@@ -2045,7 +2031,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "f0e5d5f0-633c-4744-bc15-a31c5eb3684f",
+                    "id": "9de83f43-6757-4c55-8723-1c502092980f",
                     "ord": "a2"
                   },
                   {
@@ -2063,7 +2049,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Your name"],
-                            "id": "f57d2e37-27fe-4f31-8a31-a53d7c0cc59d",
+                            "id": "a52b6265-62a4-4497-b8dc-f05f4c8f6c51",
                             "ord": "a0"
                           },
                           {
@@ -2075,11 +2061,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "66a4b107-fb1a-4c7f-b68e-0ad8269b2056",
+                            "id": "48837d57-5582-4043-8e05-1cba921d10a4",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a660bff9-1825-4702-ab97-1e9c718f4a64",
+                        "id": "7a99b817-d320-4935-a914-44bec3e92b12",
                         "ord": "a0"
                       },
                       {
@@ -2092,7 +2078,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Email address"],
-                            "id": "e67ac670-44da-484f-aa9e-401a858b6b4b",
+                            "id": "5819c966-6b39-4556-97aa-748ffbc511e9",
                             "ord": "a0"
                           },
                           {
@@ -2104,11 +2090,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "a76c942e-f390-4d56-9a5c-a9bdbc4fbeee",
+                            "id": "49c4bf85-1c43-45d6-809e-eafeee3aa0cb",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b69417aa-1f36-46aa-b27d-1776160892f3",
+                        "id": "93ddbbbc-211b-4d2b-bf88-ff10516ce76f",
                         "ord": "a1"
                       },
                       {
@@ -2121,7 +2107,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Phone number"],
-                            "id": "1e095ee4-2fc8-4402-b7e6-040e065d3732",
+                            "id": "c137cfea-33fc-4b47-997c-787d72324f69",
                             "ord": "a0"
                           },
                           {
@@ -2132,11 +2118,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "34a25d86-1d93-4a56-8120-d1be49c21c65",
+                            "id": "672528f4-572a-46b9-9509-7bb7929a4b03",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e94d417e-b33a-4506-a05d-76c14a7b49f2",
+                        "id": "f6b43f00-25b8-469a-8554-94e924253592",
                         "ord": "a2"
                       },
                       {
@@ -2149,7 +2135,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["How can we help?"],
-                            "id": "45700014-7e1e-4c12-9f46-a9c61b685a98",
+                            "id": "77f647d8-fe23-4879-8dc7-23812e5a0ca9",
                             "ord": "a0"
                           },
                           {
@@ -2159,11 +2145,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "5d13603f-e46c-4bf3-94f1-e45e48fa82f6",
+                            "id": "3bdf9011-0ab6-4e5c-9dec-09f58db4bb85",
                             "ord": "a1"
                           }
                         ],
-                        "id": "320abf0d-626b-4021-9962-079127f38368",
+                        "id": "4ea7b90d-e1c7-4769-9c36-831c745ad827",
                         "ord": "a3"
                       },
                       {
@@ -2179,11 +2165,11 @@
                               "type": "submit"
                             },
                             "children": ["Send my request"],
-                            "id": "393328ae-f559-421f-98e1-c4e13a16df1c",
+                            "id": "520eb3b9-8638-4002-b464-a6aac933497f",
                             "ord": "a0"
                           }
                         ],
-                        "id": "5e0988a8-56fa-4cb4-b603-6880419e3382",
+                        "id": "a7474f2f-9b99-4e95-87cb-ad3bd94cd271",
                         "ord": "a4"
                       }
                     ],
@@ -2194,15 +2180,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "5519730e-a0aa-4262-9a44-513919f3e78f",
+                    "id": "ded0a3dd-f35d-43cd-a09e-bb25ba21d62d",
                     "ord": "a3"
                   }
                 ],
-                "id": "080baff3-7949-426e-9787-0d00f4c88591",
+                "id": "7b3fa8b1-f710-4dfa-a5f9-79def760ebc7",
                 "ord": "a0"
               }
             ],
-            "id": "e38345da-ef05-4170-9b34-45a9845b3b30",
+            "id": "6513d695-8908-422e-8256-65ea0d908e8e",
             "ord": "a0"
           },
           {
@@ -2225,7 +2211,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Reach the practice"],
-                        "id": "59350e74-ddc4-4aa9-9380-bec7eb484c36",
+                        "id": "a83b945f-2924-4d0b-9430-d45243324fa7",
                         "ord": "a0"
                       },
                       {
@@ -2239,7 +2225,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "82fcf97c-434b-4438-aa31-5380e2021341",
+                        "id": "fc3d34ca-215f-4216-b5d1-0c5354b94080",
                         "ord": "a1"
                       },
                       {
@@ -2257,7 +2243,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday – Thursday"],
-                                "id": "f5d35267-7f5a-4727-9224-04fc662ded7b",
+                                "id": "03153ade-6217-438c-ab8b-2c7f0abc66d2",
                                 "ord": "a0"
                               },
                               {
@@ -2265,11 +2251,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["7:00 – 9:00 (mornings & evenings)"],
-                                "id": "05b912da-d4ca-47dc-9841-41a1c19b05f5",
+                                "id": "458d6a55-024b-412f-b0c6-c96637344798",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "369e91e8-b20d-43f1-b758-7fd3b8b828e5",
+                            "id": "4af5b0b6-1fcd-4d82-8d83-331964237fc4",
                             "ord": "a0"
                           },
                           {
@@ -2282,7 +2268,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Friday"],
-                                "id": "9c8a8dd5-0b67-4a68-964c-984382695541",
+                                "id": "cf2499e0-141a-4b60-a15e-c40eb4ae7d40",
                                 "ord": "a0"
                               },
                               {
@@ -2290,11 +2276,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["8:00 – 2:00"],
-                                "id": "cf2cf3bb-64c8-4da5-a194-d3427590e008",
+                                "id": "0b13cc9a-0acf-4653-a96a-9636674cfd1c",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b6718d43-7ead-421d-a34f-396f0693add5",
+                            "id": "6d53dedc-98f6-406a-83bf-9fd2729d7696",
                             "ord": "a1"
                           },
                           {
@@ -2307,7 +2293,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "8b56112f-de8f-46f7-ada3-fa4839c28a6b",
+                                "id": "dbf5f63c-b976-4d9c-8ecc-cc2934126d34",
                                 "ord": "a0"
                               },
                               {
@@ -2315,11 +2301,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 12:00"],
-                                "id": "1f959968-022f-4572-8133-73904c40254b",
+                                "id": "c866650b-47dc-4869-9f8e-f2d5ddf6caed",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "a1546bb0-8800-44cf-b837-c984b85c39f5",
+                            "id": "d78dde10-cb21-450a-84ea-07880739226c",
                             "ord": "a2"
                           },
                           {
@@ -2332,7 +2318,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "45d79c46-15dc-4a85-9dfd-a897e11c0830",
+                                "id": "5be659c9-e942-4830-9e59-002f700d20cf",
                                 "ord": "a0"
                               },
                               {
@@ -2340,19 +2326,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["By arrangement"],
-                                "id": "7a71a82b-a4ed-4d5f-b5b1-7d569a0616e8",
+                                "id": "347e4b6b-032a-48b0-8c81-cc4e67c19a5e",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "4081db8b-da18-4d14-88da-39c3745eaca6",
+                            "id": "fdcd88cc-8cbb-40ec-ad83-c45b443942bb",
                             "ord": "a3"
                           }
                         ],
-                        "id": "80d1a528-e169-46a2-8967-ae44be8931c6",
+                        "id": "219bb31c-fa77-40de-8416-980c89d9d632",
                         "ord": "a2"
                       }
                     ],
-                    "id": "7b1b129b-dc17-49f8-bb5c-d9eab5afc47d",
+                    "id": "e2d92353-6b4e-445b-a02f-3826ac83b418",
                     "ord": "a0"
                   },
                   {
@@ -2365,15 +2351,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "1e20ae17-3d98-439a-85ed-06292043273e",
+                    "id": "4e085911-f09a-4365-ad72-54ae2270123b",
                     "ord": "a1"
                   }
                 ],
-                "id": "12b57139-c08a-4fa5-aae1-5a6b8d5d77df",
+                "id": "5821c7b1-f2dd-4891-aa52-55172c9f4976",
                 "ord": "a0"
               }
             ],
-            "id": "ab670d37-dd0c-46f1-8747-f00ea3df3033",
+            "id": "7bf2f88a-1df7-4c43-bcad-c65510a3cdab",
             "ord": "a1"
           },
           {
@@ -2391,7 +2377,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than email?"],
-                    "id": "4b7f31c5-f4fd-4a45-9c12-4c9e9b985757",
+                    "id": "ebdaaf11-88cc-4ae8-b22c-5389b172621e",
                     "ord": "a0"
                   },
                   {
@@ -2401,7 +2387,7 @@
                     "children": [
                       "See live availability and reserve your free discovery call online — no phone tag, no back-and-forth."
                     ],
-                    "id": "fc22841e-211b-45fa-9791-e659ea4f18f7",
+                    "id": "c148aec3-83c9-41ed-beaf-8854cf3138de",
                     "ord": "a1"
                   },
                   {
@@ -2412,15 +2398,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a discovery call"],
-                    "id": "96957c00-5ea1-4cd8-b691-c21a9b6fb111",
+                    "id": "e9859d4e-34b1-4461-9794-408314f37390",
                     "ord": "a2"
                   }
                 ],
-                "id": "052fdc3c-8146-4814-a4af-72d945963f89",
+                "id": "e5d7652f-8af4-4e18-9f0d-cf1c310a6e3a",
                 "ord": "a0"
               }
             ],
-            "id": "0247ba16-0d9c-4111-afe7-b88c2fb55c10",
+            "id": "646a78e4-d63f-4664-b0e4-56ef21a862ca",
             "ord": "a2"
           }
         ]

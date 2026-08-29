@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-massage-therapeutic',
-  version: '1.3.3',
+  version: '1.4.0',
   name: 'Massage (Therapeutic)',
   summary:
     'A clinical therapeutic-massage site — a cool slate-and-teal palette, a muted-steel secondary and a confident sans display, leading with the outcome, not luxury. Installs a working booking flow: a menu by concern (deep tissue, sports recovery, prenatal, cupping, trigger-point, medical/rehab), three licensed therapists and two treatment rooms as bookable resources, and standard plus card-hold policies. Ships as "Meridian Bodywork".',

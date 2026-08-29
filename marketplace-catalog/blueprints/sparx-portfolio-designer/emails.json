@@ -7,7 +7,7 @@
       "subject": "Thanks for subscribing to {{site.name}}",
       "preheader": "A quick hello, and where to see the work.",
       "root": {
-        "id": "def-s-body-1249",
+        "id": "def-s-body-11",
         "kind": "body",
         "width": 600,
         "bg": "#f4f4f5",
@@ -18,7 +18,7 @@
         "colorScheme": "light dark",
         "children": [
           {
-            "id": "def-s-section-1242",
+            "id": "def-s-section-4",
             "kind": "section",
             "bg": "#ffffff",
             "bgAuto": true,
@@ -26,7 +26,7 @@
             "paddingY": 24,
             "children": [
               {
-                "id": "def-s-text-1239",
+                "id": "def-s-text-1",
                 "kind": "text",
                 "html": "Hello, {{customer.firstName}}",
                 "align": "left",
@@ -37,12 +37,12 @@
                 "lineHeight": 36
               },
               {
-                "id": "def-s-spacer-1241",
+                "id": "def-s-spacer-3",
                 "kind": "spacer",
                 "height": 16
               },
               {
-                "id": "def-s-text-1240",
+                "id": "def-s-text-2",
                 "kind": "text",
                 "html": "Thanks for subscribing to {{site.name}}. I’ll send the occasional note when there’s new work worth sharing — no noise, and never often.",
                 "align": "left",
@@ -55,7 +55,7 @@
             ]
           },
           {
-            "id": "def-s-section-1246",
+            "id": "def-s-section-8",
             "kind": "section",
             "bg": "#f4f4f5",
             "bgAuto": true,
@@ -63,7 +63,7 @@
             "paddingY": 18,
             "children": [
               {
-                "id": "def-s-text-1243",
+                "id": "def-s-text-5",
                 "kind": "text",
                 "html": "Start with the selected work",
                 "align": "left",
@@ -74,12 +74,12 @@
                 "lineHeight": 29
               },
               {
-                "id": "def-s-spacer-1245",
+                "id": "def-s-spacer-7",
                 "kind": "spacer",
                 "height": 16
               },
               {
-                "id": "def-s-text-1244",
+                "id": "def-s-text-6",
                 "kind": "text",
                 "html": "Have a look through recent projects. If something sparks an idea, I’d love to hear about it.",
                 "align": "left",
@@ -101,7 +101,7 @@
             "align": "left"
           },
           {
-            "id": "def-s-section-1248",
+            "id": "def-s-section-10",
             "kind": "section",
             "bg": "#ffffff",
             "bgAuto": true,
@@ -109,7 +109,7 @@
             "paddingY": 24,
             "children": [
               {
-                "id": "def-s-button-1247",
+                "id": "def-s-button-9",
                 "kind": "button",
                 "label": "See the work",
                 "href": "{{site.url}}/work",

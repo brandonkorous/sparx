@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "f878d796-9d2d-4c96-aa4d-521a18cde0a6",
+                  "id": "7f09e506-1948-4173-895c-32de38ce38b9",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "2a0a593b-aa2c-42a2-b23d-d4f61a9127dc",
+                      "id": "539a88e0-ef9f-463b-960b-eb36f75c2f5b",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "5b87beb4-10b0-45d4-8e09-a47b4364ca95",
+                      "id": "683e1664-f263-4c6d-a7d1-4764fda547d8",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "6d5c0375-9d78-445f-b717-c60302e82028",
+                      "id": "5b2c6d5c-b695-49b4-8b9e-5f90bacd63d7",
                       "ord": "a2"
                     }
                   ],
-                  "id": "992b6893-de4d-4022-b1ba-d94cc8fbc1f4",
+                  "id": "b153522d-50d8-488a-8149-dab3f91c7847",
                   "ord": "a1"
                 },
                 {
@@ -88,26 +88,17 @@
                   "class": "ml-auto flex items-center gap-3",
                   "children": [
                     {
-                      "kind": "element",
-                      "tag": "a",
+                      "kind": "host",
+                      "component": "site.account-link",
                       "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
-                      "attrs": {
-                        "href": "/account/login"
-                      },
-                      "children": ["Sign in"],
-                      "slot": {
-                        "name": "secondary",
-                        "type": "link",
-                        "label": "Secondary link"
-                      },
-                      "id": "dfaa6945-d9f0-4bd0-a1a0-8f3007b1640c",
+                      "id": "be43e2c0-542f-47e0-902f-83360c5dc63a",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "ef84f4ac-ecf4-4de1-8581-b62d83c126c8",
+                      "id": "bfd4b395-a68f-4caa-afd0-be0780b434ed",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +114,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "6d051677-2819-4a24-96ae-5d29b9e099c4",
+                      "id": "e3911c9a-9fda-4bd3-bf4a-141abd099b2f",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +132,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "ff578201-8038-4bf2-89ba-ededa88fafd1",
+                          "id": "b1c0763c-9a47-4833-9e2a-289900b15ef0",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "142ca935-c014-4293-9e2b-9d5577123775",
+                      "id": "ba272bea-08ae-4623-ad6a-ad72b80aec41",
                       "ord": "a3"
                     }
                   ],
-                  "id": "ed93b36f-5cbf-4aa8-86b9-1b0b4d7f1565",
+                  "id": "71f2777f-ee4e-47ff-aa02-29489a75a7f9",
                   "ord": "a2"
                 }
               ],
-              "id": "383e34cd-b2b3-4d61-b6df-0814ea273c2d",
+              "id": "173f10f6-41ad-40ce-91b2-6fe2aca52a87",
               "ord": "a0"
             },
             {
@@ -178,7 +169,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "703e5e78-2f43-4b42-942c-a44bebb71466",
+                  "id": "83987d45-8c77-4b4d-ba98-cf2d1759a5d9",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +185,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "35d89962-a3c0-4c28-94b5-b6cc420c135c",
+                  "id": "d1697a16-5fbb-44d1-bf72-fbc07e94839c",
                   "ord": "a1"
                 },
                 {
@@ -210,23 +201,14 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "a30e34bb-fd36-4d81-adc1-e0477aaeba4e",
+                  "id": "f72f866f-4628-4429-9f54-361561cc774e",
                   "ord": "a2"
                 },
                 {
-                  "kind": "component",
-                  "component": "Button",
+                  "kind": "host",
+                  "component": "site.account-link",
                   "class": "btn btn-ghost btn-sm mt-2 w-full",
-                  "props": {
-                    "label": "Sign in",
-                    "href": "/account/login"
-                  },
-                  "slot": {
-                    "name": "secondary",
-                    "type": "link",
-                    "label": "Secondary link"
-                  },
-                  "id": "8f2c2064-e1f3-48b9-b5c2-bc8ba9c324f6",
+                  "id": "86b5103d-d1b4-42db-becf-4c743612986a",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +224,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "16242cbd-10e4-4529-8c72-061d05fe7c2a",
+                  "id": "f8c54de0-1223-470c-87a0-bd0e06a8acc9",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "5c5008c8-6bf3-4bad-ac69-5921704e3469",
+              "id": "6c0b188b-7104-4a83-b88f-86931c9caed9",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "2fb89d5d-6fc8-40c8-9683-3483ed104619",
+          "id": "9f156ddb-74e5-4eab-99c5-cdd7dc549bda",
           "ord": "a0"
         },
         {
@@ -270,7 +252,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "dd7202ab-8b80-452a-90ad-44deb4e34232",
+          "id": "81ea011f-06b6-43a2-9405-f5913b80b314",
           "ord": "a1"
         },
         {
@@ -300,7 +282,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "fdf2de93-d716-4c32-bd43-239a56036f5f",
+                          "id": "7c6cc928-acb5-4209-af0e-ade5f570b92c",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +298,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "7b475890-7109-47e5-be89-ce70bed2344b",
+                          "id": "5afab251-a2d1-48b0-9a84-89ac7f0ca6f1",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +306,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "e47565b7-5738-43a6-9df1-34fb87f58791",
+                          "id": "f25db189-8e9c-46cc-abee-7801a79846a4",
                           "ord": "a2"
                         }
                       ],
-                      "id": "a2e42d2e-1698-4411-8f57-2b0938b7d0d5",
+                      "id": "8fd5dd8c-5774-4a03-86e0-11b5180606be",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +331,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "077d0736-836b-4b7e-9536-0d2b0dd1220d",
+                          "id": "223fdeb7-1199-47c9-87a9-e906bbabd4a0",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +356,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "a6af984f-c4ce-44f2-8125-61d76406d5c4",
+                                  "id": "379754d3-b9bb-412f-8124-3ddffb9f6535",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "1b310457-7d2f-4296-96c4-22a2f3c574ad",
+                              "id": "d65df5b0-f7fa-449f-98d1-e76e9eae9bd7",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +380,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "2e30f9e6-3c5a-4bc0-888c-03d946f6a5a5",
+                                  "id": "e0d94c08-0ac3-401a-b980-d333510286ea",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "400b0231-0762-4e9b-9505-acbb08d5cd45",
+                              "id": "473a0fa7-4ce9-4ba5-8c9f-a52e1dd84b44",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +404,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "17425289-e198-401e-92a4-719d3b8daa36",
+                                  "id": "14123202-d1cc-4054-a8ac-1ecad47627c6",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "fa689ba9-9d7a-4b44-8b43-f4f1bb17d434",
+                              "id": "caa63a10-08ad-46d6-8ec4-dfd4c64836b9",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +428,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "43c4ae88-bde4-4583-845c-f637e73d55d6",
+                                  "id": "f1a56968-c42e-4998-b062-78f862b9b55a",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "af000c75-e810-4da0-b8c7-e388a49f8e14",
+                              "id": "c39cb66c-1d17-4b82-b219-a13f1f2a9884",
                               "ord": "a3"
                             }
                           ],
-                          "id": "a5499089-64e5-474b-81f0-40be133c0fe3",
+                          "id": "c79fceb7-f569-439b-bbfc-84e4a4da9a3a",
                           "ord": "a1"
                         }
                       ],
-                      "id": "5325f4f1-cb6c-4905-be60-4d850d32bfc0",
+                      "id": "09bd50f4-c96a-4572-8444-c81548d12f32",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +453,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "7ad9bacd-c468-472a-b0ea-676cfd399b33",
+                          "id": "89e4ef51-e438-42bb-8b6c-09240fe1fa47",
                           "ord": "a0"
                         }
                       ],
-                      "id": "b41f3fce-6fe1-4f22-9baa-4e1ba79511b3",
+                      "id": "3b43e4fb-8ee4-4425-ab07-e62e6a19a826",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +481,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "7fa5f643-a684-467f-a763-1ba54ed3f559",
+                                  "id": "b240d062-de79-447b-9338-2dee7db0be5a",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "98f088d6-22e1-4574-980b-db73969ce140",
+                              "id": "0428cecc-f415-4dda-a424-b008f6d1dc13",
                               "ord": "a0"
                             }
                           ],
-                          "id": "c98215c5-aff9-4896-9963-29a57f01672c",
+                          "id": "85a90618-92de-4d9c-9e01-c9cdd89dfc16",
                           "ord": "a0"
                         }
                       ],
-                      "id": "85f4556e-3109-4ab1-b6d9-a6d5bc7915ed",
+                      "id": "b5927a85-eb8d-499c-b97f-e2de0a83fede",
                       "ord": "a3"
                     }
                   ],
-                  "id": "7bd06bbf-834d-47ff-8307-0efab40960ba",
+                  "id": "8e1d3a02-2ab1-48c8-88dc-5f0161f744e6",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +520,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "6d92376e-56e9-4627-8fac-edfb86d9c02d",
+                          "id": "0239b067-30d2-4225-a8d1-e38052799b07",
                           "ord": "a0"
                         }
                       ],
-                      "id": "63da0334-4673-495b-b9d7-82702f948a82",
+                      "id": "143b9c4a-f7ae-43fb-a059-721dc3b75183",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +532,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "5a719b0e-1a2f-44a6-9636-cb2beca10a25",
+                      "id": "25eb87b1-f619-4860-9e7b-613bd8440ab1",
                       "ord": "a1"
                     }
                   ],
-                  "id": "faf5fb9d-dc57-41bc-925e-5b6efafbe4be",
+                  "id": "7ecde2be-b6b7-4098-9d4a-8e84d4aa59ca",
                   "ord": "a1"
                 }
               ],
-              "id": "f30755f1-ba48-4f53-818c-9b9f14274573",
+              "id": "612d0413-068a-4534-99ff-7f521a2b2632",
               "ord": "a0"
             }
           ],
-          "id": "ee373b15-0c8f-423f-b4d2-2e14fa8d2458",
+          "id": "ec778077-544c-4267-a324-0674e4ef3088",
           "ord": "a2"
         }
       ],
-      "id": "454b3fdc-82a5-4c90-a694-ad50e830f143"
+      "id": "42afac27-94c3-4da6-b638-daa37338cfbb"
     }
   },
   "pages": [
@@ -580,7 +562,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "9d360122-ce4b-4735-896b-6f3bc7937457",
+        "id": "fa7a462d-e74b-45a7-ae70-5c65035595ed",
         "children": [
           {
             "kind": "element",
@@ -596,14 +578,14 @@
                   "alt": "A bright, calm salon interior in warm neutrals",
                   "loading": "eager"
                 },
-                "id": "0c3eee52-6040-4668-9f8a-2faa8e0d4b30",
+                "id": "1b20dc34-a97d-4f25-b7a4-713f10bec8f5",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/50",
-                "id": "f4650660-3536-47e2-9830-aff22a93dc97",
+                "id": "1f437d15-4fbe-4002-906f-adf2ca586c7f",
                 "ord": "a1"
               },
               {
@@ -616,7 +598,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Hair that feels like you, only better"],
-                    "id": "86e60f86-36de-4d49-8336-beae6c5cc623",
+                    "id": "0f3649c5-3744-410a-bede-72033b6a7aad",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +608,7 @@
                     "children": [
                       "A calm studio for considered cuts, soft lived-in color and the kind of finish that lasts past the front door."
                     ],
-                    "id": "96ef08a3-2b72-469e-9ccf-46460607048a",
+                    "id": "378dc734-f0d7-4632-9b62-46605c0cc843",
                     "ord": "a1"
                   },
                   {
@@ -642,7 +624,7 @@
                           "href": "/book"
                         },
                         "children": ["Book online"],
-                        "id": "55873ab2-d323-4dc4-a6d8-02e52388018a",
+                        "id": "37236775-8e17-40c1-affb-802ba9170c78",
                         "ord": "a0"
                       },
                       {
@@ -653,19 +635,19 @@
                           "href": "/book"
                         },
                         "children": ["See services"],
-                        "id": "a1c8b199-7840-47f7-a5a2-d1657c697db9",
+                        "id": "da78571f-4ef6-46cd-91d5-26d401431ccf",
                         "ord": "a1"
                       }
                     ],
-                    "id": "58054676-2a13-4355-9bc4-26c84d0e2169",
+                    "id": "343ffa82-f238-48d2-bb36-3bc38aaffc21",
                     "ord": "a2"
                   }
                 ],
-                "id": "daaf1312-35ae-4a1a-87fc-866bd209ec25",
+                "id": "5b22c7d0-ea08-4117-97c3-0d909908cf00",
                 "ord": "a2"
               }
             ],
-            "id": "3e2a4e9c-d4ac-4212-ab18-9f1a8ba81693",
+            "id": "bd044eb4-c702-4f21-b2da-4a41b86e72f6",
             "ord": "a0"
           },
           {
@@ -693,7 +675,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Stylists, not a conveyor belt"],
-                            "id": "5192223b-c5cf-4dbf-8aac-8e9acc578c1a",
+                            "id": "93db323b-7a44-461e-a3c9-816d88817eae",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +685,11 @@
                             "children": [
                               "You’ll see the same person each visit — someone who learns your hair and plans it with you, never rushes it."
                             ],
-                            "id": "2ed68ad3-d27b-4050-a01b-c15476d37d8e",
+                            "id": "1334dfe1-56ba-4d7e-923a-f136215c8537",
                             "ord": "a1"
                           }
                         ],
-                        "id": "79809709-014b-4e3d-80d3-8c3869b61f56",
+                        "id": "f9cb8a4c-0dd0-4f0e-bb17-20e6e6deec55",
                         "ord": "a0"
                       },
                       {
@@ -720,7 +702,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Color that grows out kindly"],
-                            "id": "d6c5c79d-5535-48d3-9773-82afa52689ef",
+                            "id": "3f5cf787-3185-4dcb-842b-af0115f65dd4",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +712,11 @@
                             "children": [
                               "Soft, hand-placed color designed for low upkeep — so you leave less often and love it longer."
                             ],
-                            "id": "70eb2d54-ce64-413b-9be8-d062224816bb",
+                            "id": "eefe6409-9c04-4e42-a05a-aedb2f2264dd",
                             "ord": "a1"
                           }
                         ],
-                        "id": "82abd4c0-6c9d-46ce-bbf7-bd2e603d1393",
+                        "id": "8a53673a-80b7-41d7-b433-c5736cc23f7d",
                         "ord": "a1"
                       },
                       {
@@ -747,7 +729,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["A calm hour that’s yours"],
-                            "id": "f64335d6-e79c-40d5-9b17-b1e1d03ddcfd",
+                            "id": "543387b7-8a2b-4653-8b2e-f3489f021e1e",
                             "ord": "a0"
                           },
                           {
@@ -757,23 +739,23 @@
                             "children": [
                               "No overbooking, no noise. Just a quiet chair, good coffee and an hour that feels like a small reset."
                             ],
-                            "id": "3db5612e-cdba-48b4-abad-132109761cf0",
+                            "id": "d82c1477-3d85-40c2-a392-32412ceb8f87",
                             "ord": "a1"
                           }
                         ],
-                        "id": "23dd58f0-d4d6-4790-be00-4eec51f80212",
+                        "id": "bcefc02d-ddf1-4598-83d5-77584a420ac6",
                         "ord": "a2"
                       }
                     ],
-                    "id": "6deed452-7f4d-4c14-945f-027a8c157c44",
+                    "id": "829d8fa7-817d-4f18-8154-4ca130e96cd3",
                     "ord": "a0"
                   }
                 ],
-                "id": "a9cec5a8-ea41-4eb7-87df-da992c598c12",
+                "id": "86649e3b-b8b3-4cfb-a12f-26d45c4e0e2b",
                 "ord": "a0"
               }
             ],
-            "id": "b4336896-81fb-4978-843c-91726336b1cb",
+            "id": "ab1329cc-2392-4eae-8e20-39da24768998",
             "ord": "a1"
           },
           {
@@ -796,7 +778,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["The menu"],
-                        "id": "24807a8b-613f-4a2b-836e-f986cdf04d81",
+                        "id": "4ffc1acc-e90a-46b2-8cfb-c7baa1bb15c1",
                         "ord": "a0"
                       },
                       {
@@ -806,11 +788,11 @@
                         "children": [
                           "A few of the things we do most. Full prices and live availability are on the booking page."
                         ],
-                        "id": "339c1906-7c8c-40bb-95b8-a07716cacef7",
+                        "id": "1389d163-1fef-4189-81d6-8e276529ad9c",
                         "ord": "a1"
                       }
                     ],
-                    "id": "8a85030d-6379-4a23-b0e2-124199c2dcf6",
+                    "id": "ffe730f1-d8f5-4132-80b2-3e195f1e1120",
                     "ord": "a0"
                   },
                   {
@@ -836,7 +818,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Cut & finish"],
-                                "id": "7ddb77c8-c262-4019-af79-8363181f25a7",
+                                "id": "1e0dddde-c0cc-432e-93d7-b06580643220",
                                 "ord": "a0"
                               },
                               {
@@ -844,11 +826,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$85"],
-                                "id": "398ccf31-d689-43be-8851-7fb0dbf79a55",
+                                "id": "b96fd5b6-22a1-437f-87d3-9478c83aed9a",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "7e76ab30-9623-4ba0-9396-aa96cda85df9",
+                            "id": "0054a735-8eba-480f-a3ae-3833863f640f",
                             "ord": "a0"
                           },
                           {
@@ -856,7 +838,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "8a7aa2f5-1ed0-4136-a98a-0821bfb749ab",
+                            "id": "702946f4-0831-462c-96e4-e501f594ff83",
                             "ord": "a1"
                           },
                           {
@@ -864,11 +846,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Consult, cut and a polished blow-dry."],
-                            "id": "709f62f2-d00d-4c90-b8f3-df6f83585285",
+                            "id": "6a870037-35f1-4b39-8a79-9575848dcf0a",
                             "ord": "a2"
                           }
                         ],
-                        "id": "1cf69f7f-81c4-4e74-a051-5e3aade6e7c3",
+                        "id": "b3cd5a5f-11e5-44e6-87e1-0d7debd83191",
                         "ord": "a0"
                       },
                       {
@@ -889,7 +871,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Balayage"],
-                                "id": "e393e10f-55b6-4df0-9272-189150096f32",
+                                "id": "7ab1af9c-d863-4056-9e99-e2801b03e886",
                                 "ord": "a0"
                               },
                               {
@@ -897,11 +879,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$240"],
-                                "id": "c2902e4a-92bc-4e03-8907-42148a48014c",
+                                "id": "fda27c8b-29b1-4cba-a20f-1b417688c3ee",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "aba811c5-5993-43a0-bf7e-fe13ed29741a",
+                            "id": "72355976-b5fc-48b6-b84a-af4daa485229",
                             "ord": "a0"
                           },
                           {
@@ -909,7 +891,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["3 hr"],
-                            "id": "1f19396b-991e-473f-ad12-ee3b11cfa880",
+                            "id": "cd609761-906c-4922-8b06-29d7a30e85d4",
                             "ord": "a1"
                           },
                           {
@@ -917,11 +899,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Hand-painted, lived-in lightness."],
-                            "id": "10087691-f810-45cd-a283-d7d50119e11b",
+                            "id": "d5d4553a-55d2-4570-81aa-3b20d2412a46",
                             "ord": "a2"
                           }
                         ],
-                        "id": "f3c12adf-7f58-4cf6-b386-bb302174a24e",
+                        "id": "0184d3e3-7fa4-474b-9830-9a93fadeb2b9",
                         "ord": "a1"
                       },
                       {
@@ -942,7 +924,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Full color"],
-                                "id": "bc4cf26b-20e2-4c69-a4bd-6b3fd644f9d4",
+                                "id": "e286ce8e-7f01-4bcc-9a7e-7fbf11339fb9",
                                 "ord": "a0"
                               },
                               {
@@ -950,11 +932,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$160"],
-                                "id": "353eb1c7-ce97-4264-a903-b5eb35bbc85e",
+                                "id": "ecdc2cd7-01aa-4124-b07b-4f48ea276a08",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "7f1cacb1-1043-4766-9a6b-fafb8f52d702",
+                            "id": "46559aaf-16c3-476f-83ee-87e50263920c",
                             "ord": "a0"
                           },
                           {
@@ -962,7 +944,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["2 hr"],
-                            "id": "ec576896-8452-4366-814f-acd9cadbddd6",
+                            "id": "449425a5-7de5-48fc-b638-4645ddc545a6",
                             "ord": "a1"
                           },
                           {
@@ -970,11 +952,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Root-to-tip color with a gloss."],
-                            "id": "bf623d1a-f0b8-4b75-86e0-94278bfc6e98",
+                            "id": "6bce5bbe-90f3-4823-8480-62498758e79d",
                             "ord": "a2"
                           }
                         ],
-                        "id": "d93cef65-d317-4699-a33f-1e2c1e78eebb",
+                        "id": "d91aae03-e95a-4f75-bd01-5da6f0e734f8",
                         "ord": "a2"
                       },
                       {
@@ -995,7 +977,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Blow-dry & style"],
-                                "id": "ba6c17ff-32d8-4f59-9446-48b6f9f4d72b",
+                                "id": "89e14ebf-2473-4e9d-b75d-cec47977415e",
                                 "ord": "a0"
                               },
                               {
@@ -1003,11 +985,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$50"],
-                                "id": "4dbe23dd-bcdb-4785-9c61-c00af5fd4889",
+                                "id": "dd84c85c-2a5c-474e-a331-d84b287ac727",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "5ddcc66c-2ec2-4aff-9931-5b13fe07aa1b",
+                            "id": "93566c66-6788-40da-8972-c6a2a3f8e495",
                             "ord": "a0"
                           },
                           {
@@ -1015,7 +997,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "c7e827f6-4cb1-4563-8328-2b20dd540ba7",
+                            "id": "0c6b6e5b-312a-4b78-b294-672eb6fc8e5d",
                             "ord": "a1"
                           },
                           {
@@ -1023,15 +1005,15 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["A wash and a styled finish."],
-                            "id": "da1dddd8-1367-4f1b-9fd5-caaa0bb7ba36",
+                            "id": "355ad0ba-2fc6-4057-b3f0-54c37e278c7f",
                             "ord": "a2"
                           }
                         ],
-                        "id": "71f07993-5889-404b-aac4-b267585899e3",
+                        "id": "71516cd7-40f3-4325-95e0-3c3314848c86",
                         "ord": "a3"
                       }
                     ],
-                    "id": "efe0e89b-6f87-4180-97be-9782deff6d0d",
+                    "id": "2004f58c-9080-41e6-852d-e9fe9da165c7",
                     "ord": "a1"
                   },
                   {
@@ -1047,19 +1029,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "8fc64262-9459-4f64-8184-eddefea70b34",
+                        "id": "114411c4-195f-4947-b464-edc19fc9cd41",
                         "ord": "a0"
                       }
                     ],
-                    "id": "73f64aee-13b1-4671-be6d-451c9603958f",
+                    "id": "5368abca-f6da-49c1-93a2-4b7cdc893c69",
                     "ord": "a2"
                   }
                 ],
-                "id": "b1a1cf86-1822-4669-b4d5-f1a5d162586c",
+                "id": "071b9f21-9519-465c-87ae-f31f90f44d4b",
                 "ord": "a0"
               }
             ],
-            "id": "66c466bc-e6a8-48db-94fc-55e13b185d3a",
+            "id": "0282d400-4a8a-4a39-9cad-465ff0b3bc3e",
             "ord": "a2"
           },
           {
@@ -1081,7 +1063,7 @@
                       "alt": "A styling station with soft natural light",
                       "loading": "lazy"
                     },
-                    "id": "360e69fc-48e9-4c05-8540-bfe6be42812e",
+                    "id": "a85d5f3a-84f5-475d-9d00-56e107d8d9e0",
                     "ord": "a0"
                   },
                   {
@@ -1094,7 +1076,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["A small studio, on purpose"],
-                        "id": "ef8b6523-6074-4b5e-b053-f6a121839482",
+                        "id": "522c87d7-3a80-4425-96de-b79f39ec996f",
                         "ord": "a0"
                       },
                       {
@@ -1104,7 +1086,7 @@
                         "children": [
                           "Maison Élan is a three-chair studio, not a factory floor. We keep the day unhurried so every appointment gets a real consultation and a proper finish."
                         ],
-                        "id": "7a517579-dcb2-4db5-b991-93aa637a42ee",
+                        "id": "1fbaf270-4656-44c7-b732-66bb67ebaab3",
                         "ord": "a1"
                       },
                       {
@@ -1114,7 +1096,7 @@
                         "children": [
                           "That’s the whole idea: fewer people, more attention, and hair you don’t have to fuss with once you’re home."
                         ],
-                        "id": "aacb05e2-e858-4ce7-b009-9aa5e7f95c2c",
+                        "id": "5a227fd2-5f62-42aa-9976-d27a56a3b3fb",
                         "ord": "a2"
                       },
                       {
@@ -1130,23 +1112,23 @@
                               "href": "/book"
                             },
                             "children": ["Book your chair"],
-                            "id": "2405f6d9-d641-451e-9ee5-227932701458",
+                            "id": "92d70752-b8ce-4a29-8e86-3e051221a578",
                             "ord": "a0"
                           }
                         ],
-                        "id": "30c1d4c1-5f21-4fc0-a1fa-c0865980c1f7",
+                        "id": "2cc30cab-fd31-4f16-b569-402ef84cfdb5",
                         "ord": "a3"
                       }
                     ],
-                    "id": "8a625c08-508b-4e3f-9936-2eba1dd96a2c",
+                    "id": "29255834-bf01-43db-8dc8-aa02210193e3",
                     "ord": "a1"
                   }
                 ],
-                "id": "f74c6334-0d3c-42b7-9d10-5a2ad6350e79",
+                "id": "ad903448-8fa6-4344-bca1-4bd811b3b2d6",
                 "ord": "a0"
               }
             ],
-            "id": "4baf0c52-a6e3-410f-9712-b1a9bedda77d",
+            "id": "ad4f8ec8-c187-4351-882b-9a642e0cfbd5",
             "ord": "a3"
           },
           {
@@ -1169,7 +1151,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Who you’ll sit with"],
-                        "id": "70342bde-f947-4a42-a680-afeeaa9cc685",
+                        "id": "7081dbc3-80f9-4dc8-8361-f2f549be7979",
                         "ord": "a0"
                       },
                       {
@@ -1177,11 +1159,11 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": ["Book by name — you’ll see the same stylist each time."],
-                        "id": "4c90c61f-e63a-4d1a-abb6-f37a223bed4b",
+                        "id": "b43d3302-dd2e-4472-b51e-adecd6f8910d",
                         "ord": "a1"
                       }
                     ],
-                    "id": "654c881a-32ac-41a6-a620-f49ad877725f",
+                    "id": "ca7f548e-550d-4eb8-b587-56f411734544",
                     "ord": "a0"
                   },
                   {
@@ -1203,7 +1185,7 @@
                               "alt": "Ava Bennett, senior stylist",
                               "loading": "lazy"
                             },
-                            "id": "edfabd66-b813-40bc-b269-3241e669cb64",
+                            "id": "f7bfc4fd-541c-4305-bf1b-c4a1e4a55016",
                             "ord": "a0"
                           },
                           {
@@ -1216,7 +1198,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Ava Bennett"],
-                                "id": "596d973c-12e1-48f4-9ee3-ecb6fe25da8a",
+                                "id": "af7aa6e4-d590-4d4c-b34d-924bf04c2e79",
                                 "ord": "a0"
                               },
                               {
@@ -1224,7 +1206,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Senior stylist"],
-                                "id": "6f06ac12-ddcf-4d0e-a8d3-4d099b21460f",
+                                "id": "2a2bab80-cbac-46c7-a2d1-2b60ba08a7be",
                                 "ord": "a1"
                               },
                               {
@@ -1234,15 +1216,15 @@
                                 "children": [
                                   "Precision cuts and quiet-luxury color. Ava leads the studio."
                                 ],
-                                "id": "fc391e5a-be14-4a0d-abd3-1cd84e31735a",
+                                "id": "78bc8c35-dc32-4b5e-9edb-23b0052056a2",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "54ddcf1e-e057-444f-a0d8-38e9aa252852",
+                            "id": "3171b365-8481-4da7-a199-d83eb14a929e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c4d50564-6ab1-4610-a823-84297143a0a4",
+                        "id": "4abb9822-d256-4156-ab3c-852e1db823dc",
                         "ord": "a0"
                       },
                       {
@@ -1259,7 +1241,7 @@
                               "alt": "Maya Cole, stylist",
                               "loading": "lazy"
                             },
-                            "id": "9cacc5d1-90f4-400e-84ec-0b9702eea6f7",
+                            "id": "8e38f798-68a7-4869-9679-c1afccf0fea1",
                             "ord": "a0"
                           },
                           {
@@ -1272,7 +1254,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Maya Cole"],
-                                "id": "7e9c5267-ab31-40ac-8988-e945667b3062",
+                                "id": "e9f89026-3332-4641-b085-0fca9473a71c",
                                 "ord": "a0"
                               },
                               {
@@ -1280,7 +1262,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Stylist"],
-                                "id": "ab661f45-17e5-444c-a743-9b1f52510c4c",
+                                "id": "93664cf7-eac9-4cb9-90e2-b5cdc04734ea",
                                 "ord": "a1"
                               },
                               {
@@ -1288,15 +1270,15 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": ["Texture, curtain bangs and the easy, undone finish."],
-                                "id": "5478605e-3a71-4e03-9299-4ceea9e85828",
+                                "id": "79fb93ec-7b14-4de9-a71d-5ca3c96d785c",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "84a33385-9cc5-40c0-8936-e69852998833",
+                            "id": "d869c198-9f70-4839-a1ff-66f9c190ca72",
                             "ord": "a1"
                           }
                         ],
-                        "id": "b39adc71-19a9-4ac9-b30e-019d3b0d0303",
+                        "id": "972200f9-9f00-4299-afe9-cb659038f447",
                         "ord": "a1"
                       },
                       {
@@ -1313,7 +1295,7 @@
                               "alt": "Noor Rahim, color specialist",
                               "loading": "lazy"
                             },
-                            "id": "84307c88-4ef7-4e18-addd-f17b0326a52a",
+                            "id": "fd71e45c-7846-42dd-ac23-5addada672ac",
                             "ord": "a0"
                           },
                           {
@@ -1326,7 +1308,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Noor Rahim"],
-                                "id": "489df0b0-ea5d-476e-8a96-1d876d307e82",
+                                "id": "56f69d7b-c87d-43f1-96f3-b8a0eb97c016",
                                 "ord": "a0"
                               },
                               {
@@ -1334,7 +1316,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Color specialist"],
-                                "id": "9a950272-1d1d-4622-8084-a3cf3e6f9855",
+                                "id": "c0a92d88-22d4-4a3b-81bc-bd9e2879609d",
                                 "ord": "a1"
                               },
                               {
@@ -1344,27 +1326,27 @@
                                 "children": [
                                   "Balayage and lived-in color that grows out beautifully."
                                 ],
-                                "id": "468f895e-78bf-4626-a1a3-354e8b041341",
+                                "id": "9cde61ea-2be1-4230-89bf-eec276cbc4ab",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "ea303152-231d-40a5-a790-14d87aaf653e",
+                            "id": "c13b84c2-d61d-47a3-8e08-5ab57045835e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "52337ed3-5ab6-4e04-8b64-56aae2b70d11",
+                        "id": "e2c5ca72-a4bb-4bbb-8073-2df4b466dd4c",
                         "ord": "a2"
                       }
                     ],
-                    "id": "163a3d6b-8c79-4f23-897f-6d4f8c82ff80",
+                    "id": "a5b72950-8e5c-4b48-ae9f-d50bca7cadd9",
                     "ord": "a1"
                   }
                 ],
-                "id": "64918cf9-b22f-4968-9038-141d81e81736",
+                "id": "8961127e-5661-47d7-a061-4daec56bcf04",
                 "ord": "a0"
               }
             ],
-            "id": "be645570-3d76-4613-92be-5a4ad710d62b",
+            "id": "829ce2fb-6a3e-4f49-88ce-df88b4e2a783",
             "ord": "a4"
           },
           {
@@ -1382,7 +1364,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Recent work"],
-                    "id": "054dff0d-00e9-418b-9002-5272b15c8c53",
+                    "id": "a89c96f0-2b08-4c10-85a8-26a422533555",
                     "ord": "a0"
                   },
                   {
@@ -1399,7 +1381,7 @@
                           "alt": "A soft, lived-in balayage",
                           "loading": "lazy"
                         },
-                        "id": "6cca9db9-40bd-493f-8f48-0f728b218a35",
+                        "id": "87c683ac-543e-4408-a8ad-fc4776a78518",
                         "ord": "a0"
                       },
                       {
@@ -1411,7 +1393,7 @@
                           "alt": "A precise, glossy blunt cut",
                           "loading": "lazy"
                         },
-                        "id": "f615ff0f-65aa-4e14-9e86-b59f6cfd5cb6",
+                        "id": "ac05915b-a96b-44d3-a3e3-505a67da510d",
                         "ord": "a1"
                       },
                       {
@@ -1423,19 +1405,19 @@
                           "alt": "An effortless textured finish",
                           "loading": "lazy"
                         },
-                        "id": "974e560e-2a06-4fc8-b981-8dfa4b572a24",
+                        "id": "5c8e892b-3a65-4176-98c1-d0913bedb185",
                         "ord": "a2"
                       }
                     ],
-                    "id": "3e0265df-e2d0-4ff5-8123-0ea54e776a70",
+                    "id": "ec363f5e-751e-471a-8272-ad4a2df0301d",
                     "ord": "a1"
                   }
                 ],
-                "id": "218b95a8-d356-4c79-86c9-765be350c835",
+                "id": "962f9e71-b787-40d5-84ec-6324b9242cfd",
                 "ord": "a0"
               }
             ],
-            "id": "1ddbc7fc-549c-425c-a927-b89745f8bc5f",
+            "id": "361d344e-5993-41f5-bd38-e1831f557418",
             "ord": "a5"
           },
           {
@@ -1455,7 +1437,7 @@
                     "children": [
                       "“First salon in years where I actually look like the photo I brought in. I leave calmer than I arrived.”"
                     ],
-                    "id": "aff5e84c-c03e-402b-bdd9-a86c675c1a5c",
+                    "id": "78201804-38fa-4c73-8661-3234cf030b5d",
                     "ord": "a0"
                   },
                   {
@@ -1463,15 +1445,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["Priya, client since 2023"],
-                    "id": "22ef87e0-f590-408a-9396-5156e891afda",
+                    "id": "f69a7db2-b4d8-4845-8d5b-ef21395ce39b",
                     "ord": "a1"
                   }
                 ],
-                "id": "ddb5754f-fd32-4cfa-bfd4-2765c813fdd2",
+                "id": "5ddeb9f1-c90b-43a5-8ac9-c0e7a3259bae",
                 "ord": "a0"
               }
             ],
-            "id": "66a44e37-bfff-47e9-b3d4-c7cb0fcc1c01",
+            "id": "c3873181-e82f-4fe9-a7e3-d17b3370dc1e",
             "ord": "a6"
           },
           {
@@ -1489,7 +1471,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Ready when you are"],
-                    "id": "999a0fd7-3eaa-47f9-bd4f-1991be0d9451",
+                    "id": "ac83493e-e6ea-48d1-b6ed-bca771ffa66c",
                     "ord": "a0"
                   },
                   {
@@ -1499,7 +1481,7 @@
                     "children": [
                       "Pick a service, choose your stylist and see live times. It takes about a minute."
                     ],
-                    "id": "1d77b003-e903-47d1-8e9a-ae41e46b6ab8",
+                    "id": "d064900b-6f9b-402e-8c80-7279e357a666",
                     "ord": "a1"
                   },
                   {
@@ -1510,15 +1492,15 @@
                       "href": "/book"
                     },
                     "children": ["Book online"],
-                    "id": "3a8fc321-60f6-4478-a78b-ad08b279dbce",
+                    "id": "f80bde51-0214-4dc4-b0c5-6db6e78c1374",
                     "ord": "a2"
                   }
                 ],
-                "id": "59b78f0a-63ad-4f68-8518-a922644b378f",
+                "id": "19c8b4a7-1563-40c4-a040-8969393afac0",
                 "ord": "a0"
               }
             ],
-            "id": "a7247ae3-c13d-471e-9771-fed11cf70d6e",
+            "id": "623f833a-32ef-493d-80ab-2566502d4ae0",
             "ord": "a7"
           }
         ]
@@ -1535,7 +1517,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "53cb877a-cf22-4c08-83a3-a8feecabd0e9",
+        "id": "69ba7fdb-17d8-4f1d-99d0-c1d8946774e3",
         "children": [
           {
             "kind": "element",
@@ -1551,14 +1533,14 @@
                   "alt": "A styling station with soft natural light",
                   "loading": "eager"
                 },
-                "id": "ec8154e0-7bb5-4f56-ae50-54ffcd78eae6",
+                "id": "8408f5c0-ddef-447d-8a6c-711acf7b2dbf",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "68b6f5e7-6801-4fc2-9798-75820f7fe2a8",
+                "id": "3023b204-fd66-4b3b-9ab7-1e105661905c",
                 "ord": "a1"
               },
               {
@@ -1571,7 +1553,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book your appointment"],
-                    "id": "f8501f28-9ed8-4913-b225-5f0abd6077e0",
+                    "id": "b01fd0c1-5fec-4e95-bf3a-57e463a1abbe",
                     "ord": "a0"
                   },
                   {
@@ -1581,7 +1563,7 @@
                     "children": [
                       "Choose a service to see prices and live availability, then pick your stylist and time."
                     ],
-                    "id": "ce7bdaca-576a-42c3-a3f6-deba6aac6f7c",
+                    "id": "4d83c5bc-d231-4d52-b7da-ace539ec4676",
                     "ord": "a1"
                   },
                   {
@@ -1597,27 +1579,31 @@
                           "href": "/book"
                         },
                         "children": ["See services below"],
-                        "id": "ae8fde5d-015e-4d88-86a7-87fe8ec6bfa0",
+                        "id": "44dc49d9-7256-4cc3-b8db-a2bc6dbae794",
                         "ord": "a0"
                       }
                     ],
-                    "id": "f8b17652-3db0-4272-bea4-b3d503f9bceb",
+                    "id": "698991bc-ca30-499a-8185-50ef2edc27d3",
                     "ord": "a2"
                   }
                 ],
-                "id": "91188370-d7a2-453d-a027-ec169e48915f",
+                "id": "c30e1ca5-dcf9-47e3-98b0-18315086dcf3",
                 "ord": "a2"
               }
             ],
-            "id": "98d22300-8dfb-4b3f-83b5-aa09204dee7f",
+            "id": "ae333695-ba74-46d2-9936-9e83326145b9",
             "ord": "a0"
           },
           {
             "kind": "host",
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "props": {
+              "heading": "Book with us",
+              "subheading": "Choose a service to see open times and reserve your spot."
+            },
             "locked": "host",
-            "id": "beaff9b9-f884-4b46-acba-97b9cb8c5b35",
+            "id": "52ef56b6-4518-47a7-b33f-85ec28be25c8",
             "ord": "a1"
           },
           {
@@ -1640,7 +1626,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Good to know"],
-                        "id": "038bbe76-913b-4d2e-8d60-64ec14888c49",
+                        "id": "5a6e6414-6172-43f8-b486-9a0d6ee80fda",
                         "ord": "a0"
                       },
                       {
@@ -1650,11 +1636,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "e39d663c-19be-4e3f-9ec8-299930a6fba1",
+                        "id": "04d48898-fe00-46dd-84a0-5451aa6b6bec",
                         "ord": "a1"
                       }
                     ],
-                    "id": "153e0ae2-617e-4cfd-a5c2-7bc93c6dfa41",
+                    "id": "f4adb016-9d7e-49d9-89fe-a7797a633929",
                     "ord": "a0"
                   },
                   {
@@ -1672,7 +1658,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Standard booking"],
-                            "id": "a2aee910-8a6d-4e48-b15d-7f2bf5d09c4d",
+                            "id": "ba54be4d-1a3a-4b7b-8b59-040ec2a675a5",
                             "ord": "a0"
                           },
                           {
@@ -1682,7 +1668,7 @@
                             "children": [
                               "Please give us at least 24 hours’ notice to change or cancel. We send a reminder the day before and two hours ahead."
                             ],
-                            "id": "99a87503-60fe-4ec6-881e-c822e38cfc17",
+                            "id": "da192637-88e5-44fc-91b4-f9581aee51d0",
                             "ord": "a1"
                           },
                           {
@@ -1692,11 +1678,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "9366af81-5ce9-4b7e-b675-a042bf432bb6",
+                            "id": "50df4b5b-7bf2-4a36-801b-bd9fb39ce60b",
                             "ord": "a2"
                           }
                         ],
-                        "id": "3d6eb91c-1f59-4683-9d6d-84371cfb81a4",
+                        "id": "61f02f4f-dbcf-4874-b72c-57b1d58f12c6",
                         "ord": "a0"
                       },
                       {
@@ -1709,7 +1695,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Color deposit"],
-                            "id": "14518cc2-ee5e-40f7-bf81-5acf473fac80",
+                            "id": "ea82b75b-c24d-4378-af2d-18dc09b3f5c0",
                             "ord": "a0"
                           },
                           {
@@ -1719,7 +1705,7 @@
                             "children": [
                               "Color appointments hold a $25 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over."
                             ],
-                            "id": "e75d1580-7851-49bb-ab61-9ac2ed5ee353",
+                            "id": "fa51d46f-f84e-4068-b0e6-d8cad16847ad",
                             "ord": "a1"
                           },
                           {
@@ -1729,23 +1715,23 @@
                             "children": [
                               "A $25 deposit holds your place. Change or cancel free up to 2 days before."
                             ],
-                            "id": "11a703e9-c1be-4d95-a01f-18c92a4445fd",
+                            "id": "e5f81b3b-8ce2-4635-96fe-2a70b49f2c47",
                             "ord": "a2"
                           }
                         ],
-                        "id": "87d7df03-88d3-40e2-aa4c-87b3f122dfa3",
+                        "id": "c8693819-f380-4cbc-b2a0-a2ce5db52653",
                         "ord": "a1"
                       }
                     ],
-                    "id": "4e0d610b-b03b-4a8f-80d7-ee516a8197b9",
+                    "id": "36c1ee1b-58d0-498f-a94d-af711ab94200",
                     "ord": "a1"
                   }
                 ],
-                "id": "7ed52db7-b7a1-462c-bb58-9eba9ec67440",
+                "id": "0f818178-1621-4aee-a46d-ae0dc8916b6f",
                 "ord": "a0"
               }
             ],
-            "id": "efd2e34c-1a38-4068-b9ea-2f5a389178c1",
+            "id": "8e5c89dd-6bea-4be1-af43-e310b8fadf9e",
             "ord": "a2"
           }
         ]
@@ -1762,7 +1748,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "0666dc52-3c71-458f-8cf2-33bca6e2d070",
+        "id": "eade06fa-8a1a-438d-a076-c231bdb1a897",
         "children": [
           {
             "kind": "element",
@@ -1783,7 +1769,7 @@
                       "alt": "A bright, calm salon interior in warm neutrals",
                       "loading": "lazy"
                     },
-                    "id": "0c0e3a58-db33-45ee-b347-dc84b35874f1",
+                    "id": "15ac20e3-e950-40db-8ad1-5203e7cce4fb",
                     "ord": "a0"
                   },
                   {
@@ -1796,7 +1782,7 @@
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About Maison Élan"],
-                        "id": "19bea90c-1498-4434-b2c7-1e9a3ddf834f",
+                        "id": "e70f6277-42a3-4188-83a3-094795c3b723",
                         "ord": "a0"
                       },
                       {
@@ -1806,7 +1792,7 @@
                         "children": [
                           "We opened Maison Élan to do hair the way we always wished it were done — slowly, thoughtfully, and with the same person who knows your hair."
                         ],
-                        "id": "068fcd42-e901-4abd-8eea-e52ba57b2966",
+                        "id": "946f36b6-ef15-4076-9d7b-8d89e7a8fea6",
                         "ord": "a1"
                       },
                       {
@@ -1816,7 +1802,7 @@
                         "children": [
                           "No upselling, no rushing, no leaving with a look you can’t recreate. Just considered cuts, soft color and a calm hour that’s genuinely yours."
                         ],
-                        "id": "c7f77ab8-d7bd-4612-b0c1-9eda2587505f",
+                        "id": "701bab94-6dc9-494f-91c5-341c435217b5",
                         "ord": "a2"
                       },
                       {
@@ -1832,23 +1818,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a chair"],
-                            "id": "5df17880-8f69-470a-9e39-547dfb66db4f",
+                            "id": "0e1f40ea-ce8a-4c33-80a3-afc5421328d8",
                             "ord": "a0"
                           }
                         ],
-                        "id": "589e61c6-300d-419b-916f-24aca4c50959",
+                        "id": "4c58b2ec-5e38-4091-811f-237c1ffd9ad7",
                         "ord": "a3"
                       }
                     ],
-                    "id": "69895aaf-1ff2-4090-81df-3f0d347d60a9",
+                    "id": "3232fa68-d415-41fd-a4ab-dcd2710f95d8",
                     "ord": "a1"
                   }
                 ],
-                "id": "2ed0ff0d-65e4-4b7e-b9d2-c6ab10da0dda",
+                "id": "7fa21337-d810-40db-8fe3-2738660702a5",
                 "ord": "a0"
               }
             ],
-            "id": "7c3c5714-50f5-43b6-8713-96d543f096bb",
+            "id": "8d850268-dcfa-49e3-bf5f-847e731dc446",
             "ord": "a0"
           },
           {
@@ -1866,7 +1852,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["How we work"],
-                    "id": "b99873ad-6b80-40cc-ad28-bd7f170eb8a9",
+                    "id": "ef5824cd-1bfe-4630-8038-06b83534944a",
                     "ord": "a0"
                   },
                   {
@@ -1884,7 +1870,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Consultation first"],
-                            "id": "7d994d9b-82af-46cd-8a09-5ae70bcdfefc",
+                            "id": "1c26cd86-9555-4321-8cd0-5472558db0c3",
                             "ord": "a0"
                           },
                           {
@@ -1894,11 +1880,11 @@
                             "children": [
                               "Every appointment starts with a real conversation about your hair, your routine and what you actually want."
                             ],
-                            "id": "d423f03d-e688-44d7-9064-d40d7eb4d6e9",
+                            "id": "05df0585-44d3-44a9-8dd2-48c744a8ada5",
                             "ord": "a1"
                           }
                         ],
-                        "id": "519da716-8d15-4503-827a-d3e1ca37e63d",
+                        "id": "bbf35cc1-452d-44fd-b639-733c75f840a1",
                         "ord": "a0"
                       },
                       {
@@ -1911,7 +1897,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Products we believe in"],
-                            "id": "8428ee9c-5b9d-4675-bb1c-9d01af806316",
+                            "id": "34208547-2282-4ae2-8222-0400fbde294b",
                             "ord": "a0"
                           },
                           {
@@ -1921,11 +1907,11 @@
                             "children": [
                               "Gentle, salon-grade color and care — and honest advice on the short list of things worth taking home."
                             ],
-                            "id": "676299e5-dd63-4dc1-8227-2eaf904ee91b",
+                            "id": "71949e82-6a08-4d66-bed7-07951d495f1b",
                             "ord": "a1"
                           }
                         ],
-                        "id": "0bf88d7e-d8f5-4d98-abe4-c41e69c9fab5",
+                        "id": "df3198f4-aaec-452f-9f6e-8774adaf868b",
                         "ord": "a1"
                       },
                       {
@@ -1938,7 +1924,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Yours to keep"],
-                            "id": "e01daf4f-8799-4038-bafe-0623963dc987",
+                            "id": "e7bc50f9-3bb8-4ec6-941a-99b776d4a299",
                             "ord": "a0"
                           },
                           {
@@ -1948,23 +1934,23 @@
                             "children": [
                               "We finish by showing you how to get the look again at home, so it works on a Tuesday, not just in the chair."
                             ],
-                            "id": "ef256a3f-8ecd-40c1-9c88-dcbef7cb0c20",
+                            "id": "930bac6f-506a-478b-8b0b-bf0f2b472e00",
                             "ord": "a1"
                           }
                         ],
-                        "id": "fb49cd6f-5fb7-4182-af1c-8e7e788e4425",
+                        "id": "080caa3f-7b8c-4ccb-9b81-9d29bba901d9",
                         "ord": "a2"
                       }
                     ],
-                    "id": "92026df3-65c2-4dce-aff8-7369f1ebc409",
+                    "id": "e1ef7b9f-cfc9-4aaf-b056-422c0a57d9c7",
                     "ord": "a1"
                   }
                 ],
-                "id": "aafdc3e3-7973-4757-a990-57ba47f78d81",
+                "id": "23b81d86-4cc6-422c-b1c6-1e76d1221d53",
                 "ord": "a0"
               }
             ],
-            "id": "a26504f6-56ea-4723-bb1e-531430d9511e",
+            "id": "e0088517-43d9-4ddc-841f-815f666a0a5e",
             "ord": "a1"
           }
         ]
@@ -1981,7 +1967,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "170153f4-c9c7-42a4-9bea-46a3deebd3e9",
+        "id": "cbe82ca7-0d71-40c9-902e-d6089741dce0",
         "children": [
           {
             "kind": "element",
@@ -2003,7 +1989,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Get in touch"],
-                        "id": "11a621e0-b990-4a1e-955e-f2d7871ecb7c",
+                        "id": "4a5bfd2d-8935-42ce-82e8-2e336ce6ed82",
                         "ord": "a0"
                       },
                       {
@@ -2013,11 +1999,11 @@
                         "children": [
                           "Questions before you book? Send a note and Maison Élan will get back to you — usually the same day."
                         ],
-                        "id": "e02e3045-6f46-423e-9dec-370624edabce",
+                        "id": "b495b040-6cfb-4430-97f1-dab91f80d241",
                         "ord": "a1"
                       }
                     ],
-                    "id": "71b48fe9-d46f-470b-b014-d3c16870df2c",
+                    "id": "eb5cf948-2d88-4967-a9da-fe617fe405d7",
                     "ord": "a0"
                   },
                   {
@@ -2030,7 +2016,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Call us"],
-                        "id": "7d617758-c723-4796-9ca5-36a671a2cb5b",
+                        "id": "8d7f01a9-7816-46c5-854e-90356e3e925d",
                         "ord": "a0"
                       },
                       {
@@ -2046,7 +2032,7 @@
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "531216c6-ac1f-45d0-90aa-e44ce0fff1c1",
+                            "id": "6c50630d-7676-4ed4-8a04-3971fa0c26a3",
                             "ord": "a0"
                           }
                         ],
@@ -2055,7 +2041,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "633a644e-f5f3-46fa-b154-9cf15a464570",
+                        "id": "bba7ec9c-42d3-4481-9e71-6119c634d0f6",
                         "ord": "a1"
                       }
                     ],
@@ -2063,7 +2049,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "652205b3-0566-4be8-8a95-a82bea788078",
+                    "id": "5697a425-57de-452d-9fc0-5847f53c9988",
                     "ord": "a1"
                   },
                   {
@@ -2076,7 +2062,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Email us"],
-                        "id": "633d1bd0-9313-491f-90ef-4368eb8e8f4d",
+                        "id": "45d53218-bfba-4378-aa42-e32f248888f9",
                         "ord": "a0"
                       },
                       {
@@ -2092,7 +2078,7 @@
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "65701c04-2863-4324-9c49-01db13c7ec6c",
+                            "id": "da6ad6e5-1730-4c91-b22d-19cd8c73c31a",
                             "ord": "a0"
                           }
                         ],
@@ -2101,7 +2087,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "12e03d5a-cea6-4472-9252-331941e6bb89",
+                        "id": "7c49e0a6-de4a-4b4a-90e3-2903fc8d3334",
                         "ord": "a1"
                       }
                     ],
@@ -2109,7 +2095,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "9f99992a-bb4a-484a-9e0b-9a05237976eb",
+                    "id": "7d5cb264-cd7d-4cb0-8548-340c2541e6c3",
                     "ord": "a2"
                   },
                   {
@@ -2127,7 +2113,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Your name"],
-                            "id": "0b083936-d3a8-479d-b63d-8f8e661235a4",
+                            "id": "8d1f794e-dfeb-40a0-ae8d-d39114511c82",
                             "ord": "a0"
                           },
                           {
@@ -2139,11 +2125,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "5ecef89a-d413-4d87-9687-2c83a0fc15c1",
+                            "id": "603e8e9a-9c69-4e62-8757-b5f3653915e4",
                             "ord": "a1"
                           }
                         ],
-                        "id": "eaf435ae-1a92-4f25-b670-be16009b4f02",
+                        "id": "955bfc94-6766-4ac7-95ff-4ab40bd33128",
                         "ord": "a0"
                       },
                       {
@@ -2156,7 +2142,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Email address"],
-                            "id": "75089418-7d48-44c2-93f6-380251a596bc",
+                            "id": "0d05239c-3c86-4c10-8c62-c1a965e52b77",
                             "ord": "a0"
                           },
                           {
@@ -2168,11 +2154,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "da45e9ed-bc70-4d71-88af-7bdac139619d",
+                            "id": "d998219c-3ff1-4283-a39f-b0c398443b30",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1ac5aae4-61cf-48ce-b642-9c89265c593b",
+                        "id": "a717104f-af91-47bf-95b9-9b16acf3e5eb",
                         "ord": "a1"
                       },
                       {
@@ -2185,7 +2171,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Phone number"],
-                            "id": "574a2f92-5594-4815-87f2-84b0e96ffc19",
+                            "id": "749b4f48-8d7e-4f90-bf38-77fe3fa17f91",
                             "ord": "a0"
                           },
                           {
@@ -2196,11 +2182,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "75dc1b9b-ba87-498e-b111-3c55947fa119",
+                            "id": "524a3288-9026-45c2-bc18-f03d1db2b514",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3e02b945-6b1b-4a01-9d14-44bc3845b2c1",
+                        "id": "7d4c6528-7638-4ace-b6f7-4318642be9cb",
                         "ord": "a2"
                       },
                       {
@@ -2213,7 +2199,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["How can we help?"],
-                            "id": "2cff4d1d-9b82-4625-9329-cecd3b1953c4",
+                            "id": "585b794c-4209-4131-bc64-27377734bed5",
                             "ord": "a0"
                           },
                           {
@@ -2223,11 +2209,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "4e95e007-b63a-40d4-95d1-18a65f19844d",
+                            "id": "f03f2524-1647-4d97-9459-77849943b60c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "80f5a33a-81e2-4ac4-91f4-fe33a558e830",
+                        "id": "3652a112-d27f-4e95-bd48-c770bbd0cbab",
                         "ord": "a3"
                       },
                       {
@@ -2243,11 +2229,11 @@
                               "type": "submit"
                             },
                             "children": ["Send my request"],
-                            "id": "fb088de7-4fb5-4771-9034-5f26408749d3",
+                            "id": "9fa47dd5-5bea-4c6c-9489-7989d2dcc450",
                             "ord": "a0"
                           }
                         ],
-                        "id": "65660f24-eb5f-47b6-965a-a4a2ee350796",
+                        "id": "130ed9fe-32cf-421e-a6ee-ddd8d3a2ad9e",
                         "ord": "a4"
                       }
                     ],
@@ -2258,15 +2244,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "02b10fbc-f998-4000-ad19-c1193ebd0ea3",
+                    "id": "e7a986e5-6ae7-4b4d-88de-d46e6843d684",
                     "ord": "a3"
                   }
                 ],
-                "id": "88cd37ab-a2e5-4ba5-a4e6-5abd9362c5d9",
+                "id": "5a102291-2cc9-4826-8046-982f3f668cfe",
                 "ord": "a0"
               }
             ],
-            "id": "64e46274-2d95-4b6e-9b4c-769c3cdf2c5b",
+            "id": "6656cdbb-b657-4c34-8042-ae9f89eb097a",
             "ord": "a0"
           },
           {
@@ -2289,7 +2275,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Visit the studio"],
-                        "id": "e1985f73-d7f8-4ce0-b1b5-5244297c87fe",
+                        "id": "af176048-6c3d-4bb9-9417-5eeb3e147ea8",
                         "ord": "a0"
                       },
                       {
@@ -2303,7 +2289,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "a7f5623a-4dcc-4b24-98bf-2ee889378c51",
+                        "id": "2cafe9b3-205c-49db-83c5-254d86b06c44",
                         "ord": "a1"
                       },
                       {
@@ -2321,7 +2307,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Tuesday – Friday"],
-                                "id": "9ee9b298-3ddf-4da3-ada2-a341313dd91c",
+                                "id": "cb344c58-e4d2-4c41-9db2-9e27333e2c29",
                                 "ord": "a0"
                               },
                               {
@@ -2329,11 +2315,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 7:00"],
-                                "id": "ac68905a-e73f-4935-ab40-5da6cdc2e23e",
+                                "id": "58c58bf7-17fa-4eb9-9620-7dc38dd32519",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e37fbc57-03f4-416d-a877-913cf329e26c",
+                            "id": "c9096eeb-e8f7-4e3e-99bd-5c499272a5a9",
                             "ord": "a0"
                           },
                           {
@@ -2346,7 +2332,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "bc45ed67-76e7-45e4-999b-f1ecf377f9a7",
+                                "id": "d0b1338d-dd00-400a-9899-dda8234d1c6a",
                                 "ord": "a0"
                               },
                               {
@@ -2354,11 +2340,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 6:00"],
-                                "id": "56c400b1-dc32-4406-84e4-7e0a4f7cd8b1",
+                                "id": "80a6601e-6670-4275-88b2-5a8178e5afba",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f0735800-0d52-4886-9ae2-31f382f0a01d",
+                            "id": "e659c088-5c11-461c-8715-04e280509cb5",
                             "ord": "a1"
                           },
                           {
@@ -2371,7 +2357,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "bd6f5d11-10a0-4b0c-b813-c3e1469b90d1",
+                                "id": "96bd8e69-3e7d-491d-9b59-18cec8d0b473",
                                 "ord": "a0"
                               },
                               {
@@ -2379,11 +2365,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["10:00 – 4:00"],
-                                "id": "c48b0b83-1b64-4194-a9c4-a3d707638796",
+                                "id": "6b7e077f-8820-49a6-8a5d-d6947af4f522",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "16189ee2-517a-4038-842e-748788edcffb",
+                            "id": "f61457ed-bca8-4805-abcb-8bdd773c2736",
                             "ord": "a2"
                           },
                           {
@@ -2396,7 +2382,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday"],
-                                "id": "6a156ae9-f082-4d71-986a-f6228deda413",
+                                "id": "1098352b-8c42-4606-bba4-ff37f22a3bf1",
                                 "ord": "a0"
                               },
                               {
@@ -2404,19 +2390,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Closed"],
-                                "id": "1438b8d2-16bb-40f6-b728-922c8e629c6a",
+                                "id": "9da9e872-6e64-421e-a040-b3e5900317b5",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "80725c05-f77d-465f-a96d-cd0332f9a202",
+                            "id": "8cf5450c-b3aa-4a56-bafb-612b581597a4",
                             "ord": "a3"
                           }
                         ],
-                        "id": "ce4fdf8b-6654-4037-9b87-3a2c46995568",
+                        "id": "bc3dc109-bfae-4ce5-b238-09ea4c9f6aaf",
                         "ord": "a2"
                       }
                     ],
-                    "id": "f2139ed1-693b-41ec-9fc5-e8ec1d3779f3",
+                    "id": "9640152f-349e-46f3-bf4a-262adbd43820",
                     "ord": "a0"
                   },
                   {
@@ -2429,15 +2415,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "ded4d40b-edcc-4779-a75c-be4959286bf6",
+                    "id": "58514f8c-4ffa-4ad2-aed4-51f5e37b72c4",
                     "ord": "a1"
                   }
                 ],
-                "id": "070aad5d-77cb-4e55-8b53-9bc10f206781",
+                "id": "c35df424-4943-4ed6-80f5-c47d434ddb3e",
                 "ord": "a0"
               }
             ],
-            "id": "d21cd127-3cb9-444f-bb9c-a83da7bedd01",
+            "id": "58231471-616a-412a-a78e-1923b96ca5a0",
             "ord": "a1"
           },
           {
@@ -2455,7 +2441,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than call?"],
-                    "id": "5b6803b8-0499-44ee-a581-ed4a928fc5df",
+                    "id": "21c1c234-b486-4e8a-93d1-beb9892047bb",
                     "ord": "a0"
                   },
                   {
@@ -2465,7 +2451,7 @@
                     "children": [
                       "See live availability and reserve your time online — no phone tag."
                     ],
-                    "id": "d16910d4-0fe5-4241-a939-9de48f22a85e",
+                    "id": "641d4e1d-4a6d-4884-af6e-19518e798139",
                     "ord": "a1"
                   },
                   {
@@ -2476,15 +2462,15 @@
                       "href": "/book"
                     },
                     "children": ["Book online"],
-                    "id": "54aeff67-8d55-4d20-b63f-36820a8202a3",
+                    "id": "d8255e1d-c831-4ced-9ec5-34c104626005",
                     "ord": "a2"
                   }
                 ],
-                "id": "740070c9-3787-4540-aa9e-19675e552ced",
+                "id": "a8d88f9d-2419-4d58-94e5-1d58e0016fd6",
                 "ord": "a0"
               }
             ],
-            "id": "b66f3605-5e51-476c-9f62-3cd2f50177c6",
+            "id": "1a79865d-a771-48ee-b148-8bef529b31c6",
             "ord": "a2"
           }
         ]

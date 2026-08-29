@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-electrician-residential',
-  version: '1.3.3',
+  version: '1.4.0',
   name: 'Electrician (Residential)',
   summary:
     'A trustworthy residential-electrician site — a warm-white ground, a charcoal primary and a safety-yellow accent, with photo-led, code-to-safety copy. Installs a working booking flow: free estimates, diagnostics, outlet & lighting installs, panel consults, safety inspections and an emergency callout, with three electricians you book by name and their own weekly hours. Ships as "Brightwire Electric".',

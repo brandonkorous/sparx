@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-law-family",
   "name": "Law (Family & Estate)",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "tagline": "A warm, human template for family & estate law firms — book consultations from day one.",
   "description": "A warm, approachable family and estate law site — a cream ground, a deep-navy primary and a trustworthy serif — built around booking a free consultation. Installs a working booking flow: wills, trusts, probate, family-law and guardianship consults, three attorneys you book by name with their own hours, and a standard reschedule policy. Ships as \"Hearth & Stone Law\", a caring, plain-English practice.",
   "payload": "blueprint.ts",

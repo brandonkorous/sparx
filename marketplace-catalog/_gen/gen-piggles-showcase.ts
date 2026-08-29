@@ -44,6 +44,32 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { safeParseBlueprint } from '../../wizeworks/packages/blueprints/src/validate';
+import { upgradeFrameChrome } from '../../wizeworks/packages/silica-catalog/src/upgrade-frame';
+
+/** The golden bundle's frame, run through the platform's own upgrade-on-read before it is
+ *  cloned.
+ *
+ *  The site half of `sparx` is CAPTURED from the live Template property, so its header and
+ *  footer are as old as the last capture — and the capture predates both the live account
+ *  core and the live legal-links core. Every clone inherited that, which is how twenty one
+ *  designs came to ship a stamped "Sign in" that tells a signed-in customer they are a
+ *  stranger and offers them no route to the account holding their orders (issues 291, 313).
+ *
+ *  `upgradeFrameChrome` is exactly the repair the platform already applies to a stale stored
+ *  frame the first time its owner opens the studio. Applying it HERE means an installing
+ *  tenant gets the current chrome on day one instead of on their first visit to the builder,
+ *  which many never make. It is a no-op on a frame that is already current, so re-running
+ *  this generator after a fresh capture changes nothing.
+ *
+ *  The golden `sparx` bundle ITSELF is not written by any generator — it is the capture — so
+ *  it stays behind until the Template property is opened in the studio (which heals its
+ *  draft) and re-captured. That is the one bundle the chrome guard excepts, by name. */
+function healedSite(site: Record<string, unknown>): Record<string, unknown> {
+    const frame = site.frame as { root: unknown } | null | undefined;
+    if (!frame?.root) return site;
+    const healed = upgradeFrameChrome(frame.root as Parameters<typeof upgradeFrameChrome>[0]);
+    return healed.changed ? { ...site, frame: { ...frame, root: healed.root } } : site;
+}
 
 const here = dirname(fileURLToPath(import.meta.url));
 const catalog = join(here, '..');
@@ -279,7 +305,7 @@ async function main(): Promise<void> {
         'The complete starter — a faceted shop, a journal, a booking page, and a wholesale ' +
         'page. Install it, make it yours, and launch a polished working site in minutes.';
 
-    await fs.writeFile(join(outDir, 'site.json'), json(site));
+    await fs.writeFile(join(outDir, 'site.json'), json(healedSite(site)));
     await fs.writeFile(join(outDir, 'content.json'), json(content));
     await fs.writeFile(join(outDir, 'commerce.json'), json(commerce));
     await fs.writeFile(join(outDir, 'assets.json'), json(assetsPart));
@@ -303,7 +329,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: ${JSON.stringify(KEY)},
-  version: '1.2.0',
+  version: '1.3.0',
   name: ${JSON.stringify(name)},
   summary: ${JSON.stringify(summary)},
   vertical: 'retail',
@@ -340,7 +366,7 @@ export default blueprint;
             category: 'blueprint',
             slug: KEY,
             name,
-            version: '1.2.0',
+            version: '1.3.0',
             tagline: 'A complete multi-module starter — shop, journal, bookings, and wholesale.',
             description: summary,
             payload: 'blueprint.ts',

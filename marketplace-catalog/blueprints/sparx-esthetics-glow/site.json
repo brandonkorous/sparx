@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "757ecb1b-c811-47a6-a8da-481ee65bedc8",
+                  "id": "a9a06880-e129-414a-b272-ce9757f04c84",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "0f17b6c8-5a35-45b3-9f68-d3744d9e8aa0",
+                      "id": "85e092fe-2612-4b31-b8cd-f321d673dd87",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "13d70fef-f524-4f49-9161-d1cf260e0725",
+                      "id": "68b38371-a68b-4b44-802f-4dc89f16e49b",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "ff8c02c4-f3f7-47f9-b4e8-5f6e8cda34ba",
+                      "id": "ecf5757a-de61-4cb0-b0d9-c103fc60b119",
                       "ord": "a2"
                     }
                   ],
-                  "id": "98555c5e-9c7a-4747-9d6c-88525c50497d",
+                  "id": "1c914e10-cb01-49b0-b87b-a47896406227",
                   "ord": "a1"
                 },
                 {
@@ -88,26 +88,17 @@
                   "class": "ml-auto flex items-center gap-3",
                   "children": [
                     {
-                      "kind": "element",
-                      "tag": "a",
+                      "kind": "host",
+                      "component": "site.account-link",
                       "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
-                      "attrs": {
-                        "href": "/account/login"
-                      },
-                      "children": ["Sign in"],
-                      "slot": {
-                        "name": "secondary",
-                        "type": "link",
-                        "label": "Secondary link"
-                      },
-                      "id": "216168b8-3d80-4611-a931-778542b2803a",
+                      "id": "88185604-847c-42e3-ad4e-3ae0b0cda4db",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "785e7f3b-24f3-410f-a5eb-4e9e9b3f7a0a",
+                      "id": "e884e808-2656-458c-8a91-7f20b5913b86",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +114,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "dbc9519c-9788-4cc7-9d92-9c1a36e7cb9f",
+                      "id": "4467850b-4948-46c0-951c-c427d0e22dcf",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +132,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "fd54bc98-5578-44cd-99ff-805e3199715f",
+                          "id": "1bec814b-d620-4ddb-9615-1733c1a6436e",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "1d1ace7b-7231-42a1-a473-dc10bd3ff485",
+                      "id": "f5572c26-e6d2-43e7-9ae6-91c59467e0ab",
                       "ord": "a3"
                     }
                   ],
-                  "id": "649e4c6a-c615-4b9b-8b7b-0cc91b8d2a58",
+                  "id": "e3d12fa0-d1f9-4c4c-9ac0-4cf976219104",
                   "ord": "a2"
                 }
               ],
-              "id": "44e80c77-e328-4c21-82f5-48525f0462d6",
+              "id": "83fc8f85-1835-4c2f-8339-17cf782307a1",
               "ord": "a0"
             },
             {
@@ -178,7 +169,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "6e9d3568-8b6b-4791-976b-7dcae19e34ae",
+                  "id": "7cb16293-ebd5-425f-b6ab-697513774e20",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +185,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "d941506b-3f4d-4d08-9540-c82902923a01",
+                  "id": "4418464f-3184-4ff2-a062-678c7d7ccf4c",
                   "ord": "a1"
                 },
                 {
@@ -210,23 +201,14 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "857d82b4-4aee-46e2-aea1-0450d4904812",
+                  "id": "96955053-bee5-4536-b1c0-798f3284d6da",
                   "ord": "a2"
                 },
                 {
-                  "kind": "component",
-                  "component": "Button",
+                  "kind": "host",
+                  "component": "site.account-link",
                   "class": "btn btn-ghost btn-sm mt-2 w-full",
-                  "props": {
-                    "label": "Sign in",
-                    "href": "/account/login"
-                  },
-                  "slot": {
-                    "name": "secondary",
-                    "type": "link",
-                    "label": "Secondary link"
-                  },
-                  "id": "de2b6e49-b698-4c66-8fb1-5085abd3a1ff",
+                  "id": "23ad119f-ece0-4623-b5bb-69f08c671d7a",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +224,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "f8c8d9d3-fb3f-40c0-bf59-ac6bcd2f547f",
+                  "id": "0f242484-19fe-4bd4-bc20-c674128cec53",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "9c1bc63f-4ace-44db-aefb-37bb4cecba32",
+              "id": "70500318-01f3-4461-9423-983f0326ef93",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "5dda5ad9-02c1-4434-815a-b33f9ffe1f13",
+          "id": "d749caed-8dd9-483f-88e9-e1075d75252d",
           "ord": "a0"
         },
         {
@@ -270,7 +252,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "1ac6dc0b-235d-40c4-bfab-8d8fc9e85c69",
+          "id": "c2f6b2bb-7a97-42df-a0fb-1132af6ea7ae",
           "ord": "a1"
         },
         {
@@ -300,7 +282,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "24255478-5d96-42d9-9274-b2599c181e3f",
+                          "id": "161605db-c3c9-487a-b2e9-d57d6c8efcf6",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +298,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "5ac2e226-c97e-42b6-a441-facbe2277be7",
+                          "id": "46010f4a-30f3-4781-b835-c1cd731965db",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +306,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "5f1b2ef9-cca1-46c5-92a9-3d865af7a90d",
+                          "id": "930346d3-6929-4c1b-9892-fff0e830a00a",
                           "ord": "a2"
                         }
                       ],
-                      "id": "4e093450-a0ec-458e-8d3e-03d971799184",
+                      "id": "2400ad71-5bf9-49e3-9544-92b1d4b25899",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +331,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "aba786a5-e170-4185-8d4c-06c71ffcede0",
+                          "id": "dd0700e1-d599-456c-bb74-344b0e679488",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +356,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "857c2b7c-f17f-47d9-b21e-7bc864dbec37",
+                                  "id": "fb7c73d6-9d46-44a1-b267-540ca124ffa8",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "0607737b-a616-4ea4-bbe5-eca781923514",
+                              "id": "3d472871-7821-422e-8606-577fae16956d",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +380,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "3bc0575e-4893-43e3-9e0b-307ab67e7dde",
+                                  "id": "a6d9ce70-4c52-4308-877c-e2470533adc5",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "b15b1c59-7eaa-4d1a-a697-8e5f53e65906",
+                              "id": "4e320df5-3385-4e4b-bc79-a67220ba5539",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +404,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "1ea264c6-a1d5-41cb-82b4-487b8889276c",
+                                  "id": "0e3da59c-955f-4671-a69c-85b403c556fb",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "2b4ccfd2-1d9e-41ae-8870-a757e77a37bf",
+                              "id": "506fce83-8acb-439a-9f6a-2ff1c1549a59",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +428,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "ca644832-df72-4c00-8c1b-4404e78e0aa2",
+                                  "id": "84856767-1421-4f7a-8433-5119a8f1323f",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "df6751ad-68a5-477f-8aeb-ffd54cdc2790",
+                              "id": "d8c7bd9e-55c5-4113-8d49-d75083d2eb90",
                               "ord": "a3"
                             }
                           ],
-                          "id": "700b7807-a8b9-4831-b557-4ebbfd405904",
+                          "id": "146478d0-2909-41ce-b69c-b021aa8d2448",
                           "ord": "a1"
                         }
                       ],
-                      "id": "1f3cfc70-7c92-4090-a3ff-e1e6b6455dfa",
+                      "id": "e58ac8f2-1885-4d0b-ab45-580ff35e6c63",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +453,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "95c64b76-7274-4eae-a4a6-edcd9c937a95",
+                          "id": "5f2b2e9b-8701-49bc-8715-e0dd8af7d32b",
                           "ord": "a0"
                         }
                       ],
-                      "id": "e4352881-a4a6-4f87-ad7e-6283bc38d3ba",
+                      "id": "b2340fb0-092e-46a6-9228-0febada5b83e",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +481,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "9bbeed88-ada0-4ec7-853a-9daf1a7dc4a8",
+                                  "id": "4fbd3424-2059-4cdf-ab3f-42ed05f54d3a",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "6c557441-396c-4e6b-855a-bfdec75c518d",
+                              "id": "a46180c0-79b9-4354-8933-4d4096d8e967",
                               "ord": "a0"
                             }
                           ],
-                          "id": "5cb1bd26-1805-4956-b4a3-403dc7649852",
+                          "id": "9bde9e3e-86c9-4a81-b51e-0f2a7da9a3ff",
                           "ord": "a0"
                         }
                       ],
-                      "id": "3aee0c52-f402-4a52-a2a6-803c215f7191",
+                      "id": "6da6674d-833a-4445-a1d0-8cc56d959247",
                       "ord": "a3"
                     }
                   ],
-                  "id": "b8536c58-1df5-4c1a-8e46-274a09ca721d",
+                  "id": "d0619247-baec-4ed8-94f1-f81cccc68ed8",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +520,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "9a8ba0e4-d118-4e76-b444-73ce78380bbd",
+                          "id": "d562c8b4-530f-4792-8773-39aedcbda12b",
                           "ord": "a0"
                         }
                       ],
-                      "id": "35141542-71ad-4711-991d-3408d212aaf4",
+                      "id": "96244ac7-4131-45ae-b534-306d379ef625",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +532,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "4b82d884-64ba-4409-a4dc-0bc5df155e5b",
+                      "id": "7c8000cd-0ca5-4e68-8aac-a61775ec6497",
                       "ord": "a1"
                     }
                   ],
-                  "id": "a529907c-6c0b-40e2-97d1-3473bcfe801b",
+                  "id": "8e9dd956-c4b4-46b9-bcfa-23a51157e830",
                   "ord": "a1"
                 }
               ],
-              "id": "9df24da9-fb38-4a0e-bc5d-a3c130dbafb8",
+              "id": "af0a5a33-12fe-48e7-bb46-cf0a19605691",
               "ord": "a0"
             }
           ],
-          "id": "ff92faf3-4859-48bc-a070-4fe5a21d8f40",
+          "id": "d3596353-44cf-4727-8eea-cfa3a97c5ad8",
           "ord": "a2"
         }
       ],
-      "id": "96e9eb62-2507-49a3-909d-b9a845c29a60"
+      "id": "3f73a6b1-6337-49a7-8f0e-8ed66a821b84"
     }
   },
   "pages": [
@@ -580,7 +562,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "66a683b8-4988-4d2b-ae5b-1ca0e8d7ea9b",
+        "id": "4ab645a1-1430-4c59-ae05-5a1f278d6bd6",
         "children": [
           {
             "kind": "element",
@@ -596,14 +578,14 @@
                   "alt": "Fresh, dewy, glowing skin in bright natural light",
                   "loading": "eager"
                 },
-                "id": "5615fa47-035d-4b40-8f95-d1e23810ab98",
+                "id": "d5192b8b-92c2-4c9d-8cb5-02e27ff01229",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/30",
-                "id": "21669384-8d5d-438f-acfa-55406a74c446",
+                "id": "61166e16-a547-464c-823f-5427abadbf0f",
                 "ord": "a1"
               },
               {
@@ -616,7 +598,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Glow on your lunch break"],
-                    "id": "129d7b7f-803a-49fa-a3dc-85fa0c96f35f",
+                    "id": "77ca6800-51e8-4a5a-803b-d8d2afb09197",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +608,7 @@
                     "children": [
                       "Quick, feel-good express facials at the glow bar — walk in dull, walk out dewy. No downtime, all glow."
                     ],
-                    "id": "f74f907d-cf12-4e78-a5d2-f1066a34b063",
+                    "id": "21c09012-4e6d-4ee2-b79b-a0b400d71e2e",
                     "ord": "a1"
                   },
                   {
@@ -642,7 +624,7 @@
                           "href": "/book"
                         },
                         "children": ["Book a glow"],
-                        "id": "f5e200c3-297d-4a58-84e0-f679afc772be",
+                        "id": "b08ec594-8897-4732-b98e-272c387c3f66",
                         "ord": "a0"
                       },
                       {
@@ -653,19 +635,19 @@
                           "href": "/book"
                         },
                         "children": ["See the menu"],
-                        "id": "6bac54e1-5783-4e34-af7a-e4ebb561102b",
+                        "id": "d6c00a72-58e9-404c-a4c3-ae85068066a6",
                         "ord": "a1"
                       }
                     ],
-                    "id": "e815835f-4faa-4be9-aba8-6a81a5b3cfe0",
+                    "id": "f3403f3e-df94-43c1-b6b8-e22c4644661e",
                     "ord": "a2"
                   }
                 ],
-                "id": "79caf4f3-5b44-42a1-ab89-6c5d78f63260",
+                "id": "d962b442-136a-4451-b424-76342c0f0372",
                 "ord": "a2"
               }
             ],
-            "id": "85df5599-fffe-4ee3-93a9-a383323819e9",
+            "id": "bc14cf30-fb20-4a2d-bcfe-fdfd45d6953f",
             "ord": "a0"
           },
           {
@@ -693,7 +675,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Express, walk-in-friendly facials"],
-                            "id": "44a7b1ed-e382-4b14-909b-b23f83a3038a",
+                            "id": "ca126a88-61c7-4809-9ad1-a8013be9061b",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +685,11 @@
                             "children": [
                               "Thirty happy minutes, in and out on your break. Book ahead or pop in — a fresh glow fits any day."
                             ],
-                            "id": "a21e5a3e-8ef0-4bee-9b53-be8b263f07a9",
+                            "id": "aac8c84b-4960-4d8f-ba89-a5ede7f91e4e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ec10e32b-464e-4796-87e5-90c583e15299",
+                        "id": "8bdee8fa-1a69-4057-b10d-b6d340a89fc2",
                         "ord": "a0"
                       },
                       {
@@ -720,7 +702,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Glow memberships"],
-                            "id": "c53d6ba4-fbaf-4c5c-8711-9efceffa55a9",
+                            "id": "b54251fa-f56a-4780-871d-15b6d93b4938",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +712,11 @@
                             "children": [
                               "Make the glow a habit. Members get a monthly facial, add-on perks and friends-and-family pricing."
                             ],
-                            "id": "2f012b04-7837-4029-a615-585a7270767c",
+                            "id": "e5eae0da-b1ef-4617-9199-91f7c86406dc",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f5fccbd0-0195-4eb5-a64a-6a78be7b55d7",
+                        "id": "44495c90-6af8-4c8b-a87a-099ea22ebe07",
                         "ord": "a1"
                       },
                       {
@@ -747,7 +729,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Fun little add-ons"],
-                            "id": "17cb751c-173c-4334-a1d9-9dbda6bc6dbb",
+                            "id": "30993ae4-b315-443b-8204-6abd8e6faf0f",
                             "ord": "a0"
                           },
                           {
@@ -757,23 +739,23 @@
                             "children": [
                               "Stack an LED session or a sculpting gua sha onto any facial and float out extra dewy."
                             ],
-                            "id": "ad192db0-692c-4c28-ae1b-e3806b0e9973",
+                            "id": "7c213eab-551a-4696-bceb-1fb5c42cb47c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7d9f83a3-d7a4-4e5a-a398-f13fde955376",
+                        "id": "fab6b6d2-77d8-47a7-83f1-5801af2e9fa5",
                         "ord": "a2"
                       }
                     ],
-                    "id": "c28795b3-73d1-4cfd-b3ed-cd81aae68df6",
+                    "id": "ea7c4c22-d2c7-43cd-b625-20c3f36271bf",
                     "ord": "a0"
                   }
                 ],
-                "id": "47dbd4df-79f0-4fbb-9cf7-509300bc3402",
+                "id": "7d72a629-c6c4-489d-ba0d-1958c5e9d25e",
                 "ord": "a0"
               }
             ],
-            "id": "9bf05753-bfcc-4d6b-bff5-406795eb37c8",
+            "id": "ec85e982-c435-434a-bc66-b141d6a0f0c0",
             "ord": "a1"
           },
           {
@@ -796,7 +778,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["The glow menu"],
-                        "id": "5d3ea4a3-23af-470f-9486-f0db04d39e3d",
+                        "id": "90915542-02ce-4d11-9821-77c71f01c307",
                         "ord": "a0"
                       },
                       {
@@ -806,11 +788,11 @@
                         "children": [
                           "Express facials and fun add-ons — pick your glow. Live times and full prices are on the booking page."
                         ],
-                        "id": "5ca839cb-3ca7-465c-a0be-61fc7e510dc8",
+                        "id": "2723c409-6178-441a-beca-ef164e32c644",
                         "ord": "a1"
                       }
                     ],
-                    "id": "50e4a55d-c957-4ad3-86d5-b170cc89bd6e",
+                    "id": "f593e0f6-8041-456f-b4d8-ca24ac74e377",
                     "ord": "a0"
                   },
                   {
@@ -836,7 +818,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Express glow facial"],
-                                "id": "816321e7-fece-4a1c-9493-1791cc3a8832",
+                                "id": "03b35dcf-50ce-4f7a-a75b-1cc0b36f2e44",
                                 "ord": "a0"
                               },
                               {
@@ -844,11 +826,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$45"],
-                                "id": "84a30447-dd93-40ec-a5a9-cb448a72b7ae",
+                                "id": "19673217-24e3-49b8-a7f1-fc187a431aaf",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ab5a2f0b-8225-4214-ad52-ee72e4696993",
+                            "id": "74fa39b6-0a5d-4ce4-abf3-a66ccc4206a1",
                             "ord": "a0"
                           },
                           {
@@ -856,7 +838,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["30 min"],
-                            "id": "45e0a207-05d5-49b2-8dbb-06e967059c23",
+                            "id": "ded6cfae-6a57-4c86-b658-338788f88f7d",
                             "ord": "a1"
                           },
                           {
@@ -864,11 +846,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["A dewy glow on your lunch break."],
-                            "id": "3ca52595-760b-40d7-ba80-d7a84dd42a1a",
+                            "id": "1f9ac4d6-b17c-4f5e-a1cb-8008b1516a96",
                             "ord": "a2"
                           }
                         ],
-                        "id": "930587fb-317b-495e-8b12-9cb5184f28ad",
+                        "id": "d70ad7fc-0a10-4698-9b76-055c3c80fb3e",
                         "ord": "a0"
                       },
                       {
@@ -889,7 +871,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Signature glow facial"],
-                                "id": "fee17493-7180-4845-96a7-70e50faf96e2",
+                                "id": "9785e8c9-44c4-40ce-b797-6d2fc616cea3",
                                 "ord": "a0"
                               },
                               {
@@ -897,11 +879,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$75"],
-                                "id": "b7d26bec-a2f8-4520-9730-1cb7adc5480a",
+                                "id": "66de8fc2-b1e8-420d-b7d2-f86df7421ae1",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "93601a0b-0c8c-4712-b880-8f2406baa465",
+                            "id": "e0d39462-f455-4116-ba59-bfee9475e8fc",
                             "ord": "a0"
                           },
                           {
@@ -909,7 +891,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "c01c739f-731c-4656-a365-bdba0baffdc2",
+                            "id": "5590cb60-7e24-496b-b3cf-0829922f51bc",
                             "ord": "a1"
                           },
                           {
@@ -917,11 +899,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["The full feel-good ritual."],
-                            "id": "b9755032-9572-45a7-a431-8daa8c0c5c07",
+                            "id": "801584b9-d45f-4f46-b62e-3a30828032ff",
                             "ord": "a2"
                           }
                         ],
-                        "id": "331ba8bb-d2b3-4641-ae6e-cc1e3f0d55c3",
+                        "id": "b0c2bfb0-f5f0-46dc-a37c-c2bbd10f73b8",
                         "ord": "a1"
                       },
                       {
@@ -942,7 +924,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Dewy hydration facial"],
-                                "id": "bd1d263d-8021-44b8-9e61-17b4a1cea5bf",
+                                "id": "01cf9950-583e-4988-b504-27103c9f8f78",
                                 "ord": "a0"
                               },
                               {
@@ -950,11 +932,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$70"],
-                                "id": "8a3b75c6-8dde-4a09-8a41-d384d7c227e1",
+                                "id": "d46ad9b3-2658-415a-b4dd-2536e7b4898b",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f52b1a80-c2ed-4381-bc19-6266d63750c2",
+                            "id": "d0f4b5e5-2d6a-444e-9ca3-ac1bc60e0bb2",
                             "ord": "a0"
                           },
                           {
@@ -962,7 +944,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "9a41edee-f3fb-4335-9a75-3c93fc7912d3",
+                            "id": "1f2b9a4b-da58-46c7-98f9-e7afc78d5d02",
                             "ord": "a1"
                           },
                           {
@@ -970,11 +952,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Layers of plump, bouncy hydration."],
-                            "id": "9a0493e6-4a10-4e86-b726-2f3f35940b73",
+                            "id": "15a8e8b0-e9ba-4f90-9639-735faeb3d6ad",
                             "ord": "a2"
                           }
                         ],
-                        "id": "40a07044-7c10-414b-8801-1b599deb63d9",
+                        "id": "19b7edc7-71f3-40df-b45b-f23f9bb65dbd",
                         "ord": "a2"
                       },
                       {
@@ -995,7 +977,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["LED light add-on"],
-                                "id": "00c02c5b-6921-44f0-8749-b4bcc07eb592",
+                                "id": "e74b1d4a-60f8-4c49-ad77-ead59cae2bcd",
                                 "ord": "a0"
                               },
                               {
@@ -1003,11 +985,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$25"],
-                                "id": "d9091525-e23e-4428-9135-d77206d4a0c3",
+                                "id": "b2407a2e-4f69-4dd2-8b9a-0fef8b9d2980",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "fd1d45b2-830b-4f2b-b406-ce29780dc49d",
+                            "id": "ddd160b1-0f22-4420-96b5-f3bd3cb1a1ab",
                             "ord": "a0"
                           },
                           {
@@ -1015,7 +997,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["15 min"],
-                            "id": "d27f764a-a08a-4b0c-95b2-db2d402c0d3b",
+                            "id": "fa908946-026c-4326-bdf6-f151d56866fd",
                             "ord": "a1"
                           },
                           {
@@ -1023,15 +1005,15 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Ten minutes under the glow lights."],
-                            "id": "fff56386-e72f-410c-8bf6-227579f43ba3",
+                            "id": "523511f6-107a-4418-9fce-b7cacbcab00b",
                             "ord": "a2"
                           }
                         ],
-                        "id": "5594eace-697c-424e-aef2-4ff2688863a5",
+                        "id": "ab0a37f4-f439-4598-9a37-2c30b75608dd",
                         "ord": "a3"
                       }
                     ],
-                    "id": "c9b516cc-4695-446d-8268-4926826d3972",
+                    "id": "4c5b89e8-bd5f-41e8-a104-dee49ffbad69",
                     "ord": "a1"
                   },
                   {
@@ -1047,19 +1029,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "64b037b2-967f-4b52-be80-0095e2928b1d",
+                        "id": "b6aecfc0-691a-412b-8d8a-7d1b2737b300",
                         "ord": "a0"
                       }
                     ],
-                    "id": "6260664f-5edc-4f0a-a0a0-f19020f72f0d",
+                    "id": "fcbdbf92-81f5-4746-9510-afc1ec193ed5",
                     "ord": "a2"
                   }
                 ],
-                "id": "1026e000-6e44-4288-93c7-970edda57e96",
+                "id": "eee01125-ad1c-49cf-9919-c56b85ee7c0f",
                 "ord": "a0"
               }
             ],
-            "id": "0e224794-499f-43b2-94cc-a29630bc8f9b",
+            "id": "49331ca2-ca67-48ab-9715-6f180f3dfc63",
             "ord": "a2"
           },
           {
@@ -1081,7 +1063,7 @@
                       "alt": "A bright, cheerful glow bar with a comfy treatment chair",
                       "loading": "lazy"
                     },
-                    "id": "b0388ed2-723b-4aa2-bd47-c723deacf23b",
+                    "id": "98724247-f6d9-4c5e-8ba9-881311a1d7d3",
                     "ord": "a0"
                   },
                   {
@@ -1094,7 +1076,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Glow on your schedule"],
-                        "id": "5c9a624a-3e13-4353-ade1-ba60f00311b1",
+                        "id": "a37aea42-3316-4391-9708-ef2a1546163d",
                         "ord": "a0"
                       },
                       {
@@ -1104,7 +1086,7 @@
                         "children": [
                           "The Dewy membership is the easy way to keep your glow going: one express or signature facial a month, member pricing on every add-on, and roll-over if life gets busy."
                         ],
-                        "id": "7509d4f2-05ae-4fdd-b71e-c503e31dbbdf",
+                        "id": "843e93c3-3df4-4333-97c2-b33fcf467a54",
                         "ord": "a1"
                       },
                       {
@@ -1114,7 +1096,7 @@
                         "children": [
                           "No lock-in, no fine print you need a magnifying glass for. Pause it, share it, or cancel any time — it’s your glow, your call."
                         ],
-                        "id": "96fc0a2d-9b30-4671-bea0-69fe8dc4b104",
+                        "id": "4b6f25b3-06a4-43e8-8eee-12bed35afe98",
                         "ord": "a2"
                       },
                       {
@@ -1130,23 +1112,23 @@
                               "href": "/book"
                             },
                             "children": ["Chat memberships"],
-                            "id": "7322e56b-c6a5-4e43-a724-3ce8fa418bc1",
+                            "id": "3b10d8ec-a531-44a6-a954-70a9c6cf45e6",
                             "ord": "a0"
                           }
                         ],
-                        "id": "8e2a5917-2561-4375-8870-eb97f7262b64",
+                        "id": "bb04c734-525b-4ace-8cf6-4103a4ce5da9",
                         "ord": "a3"
                       }
                     ],
-                    "id": "51510739-8761-4556-89a4-91efcc90709d",
+                    "id": "7c0e49c5-474c-4d33-8d37-321a1ca5a88f",
                     "ord": "a1"
                   }
                 ],
-                "id": "2ed21a8e-58fe-42ad-8252-bb26f2465227",
+                "id": "7279c4de-a0b0-4c0a-8a83-58719a34cac0",
                 "ord": "a0"
               }
             ],
-            "id": "0fc61615-def5-410f-87d7-b83fed775fdf",
+            "id": "b7f2df63-093a-4678-aa58-b0b5e77ca7ec",
             "ord": "a3"
           },
           {
@@ -1169,7 +1151,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Your glow team"],
-                        "id": "ab09c6fd-b910-4f99-a9c4-52186f92039a",
+                        "id": "0f4eecb1-ae41-4b64-aaef-c9c1e777e8c1",
                         "ord": "a0"
                       },
                       {
@@ -1179,11 +1161,11 @@
                         "children": [
                           "Book by name — a friendly esthetician who learns your skin and roots for your glow."
                         ],
-                        "id": "d1360246-a97c-4b1b-9513-93a48ff64d09",
+                        "id": "748f9461-6ffd-49cd-9055-9cf4d9c9b9c8",
                         "ord": "a1"
                       }
                     ],
-                    "id": "856cda80-4a55-4656-8eaa-d81d498a6792",
+                    "id": "32e61384-06b3-4bb4-a5fc-d046cf455c88",
                     "ord": "a0"
                   },
                   {
@@ -1205,7 +1187,7 @@
                               "alt": "Mila Fox, esthetician",
                               "loading": "lazy"
                             },
-                            "id": "fdc8c38a-a723-4e95-a7a1-3eb3cc421404",
+                            "id": "1eb645a9-8fe8-4ee5-a2d7-61b9c11c8c5f",
                             "ord": "a0"
                           },
                           {
@@ -1218,7 +1200,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Mila Fox"],
-                                "id": "ccf0de8e-9599-4c59-95a6-d538eb53bd35",
+                                "id": "bec39009-2be3-487f-8fe5-56ecf20755f8",
                                 "ord": "a0"
                               },
                               {
@@ -1226,7 +1208,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Esthetician · Express & LED"],
-                                "id": "6d74c49c-b649-49a7-b5ba-d86406bfbe78",
+                                "id": "96413a83-388f-4b5d-a388-bc460e60b1b4",
                                 "ord": "a1"
                               },
                               {
@@ -1236,15 +1218,15 @@
                                 "children": [
                                   "Speedy express facials and glow-light sessions. Mila runs the bar."
                                 ],
-                                "id": "a223db4e-cde9-45e7-a7a6-cf68473f93bc",
+                                "id": "40618771-ec31-4b7a-af4c-bbc268964ed6",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "a5a10f9d-14c8-4887-8226-6edeb862370f",
+                            "id": "8c57577d-f1bd-4585-8f6c-0228dec4f8ff",
                             "ord": "a1"
                           }
                         ],
-                        "id": "545a76db-6639-4059-95c4-ed68f12dfce4",
+                        "id": "46328c05-6a02-44ee-a084-487429ce2d65",
                         "ord": "a0"
                       },
                       {
@@ -1261,7 +1243,7 @@
                               "alt": "Priya Anand, esthetician",
                               "loading": "lazy"
                             },
-                            "id": "d3233cba-2c48-4959-adca-4ddc71b009a4",
+                            "id": "00c8635f-192f-485f-860a-e983861cacc6",
                             "ord": "a0"
                           },
                           {
@@ -1274,7 +1256,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Priya Anand"],
-                                "id": "41675f5e-6e8b-4d74-b10e-f11775fca8cc",
+                                "id": "33c4e30b-7e6e-4e54-8a3a-9c024074beea",
                                 "ord": "a0"
                               },
                               {
@@ -1282,7 +1264,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Esthetician · Gua sha"],
-                                "id": "21d924e7-ab9f-4ea4-bc94-7d2af10ade8f",
+                                "id": "1d4d1785-50f6-42f6-ae8f-ab4fc40e7fa4",
                                 "ord": "a1"
                               },
                               {
@@ -1290,15 +1272,15 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": ["Sculpting gua sha and a calming, feel-good touch."],
-                                "id": "d8f6872f-a01c-42b0-824b-8a10345efd5f",
+                                "id": "f8f7e078-b988-40cd-9221-1c8330cfdaf5",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "633c5628-d9cc-4878-bf02-ba75e26d77ec",
+                            "id": "f875e134-6096-4f68-aa4d-a74470382b98",
                             "ord": "a1"
                           }
                         ],
-                        "id": "23491936-0b31-498a-972c-a4e8d4974b4a",
+                        "id": "7576ef28-3ca9-42cd-9c63-510c7cd26ca1",
                         "ord": "a1"
                       },
                       {
@@ -1315,7 +1297,7 @@
                               "alt": "Jade Nguyen, esthetician",
                               "loading": "lazy"
                             },
-                            "id": "7167efaa-c3c3-466e-b753-c08514f46bcb",
+                            "id": "64cc028f-6fed-480f-9298-49d16290f4d8",
                             "ord": "a0"
                           },
                           {
@@ -1328,7 +1310,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Jade Nguyen"],
-                                "id": "72ffd525-b12d-40fc-aa03-e8a52023337a",
+                                "id": "1c7853ef-5876-47f9-b679-26cc15ed212b",
                                 "ord": "a0"
                               },
                               {
@@ -1336,7 +1318,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Esthetician · Add-ons"],
-                                "id": "addeb0a9-95f9-4673-87bb-9ca671fc0c7c",
+                                "id": "00163620-3f57-4011-8a47-27090acee8ac",
                                 "ord": "a1"
                               },
                               {
@@ -1344,27 +1326,27 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": ["The add-on queen — she’ll send you out extra dewy."],
-                                "id": "d227d00a-2c58-43d4-bc5e-9746bec6b5f3",
+                                "id": "88902f86-6357-4341-a75e-c5c713e0aa5d",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "6b818a6d-e39d-45f5-8cf9-f2fecb67a36b",
+                            "id": "6e56effa-c931-48ab-a159-bfb715922c24",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c662c681-65d7-4ca2-a90e-08571d21c102",
+                        "id": "b9a79a02-b66b-4607-985f-5e9e613c3501",
                         "ord": "a2"
                       }
                     ],
-                    "id": "c763491f-10bf-4eec-a232-d40e783fc6bc",
+                    "id": "f292075d-f409-4041-af21-964a60fd214a",
                     "ord": "a1"
                   }
                 ],
-                "id": "979561d4-7ffb-4013-ada1-fdceacd072e8",
+                "id": "1f61b0de-b0f0-476e-8a1e-f2da731e531e",
                 "ord": "a0"
               }
             ],
-            "id": "82e9f99a-6dcf-4fc6-aa46-5f896c5db26d",
+            "id": "c864b899-22a4-48ca-977c-7987ce7cc4b1",
             "ord": "a4"
           },
           {
@@ -1384,7 +1366,7 @@
                     "children": [
                       "“I pop in on my lunch break and leave actually glowing. It’s become my favourite little treat — fast, fun, zero fuss.”"
                     ],
-                    "id": "914b9c1f-df2f-4ced-a7c6-bba745695520",
+                    "id": "f45e40b9-b7b2-417f-b1c1-472d9ea2c8df",
                     "ord": "a0"
                   },
                   {
@@ -1392,15 +1374,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["Sam, member since 2024"],
-                    "id": "049d2307-1f19-497e-aa26-27e55bd67deb",
+                    "id": "d1dd1ba1-dec8-4b5a-a7bc-375919402132",
                     "ord": "a1"
                   }
                 ],
-                "id": "e6093a01-d5f6-43eb-b689-8dc724359fa6",
+                "id": "0ac1e3fe-ad80-4c2d-9cbd-02107fd11476",
                 "ord": "a0"
               }
             ],
-            "id": "967889cb-bccd-48fc-82aa-ab525fb5e388",
+            "id": "10b0773c-abef-4ebc-a05e-62612d48e379",
             "ord": "a5"
           },
           {
@@ -1418,7 +1400,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Ready to glow?"],
-                    "id": "50ec7f21-4aec-4939-8cd1-810cc8d81a0f",
+                    "id": "5a50d679-fd50-4635-8364-57ed21ad5fb2",
                     "ord": "a0"
                   },
                   {
@@ -1428,7 +1410,7 @@
                     "children": [
                       "Pick a facial, add a little extra, and grab a time. It takes about a minute."
                     ],
-                    "id": "cdef4c97-2b3f-40fc-a73e-e4f90d6af31e",
+                    "id": "697ecf5f-ce2b-4b94-b60d-efe3b90c764f",
                     "ord": "a1"
                   },
                   {
@@ -1439,15 +1421,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a glow"],
-                    "id": "428d9fb8-7ffc-45c5-aef8-0a551281bf39",
+                    "id": "313c8d70-5827-46fe-bcb7-029621c66535",
                     "ord": "a2"
                   }
                 ],
-                "id": "0104892c-92e3-4bc4-a6b1-c340c996843b",
+                "id": "990cf146-986c-419d-877a-e1cd165e292e",
                 "ord": "a0"
               }
             ],
-            "id": "562d753e-7cb6-4107-ad0d-83bc4b699add",
+            "id": "d554ee6b-f354-44c8-8d32-3786c33fcc69",
             "ord": "a6"
           }
         ]
@@ -1464,7 +1446,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "fe202162-07da-4e56-ab9b-62fd8c95ad47",
+        "id": "2ed1fb32-b295-4857-8c5c-f55bb0055fbe",
         "children": [
           {
             "kind": "element",
@@ -1480,14 +1462,14 @@
                   "alt": "A bright, cheerful glow bar with a comfy treatment chair",
                   "loading": "eager"
                 },
-                "id": "e702d9d1-650c-4111-bab8-adc9fe84946e",
+                "id": "6aa56518-c8f0-42c9-83ef-f0ebe0400d58",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/50",
-                "id": "442fed42-ec39-4788-814f-f6d3c277c7db",
+                "id": "234f283f-9460-486e-a076-073b0eb2bf67",
                 "ord": "a1"
               },
               {
@@ -1500,7 +1482,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book a glow"],
-                    "id": "b9fa93d3-d0f8-4bd3-9528-662a6073ca9c",
+                    "id": "c5946f79-c9cd-45b6-8752-7b3c755210c7",
                     "ord": "a0"
                   },
                   {
@@ -1510,7 +1492,7 @@
                     "children": [
                       "Choose a facial to see live times, add an LED or gua sha if you fancy, and pick your esthetician."
                     ],
-                    "id": "bec49e18-e2d6-4f63-84e5-9fe4fcb9abe8",
+                    "id": "ce37aa75-8061-4a10-9ca9-1ff5d51c55f6",
                     "ord": "a1"
                   },
                   {
@@ -1526,27 +1508,31 @@
                           "href": "/book"
                         },
                         "children": ["See the menu below"],
-                        "id": "95f20385-b84c-459e-9f2e-f86a9b39965c",
+                        "id": "d49ae1b4-d37d-409e-9961-2b9dfeaea84f",
                         "ord": "a0"
                       }
                     ],
-                    "id": "3f646a07-5fbc-4ea8-8111-d19478c44831",
+                    "id": "e1f79dc2-0eda-48d7-9933-5d563246b79e",
                     "ord": "a2"
                   }
                 ],
-                "id": "a362beff-7507-430d-8667-d00253faacf4",
+                "id": "fc2bb968-5dba-4d61-8070-0b630a2337ed",
                 "ord": "a2"
               }
             ],
-            "id": "57ed98f4-5408-4083-97ff-d57a2ad9d193",
+            "id": "fafef8b0-6964-427c-bcd9-57f593bcfc57",
             "ord": "a0"
           },
           {
             "kind": "host",
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "props": {
+              "heading": "Book with us",
+              "subheading": "Choose a service to see open times and reserve your spot."
+            },
             "locked": "host",
-            "id": "68c7dfd3-c381-4bee-b54e-2072f56e3f28",
+            "id": "a350479d-ce0d-471f-a97d-4f673aeb661b",
             "ord": "a1"
           },
           {
@@ -1569,7 +1555,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Good to know"],
-                        "id": "d87ebc49-3746-4980-90ea-6ae4ac60c1a0",
+                        "id": "b24f4225-c999-4a96-ad0e-ac817436da57",
                         "ord": "a0"
                       },
                       {
@@ -1579,11 +1565,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "0e63db10-62bf-43ef-8e87-37e267c9b625",
+                        "id": "be38b865-f258-4e2a-8394-c43824afac12",
                         "ord": "a1"
                       }
                     ],
-                    "id": "c8b2d8ed-317f-44eb-8c9f-df6632950ac2",
+                    "id": "95f5a300-6382-4580-ab5c-ea470bca1ff0",
                     "ord": "a0"
                   },
                   {
@@ -1601,7 +1587,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Standard booking"],
-                            "id": "b6276552-4921-49c5-aeff-b0ee73b4b87a",
+                            "id": "8a97b757-96ea-40d5-a23b-8174a1f2c47c",
                             "ord": "a0"
                           },
                           {
@@ -1611,7 +1597,7 @@
                             "children": [
                               "Life happens — just give us 24 hours to reschedule or cancel. We’ll text a reminder the day before and two hours ahead so a glow never sneaks up on you."
                             ],
-                            "id": "8283666c-4f84-4ca2-b3e7-47547732917e",
+                            "id": "a75ebf1a-ed2d-4b89-89bd-aaa7c1b9117a",
                             "ord": "a1"
                           },
                           {
@@ -1621,11 +1607,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "e9533cec-f3bc-40b9-85b8-793e65da389a",
+                            "id": "77db5346-5fa1-4deb-8763-29cf7b01bb61",
                             "ord": "a2"
                           }
                         ],
-                        "id": "728769ec-1844-4b5f-9dad-c6c9f7dd94c7",
+                        "id": "59c617f8-c212-4d64-8abd-5686b48eed0c",
                         "ord": "a0"
                       },
                       {
@@ -1638,7 +1624,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["No-show policy"],
-                            "id": "8a2536b6-ff4b-4555-9a42-bb3a32a97590",
+                            "id": "caedef23-6d6e-4ed4-a523-658756e4f930",
                             "ord": "a0"
                           },
                           {
@@ -1648,7 +1634,7 @@
                             "children": [
                               "Booked facials hold your chair. A no-show or a cancel inside 24 hours may be charged 50% of the service — a heads-up text keeps you in the clear."
                             ],
-                            "id": "86bf7af1-a095-4199-937f-edbd4e78f6da",
+                            "id": "b1c6b913-a1ca-4525-b560-a318e6b4022f",
                             "ord": "a1"
                           },
                           {
@@ -1658,23 +1644,23 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "6c99ebd9-04cb-4035-9311-c30782b5c3db",
+                            "id": "60a55d14-83f0-4c96-80d5-71b8011ecca8",
                             "ord": "a2"
                           }
                         ],
-                        "id": "3f385320-3827-44d4-b922-720067b3d802",
+                        "id": "6e91037e-ab61-4eb5-9b6d-dd63664a2474",
                         "ord": "a1"
                       }
                     ],
-                    "id": "4af3b599-20f1-445e-98eb-be9fe716234d",
+                    "id": "7badf6c4-a628-48a0-9914-d50eed5a8396",
                     "ord": "a1"
                   }
                 ],
-                "id": "84bea0d9-0e0a-4896-857a-84e430658eb4",
+                "id": "67a630cb-8442-4d3a-96d9-4b0056b8db86",
                 "ord": "a0"
               }
             ],
-            "id": "49543294-ea75-438e-ba08-b97f14e88121",
+            "id": "c080e004-b4ed-400e-aeef-771c9fe8770b",
             "ord": "a2"
           }
         ]
@@ -1691,7 +1677,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "24ceb1a1-c4c2-46a4-be7b-10b9da2805bc",
+        "id": "c8ab7d44-275b-459a-b16b-9ac01aa0b1d4",
         "children": [
           {
             "kind": "element",
@@ -1712,7 +1698,7 @@
                       "alt": "Fresh, dewy, glowing skin in bright natural light",
                       "loading": "lazy"
                     },
-                    "id": "fab79f39-7b96-45cf-80f0-c88f682e6d4a",
+                    "id": "632f0118-ccd8-4a50-be6c-9eb4ce1201f4",
                     "ord": "a0"
                   },
                   {
@@ -1725,7 +1711,7 @@
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About Dewy Skin Bar"],
-                        "id": "66320ba6-67c8-4b50-8b7c-b19e8cf28a6e",
+                        "id": "92ec34db-1efd-4688-b982-ff6ce6c83d05",
                         "ord": "a0"
                       },
                       {
@@ -1735,7 +1721,7 @@
                         "children": [
                           "We started Dewy Skin Bar because good skin shouldn’t mean a two-hour appointment and a scary bill. Glowing skin should feel fun, quick and completely doable."
                         ],
-                        "id": "92080d71-ea0f-43bc-88fb-3b48a7d2a277",
+                        "id": "cdec00d9-7faa-420e-b2d4-64e5ad24afad",
                         "ord": "a1"
                       },
                       {
@@ -1745,7 +1731,7 @@
                         "children": [
                           "So we built a glow bar: express facials you can fit on a lunch break, playful add-ons, and memberships that keep the glow going — all in a bright, easy space where nobody makes you feel bad about your pores."
                         ],
-                        "id": "9ed4514b-8768-4ccf-a069-5da976951914",
+                        "id": "e64cfeb2-5122-43a1-9486-21039d9f19da",
                         "ord": "a2"
                       },
                       {
@@ -1761,23 +1747,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a glow"],
-                            "id": "ff481a81-e35e-4ec7-8956-7ebf4aa5d458",
+                            "id": "e93717be-3bd5-46ae-9b2a-29e7ef328ed6",
                             "ord": "a0"
                           }
                         ],
-                        "id": "c7384409-6c84-4bb1-a843-eceb89ea21ce",
+                        "id": "29b15bf2-5c82-46cb-becb-d65e7da4af8b",
                         "ord": "a3"
                       }
                     ],
-                    "id": "ef63b091-ca02-4fe9-bef3-69643f58c429",
+                    "id": "14972d24-4a59-4df9-8447-4bec4ef5756f",
                     "ord": "a1"
                   }
                 ],
-                "id": "d9cdb7d3-2b27-4b7c-a125-400c856218cb",
+                "id": "b83dd8ca-742e-4251-9a83-2ce4876e6bdd",
                 "ord": "a0"
               }
             ],
-            "id": "600dfd71-84bb-4367-9a63-c0883d8689d5",
+            "id": "0a7a077f-f928-4f0b-918b-d65546a3a918",
             "ord": "a0"
           },
           {
@@ -1795,7 +1781,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["How the glow bar works"],
-                    "id": "2ec983f3-2147-4420-98b6-d2749de5fc46",
+                    "id": "05a7089e-d48a-4f04-8fb6-b7c4063311d9",
                     "ord": "a0"
                   },
                   {
@@ -1813,7 +1799,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Quick by design"],
-                            "id": "535cc64c-f33e-4378-b228-d8f854b628d4",
+                            "id": "5d981dfe-1128-4f0b-9e18-e2ee4753e53d",
                             "ord": "a0"
                           },
                           {
@@ -1823,11 +1809,11 @@
                             "children": [
                               "Express facials are built for real life — 30 dewy minutes, no downtime, back to your day."
                             ],
-                            "id": "9182a732-e029-42a8-bb63-8cb0654390a5",
+                            "id": "3f1bc6dd-e751-4dd2-b324-058507786767",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5fccc105-b339-4feb-84ad-e7164416bfa7",
+                        "id": "220be405-d040-4c7d-911a-64bfcb900ed1",
                         "ord": "a0"
                       },
                       {
@@ -1840,7 +1826,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Skin you’ll actually see"],
-                            "id": "3c3d74c5-01fa-4656-be95-dc4d6788fb38",
+                            "id": "cb40806a-c563-4910-b6a4-9b3a99aa4790",
                             "ord": "a0"
                           },
                           {
@@ -1850,11 +1836,11 @@
                             "children": [
                               "Gentle, feel-good treatments that leave you plump, bright and glowing — not red and raw."
                             ],
-                            "id": "df0ac16c-759a-432f-aa90-3dac1a6d4cb3",
+                            "id": "8c04bd2f-006c-48aa-8511-96c2eb21b0eb",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2341a8e4-9710-4eb7-a282-3b4ca02e789b",
+                        "id": "715b5022-53e8-483b-8a22-e66f7fc9464d",
                         "ord": "a1"
                       },
                       {
@@ -1867,7 +1853,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Keep it going"],
-                            "id": "7263e1a6-a29a-474b-ab30-ea1a3b6f0aa9",
+                            "id": "729de574-8c4f-42d6-99e0-991162b43e39",
                             "ord": "a0"
                           },
                           {
@@ -1877,23 +1863,23 @@
                             "children": [
                               "Memberships and add-ons make the glow a habit, at prices that don’t need a special occasion."
                             ],
-                            "id": "9d1eedc4-ec35-4742-9790-954482b6abb7",
+                            "id": "dbf8f9d8-4713-448b-af78-050d7c34b192",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d0c233c6-a5fc-4d28-932b-8025a8b009cc",
+                        "id": "e546f25f-9f6a-486d-ba65-9818762155a2",
                         "ord": "a2"
                       }
                     ],
-                    "id": "572176dd-2f1e-47ba-ae31-4d2b9efb4475",
+                    "id": "3e0d61b1-0519-4eb0-bbbf-755bbb32be98",
                     "ord": "a1"
                   }
                 ],
-                "id": "9bf774b4-c0f6-498b-9ddd-c8a40bda0960",
+                "id": "3483ae2e-4659-4fbd-8475-7fc596069b4a",
                 "ord": "a0"
               }
             ],
-            "id": "d003e08a-2915-4ffb-994b-ca5debf6075b",
+            "id": "84f4ee8d-e569-4df0-8b66-bd2a21b4f362",
             "ord": "a1"
           }
         ]
@@ -1910,7 +1896,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "b474feed-1e02-4c4e-8b0f-09dcc397f809",
+        "id": "9cde8df3-41e3-4d92-ae47-239eb2cc1e72",
         "children": [
           {
             "kind": "element",
@@ -1932,7 +1918,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Get in touch"],
-                        "id": "6eb32739-7748-4fe4-9859-b24d4fa672c9",
+                        "id": "a09051a5-2b73-4101-aeab-78e4f745a8be",
                         "ord": "a0"
                       },
                       {
@@ -1942,11 +1928,11 @@
                         "children": [
                           "Questions before you book? Send a note and Dewy Skin Bar will get back to you — usually the same day."
                         ],
-                        "id": "86a725f6-dce0-4edd-826c-77c75b759d0e",
+                        "id": "d0b95124-b34d-454b-b637-9d32bdd3da48",
                         "ord": "a1"
                       }
                     ],
-                    "id": "34532b8a-a160-4649-bfe5-c25cdfa4252b",
+                    "id": "53f6cf57-55e1-4f0c-b1ff-7b3780e44ac0",
                     "ord": "a0"
                   },
                   {
@@ -1959,7 +1945,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Call us"],
-                        "id": "785f6e43-596d-4e56-bb8e-c2f6660447d8",
+                        "id": "7d170ea1-387a-4e33-9a42-a7c338b5df47",
                         "ord": "a0"
                       },
                       {
@@ -1975,7 +1961,7 @@
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "dddbf504-4962-4bfc-b99f-72ffcda56c41",
+                            "id": "8da0db2b-e921-4916-93a5-1a3680d84073",
                             "ord": "a0"
                           }
                         ],
@@ -1984,7 +1970,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "984b2638-7407-420f-9569-2180d93f8bb7",
+                        "id": "24fa06e7-c1c5-4573-adfe-418fb1da7339",
                         "ord": "a1"
                       }
                     ],
@@ -1992,7 +1978,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "a0905a2b-056d-4756-9842-87208284e452",
+                    "id": "7c2a8fc5-f5d1-42b9-93fe-74bb5e345f5b",
                     "ord": "a1"
                   },
                   {
@@ -2005,7 +1991,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Email us"],
-                        "id": "d2a65aaa-d5af-4870-879e-9b3666ac9925",
+                        "id": "3208938b-6c4d-4a1b-9630-eafd35d80fad",
                         "ord": "a0"
                       },
                       {
@@ -2021,7 +2007,7 @@
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "b2ddc979-1b14-4039-b1e7-48dcc8a628fb",
+                            "id": "765130d3-a317-4160-ba3c-c934b9ebf9a3",
                             "ord": "a0"
                           }
                         ],
@@ -2030,7 +2016,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "02faeef2-20ca-46d4-9d28-d5fa804a8364",
+                        "id": "2c539a15-a454-4e4a-9733-c49762272265",
                         "ord": "a1"
                       }
                     ],
@@ -2038,7 +2024,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "6fdd662a-f23c-49fa-9d11-b04415bb82e3",
+                    "id": "e565dc48-76be-4dc5-b1db-b51f69c8771e",
                     "ord": "a2"
                   },
                   {
@@ -2056,7 +2042,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Your name"],
-                            "id": "29d468bc-35ca-4262-9a8d-98984833019b",
+                            "id": "3a8bea1f-d1f8-49f0-9acd-dae17c1472be",
                             "ord": "a0"
                           },
                           {
@@ -2068,11 +2054,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "9ad51e35-3e61-4394-a407-996e90f72aad",
+                            "id": "9dfe5b23-58b5-41b1-b394-3b3cd0120d13",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a4f81b34-e2ff-4870-af19-f946d8962fa4",
+                        "id": "7c9e3c6d-6637-4fd0-9dca-654752df019b",
                         "ord": "a0"
                       },
                       {
@@ -2085,7 +2071,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Email address"],
-                            "id": "0b2c57a0-107a-4ef5-9fdc-529ea66f68b4",
+                            "id": "1e75c92e-80a9-42b3-8dc7-bfbaa6b20114",
                             "ord": "a0"
                           },
                           {
@@ -2097,11 +2083,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "e7a669e7-5972-4fa1-a070-65d17d4fb88e",
+                            "id": "bbcfa85e-9269-4f09-a30a-a6ca3e141e7c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "eb90e805-e598-45dc-aebd-15040241cc8f",
+                        "id": "80c5f20a-bc55-4b14-a016-9361148b88ca",
                         "ord": "a1"
                       },
                       {
@@ -2114,7 +2100,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Phone number"],
-                            "id": "8c570587-aa41-48fa-bfbf-aca8848c0307",
+                            "id": "7867d14b-ae46-40cb-ba38-703b2f12d171",
                             "ord": "a0"
                           },
                           {
@@ -2125,11 +2111,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "a91c152a-523b-4134-9d49-17c9d58af285",
+                            "id": "52e4d5d4-f3dc-4c23-91b4-243911414bc6",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2d35b593-77af-4bee-8fc1-1981239e09f9",
+                        "id": "deefd314-86cf-4964-9358-db27656541ac",
                         "ord": "a2"
                       },
                       {
@@ -2142,7 +2128,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["How can we help?"],
-                            "id": "70ff36f1-3fe7-4358-9371-3fe6cd347bee",
+                            "id": "c2398a6e-5908-49a8-ad82-4d76158c2d5c",
                             "ord": "a0"
                           },
                           {
@@ -2152,11 +2138,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "1a0b8675-312b-49ee-a73c-78759b0b049d",
+                            "id": "21bca75b-9c9e-4ad1-88fa-36f487fff173",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f40d74c0-0f5e-4b06-851e-704609c6dab4",
+                        "id": "70a68bef-0da6-4863-bc33-bb70fcd7ecbc",
                         "ord": "a3"
                       },
                       {
@@ -2172,11 +2158,11 @@
                               "type": "submit"
                             },
                             "children": ["Send my request"],
-                            "id": "682bc25a-63fb-4d0b-867b-0d4809e74f18",
+                            "id": "54a29653-4d4a-44ec-9819-6de5f0b86158",
                             "ord": "a0"
                           }
                         ],
-                        "id": "1af05cb8-95fd-4b7b-9a62-02cd67f4c687",
+                        "id": "938d2580-85a7-4d2d-bd24-425defdfc1ff",
                         "ord": "a4"
                       }
                     ],
@@ -2187,15 +2173,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "60a3ec29-baed-41eb-98d3-c0f5d5692a9b",
+                    "id": "85d54211-b893-48a9-bb2f-689cff2f5f22",
                     "ord": "a3"
                   }
                 ],
-                "id": "312cd6c5-4c4e-4c77-9ec3-334da475fae8",
+                "id": "7c092339-a8f2-4124-92c2-0d4f9411ba00",
                 "ord": "a0"
               }
             ],
-            "id": "8201d360-b4cb-46fd-bfb3-87e4ceeace52",
+            "id": "a224a2c9-b61e-4c87-afcb-7b6a44665bbf",
             "ord": "a0"
           },
           {
@@ -2218,7 +2204,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Find the glow bar"],
-                        "id": "ebe78d4c-3dcf-4d3b-962b-1f81510051b0",
+                        "id": "7f7227c8-694e-46e3-bc87-98488a564eee",
                         "ord": "a0"
                       },
                       {
@@ -2230,7 +2216,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "9d1dcb55-2a3f-478b-9ff7-efcf5bab820f",
+                        "id": "fb3456af-77b0-4bb7-ad6a-d951fbbcfcd2",
                         "ord": "a1"
                       },
                       {
@@ -2248,7 +2234,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Tuesday – Saturday"],
-                                "id": "3e84bdfc-d25a-40d7-98f5-b5a875b45f41",
+                                "id": "d821f9b8-a800-4a92-bff5-228ca0e4ba1c",
                                 "ord": "a0"
                               },
                               {
@@ -2256,11 +2242,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["10:00 – 8:00"],
-                                "id": "f345632a-b1bb-4219-9df7-37f9433151e2",
+                                "id": "5af40f48-acb8-41fc-8a6f-4bfb3ce823df",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "a3c768e1-159a-4d1a-ba1f-d87c89451a67",
+                            "id": "3b590d07-ff43-4b34-8d74-90c388066d0e",
                             "ord": "a0"
                           },
                           {
@@ -2273,7 +2259,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "e7313849-39ce-4427-ac37-ece4fb233dfd",
+                                "id": "3a3c1c4d-bb10-4e64-82e3-221d976200d2",
                                 "ord": "a0"
                               },
                               {
@@ -2281,11 +2267,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["10:00 – 6:00"],
-                                "id": "ecbbbbfb-ba3b-48e6-adcd-4e75b467ee6d",
+                                "id": "b3be4d2e-46dd-4060-8a12-9b356ae1b2bb",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "7f060457-18a6-488b-87e6-ca9ae0e4ca8a",
+                            "id": "ab827286-31af-46c1-b517-9c2c8b03803d",
                             "ord": "a1"
                           },
                           {
@@ -2298,7 +2284,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday"],
-                                "id": "d676100a-5380-4ea1-a988-e05cac1eb3c9",
+                                "id": "89a57fc4-ee26-4a08-81bf-c597778cc3d2",
                                 "ord": "a0"
                               },
                               {
@@ -2306,19 +2292,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Closed"],
-                                "id": "f23b1269-0595-4f8e-9f3e-d7d2c81a3ee1",
+                                "id": "8d36da0f-9eef-43e2-872c-b052ce75bba4",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "577d26c9-d168-40e4-8dad-878b895946e6",
+                            "id": "241ecf96-d62e-47f5-b099-ed2841b5c91f",
                             "ord": "a2"
                           }
                         ],
-                        "id": "61320cc9-33fd-4214-9c6c-3372f64e9977",
+                        "id": "5952c8a5-be43-4fe4-8393-d9db4c01cd1d",
                         "ord": "a2"
                       }
                     ],
-                    "id": "fb6b9b8f-2dd9-4209-9959-af0c4e991e04",
+                    "id": "2edba63f-1645-4e31-844b-7e8ac34fbb3d",
                     "ord": "a0"
                   },
                   {
@@ -2331,15 +2317,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "ed3a73bc-5fc0-4bf2-b4f7-02ea79654a69",
+                    "id": "a4ce7ccd-bdce-43da-8efe-a3b2625a5cba",
                     "ord": "a1"
                   }
                 ],
-                "id": "03784e51-8fb7-4d5c-b8e8-7820da8c01e1",
+                "id": "1ec450fb-b9be-43b6-8188-b208d2d4537f",
                 "ord": "a0"
               }
             ],
-            "id": "530d8e11-9dac-4045-8bd1-aa43e70d2f25",
+            "id": "8e878fe5-ff7c-4210-aa18-244cd98ea0be",
             "ord": "a1"
           },
           {
@@ -2357,7 +2343,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than call?"],
-                    "id": "911d0796-f2b9-4156-9538-663297693417",
+                    "id": "0c29b5c9-27b7-41e3-b212-820656ba90ae",
                     "ord": "a0"
                   },
                   {
@@ -2367,7 +2353,7 @@
                     "children": [
                       "See live times and grab your glow online — no phone tag, no hold music."
                     ],
-                    "id": "ff3c35c3-8655-4b5c-b853-763244d9e411",
+                    "id": "ae65b2ca-1524-4b9a-9d9d-4a8567a1b5de",
                     "ord": "a1"
                   },
                   {
@@ -2378,15 +2364,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a glow"],
-                    "id": "e3cae059-67a9-4f03-89f8-a89b441e6afd",
+                    "id": "a23d18fc-8832-4a7e-847c-1b51d6e22178",
                     "ord": "a2"
                   }
                 ],
-                "id": "e6678cbf-783b-499f-a9b3-e707bc139f45",
+                "id": "9710af24-873a-4d72-ab0a-54972f121ed0",
                 "ord": "a0"
               }
             ],
-            "id": "93a89a6a-27fd-4395-ae4c-2b84ca23feea",
+            "id": "bc6df463-5747-4e47-af6a-5af577513ab7",
             "ord": "a2"
           }
         ]

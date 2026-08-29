@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "6c7879d9-c547-42b4-a734-f903e96501b9",
+                  "id": "eb3bc44a-9ea2-418c-9cdb-9a2f27ebc411",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "0a600ee4-52ef-44ac-b2f5-70000b8ac220",
+                      "id": "034223cf-1235-48fa-871f-0bece1c05fde",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "b2ee7576-0f36-4b6b-b8ad-c7ff893fafc1",
+                      "id": "3d40464e-7065-4aab-921c-b2396d52aedd",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "08e752d7-c6c2-4527-b319-2f8ff8f62d98",
+                      "id": "6e8cf78d-ce8a-45c7-9ed4-65da9568498f",
                       "ord": "a2"
                     }
                   ],
-                  "id": "865a4eb1-62c1-4251-82bf-c15c8a5cddf7",
+                  "id": "d7fc6b75-4b29-476e-a9cb-d53b319de15c",
                   "ord": "a1"
                 },
                 {
@@ -88,26 +88,17 @@
                   "class": "ml-auto flex items-center gap-3",
                   "children": [
                     {
-                      "kind": "element",
-                      "tag": "a",
+                      "kind": "host",
+                      "component": "site.account-link",
                       "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
-                      "attrs": {
-                        "href": "/account/login"
-                      },
-                      "children": ["Sign in"],
-                      "slot": {
-                        "name": "secondary",
-                        "type": "link",
-                        "label": "Secondary link"
-                      },
-                      "id": "7839855d-a02c-4b25-8817-5f977813e37d",
+                      "id": "9e001536-65c6-4913-bece-36a57c01d666",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "0eabf889-89f4-487b-9949-f8baa6caedff",
+                      "id": "418c15ff-e7df-4602-bb49-d95adbbfde4f",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +114,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "783d7d49-4326-4766-9820-a9febf360932",
+                      "id": "6eb816b3-c8cd-4c44-aaa8-cb01584fee41",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +132,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "24384803-c5d7-4944-93d0-e44e54462cc2",
+                          "id": "3afeca93-5f44-4de0-a1db-965c6d9d39de",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "8453551f-4b17-499c-a7ba-97607cfbf955",
+                      "id": "3445cc9a-ec93-4361-9501-fcd5ec8c477e",
                       "ord": "a3"
                     }
                   ],
-                  "id": "a59e167f-30cb-47aa-965f-f441043f0443",
+                  "id": "c0914df4-dff6-4e43-980c-0bd278ccb6a3",
                   "ord": "a2"
                 }
               ],
-              "id": "d8075108-efd1-44ee-9d0d-5d19d383d7d5",
+              "id": "76c01035-048d-4625-83b1-0ebb3c48813f",
               "ord": "a0"
             },
             {
@@ -178,7 +169,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "b12d4a37-f78c-495e-a551-d83e52a04fa5",
+                  "id": "b4695e61-80d7-4a58-9894-68019074ed26",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +185,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "649bc978-744b-41fe-8d0c-371bfa8ec019",
+                  "id": "0e70955e-43c6-4c58-977e-026ad68c07ad",
                   "ord": "a1"
                 },
                 {
@@ -210,23 +201,14 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "0f579f99-69bc-4cdb-85ac-0f0812f3095b",
+                  "id": "0741a6b2-35b4-467f-b5c1-06ba503cc2a9",
                   "ord": "a2"
                 },
                 {
-                  "kind": "component",
-                  "component": "Button",
+                  "kind": "host",
+                  "component": "site.account-link",
                   "class": "btn btn-ghost btn-sm mt-2 w-full",
-                  "props": {
-                    "label": "Sign in",
-                    "href": "/account/login"
-                  },
-                  "slot": {
-                    "name": "secondary",
-                    "type": "link",
-                    "label": "Secondary link"
-                  },
-                  "id": "a0776cdc-4f6a-484b-8853-4e02e7d31dbe",
+                  "id": "5c710f8b-47bc-47de-866e-84d660ee728e",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +224,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "e2b79f82-67eb-4b67-8d11-0bdedd22f04f",
+                  "id": "42690d60-d89d-4996-9561-93889354de87",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "b34e0de1-2260-42d2-a99b-3a1001e02294",
+              "id": "28f08cca-aa18-4c22-bd70-b0c8ffa2c432",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "a4426dfa-979b-4f74-9a6c-4e81159ebbdd",
+          "id": "4b55f8ce-8a0f-41ec-ba83-f9218c635cd8",
           "ord": "a0"
         },
         {
@@ -270,7 +252,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "8ab02996-f4d0-42b0-96ba-8852cf684310",
+          "id": "729834ee-b9a1-4349-8c15-a1b9a3529054",
           "ord": "a1"
         },
         {
@@ -300,7 +282,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "29281335-d4d2-4733-86d1-a7ef51b3aa88",
+                          "id": "4578c0ec-d2fc-4bfb-98e5-bfe84b458c76",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +298,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "d2215604-69ea-4bc1-998a-2162ca88d4fc",
+                          "id": "202a9553-ec6e-4529-874d-57ea63f1087c",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +306,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "fe9ae8dc-2b5a-4678-ae5a-2125cae22ff1",
+                          "id": "1da55675-a6b8-46ca-9367-351c204a2192",
                           "ord": "a2"
                         }
                       ],
-                      "id": "0f282f92-7bfb-4ce5-a32e-54b2746cf45b",
+                      "id": "58240cab-abbc-442e-a2dd-e367b516a2c6",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +331,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "5d180afc-f8a1-4e67-b49f-d231226bf723",
+                          "id": "b98eb062-b770-40bb-b52e-37ad1a027a0a",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +356,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "ef875821-fa0a-43e0-8d9e-4a51224490f8",
+                                  "id": "1932fb99-ea39-4a18-b592-d7950db5ff4b",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "d4e2770b-3116-4727-a778-8ecc260e5948",
+                              "id": "d5a282ea-bf9d-4f3c-86ed-0bff5e976af3",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +380,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "308b38e9-fa10-4985-8a5d-7d2f0e99b601",
+                                  "id": "aad8b537-d89b-4b96-82f4-ed06cf9c1b42",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "7c1c54bd-df08-4924-9b9b-3a64ef6abddf",
+                              "id": "ae151eed-d05c-493e-885d-1753ab3c8c73",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +404,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "eed32a47-9449-499d-ab6d-c260277c654a",
+                                  "id": "e69fe5e7-0d26-497b-8c2a-ac2d64e18afa",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "b3c82000-ad68-4d48-b8cb-a71717261548",
+                              "id": "333e1dbd-5be6-4b44-8132-8d406068e922",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +428,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "bc24515a-7409-4d4b-ad81-3c93b4aa323e",
+                                  "id": "e3e19e6e-16c6-4e42-bceb-48fe177a4626",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "6d7cde12-3b85-48ab-9f02-2b1683accd95",
+                              "id": "ea25986a-94fd-4b49-8d87-a9aaebb73d0d",
                               "ord": "a3"
                             }
                           ],
-                          "id": "054c52c1-c085-481a-bd61-5b775430bf5f",
+                          "id": "8a837be9-c24c-458e-bc6f-5cb3cba7a3ad",
                           "ord": "a1"
                         }
                       ],
-                      "id": "0d1448f3-7beb-4757-b837-1aa0f38bf4ae",
+                      "id": "91b8ad4a-93f9-4d99-b488-2304e8e0ed14",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +453,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "0898f70e-09f8-4fa9-9bad-d446166e5f2f",
+                          "id": "1e11bd19-dc39-4915-80ae-3d75b2a2e99d",
                           "ord": "a0"
                         }
                       ],
-                      "id": "a9527bf8-5367-417e-8c8d-02433a4ae833",
+                      "id": "34ef6ea4-e097-4a47-af33-d3c4878b360f",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +481,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "f995fac9-6250-4e9d-bd9d-0188ac8eaaf6",
+                                  "id": "4b12a0bc-6005-4453-8b6d-5bfe71dde615",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "23d103bb-a6b0-43f5-b027-c86e41b0a0c2",
+                              "id": "cfdcacfa-850b-4d41-9935-2cfcff488699",
                               "ord": "a0"
                             }
                           ],
-                          "id": "da899c45-f697-4ad1-b82f-67ea5c94f80c",
+                          "id": "79416564-2b39-45c0-ac17-ec2f40958327",
                           "ord": "a0"
                         }
                       ],
-                      "id": "94e68a48-10ea-47f4-a1d1-42f8d57fdbff",
+                      "id": "8b4eda9f-6bd0-4231-baf6-a9f812f35dca",
                       "ord": "a3"
                     }
                   ],
-                  "id": "1a6ce3ea-685e-420b-9431-d8ad1e0cbcfc",
+                  "id": "6bd3e955-9538-46d0-87c8-dc5b9703ade9",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +520,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "0c368b38-910d-4bbb-ad8e-e667f3d809dd",
+                          "id": "11dbc11b-398d-4352-91dd-3e288a33f737",
                           "ord": "a0"
                         }
                       ],
-                      "id": "a9fa09c6-af25-4737-adc4-730e48be5d1f",
+                      "id": "fb0f1e60-f154-4953-a497-93c1d31f3728",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +532,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "90c1a442-184b-4bd6-8f91-dde91a3dd5b3",
+                      "id": "c18a3f9d-6bf2-4fa9-96a4-7448c500423d",
                       "ord": "a1"
                     }
                   ],
-                  "id": "5dd37a6c-8ea5-405b-8268-6ba92a360299",
+                  "id": "7382892f-55fe-4559-b005-8210cbc29e18",
                   "ord": "a1"
                 }
               ],
-              "id": "dc09134d-7bca-4c30-bb12-4da9b94ec7e5",
+              "id": "fa4ff174-a962-4207-b193-358dd8d810e9",
               "ord": "a0"
             }
           ],
-          "id": "cef74b9f-1a28-4cd4-bd0d-98eb2475e4ba",
+          "id": "db9a8fc7-89b8-43a2-b415-adea512737e4",
           "ord": "a2"
         }
       ],
-      "id": "66ac3295-aaf6-411b-afd8-b6f1abb0a8f7"
+      "id": "c40d4bce-1b37-4373-b3b5-4bb59621e050"
     }
   },
   "pages": [
@@ -580,7 +562,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "d2bc2651-031f-4580-85f3-47737f232cae",
+        "id": "34806bdc-ac26-45e7-8753-7fc8e298dd18",
         "children": [
           {
             "kind": "element",
@@ -596,14 +578,14 @@
                   "alt": "A happy, freshly-bathed dog with a big grin",
                   "loading": "eager"
                 },
-                "id": "24b19837-dcb9-431a-badb-1e92485a2f6e",
+                "id": "1c8bebf8-3ada-4ae9-a3c3-63caa28d4c97",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/50",
-                "id": "6e29041b-f68e-4776-9472-db60fdc0fd30",
+                "id": "a125c9c0-6391-4de1-b3ea-8dd7c36e12ff",
                 "ord": "a1"
               },
               {
@@ -616,7 +598,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Gentle hands, happy tails"],
-                    "id": "2eb696d9-5d96-4b9d-bf02-36920458cf7d",
+                    "id": "9b95ca5a-b1f4-4167-a68b-5a936d3c3e5c",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +608,7 @@
                     "children": [
                       "A bright, fear-free neighborhood dog grooming shop — baths, full grooms and nail trims for every breed and size, done calmly and never rushed."
                     ],
-                    "id": "5765facb-5144-43c8-8895-5f50dc9e704f",
+                    "id": "6cbd0063-d4d0-4bc1-9512-d8a3df220c70",
                     "ord": "a1"
                   },
                   {
@@ -642,7 +624,7 @@
                           "href": "/book"
                         },
                         "children": ["Book online"],
-                        "id": "73caa4f4-0f51-4134-a4e2-71d3775ae767",
+                        "id": "ceb5e5a1-9174-42d0-911f-d1fd29917d81",
                         "ord": "a0"
                       },
                       {
@@ -653,19 +635,19 @@
                           "href": "/book"
                         },
                         "children": ["See the menu"],
-                        "id": "dbc6e663-be69-4080-bcb6-44d7b09265a5",
+                        "id": "d22f02f2-43a5-45e5-aba4-b6654add0b25",
                         "ord": "a1"
                       }
                     ],
-                    "id": "cb28c37f-aebf-41d8-828b-1c12be9fbcd2",
+                    "id": "72d982e8-d697-4024-b7d5-5edbaecff436",
                     "ord": "a2"
                   }
                 ],
-                "id": "eedfb7dd-7685-4b7e-9d45-b53f9d89145e",
+                "id": "8d306963-0a73-4951-8464-ee72424eb005",
                 "ord": "a2"
               }
             ],
-            "id": "2a58b6c3-02ad-4c49-9331-8ffb36839554",
+            "id": "5d7aecac-1181-49d2-9643-229cc5396ab4",
             "ord": "a0"
           },
           {
@@ -693,7 +675,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Fear-free, always"],
-                            "id": "430df22f-619d-4e7f-a3cb-d0fb70a60b80",
+                            "id": "ab469029-689e-413b-9ac9-cb19fe07d2b2",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +685,11 @@
                             "children": [
                               "Gentle handling, lots of treats and breaks when your dog needs one. Nervous pups are our specialty, not our problem."
                             ],
-                            "id": "58ce8f6f-132e-49c0-9e03-9e927947eaaf",
+                            "id": "60c7912e-d8a3-4930-88c7-ca221d2edd01",
                             "ord": "a1"
                           }
                         ],
-                        "id": "443ca7aa-bd66-454f-89fb-50e3fa4e5ef7",
+                        "id": "f133b19d-2226-4e6c-9627-7437a2b6989c",
                         "ord": "a0"
                       },
                       {
@@ -720,7 +702,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["By appointment, so it stays calm"],
-                            "id": "d01a57db-9a4e-4e3b-a814-2f618847df06",
+                            "id": "1a95aeab-171f-44c6-b16d-b8ad4f0b820d",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +712,11 @@
                             "children": [
                               "One dog at a time per groomer — no packed kennels, no barking chaos. Your dog gets our full attention."
                             ],
-                            "id": "af2635a4-c1e2-489f-b42e-0903741a9c5d",
+                            "id": "3fc1d202-c325-43b6-ad0b-377dfe1b93df",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f0155157-d723-49db-9654-b0c91cae15af",
+                        "id": "2e2bef8e-f0d6-4b8a-82b1-a0bd5b206924",
                         "ord": "a1"
                       },
                       {
@@ -747,7 +729,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["All breeds & sizes"],
-                            "id": "6949669c-51f6-424c-8e0f-306328b90d3a",
+                            "id": "6cc6f344-8916-47b5-a802-1e22d9d6a0ac",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +739,11 @@
                             "children": [
                               "Chihuahua to Great Dane, doodle to double-coat — every dog is welcome and priced fairly by size."
                             ],
-                            "id": "4299ac41-a60f-4698-bed5-34e8ab2988fd",
+                            "id": "3ae5bc42-6e7d-4112-8d42-0d81d8b27e97",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5bf87fe7-c454-42c1-a334-dbfe58a9f773",
+                        "id": "ad5ce75d-3a90-4ae1-89a1-c2a7ca9e52c3",
                         "ord": "a2"
                       },
                       {
@@ -774,7 +756,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Cage-free drying"],
-                            "id": "4187e501-c585-46b9-9ee8-0b6b064a4eb4",
+                            "id": "01d94b00-c474-4f77-bb24-0c6a0dacd368",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +766,23 @@
                             "children": [
                               "No hot box dryers. We hand-dry and towel off, so your dog goes home fluffy, comfy and stress-free."
                             ],
-                            "id": "deb8f926-20eb-4048-a851-ab8c43d1a364",
+                            "id": "740b11df-0e95-43c5-a27e-8808f671f19d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a766a7b0-ba9d-467b-8178-4928d658a453",
+                        "id": "6e95f3fe-3062-4266-bf1b-f003cd2793fc",
                         "ord": "a3"
                       }
                     ],
-                    "id": "8686671b-6ff0-49be-a7a5-3ec3fb63fa2f",
+                    "id": "3de7fc52-b1bf-4afc-bc28-3fafe4a2791c",
                     "ord": "a0"
                   }
                 ],
-                "id": "71bda83b-5514-4c7a-90b6-68747625aa12",
+                "id": "d7fe4db0-2188-42e1-a4f0-ff1bd80585d9",
                 "ord": "a0"
               }
             ],
-            "id": "066dd2eb-5c51-496c-8559-2bc440d84a38",
+            "id": "936cb459-3710-4514-bcc3-63eb698cff3f",
             "ord": "a1"
           },
           {
@@ -823,7 +805,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Our menu"],
-                        "id": "72b086b0-afdc-488c-89fb-7ec235101660",
+                        "id": "cafb68ee-2727-4cb1-967e-16bd6f4f3d16",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +815,11 @@
                         "children": [
                           "Priced by your dog’s size, because a Yorkie and a Newfoundland are not the same afternoon. Full prices and live openings are on the booking page."
                         ],
-                        "id": "044633bf-942a-4043-87a5-9f6cdd025571",
+                        "id": "94c9b04c-d302-4a99-a6c0-1c58c0b8179f",
                         "ord": "a1"
                       }
                     ],
-                    "id": "de87f797-9163-41d7-a66c-fb262f4f2322",
+                    "id": "8ff31e1e-ecae-4411-97e0-146e11314916",
                     "ord": "a0"
                   },
                   {
@@ -863,7 +845,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Bath & brush — small"],
-                                "id": "70d5b792-1124-41ca-9b39-9f75d8061559",
+                                "id": "4599d582-598f-4a42-9286-3dd4b9cb68fd",
                                 "ord": "a0"
                               },
                               {
@@ -871,11 +853,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$40"],
-                                "id": "a5251b55-9849-4ddb-bf27-c919bc2cae70",
+                                "id": "e3b317fb-598a-4166-9a0d-3a1ca13f8a82",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "11567798-5870-4b42-b6e0-be7578db30db",
+                            "id": "bd5f69df-de5c-4a12-8076-c4b7162719e8",
                             "ord": "a0"
                           },
                           {
@@ -883,7 +865,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "15349a32-df0f-4801-9a87-e9cc044b52b7",
+                            "id": "02f2fb5e-a11b-48f0-88f2-f7ccee7bfbc1",
                             "ord": "a1"
                           },
                           {
@@ -891,11 +873,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Warm bath, brush-out and cage-free dry."],
-                            "id": "915dde88-b3fc-483c-b3b6-60af973abb94",
+                            "id": "a6b41b9c-882d-4c3a-9a34-45af337a9100",
                             "ord": "a2"
                           }
                         ],
-                        "id": "e3530f0c-3318-49b3-b682-2ac0468fbe23",
+                        "id": "98f4559c-54bd-43f9-8254-df3852cbaf58",
                         "ord": "a0"
                       },
                       {
@@ -916,7 +898,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Full groom — small"],
-                                "id": "df43a9b6-2bc4-4881-8d55-f28bda8fcae2",
+                                "id": "3f66b2b3-e542-4709-975d-6c6df48c80f4",
                                 "ord": "a0"
                               },
                               {
@@ -924,11 +906,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$75"],
-                                "id": "39418caa-3bf3-476b-b9cb-aaca07ac39f6",
+                                "id": "a7aeb091-d6cc-4f37-9ddc-c6a56fd0cebb",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b0bd0d3e-64ba-4125-834e-9d07df3e0d0c",
+                            "id": "f285f294-1a6c-4340-be46-aff612e6991a",
                             "ord": "a0"
                           },
                           {
@@ -936,7 +918,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr 30 min"],
-                            "id": "027d2a14-b63e-4728-ac5e-f73b00c7744d",
+                            "id": "94265c7f-f140-484c-b9d5-bc4ca4e46b5d",
                             "ord": "a1"
                           },
                           {
@@ -944,11 +926,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Bath, haircut, nails, ears and a bandana."],
-                            "id": "435c5f3e-2e2e-405b-8897-26e89281c6d8",
+                            "id": "3ae691b8-0ed0-4cd3-8578-2ee1fdb18d62",
                             "ord": "a2"
                           }
                         ],
-                        "id": "c37abae7-8091-4ebf-b411-ef2a07adcfc9",
+                        "id": "62edf081-4d1d-4ff0-bbef-0ddb5fd4e778",
                         "ord": "a1"
                       },
                       {
@@ -969,7 +951,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Full groom — large"],
-                                "id": "b4fa7e21-1f44-42d7-a77f-c71a15595de0",
+                                "id": "4138a2df-1860-4c07-8ecd-5c239254ae93",
                                 "ord": "a0"
                               },
                               {
@@ -977,11 +959,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$115"],
-                                "id": "9b6e28ed-2283-4c87-ad1f-f175968c38bb",
+                                "id": "931be2e5-c614-40e5-992c-4036fb11e764",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "3a055089-2345-4836-b7cd-d49f2920bb03",
+                            "id": "48e847a0-be6b-4c54-a2e8-a084ff78f88e",
                             "ord": "a0"
                           },
                           {
@@ -989,7 +971,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["2 hr"],
-                            "id": "da7febde-4098-40e3-aec7-1f395377aaf4",
+                            "id": "1a6a2061-125b-44aa-b319-bf7fd8d22671",
                             "ord": "a1"
                           },
                           {
@@ -997,11 +979,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["The whole works for the big kids."],
-                            "id": "c0923735-1a9f-4004-9b9d-4441b76ef213",
+                            "id": "6898998a-9ea0-424e-bfd6-6288e46839f1",
                             "ord": "a2"
                           }
                         ],
-                        "id": "c8c1957f-2a6c-45a8-a743-ef6276f8bd56",
+                        "id": "8caf085f-df30-4ff6-8e67-c74ad87aeb0e",
                         "ord": "a2"
                       },
                       {
@@ -1022,7 +1004,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["De-shed treatment"],
-                                "id": "56c6e6cb-a7bc-43c9-9cc7-07b87ac2c26b",
+                                "id": "1ce9689e-ffb5-439e-8d4a-37f471215109",
                                 "ord": "a0"
                               },
                               {
@@ -1030,11 +1012,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$80"],
-                                "id": "1d656961-0c13-4d6b-ae6b-2d7e4d36ca0f",
+                                "id": "cac03f80-b996-4498-bd06-08e0fdf91e4f",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "cf0f57cc-532d-41a1-baed-ce0550efbd4c",
+                            "id": "c0a8738b-1c2a-4615-bae9-d9393c20bf61",
                             "ord": "a0"
                           },
                           {
@@ -1042,7 +1024,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr 30 min"],
-                            "id": "14fa59cf-1d60-4351-b2d0-d3d99f92c520",
+                            "id": "acb916d8-77e7-43ad-bd4c-024bae0f1703",
                             "ord": "a1"
                           },
                           {
@@ -1050,11 +1032,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Deep bath and undercoat blow-out."],
-                            "id": "e3f59575-eb66-447f-9659-33903632e549",
+                            "id": "9a7c708a-1758-460e-a548-4ef3bf896793",
                             "ord": "a2"
                           }
                         ],
-                        "id": "5ecacc4f-a999-422c-9479-1814685ccf89",
+                        "id": "3767e870-02c4-4e92-9b66-6cca2d0fdd2e",
                         "ord": "a3"
                       },
                       {
@@ -1075,7 +1057,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Puppy’s first groom"],
-                                "id": "8a49ac22-24f5-4d9a-b2e9-18d8230e2271",
+                                "id": "fa3b988a-1e39-4a9e-a814-390634832f8e",
                                 "ord": "a0"
                               },
                               {
@@ -1083,11 +1065,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$35"],
-                                "id": "4bf0775d-a42b-4b4b-b969-4df506d3b09e",
+                                "id": "7d4b8c9d-cf22-45e3-b965-8ff27dca3470",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "64951a7b-d414-4dda-94ea-6999f9cf4484",
+                            "id": "0f459fa4-8676-4f0e-b8b0-ba6d12d3c770",
                             "ord": "a0"
                           },
                           {
@@ -1095,7 +1077,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "c1482edc-32dd-4ab8-85db-a9d2d2b7b2bd",
+                            "id": "0a11d1b9-ae3f-4876-af88-ab0f7f339ab9",
                             "ord": "a1"
                           },
                           {
@@ -1103,11 +1085,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["A gentle, all-treats introduction."],
-                            "id": "81cab784-cf75-43b3-aa2c-2e2ba2ee28aa",
+                            "id": "9f967351-af04-4843-ada7-ac19eef43934",
                             "ord": "a2"
                           }
                         ],
-                        "id": "da9f5079-fb12-4f8b-9690-026f2c52df0d",
+                        "id": "2fa7c679-1c95-474f-a956-daebc05b8f2c",
                         "ord": "a4"
                       },
                       {
@@ -1128,7 +1110,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Nail trim & tidy"],
-                                "id": "943c865b-c0db-4697-859c-2624d1042317",
+                                "id": "7a608734-c499-4032-9bb1-53562d37eed2",
                                 "ord": "a0"
                               },
                               {
@@ -1136,11 +1118,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$20"],
-                                "id": "06c57846-4928-42b4-996d-9ea08cb0b81a",
+                                "id": "d1c2770c-749d-42f0-9baf-1fba1067df0e",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "83db9197-aba6-45c9-a031-34d47f7ce5b7",
+                            "id": "d13218a5-9411-40fe-9a91-f0fc22571996",
                             "ord": "a0"
                           },
                           {
@@ -1148,7 +1130,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "7d291a49-b42a-472c-ad90-0c8f04f63b46",
+                            "id": "76306fb5-3a35-402e-8487-688be03cf23f",
                             "ord": "a1"
                           },
                           {
@@ -1156,15 +1138,15 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Quick, calm nails with a smooth finish."],
-                            "id": "b483cde4-1d47-40a7-8a2b-160d3ac0f126",
+                            "id": "99f34c31-bd45-4bd8-8826-df6cc9d932c4",
                             "ord": "a2"
                           }
                         ],
-                        "id": "edc38be6-1cf1-4174-819e-0b58aeefa15b",
+                        "id": "996f1208-8d92-4875-9acd-6a4887285f98",
                         "ord": "a5"
                       }
                     ],
-                    "id": "aaa7708a-3fe3-44a3-bd66-1b239da7d684",
+                    "id": "adb24e4a-84d3-46a3-a3f9-0a76dce1b132",
                     "ord": "a1"
                   },
                   {
@@ -1180,19 +1162,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "31e4f4e1-a752-469b-a079-9cb290f85f7e",
+                        "id": "549b42e9-a4d7-4d2f-97a4-d7a805bce952",
                         "ord": "a0"
                       }
                     ],
-                    "id": "d84dd9bc-9922-4aea-a37b-46a2fd1f1784",
+                    "id": "57ac7168-0b22-4720-980f-b092905164e1",
                     "ord": "a2"
                   }
                 ],
-                "id": "43321deb-8c51-43b8-8de5-b700e0e0c256",
+                "id": "07371c91-4dcf-4fe7-97de-44da00dde7c6",
                 "ord": "a0"
               }
             ],
-            "id": "392880ad-9cf5-40fd-928d-a9dff9155e5a",
+            "id": "5a9393e0-8e3b-4178-a1e8-5bb661f069bb",
             "ord": "a2"
           },
           {
@@ -1214,7 +1196,7 @@
                       "alt": "A bright, cheerful grooming shop with a calm bathing station",
                       "loading": "lazy"
                     },
-                    "id": "ffb49fa6-3a1d-492e-8157-7c78ba85211e",
+                    "id": "0030bedf-2cfb-4c4f-b80f-2284d2e43260",
                     "ord": "a0"
                   },
                   {
@@ -1227,7 +1209,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["A calm day, start to finish"],
-                        "id": "14e1c865-f474-4c79-9131-5a20b14ec14d",
+                        "id": "d08b2f2f-1958-4048-a1f5-357f7d0fdbc2",
                         "ord": "a0"
                       },
                       {
@@ -1237,7 +1219,7 @@
                         "children": [
                           "Scrub & Wag is a small shop on purpose. We book one dog at a time per groomer, so there’s no crate stacking, no waiting all day, and no rush to get to the next appointment."
                         ],
-                        "id": "07a21b83-7db6-49e0-bae2-3e325987b486",
+                        "id": "239d0fbd-59f7-41b8-9d4b-724f37305759",
                         "ord": "a1"
                       },
                       {
@@ -1247,7 +1229,7 @@
                         "children": [
                           "Drop off, grab a coffee, and come back to a happy, clean dog who actually had a nice morning. That’s the whole idea."
                         ],
-                        "id": "584a790d-dc54-44d5-99fa-9109ade1d416",
+                        "id": "1be4bf6f-3f7a-437b-b5d4-f5ab65e0d21f",
                         "ord": "a2"
                       },
                       {
@@ -1263,23 +1245,23 @@
                               "href": "/book"
                             },
                             "children": ["Book your dog in"],
-                            "id": "c4ab0797-3c9f-41d3-ad18-7b5be134469a",
+                            "id": "019b9abb-5916-465e-a57c-04c14d9d51e3",
                             "ord": "a0"
                           }
                         ],
-                        "id": "c94d6edc-e742-472e-93c3-c581ad78e93b",
+                        "id": "6e0c6e71-7a98-444c-8881-5f1a410ea429",
                         "ord": "a3"
                       }
                     ],
-                    "id": "ce700082-75ac-4014-90c0-d1d323efe593",
+                    "id": "03893d1d-1b8a-4963-87bf-018b4bb52b46",
                     "ord": "a1"
                   }
                 ],
-                "id": "9c5b8fc5-d8ca-4362-8785-cd3391251851",
+                "id": "0c74bdea-2537-4369-a603-4011312bcb0f",
                 "ord": "a0"
               }
             ],
-            "id": "72c5027a-fd88-485e-b16e-4c8cf6c59241",
+            "id": "8dc18cd4-e9c3-4184-9d35-cbb68b588615",
             "ord": "a3"
           },
           {
@@ -1302,7 +1284,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Meet the groomers"],
-                        "id": "624b827d-6073-437f-8b58-f550fb0de840",
+                        "id": "a6b3f151-c7fa-4c2a-b7f7-68cb85ab97f4",
                         "ord": "a0"
                       },
                       {
@@ -1312,11 +1294,11 @@
                         "children": [
                           "Book by name — your dog gets to know the same friendly face each visit."
                         ],
-                        "id": "9113b923-7123-40c1-b353-0b78d7a7ae11",
+                        "id": "def759c2-7d04-4287-8be5-e0bf6b082d6e",
                         "ord": "a1"
                       }
                     ],
-                    "id": "fae2221f-7d43-47f9-9644-46b5dc1f156a",
+                    "id": "db775dcd-4891-420e-a848-1ac4fc73dde6",
                     "ord": "a0"
                   },
                   {
@@ -1338,7 +1320,7 @@
                               "alt": "Rosa Delgado, lead groomer",
                               "loading": "lazy"
                             },
-                            "id": "da4f4a59-c5eb-4f72-82fc-878d35a08829",
+                            "id": "282dac8c-5a9c-4ea9-b7ea-5f4c3272c52d",
                             "ord": "a0"
                           },
                           {
@@ -1351,7 +1333,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Rosa Delgado"],
-                                "id": "c9f6652f-7e1f-4d9b-9075-e6617bb706f7",
+                                "id": "9252f7c3-9840-4ec7-bd95-458b3c6c6fe4",
                                 "ord": "a0"
                               },
                               {
@@ -1359,7 +1341,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Lead groomer"],
-                                "id": "7ce924cf-d9b0-4cee-aa97-5c5f3c0600e9",
+                                "id": "619881a2-5132-4397-9303-cd5ae9a54932",
                                 "ord": "a1"
                               },
                               {
@@ -1369,15 +1351,15 @@
                                 "children": [
                                   "Full grooms and hand-stripping for wire coats. Rosa runs the shop and loves a good doodle."
                                 ],
-                                "id": "4e649a35-476a-42dd-b72d-d5c08015ed29",
+                                "id": "e5b6b633-14dc-4b19-bce4-0a10016089e7",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "20ac8688-6199-406e-a356-0338add8d7f8",
+                            "id": "8ac82ddc-1ddd-4eba-8fe1-cdb5801670fc",
                             "ord": "a1"
                           }
                         ],
-                        "id": "aee63f54-9605-4a38-a2b2-78d22fb83ae1",
+                        "id": "b2254dbd-9353-496c-ac61-68a62baf5c14",
                         "ord": "a0"
                       },
                       {
@@ -1394,7 +1376,7 @@
                               "alt": "Theo Park, groomer and de-shed specialist",
                               "loading": "lazy"
                             },
-                            "id": "e2858277-1ac1-4b6f-9a30-732e804ab8c4",
+                            "id": "3dcf4cd0-0335-4b50-859a-fc620a8f2d1a",
                             "ord": "a0"
                           },
                           {
@@ -1407,7 +1389,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Theo Park"],
-                                "id": "fbcf6a9e-c8a3-4dff-90aa-2022b56c21b8",
+                                "id": "b45cb9aa-dcb8-4b44-8712-b876224912ff",
                                 "ord": "a0"
                               },
                               {
@@ -1415,7 +1397,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Groomer · de-shed specialist"],
-                                "id": "8b17d9d4-3a1d-4619-9166-4a4b32fba40c",
+                                "id": "0414b852-9bf2-40fd-a116-4b24099df0b7",
                                 "ord": "a1"
                               },
                               {
@@ -1425,15 +1407,15 @@
                                 "children": [
                                   "The double-coat whisperer — huskies, shepherds and shedders of all kinds."
                                 ],
-                                "id": "97bc0df1-8378-4fc0-8af3-6fd33f27f137",
+                                "id": "19612c82-8534-427d-ad6d-77dced7a2f00",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "ac52ab03-1a13-4038-89c9-c28af20f8b20",
+                            "id": "75e289c7-c779-4609-9713-de69e6470870",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c375567f-e3bf-4b83-8f91-0eac48cf659a",
+                        "id": "aa1a14cf-1104-42d7-9bcf-ed00d020acb4",
                         "ord": "a1"
                       },
                       {
@@ -1450,7 +1432,7 @@
                               "alt": "Bea Nguyen, puppy and bath groomer",
                               "loading": "lazy"
                             },
-                            "id": "dd55e9dd-c4b6-4a1c-b3ff-c09cc406dc2c",
+                            "id": "a531cd8f-90e2-404a-8b42-232470bb24ec",
                             "ord": "a0"
                           },
                           {
@@ -1463,7 +1445,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Bea Nguyen"],
-                                "id": "b7465fdc-7e6c-451e-a2b6-a81496602dfd",
+                                "id": "0144c8e8-2a3b-4d82-ad11-f2b41880b7fc",
                                 "ord": "a0"
                               },
                               {
@@ -1471,7 +1453,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Puppy & bath groomer"],
-                                "id": "c236e535-aec5-4692-926c-1c868c8d7362",
+                                "id": "42191776-30b0-42c9-bfd9-531677830b58",
                                 "ord": "a1"
                               },
                               {
@@ -1481,27 +1463,27 @@
                                 "children": [
                                   "Endless patience for first-timers and nervous pups. Baths, nails and puppy introductions."
                                 ],
-                                "id": "4060ffaf-a815-4efe-bb50-1eedc01c592c",
+                                "id": "4d99a2cf-1c7c-4cad-9acb-adb0a5c956df",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "7ec89244-28ce-4017-a0c8-bb722d5278e8",
+                            "id": "eade1572-9693-4f70-8076-af92b6aa92c4",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7be4c212-1a8f-4151-9d95-2582e33ca836",
+                        "id": "c455d07f-d9bf-4aa8-a900-237d7bed7da7",
                         "ord": "a2"
                       }
                     ],
-                    "id": "b85f1f43-0303-42eb-9a21-f97a78cc1524",
+                    "id": "adfde905-3761-4905-924f-944b8d672a68",
                     "ord": "a1"
                   }
                 ],
-                "id": "11d5ed44-17ef-4f83-ae1b-b3326a60ad69",
+                "id": "f459e587-9f09-4a17-83da-ccf763543a07",
                 "ord": "a0"
               }
             ],
-            "id": "ba1cf83a-2234-4cdb-943c-831447af5181",
+            "id": "de23072d-6760-4e73-b2d2-c999bc5da1c1",
             "ord": "a4"
           },
           {
@@ -1519,7 +1501,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["Fresh & fluffy"],
-                    "id": "544eceba-9a9b-47df-93e0-f45f512b4a35",
+                    "id": "f9cabd28-266a-4040-9583-44e8d22e57b7",
                     "ord": "a0"
                   },
                   {
@@ -1536,7 +1518,7 @@
                           "alt": "A fluffy dog after a full groom, looking proud",
                           "loading": "lazy"
                         },
-                        "id": "ffcdc1ed-97c4-48fb-a406-4a2b01cbcb67",
+                        "id": "524a25b3-6af9-4443-a081-ee3a942e8238",
                         "ord": "a0"
                       },
                       {
@@ -1548,7 +1530,7 @@
                           "alt": "A small dog with a fresh, tidy trim",
                           "loading": "lazy"
                         },
-                        "id": "f9fca9b9-3193-4903-af96-8529c82ddf34",
+                        "id": "3d2fc404-f9ce-4d43-a1ce-1043ef68d1a5",
                         "ord": "a1"
                       },
                       {
@@ -1560,19 +1542,19 @@
                           "alt": "A big smiling dog fresh from a bath and brush",
                           "loading": "lazy"
                         },
-                        "id": "453b156c-e79e-4c57-8524-5423fed4ee9d",
+                        "id": "dc1a9e97-f427-4dad-b59a-b9440c10d859",
                         "ord": "a2"
                       }
                     ],
-                    "id": "7e965073-7ffb-43b5-8178-f63633f2b803",
+                    "id": "37287bcb-1251-420e-84a7-cf7a10fa1256",
                     "ord": "a1"
                   }
                 ],
-                "id": "8187c126-28a9-4191-8dcb-4c88034c1a7d",
+                "id": "714be958-ab35-4a8b-b34b-32f5d99b7233",
                 "ord": "a0"
               }
             ],
-            "id": "435a09ba-55ac-4d9f-b48d-c5e2c5270e62",
+            "id": "2f3558f9-b56f-415c-94a3-e60f515bca5d",
             "ord": "a5"
           },
           {
@@ -1592,7 +1574,7 @@
                     "children": [
                       "“My rescue used to shake the whole drive to the groomer. Now she drags me to the door. Whatever they do here, it works.”"
                     ],
-                    "id": "efa11d2c-68eb-4392-90bc-6fa19ac7ddc2",
+                    "id": "7923aa30-16dc-4d86-8ba3-03f65f4024f7",
                     "ord": "a0"
                   },
                   {
@@ -1600,15 +1582,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["Marcus & Poppy, regulars since 2024"],
-                    "id": "6e9d1f73-e740-46f5-8df7-d270684f4b17",
+                    "id": "20f8d48a-ecd5-44b5-92c8-396e91eda728",
                     "ord": "a1"
                   }
                 ],
-                "id": "dfc2eaa5-c867-4d98-9349-df6e5ba8630f",
+                "id": "399a5c0b-279e-40fb-90a3-1c63362254bb",
                 "ord": "a0"
               }
             ],
-            "id": "5c4aa057-b62c-496f-ba5e-03da2a4ff5a1",
+            "id": "b8710ecc-88f8-40c8-aed9-38a599e29417",
             "ord": "a6"
           },
           {
@@ -1626,7 +1608,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Ready for a happy, clean dog?"],
-                    "id": "98ea24d0-7dc6-4002-9114-0c2a6732320e",
+                    "id": "b8278087-b826-4aa6-8b98-ddacb74cf7e2",
                     "ord": "a0"
                   },
                   {
@@ -1636,7 +1618,7 @@
                     "children": [
                       "Pick a service, choose your groomer and see live openings. It takes about a minute."
                     ],
-                    "id": "c08fb541-8fd4-4489-b292-3edbaff5bc16",
+                    "id": "6ae2f1fc-5e05-4834-9bcd-6bb415ea48cd",
                     "ord": "a1"
                   },
                   {
@@ -1647,15 +1629,15 @@
                       "href": "/book"
                     },
                     "children": ["Book online"],
-                    "id": "54a3a048-ece6-449a-8dd1-06e6d369b3b3",
+                    "id": "3ac4e9f9-a320-4636-b723-be251f3f7331",
                     "ord": "a2"
                   }
                 ],
-                "id": "708aabdc-9615-416e-b6b2-5e904f01c8ca",
+                "id": "3639da0a-4e62-4038-ab1e-6444d704ecfb",
                 "ord": "a0"
               }
             ],
-            "id": "e9b98078-15aa-48ff-b4cd-dde403792d9a",
+            "id": "a6385b16-083a-441d-aee0-729bf9189a8d",
             "ord": "a7"
           }
         ]
@@ -1672,7 +1654,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "30b5ee7e-3c21-4d14-818e-46dc4aa8343d",
+        "id": "9b749648-1e44-421f-a0d0-3f23a1433f34",
         "children": [
           {
             "kind": "element",
@@ -1688,14 +1670,14 @@
                   "alt": "A bright, cheerful grooming shop with a calm bathing station",
                   "loading": "eager"
                 },
-                "id": "94722ed3-88c4-4855-99ff-59d6e5d7b809",
+                "id": "91c1f678-1a45-4275-9614-1d779d3c6cd6",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "1679f861-fcd4-49a7-972b-508f1b46b208",
+                "id": "dc6f8088-c1f8-41bf-9512-ea1ca591714d",
                 "ord": "a1"
               },
               {
@@ -1708,7 +1690,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book your dog’s spot"],
-                    "id": "7d01a3ea-00f2-4b73-9061-58121efbf2b6",
+                    "id": "11a48ab3-a4f9-42b5-8344-3a097d45e779",
                     "ord": "a0"
                   },
                   {
@@ -1718,7 +1700,7 @@
                     "children": [
                       "Choose a service to see prices by size and live openings, then pick your groomer and time."
                     ],
-                    "id": "f7baed00-ee94-4917-8fb8-f2eb40f79dfa",
+                    "id": "6e636ff4-6fce-4321-a46f-bc4ad3a7597c",
                     "ord": "a1"
                   },
                   {
@@ -1734,27 +1716,31 @@
                           "href": "/book"
                         },
                         "children": ["See services below"],
-                        "id": "452e41cb-f435-4f57-bd23-7fca35a1b0f1",
+                        "id": "3c291cd3-9344-4b43-a6d5-ac52f03bca83",
                         "ord": "a0"
                       }
                     ],
-                    "id": "025bceaa-ccde-40cf-8057-3b11ef5d04d8",
+                    "id": "e7d5b8cf-1718-48cb-bf56-12a6487977fd",
                     "ord": "a2"
                   }
                 ],
-                "id": "27e7f1aa-9de5-4c66-af49-7bfbdaa284b3",
+                "id": "b1e230d7-8253-43af-bdad-84968926c887",
                 "ord": "a2"
               }
             ],
-            "id": "a064d456-8766-4634-9653-955e547ec34a",
+            "id": "09fd6445-6afc-4518-b6f2-fa4c9f828822",
             "ord": "a0"
           },
           {
             "kind": "host",
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "props": {
+              "heading": "Book with us",
+              "subheading": "Choose a service to see open times and reserve your spot."
+            },
             "locked": "host",
-            "id": "0a3b2eb5-c248-4caa-87fd-a5f6bd847139",
+            "id": "0b2790ae-6d5e-40f8-baec-2b6a69c94db8",
             "ord": "a1"
           },
           {
@@ -1777,7 +1763,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Good to know"],
-                        "id": "16d167e4-85c0-4af1-86a2-8f3bf21b8032",
+                        "id": "93a7c771-6842-4110-a7a5-23a74d5647d1",
                         "ord": "a0"
                       },
                       {
@@ -1787,11 +1773,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "dcd6935c-0858-4e4c-af1d-f9f3ee9ef9dc",
+                        "id": "92e551a5-e9da-4087-863f-b2a63c8d1bdf",
                         "ord": "a1"
                       }
                     ],
-                    "id": "d0f37819-d07e-464c-991f-7d94d59e7b2a",
+                    "id": "1fb658fc-a860-42a8-8e35-04c272b47a44",
                     "ord": "a0"
                   },
                   {
@@ -1809,7 +1795,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Standard booking"],
-                            "id": "29cb7f8c-fef6-43de-a981-886f5739c120",
+                            "id": "2f542ac6-1932-4770-ade3-9c7b40f7a1ad",
                             "ord": "a0"
                           },
                           {
@@ -1819,7 +1805,7 @@
                             "children": [
                               "Give us at least 24 hours’ notice to change or cancel your dog’s spot. We text a reminder the day before and two hours ahead so nobody forgets bath day."
                             ],
-                            "id": "91f28499-9334-4bb2-a939-0a48d43bf329",
+                            "id": "2ab3489e-2c9a-4409-b5b4-03a6bd3c5e59",
                             "ord": "a1"
                           },
                           {
@@ -1829,11 +1815,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "73174e38-0055-41cb-97e8-b3d5b585c904",
+                            "id": "1f231f3f-3c90-4a96-82ff-832f8230a66d",
                             "ord": "a2"
                           }
                         ],
-                        "id": "50e6fd98-9692-4e0f-951d-ddd6af2fa3e2",
+                        "id": "55c991e1-cd99-4450-9ff6-e574741f5937",
                         "ord": "a0"
                       },
                       {
@@ -1846,7 +1832,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Full-groom deposit"],
-                            "id": "b42cc27b-6778-41d5-a85a-ffba15757115",
+                            "id": "0439788b-3e50-4f21-b1be-8342744ad926",
                             "ord": "a0"
                           },
                           {
@@ -1856,7 +1842,7 @@
                             "children": [
                               "Full grooms hold a $15 deposit that comes right off your total. Reschedule with 48 hours’ notice and it carries over — it only keeps a no-show from taking a groomer’s whole afternoon."
                             ],
-                            "id": "4402da6a-c4cd-46fb-aa04-1c8a19a8cd3a",
+                            "id": "9bc1d14b-8883-4acf-8520-e1c5007b7a90",
                             "ord": "a1"
                           },
                           {
@@ -1866,23 +1852,23 @@
                             "children": [
                               "A $15 deposit holds your place. Change or cancel free up to 2 days before."
                             ],
-                            "id": "4c6e6a2e-34f1-489c-bf9a-399fbb55e1cf",
+                            "id": "21cefc61-0a78-4964-b4df-335f18c29a04",
                             "ord": "a2"
                           }
                         ],
-                        "id": "47c42399-f1a7-46fc-b177-23faff3dcada",
+                        "id": "db09e464-6065-4201-b86d-dabefe1de3ee",
                         "ord": "a1"
                       }
                     ],
-                    "id": "ecb369d6-294b-4f1b-ac8e-21ac8097ccaa",
+                    "id": "dd58dff3-5afc-4708-8340-79d67a47d305",
                     "ord": "a1"
                   }
                 ],
-                "id": "5ab96278-7757-4039-8f39-7de563a2a74d",
+                "id": "97796c35-de37-4262-bfb4-4a1a57ca015f",
                 "ord": "a0"
               }
             ],
-            "id": "d3dc6d4a-dffe-4924-b3e5-530b64019798",
+            "id": "17755c3c-a09e-4be4-9cb1-897b87957846",
             "ord": "a2"
           }
         ]
@@ -1899,7 +1885,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "117f47ed-fbd2-435c-9a6f-0d1c8edd1de8",
+        "id": "4a403033-ed10-48a7-8d4f-08943e31e4d9",
         "children": [
           {
             "kind": "element",
@@ -1920,7 +1906,7 @@
                       "alt": "A happy, freshly-bathed dog with a big grin",
                       "loading": "lazy"
                     },
-                    "id": "2649bf49-bb29-4821-9b0a-68c731721998",
+                    "id": "f0c4e32b-742b-41dd-b978-baabe709d420",
                     "ord": "a0"
                   },
                   {
@@ -1933,7 +1919,7 @@
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About Scrub & Wag"],
-                        "id": "674b3ce5-9212-42c4-aee8-b3694215f61d",
+                        "id": "dc117ef7-d5c6-4493-9fe9-15ae444d558a",
                         "ord": "a0"
                       },
                       {
@@ -1943,7 +1929,7 @@
                         "children": [
                           "We started Scrub & Wag because grooming shouldn’t be a scary day. Too many places pack dogs into crates, rush them through, and hand back a stressed pup. We wanted the opposite."
                         ],
-                        "id": "fc2cbd83-b2af-48d8-888a-f68ef1880f85",
+                        "id": "09a614bb-9b25-4db4-8905-a24a3bcee412",
                         "ord": "a1"
                       },
                       {
@@ -1953,7 +1939,7 @@
                         "children": [
                           "So we keep it small, gentle and unhurried — fear-free handling, cage-free drying, and one dog at a time per groomer. Just clean, happy dogs and owners who trust us with them."
                         ],
-                        "id": "197b730b-9976-4183-bc81-90202fe0b116",
+                        "id": "86b3ae6b-cf3d-403d-9cd4-7fda5e6b5e5a",
                         "ord": "a2"
                       },
                       {
@@ -1969,23 +1955,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a groom"],
-                            "id": "37e27b7a-1795-4503-b4d1-5cdbbbf179bd",
+                            "id": "9dce490e-a23f-4304-9346-6881f74c9d3a",
                             "ord": "a0"
                           }
                         ],
-                        "id": "cf18e667-858a-414d-bba9-4b361aca72fe",
+                        "id": "2775f163-a422-457e-95c1-31ddb61f8255",
                         "ord": "a3"
                       }
                     ],
-                    "id": "5495f8a8-8298-4496-bbaf-cf7574488358",
+                    "id": "0c7b5dfa-7dd6-44c7-aa6d-930bfbd54af0",
                     "ord": "a1"
                   }
                 ],
-                "id": "0f62c83a-1f59-4d22-b237-3114a789c9e6",
+                "id": "3725c007-7a46-402b-b316-f904109e709a",
                 "ord": "a0"
               }
             ],
-            "id": "6aa093e3-4a59-44df-89c0-11c4c767f79a",
+            "id": "e62e9dce-8299-4f06-ba61-0d59733f625c",
             "ord": "a0"
           },
           {
@@ -2003,7 +1989,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["How we do things"],
-                    "id": "48752a24-be6d-4df2-b140-609c9bc40d42",
+                    "id": "6d705474-bb6d-476e-a421-eee9f771166a",
                     "ord": "a0"
                   },
                   {
@@ -2021,7 +2007,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Fear-free handling"],
-                            "id": "8a9faf8e-84e1-4964-8ff9-8c921a61300c",
+                            "id": "3ee872be-9a75-48d7-9437-4d05d0a5f07c",
                             "ord": "a0"
                           },
                           {
@@ -2031,11 +2017,11 @@
                             "children": [
                               "Treats, patience and breaks when your dog needs them. We go at your dog’s pace, not a timer’s."
                             ],
-                            "id": "0ee606d0-49d3-4ec0-8717-fd0346ac108a",
+                            "id": "5309724c-5a15-474a-9513-611a7d335bb9",
                             "ord": "a1"
                           }
                         ],
-                        "id": "d58f3f4a-6558-4348-ae76-f1a4926e60ea",
+                        "id": "e5be8517-fc7a-4830-841c-67531189c8a3",
                         "ord": "a0"
                       },
                       {
@@ -2048,7 +2034,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Fair, by-size pricing"],
-                            "id": "416fd74e-5b85-4c5e-830b-6564522ca2dc",
+                            "id": "b20c343a-6092-43f9-8451-1ecf8fc54c76",
                             "ord": "a0"
                           },
                           {
@@ -2058,11 +2044,11 @@
                             "children": [
                               "No mystery add-ons. You’ll know the price for your dog’s size before you book, and it’s the price you pay."
                             ],
-                            "id": "b957293c-6a34-4994-a16a-8f44be0a8fd1",
+                            "id": "d4528f8a-b882-436a-908c-7278361d8d95",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5cded0da-79d2-4de9-b97c-7f4af5931573",
+                        "id": "a4ce0778-49d2-488b-a8c1-3a65a9912c8b",
                         "ord": "a1"
                       },
                       {
@@ -2075,7 +2061,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["You’ll always know"],
-                            "id": "961fc238-1429-472f-be56-062f6c9a3fa5",
+                            "id": "492f4524-ffe0-44a6-8e9d-e0cdb49d050e",
                             "ord": "a0"
                           },
                           {
@@ -2085,23 +2071,23 @@
                             "children": [
                               "We tell you exactly what your dog got, flag anything we noticed on their skin or coat, and show you how to keep them comfy between visits."
                             ],
-                            "id": "2befdbbc-6f16-408e-a292-bb3829ab3310",
+                            "id": "1edb10d3-7199-48a3-8b33-3dc2d2864ed2",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f87c564a-af11-4870-a85c-913f08fa39e4",
+                        "id": "54f6ddca-13e5-4a25-8339-3c75f45dd013",
                         "ord": "a2"
                       }
                     ],
-                    "id": "a88d346b-32e3-49b1-a4d5-8e8ddb1c7a3a",
+                    "id": "b3aed24a-128c-488e-9068-cab029ede7f7",
                     "ord": "a1"
                   }
                 ],
-                "id": "bb42be13-c271-4f73-a4ed-611af36b643c",
+                "id": "91e742f2-9d2e-47f5-b821-d17da8399d6b",
                 "ord": "a0"
               }
             ],
-            "id": "d03c1171-a0de-4577-b077-b0ff381a0d96",
+            "id": "0a76e81a-c924-42f5-b0e1-e67125c4725e",
             "ord": "a1"
           }
         ]
@@ -2118,7 +2104,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "5bf8bf6a-7529-4be8-b1ca-4b8c10f28ebf",
+        "id": "20f5e812-61d2-422f-b372-14c6a9490ab5",
         "children": [
           {
             "kind": "element",
@@ -2140,7 +2126,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Get in touch"],
-                        "id": "176a5034-b04a-4411-bdd3-e8ae187d038d",
+                        "id": "0a6881ad-cd5f-4bcb-86b7-a19781bc0eb0",
                         "ord": "a0"
                       },
                       {
@@ -2150,11 +2136,11 @@
                         "children": [
                           "Questions before you book? Send a note and Scrub & Wag will get back to you — usually the same day."
                         ],
-                        "id": "2cfacaa9-b699-44af-97ec-898bd1bcc314",
+                        "id": "e2f05c81-0a2d-436d-8d4a-0f05aacb27e1",
                         "ord": "a1"
                       }
                     ],
-                    "id": "ba22f72d-a479-419a-8381-6eef3a0f502b",
+                    "id": "2a7b902d-fb7f-40d4-b420-15236a473683",
                     "ord": "a0"
                   },
                   {
@@ -2167,7 +2153,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Call us"],
-                        "id": "667f846d-468c-4ff2-b171-087aa1f34955",
+                        "id": "7b1b61d8-8083-455f-b6b6-cdf3ebe915fd",
                         "ord": "a0"
                       },
                       {
@@ -2183,7 +2169,7 @@
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "61025ede-ad6d-45c2-be32-16380f70e855",
+                            "id": "6b5f832c-e697-4e9b-aa7f-17b69ed3140a",
                             "ord": "a0"
                           }
                         ],
@@ -2192,7 +2178,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "15a1c406-851c-4f44-9177-7ea4f8dba505",
+                        "id": "e0d5fe16-5549-4886-9dec-bb3425f9de1d",
                         "ord": "a1"
                       }
                     ],
@@ -2200,7 +2186,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "4f64d3c0-4f8a-476d-a248-c4c07ab1666d",
+                    "id": "a6cfc7a6-3142-460d-9ed5-823d996d2b96",
                     "ord": "a1"
                   },
                   {
@@ -2213,7 +2199,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Email us"],
-                        "id": "09482344-171a-49c5-be6a-5bf39fdf8afa",
+                        "id": "5899bcb8-4ed6-4b5a-9bd3-f3e500b1dbc7",
                         "ord": "a0"
                       },
                       {
@@ -2229,7 +2215,7 @@
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "a0ac54a3-4d14-4110-ab38-60fae918d15f",
+                            "id": "4d6567e5-97ee-43a3-83d9-5a0730da2f7f",
                             "ord": "a0"
                           }
                         ],
@@ -2238,7 +2224,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "c56f8420-9c3b-442d-be54-bf6941b91740",
+                        "id": "1fb09a8b-a135-436b-b322-1341cb9900e3",
                         "ord": "a1"
                       }
                     ],
@@ -2246,7 +2232,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "eb6487cf-4b5e-4fa6-9664-e6171972c198",
+                    "id": "7dc4aa54-0eae-4e6b-8049-05c60c5836e6",
                     "ord": "a2"
                   },
                   {
@@ -2264,7 +2250,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Your name"],
-                            "id": "42d83638-cecf-4c66-991b-3cef05930c73",
+                            "id": "e396c380-d69d-4e79-9f56-5080ed738677",
                             "ord": "a0"
                           },
                           {
@@ -2276,11 +2262,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "84f45d23-a52c-4db9-9088-1b9f4dbc6988",
+                            "id": "f64d0ecb-397d-480a-aea5-bb75a29bca60",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2b6ec29f-46ab-4ffe-b77e-9ec81e6e930f",
+                        "id": "c6fc23da-50d6-4bd3-9b18-519aa3a91bc7",
                         "ord": "a0"
                       },
                       {
@@ -2293,7 +2279,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Email address"],
-                            "id": "82888234-1e86-4e41-9ddb-afac40da9cc0",
+                            "id": "34bf3e25-f404-4cd9-97d6-ae3005144c05",
                             "ord": "a0"
                           },
                           {
@@ -2305,11 +2291,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "ee7f49cd-ac97-405f-afb0-203ae55b98d0",
+                            "id": "aa83eb32-8d74-4581-a6cf-da5a320cf50c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "14218685-9069-4a04-b3db-3f28f5f079d8",
+                        "id": "b8c22123-eed4-45b6-9181-4c4da27a399c",
                         "ord": "a1"
                       },
                       {
@@ -2322,7 +2308,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Phone number"],
-                            "id": "cb70f2df-6c52-474d-8d4f-dd26607f3bd5",
+                            "id": "fb079478-156a-4ece-a765-fe5ac150f8bf",
                             "ord": "a0"
                           },
                           {
@@ -2333,11 +2319,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "eab89d1c-9e95-4387-ab0a-23b5c3b6dcbe",
+                            "id": "d587857d-9804-45ee-a91f-805412d6f09f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "85333b63-203a-4935-b919-b1b860f59547",
+                        "id": "83808209-c3f1-421f-aea7-ca53b8629533",
                         "ord": "a2"
                       },
                       {
@@ -2350,7 +2336,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["How can we help?"],
-                            "id": "b4c20ca9-fae6-4267-8df3-f9b773176f95",
+                            "id": "8f35d6df-5e2e-4c8e-bd74-a77f33d44ae7",
                             "ord": "a0"
                           },
                           {
@@ -2360,11 +2346,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "a6163950-89f7-4a9a-ab2d-14a8b867322b",
+                            "id": "87944068-a68c-474b-ba45-08ea46e2f58e",
                             "ord": "a1"
                           }
                         ],
-                        "id": "58f87737-fde1-4209-8724-a8d144502dc5",
+                        "id": "b486bc29-7ea5-46ba-b9a3-54045585f01f",
                         "ord": "a3"
                       },
                       {
@@ -2380,11 +2366,11 @@
                               "type": "submit"
                             },
                             "children": ["Send my request"],
-                            "id": "cf4f5a24-c7a8-42a4-9f72-1f833109e53c",
+                            "id": "473e194f-a753-417f-8b47-47527e49ddbf",
                             "ord": "a0"
                           }
                         ],
-                        "id": "74b29788-f293-403c-86d3-8eb99404f9c2",
+                        "id": "f76e14d3-82b1-496a-9d0d-d36239e4646f",
                         "ord": "a4"
                       }
                     ],
@@ -2395,15 +2381,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "583d8ba3-fceb-42a2-9208-425994872e4d",
+                    "id": "bdb29b2b-8357-4e6e-a21a-7d8d4a448375",
                     "ord": "a3"
                   }
                 ],
-                "id": "b450f52b-bc7e-49a5-a9a5-6cb750e67030",
+                "id": "5decd292-a76d-4184-a8f5-160d13c6953f",
                 "ord": "a0"
               }
             ],
-            "id": "b2060978-542e-4df7-a107-d49e75919dd9",
+            "id": "7ad63ea3-66fd-465d-a94e-048f81b64217",
             "ord": "a0"
           },
           {
@@ -2426,7 +2412,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Come say hi"],
-                        "id": "88b784fc-31e1-43f8-86cd-881b0886ebee",
+                        "id": "01630c79-abb7-403d-b05e-9f80340a8bf9",
                         "ord": "a0"
                       },
                       {
@@ -2438,7 +2424,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "3a50fb5d-20f3-4270-a322-c84a334457f0",
+                        "id": "31f2db63-ff5b-4cb3-9e46-32ddf408d2c0",
                         "ord": "a1"
                       },
                       {
@@ -2456,7 +2442,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Tuesday – Friday"],
-                                "id": "ffc9b240-153a-48e7-90f6-18015e2c5522",
+                                "id": "375b4856-9d28-4491-9b3c-fbf078762a72",
                                 "ord": "a0"
                               },
                               {
@@ -2464,11 +2450,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 5:00"],
-                                "id": "281d5ffa-afd9-40ea-8d01-65d6364e3df1",
+                                "id": "70b9def4-fcba-48c0-a4a6-85a80a765c08",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "566b6887-d852-4ded-ad66-4fc98b3062c1",
+                            "id": "674afccb-09ec-47d4-8ffc-5ca1a9cc6840",
                             "ord": "a0"
                           },
                           {
@@ -2481,7 +2467,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "4bfe17f8-6f63-4734-9af2-87aa96efe196",
+                                "id": "5f8aa175-f9d7-4434-b129-a32ea270fb7e",
                                 "ord": "a0"
                               },
                               {
@@ -2489,11 +2475,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 5:00"],
-                                "id": "48aaea8d-aa8b-451c-8d34-77cf2af9f110",
+                                "id": "9a3d82af-e6f9-4ccb-a5ac-4dad5624e756",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "3580085d-e1aa-454b-b5cf-b8a383432508",
+                            "id": "7c3fce28-57d9-49d6-8952-d184b28b840e",
                             "ord": "a1"
                           },
                           {
@@ -2506,7 +2492,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday – Monday"],
-                                "id": "f51022cb-053d-4967-a980-8ae4b5b6e7be",
+                                "id": "1d1104ae-041d-46cf-afea-138159ce5adc",
                                 "ord": "a0"
                               },
                               {
@@ -2514,19 +2500,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Closed"],
-                                "id": "10ab72b1-ac63-4a26-a2b2-a1251001a2aa",
+                                "id": "6206e352-600a-460f-8a4e-44fdb2e9e1d6",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "5780ca8f-a156-455c-8729-2757f3a8cfee",
+                            "id": "de905f62-354d-4104-adec-da3c534f92a0",
                             "ord": "a2"
                           }
                         ],
-                        "id": "8957ea45-20b6-4930-a514-52f3fc94f1a9",
+                        "id": "a57b76c1-c8dc-4441-aeaa-c430e59e5ecd",
                         "ord": "a2"
                       }
                     ],
-                    "id": "fbd6c5b4-857a-498b-91a7-e5c60351dd93",
+                    "id": "4827bbc4-d323-4505-8f3c-933f9c3e1ac2",
                     "ord": "a0"
                   },
                   {
@@ -2539,15 +2525,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "d2d441c5-a9c2-45d5-8732-da1b485c4ee4",
+                    "id": "9d4487fd-a70e-4123-a4fe-58273960d8ef",
                     "ord": "a1"
                   }
                 ],
-                "id": "b4795cfb-ae8c-4278-afbe-6e2e08c37f87",
+                "id": "8c7d5290-3bce-4851-9f85-5d915ede81c2",
                 "ord": "a0"
               }
             ],
-            "id": "cfa35750-0ef8-45c0-94fa-3588369239bb",
+            "id": "010ff283-7804-4310-86af-1100d740f68e",
             "ord": "a1"
           },
           {
@@ -2565,7 +2551,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than call?"],
-                    "id": "18c23f9f-d166-40c3-9613-bf9b995b71af",
+                    "id": "65f20932-b44d-4412-b1b3-24724d13194f",
                     "ord": "a0"
                   },
                   {
@@ -2575,7 +2561,7 @@
                     "children": [
                       "See live openings and grab your dog’s spot online — no phone tag, no hold music."
                     ],
-                    "id": "991d0750-f395-40bb-a764-9310a7e8aa72",
+                    "id": "b8b83f98-5530-4608-aa87-38a3329ccd43",
                     "ord": "a1"
                   },
                   {
@@ -2586,15 +2572,15 @@
                       "href": "/book"
                     },
                     "children": ["Book online"],
-                    "id": "5464025d-b249-4288-9b13-e3140fef3e3b",
+                    "id": "4cde3f6c-1854-4840-bbca-a1b8ae055a88",
                     "ord": "a2"
                   }
                 ],
-                "id": "b9439b34-fb80-4c4d-b590-09cf6383c5c1",
+                "id": "ae20b3fb-44a1-4d84-a19a-1f265935608e",
                 "ord": "a0"
               }
             ],
-            "id": "cfbf7fed-d8c5-4fca-a15b-da4110939682",
+            "id": "faa287b4-11fe-471d-a558-1d83f85feb5b",
             "ord": "a2"
           }
         ]

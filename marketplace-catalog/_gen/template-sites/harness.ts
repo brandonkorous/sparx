@@ -62,8 +62,12 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
  *  catalog keeps serving the OLD payload and a fresh install never sees the new pages. 1.1.0
  *  is the full 9-page sites (bespoke PDP + Collections/Cart/Search/Journal framing) over the
  *  original 1.0.0 home-only pass. Both the blueprint.ts and sparx.json versions read this, so
- *  they can't disagree (the loader cross-checks them). */
-const BUNDLE_VERSION = '1.4.2';
+ *  they can't disagree (the loader cross-checks them).
+ *
+ *  1.5.0 carries the chrome the composite has been emitting since issue 291 — the
+ *  account link in the bar and the phone panel, and the legal links in the footer —
+ *  which the committed bundles had been a release behind on (issue 313). */
+const BUNDLE_VERSION = '1.5.0';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

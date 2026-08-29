@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "7cd5e334-1641-4e1a-a7de-2cb052ba3677",
+                  "id": "052705a5-a540-485f-864a-32a2f7fde40b",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "801a145f-85c7-41ad-ae05-3f6ea0ad0790",
+                      "id": "dc131f1d-67a1-43f7-aa11-e2dc85bb582e",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "198b8337-b6ab-4e5f-b87a-512992f6ec5f",
+                      "id": "cf8d2712-f585-4f01-a391-ce1c9dad9c28",
                       "ord": "a1"
                     },
                     {
@@ -75,7 +75,7 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "ca6084b8-786c-47ec-b73e-8882ba58d1ef",
+                      "id": "173a4b7a-d739-4334-9dbc-f6490a82cfba",
                       "ord": "a2"
                     },
                     {
@@ -91,11 +91,11 @@
                         "type": "link",
                         "label": "Company"
                       },
-                      "id": "300b10f0-5727-42fe-8c9a-6cea36d8b397",
+                      "id": "1be63936-55bb-437c-b1c0-afd4841ba5ff",
                       "ord": "a3"
                     }
                   ],
-                  "id": "5edfc985-8752-4c82-81b4-b1ac53f81207",
+                  "id": "e5bc538c-71e2-4ff6-bcad-f12d038a5b2b",
                   "ord": "a1"
                 },
                 {
@@ -104,26 +104,17 @@
                   "class": "ml-auto flex items-center gap-3",
                   "children": [
                     {
-                      "kind": "element",
-                      "tag": "a",
+                      "kind": "host",
+                      "component": "site.account-link",
                       "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
-                      "attrs": {
-                        "href": "/account/login"
-                      },
-                      "children": ["Sign in"],
-                      "slot": {
-                        "name": "secondary",
-                        "type": "link",
-                        "label": "Secondary link"
-                      },
-                      "id": "41a3ec06-6bc7-4ff7-b0ea-ec9f778ae47e",
+                      "id": "18e4d896-f522-45e4-b5a7-30926bfda047",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "d2b9e419-a8ce-4020-b8c1-f1dc1ca635a2",
+                      "id": "144bacbf-6fb7-4006-a41f-ab34a7c138a2",
                       "ord": "a1"
                     },
                     {
@@ -139,7 +130,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "76e7bffe-7b56-4df4-96ff-c3ce8dcac567",
+                      "id": "839593d2-05dc-407b-8b6c-41ee3991ebc1",
                       "ord": "a2"
                     },
                     {
@@ -157,20 +148,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "36e89d1a-3d67-4240-bd1c-cc8e38d1e10f",
+                          "id": "d2c65301-d80c-4f08-bf04-5d532bd3e352",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "c64448a9-9795-4148-b198-a5aedd419c20",
+                      "id": "d7d88de1-2e2d-4039-84ef-52e895631502",
                       "ord": "a3"
                     }
                   ],
-                  "id": "0cf97030-269c-4412-bb8a-defcfeb94d9c",
+                  "id": "e9b92058-28df-49a4-a31a-534210d7a472",
                   "ord": "a2"
                 }
               ],
-              "id": "98a01c44-2a60-43e0-9abe-25a1537ac8e5",
+              "id": "f054fd72-030e-4f07-9fe2-79a4aa62f801",
               "ord": "a0"
             },
             {
@@ -194,7 +185,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "9aef1bd8-6f7c-4348-89d7-c1b239a0250c",
+                  "id": "01764a47-145f-42d3-b586-6ac653b8fc3f",
                   "ord": "a0"
                 },
                 {
@@ -210,7 +201,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "d2f10827-0ad4-4ddf-8953-1c24f7a214a7",
+                  "id": "05fb4e1a-52b5-4f3b-a0c3-9b5cf4c28264",
                   "ord": "a1"
                 },
                 {
@@ -226,7 +217,7 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "f7163897-da37-4239-9b78-551e92ea1ee1",
+                  "id": "1c8aef1b-0330-4b37-ad00-815a19e73eda",
                   "ord": "a2"
                 },
                 {
@@ -242,23 +233,14 @@
                     "type": "link",
                     "label": "Company"
                   },
-                  "id": "773b6626-44c3-403d-bb00-3c917cb1be9d",
+                  "id": "43602446-bb46-47bc-9352-d827d2cc742e",
                   "ord": "a3"
                 },
                 {
-                  "kind": "component",
-                  "component": "Button",
+                  "kind": "host",
+                  "component": "site.account-link",
                   "class": "btn btn-ghost btn-sm mt-2 w-full",
-                  "props": {
-                    "label": "Sign in",
-                    "href": "/account/login"
-                  },
-                  "slot": {
-                    "name": "secondary",
-                    "type": "link",
-                    "label": "Secondary link"
-                  },
-                  "id": "b795c93d-58d0-47ce-be03-ecc53c675f93",
+                  "id": "9a6e7395-623c-4efa-8459-75eb39a92296",
                   "ord": "a4"
                 },
                 {
@@ -274,19 +256,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "41ce0236-2c31-40e8-8a1a-88b15745b633",
+                  "id": "02088b0e-f319-4382-a72b-79cf4a36905d",
                   "ord": "a5"
                 }
               ],
               "part": "panel",
-              "id": "00971213-67ee-4048-962d-9a5fa23ecc5f",
+              "id": "e0b64737-d876-4999-ad29-a429f54a5da3",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "3771bc1d-6a17-457e-ac7e-442a911fd11c",
+          "id": "d562ec29-f002-4b22-805b-1da8dedaac28",
           "ord": "a0"
         },
         {
@@ -302,7 +284,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "fb35e45e-3bc4-4488-9f8b-986fe4406770",
+          "id": "9fe07daa-9c9e-4bc0-a240-34289835316d",
           "ord": "a1"
         },
         {
@@ -332,7 +314,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "fad3642f-395c-4f37-8017-cb6ce54de86a",
+                          "id": "41382958-01d1-46aa-8050-0ee0aa832bf4",
                           "ord": "a0"
                         },
                         {
@@ -348,7 +330,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "2e5c5ca3-e73c-4821-9faa-c9635c3a7c43",
+                          "id": "facb2f0b-70a5-4bb5-afa8-7b508fb8c47f",
                           "ord": "a1"
                         },
                         {
@@ -356,11 +338,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "98f76e6e-d8bb-4a8e-9bee-7946638b5321",
+                          "id": "02797eec-f19d-45b7-88e9-b7e907f2ee7e",
                           "ord": "a2"
                         }
                       ],
-                      "id": "3bb2b2fa-a012-4689-a7e4-4160ab1703c2",
+                      "id": "8cab6963-f682-498c-9086-8323fcc42e08",
                       "ord": "a0"
                     },
                     {
@@ -381,7 +363,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "e30b6dc7-8fb6-4205-87d1-42fbb884efa6",
+                          "id": "85c3bf04-b20d-43af-95eb-c7cb87087499",
                           "ord": "a0"
                         },
                         {
@@ -406,11 +388,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "450bf408-240f-4e5b-8c3c-f7700d692200",
+                                  "id": "ce18609a-1dc6-4b8a-9323-20ab1f88968e",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "f3818431-96fb-497f-a427-b013e4306f67",
+                              "id": "afe5c8bc-fd85-4e7d-ab1f-1ad7fbffb749",
                               "ord": "a0"
                             },
                             {
@@ -430,11 +412,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "8652baff-33b7-4013-8f18-23e27dcd2d8c",
+                                  "id": "8fab439b-704a-44b9-bf7f-891f4fa7f379",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "60962e72-5743-4072-9b9e-f12f18f52cc5",
+                              "id": "f31887df-efe0-4b3a-9bc1-52f17350051f",
                               "ord": "a1"
                             },
                             {
@@ -454,11 +436,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "c65072e3-19db-4238-b33a-c944abf27bfa",
+                                  "id": "c163a1a5-b92e-4f58-b3fa-23a1014f9c86",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "54faa272-35c7-42b7-8330-0d1da4b085bc",
+                              "id": "375ce637-7de0-4e63-bdb7-255b412bd212",
                               "ord": "a2"
                             },
                             {
@@ -478,19 +460,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "dc608d29-8cd5-43ee-b13d-6b02b03197c2",
+                                  "id": "30199599-aa46-4b37-9f8a-3073743ef879",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "7b7072cc-52f1-49a0-8831-45d6a4f9ac2b",
+                              "id": "10594a37-0d64-4825-b500-2d18275c224b",
                               "ord": "a3"
                             }
                           ],
-                          "id": "2ea24447-8970-4bc7-80b3-8725481c556d",
+                          "id": "0603b994-054c-4ac9-8a23-c90103d01dc7",
                           "ord": "a1"
                         }
                       ],
-                      "id": "71fd2aab-950a-4fb7-94d0-fb68151994a8",
+                      "id": "f52bca1a-a6da-4909-8514-8141f9be3e02",
                       "ord": "a1"
                     },
                     {
@@ -503,11 +485,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "af2560d9-439e-40c8-8c19-e6272db0842d",
+                          "id": "67c1c439-d8d9-4e3a-a1df-30f40cdd6a04",
                           "ord": "a0"
                         }
                       ],
-                      "id": "774aa17e-b437-46d1-9cc3-742c44f1b903",
+                      "id": "595d6f05-db8a-4086-9ed6-537314815428",
                       "ord": "a2"
                     },
                     {
@@ -531,23 +513,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "f2988b3e-63c2-4d9c-bc60-f224946e6d5b",
+                                  "id": "6c4cff9f-31cd-4712-8445-2e30f1dbb2f9",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "cb09c47f-1bd3-477f-a581-f0e741068b8d",
+                              "id": "80b1e31b-8819-425b-b888-671a5f7935bd",
                               "ord": "a0"
                             }
                           ],
-                          "id": "615ba5db-f0ce-4d54-bd7f-d6be68de362e",
+                          "id": "9422b304-bcb6-4678-90a7-af41c1c46346",
                           "ord": "a0"
                         }
                       ],
-                      "id": "5f8069c2-1954-42ae-8828-2c037cc34c6a",
+                      "id": "77a5cc56-240e-46c6-9088-a5750bc89628",
                       "ord": "a3"
                     }
                   ],
-                  "id": "4a2d86a6-f508-44d9-a6ce-7ad40d28de96",
+                  "id": "e4968917-afbe-4781-9c4f-657fa85d72a7",
                   "ord": "a0"
                 },
                 {
@@ -570,11 +552,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "089707f1-0b05-4060-bb66-41737cdc2241",
+                          "id": "4229f57c-8d8a-4fc9-869d-f6891be10fab",
                           "ord": "a0"
                         }
                       ],
-                      "id": "bece4403-790f-46a5-bc9a-893717ede930",
+                      "id": "e19e8622-3621-45f9-8279-f5b492ed6f51",
                       "ord": "a0"
                     },
                     {
@@ -582,23 +564,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "f71d84e6-2bfa-48aa-bde7-209104836869",
+                      "id": "4d350d54-11e5-44bf-9e20-8989d4bdd25f",
                       "ord": "a1"
                     }
                   ],
-                  "id": "524a696a-be9a-4581-9419-3cca3a61e1f3",
+                  "id": "ab9e3a90-16c3-49ad-bdbb-37eaac5e2dbd",
                   "ord": "a1"
                 }
               ],
-              "id": "6a31f57b-5c53-4c18-9912-4d881e38f43b",
+              "id": "f01b5ac3-abe9-4c5c-967d-54a441f78a2e",
               "ord": "a0"
             }
           ],
-          "id": "d4ae024d-bba1-4fc3-8fb7-58d5a3d73b8d",
+          "id": "7397e73a-a85e-42ea-90d1-a7dc09d907d6",
           "ord": "a2"
         }
       ],
-      "id": "a1b0a983-1747-4595-8445-0284e77f3c60"
+      "id": "00711913-3bd8-478f-938e-0f4ba38f58e6"
     }
   },
   "pages": [
@@ -612,7 +594,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "50231f5b-508b-4887-a945-259b3af2b422",
+        "id": "13f78490-e448-4216-94c5-30c26802942c",
         "children": [
           {
             "kind": "element",
@@ -628,7 +610,7 @@
                   "alt": "A warm bistro dining room at dusk",
                   "loading": "lazy"
                 },
-                "id": "104c2be0-5e5f-4eb0-beaf-55b40abf3b3d",
+                "id": "a8c6f7f8-ca95-48a3-bde2-14ad62ba0164",
                 "ord": "a0"
               },
               {
@@ -646,7 +628,7 @@
                         "tag": "h1",
                         "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                         "children": ["Larkspur"],
-                        "id": "095a17a7-9bec-48ad-bf7f-a6ba385d60c8",
+                        "id": "4992e0cc-0bc3-477e-8964-25295f326379",
                         "ord": "a0"
                       },
                       {
@@ -656,7 +638,7 @@
                         "children": [
                           "A neighbourhood bistro. Seasonal plates, an honest wine list, and a room that fills up on a Tuesday. Open for lunch and dinner, Wednesday through Sunday."
                         ],
-                        "id": "49963c61-be0d-4db6-9811-60f7fff6b73c",
+                        "id": "9c970eb4-cbe0-4bd6-83dc-c34a2311d744",
                         "ord": "a1"
                       },
                       {
@@ -672,7 +654,7 @@
                               "href": "/book"
                             },
                             "children": ["Reserve a table"],
-                            "id": "0eadb74e-c074-4a48-85a0-ddb9d7299f48",
+                            "id": "38893151-dbc4-4007-9dcc-ab52d41dbf21",
                             "ord": "a0"
                           },
                           {
@@ -683,23 +665,23 @@
                               "href": "/menu"
                             },
                             "children": ["View the menu"],
-                            "id": "f6d7ddd6-98f8-4759-bc40-b84acc459efe",
+                            "id": "2f92d70c-a74b-4194-bc58-01a533c64dbf",
                             "ord": "a1"
                           }
                         ],
-                        "id": "9208aee6-87ce-48c6-8bf7-5fba502e5b9d",
+                        "id": "b0ced11e-76e8-4994-b091-9edd0d29e6e3",
                         "ord": "a2"
                       }
                     ],
-                    "id": "a505f9c4-4fb6-4e1c-b258-1ac4c5d259c3",
+                    "id": "3eed0513-3e56-44c6-bf96-20967ac52a7e",
                     "ord": "a0"
                   }
                 ],
-                "id": "bdf65f20-57db-4162-9984-baeb73aa2346",
+                "id": "84863bf6-5cd0-4750-bfae-0fd44a9f82e9",
                 "ord": "a1"
               }
             ],
-            "id": "09499628-ad62-4d25-9f3c-d8c19ebf6b62",
+            "id": "ca05563c-3770-4dde-9a80-5a7d3fa66d6d",
             "ord": "a0"
           },
           {
@@ -722,7 +704,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["On the menu now"],
-                        "id": "8ae40e54-cec6-4bf7-a672-bd3cf24e4675",
+                        "id": "d7123c9d-6d31-43c6-bfd8-82f9eecec550",
                         "ord": "a0"
                       },
                       {
@@ -732,11 +714,11 @@
                         "children": [
                           "The menu changes with the season and what the market has that morning. A few of the things we’re cooking this week."
                         ],
-                        "id": "e09ad36f-6a3d-4639-ba93-72c3face760b",
+                        "id": "23a2433b-596e-46e2-ab8d-cb96540abe89",
                         "ord": "a1"
                       }
                     ],
-                    "id": "bb557dce-33a3-4edd-a8a1-d013c209d534",
+                    "id": "20189fb2-af95-4474-b09f-1eae69e44bb6",
                     "ord": "a0"
                   },
                   {
@@ -761,7 +743,7 @@
                               "alt": "A fresh starter salad plated simply",
                               "loading": "lazy"
                             },
-                            "id": "0f3e5b9b-adeb-4a96-a8c4-fcc6570e9d28",
+                            "id": "2728871d-176d-487c-97f1-e3e3330dd8af",
                             "ord": "a0"
                           },
                           {
@@ -769,7 +751,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["To start"],
-                            "id": "7dbcdd98-6f86-4a4d-b6cf-e8718827e376",
+                            "id": "a3871f57-7734-4624-8665-c18bd96c48b3",
                             "ord": "a1"
                           },
                           {
@@ -779,11 +761,11 @@
                             "children": [
                               "Little plates to share — this week, burrata with grilled peaches and a plate of house focaccia."
                             ],
-                            "id": "def5ddd0-1f2f-417d-bf68-fbbcb4efd8c7",
+                            "id": "40f4bbd6-d7f9-4327-8247-fd7e97821234",
                             "ord": "a2"
                           }
                         ],
-                        "id": "eb03493c-09ad-4d6c-94a5-6423655c398f",
+                        "id": "333dce69-403e-43d1-96ab-74037f622846",
                         "ord": "a0"
                       },
                       {
@@ -803,7 +785,7 @@
                               "alt": "A plated seasonal main dish",
                               "loading": "lazy"
                             },
-                            "id": "ca37343f-24f6-41f0-8509-d2c649c7ba0d",
+                            "id": "50572ae6-673f-4f1d-b18b-f8518354572e",
                             "ord": "a0"
                           },
                           {
@@ -811,7 +793,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Mains"],
-                            "id": "a8257753-951b-48e9-8d8b-1b1194190092",
+                            "id": "d4545dd7-f901-4a99-a23c-4ce9828e1eec",
                             "ord": "a1"
                           },
                           {
@@ -821,11 +803,11 @@
                             "children": [
                               "Seasonal mains from the wood grill — ask about tonight’s fish and the dry-aged steak for two."
                             ],
-                            "id": "07e834aa-da35-4968-8348-0e222dfb2b4e",
+                            "id": "2bb2aabe-c351-4864-a2ae-3de250d140cc",
                             "ord": "a2"
                           }
                         ],
-                        "id": "26fc214e-6fbd-4f2a-9067-e55c93fd6466",
+                        "id": "ec6be333-0bbb-44a7-bf14-25c7dfd0a7a5",
                         "ord": "a1"
                       },
                       {
@@ -845,7 +827,7 @@
                               "alt": "A dessert plate with a spoon",
                               "loading": "lazy"
                             },
-                            "id": "8792bca0-c48d-4d7a-9ece-d8323f3d5ef1",
+                            "id": "6bbc57b6-4ff5-4fc4-89d1-7bb653915dae",
                             "ord": "a0"
                           },
                           {
@@ -853,7 +835,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["To finish"],
-                            "id": "bde34335-d0cb-48e4-b638-3b3d5c72287a",
+                            "id": "1601a152-b781-4707-a881-b029e29c4b1c",
                             "ord": "a1"
                           },
                           {
@@ -863,15 +845,15 @@
                             "children": [
                               "A short, changing dessert list, and a proper cheese board with everything from a nearby dairy."
                             ],
-                            "id": "6c18be0c-7bc6-4ae3-8d63-0c2e6c92b8db",
+                            "id": "6673e014-53fb-410f-b7b5-dca71ad31b01",
                             "ord": "a2"
                           }
                         ],
-                        "id": "e08ccc6d-90ae-45e3-ab02-debdbe28656b",
+                        "id": "62ba57ec-5c94-4226-b854-12138d141677",
                         "ord": "a2"
                       }
                     ],
-                    "id": "ab4c3aa8-21fd-4ba8-ba9f-912b70687563",
+                    "id": "a0b7fb22-72e4-4d6c-a736-11d0db9d71f8",
                     "ord": "a1"
                   },
                   {
@@ -886,26 +868,26 @@
                         "kind": "element",
                         "tag": "span",
                         "children": ["See the full menu"],
-                        "id": "ad078e01-53ad-4c06-b413-78d7ee4a9f12",
+                        "id": "d1fb4b1f-5f44-41b1-848c-bca190854fab",
                         "ord": "a0"
                       },
                       {
                         "kind": "element",
                         "tag": "span",
                         "children": ["→"],
-                        "id": "a39a0ddc-4573-4019-9a4e-2a0a25f593c3",
+                        "id": "04df896b-cc9d-448e-8877-bd1e6280f5cb",
                         "ord": "a1"
                       }
                     ],
-                    "id": "2969a160-11c4-4f6c-b67d-9dffd2910473",
+                    "id": "fc95d6de-c8b9-4f31-9d42-b19583443ebf",
                     "ord": "a2"
                   }
                 ],
-                "id": "e8679e02-fe4f-4e44-bf27-69ef117a44d3",
+                "id": "2a6b3061-9a12-4bfc-a860-c2c31e644ac4",
                 "ord": "a0"
               }
             ],
-            "id": "e9ed739b-a878-4866-ad6c-698ddb390fe6",
+            "id": "168cb9fc-1a1e-4753-86d2-0050bd0e5908",
             "ord": "a1"
           },
           {
@@ -927,7 +909,7 @@
                       "alt": "The bistro interior — wooden tables, warm light",
                       "loading": "lazy"
                     },
-                    "id": "d4362a4d-9147-49db-95fc-c4aab348f6b2",
+                    "id": "68c30d7d-d3c2-4929-a404-314e47b698a5",
                     "ord": "a0"
                   },
                   {
@@ -940,7 +922,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["A table’s waiting"],
-                        "id": "cc965e47-4aed-40f2-98a8-24e8777a2e05",
+                        "id": "36437d67-8b65-460c-bbcd-afa586726c25",
                         "ord": "a0"
                       },
                       {
@@ -950,7 +932,7 @@
                         "children": [
                           "Book online in under a minute — you’ll see the real availability and pick a time that suits you. Walk-ins are always welcome at the bar, and we keep a few tables back for them every night."
                         ],
-                        "id": "258ea240-1c10-4c5d-8297-bdad2f9a952a",
+                        "id": "2babc69e-5714-492a-922c-13c70715b034",
                         "ord": "a1"
                       },
                       {
@@ -966,23 +948,23 @@
                               "href": "/book"
                             },
                             "children": ["Reserve a table"],
-                            "id": "f56ba37d-8ea0-4bb6-90ac-37b5f374f5ba",
+                            "id": "ac2e666f-0004-4a46-8619-4cb57f9ec6d1",
                             "ord": "a0"
                           }
                         ],
-                        "id": "302fb1fc-7524-465a-b403-f960c3b49d9f",
+                        "id": "c6554345-4ed7-459e-b4b7-edb65b1933f6",
                         "ord": "a2"
                       }
                     ],
-                    "id": "72e3feea-6835-4248-aa70-cdd27a8e0bea",
+                    "id": "b1ce9980-8547-4e89-af60-7473f2361fec",
                     "ord": "a1"
                   }
                 ],
-                "id": "d46fd9ab-b85f-48bc-b4d5-06b5014bad49",
+                "id": "03991210-9173-4c9c-9197-82abfc1abb93",
                 "ord": "a0"
               }
             ],
-            "id": "6554811b-1aec-4b42-ab4d-5d7f8a411b00",
+            "id": "011b07c5-c473-4cd0-a506-5696bb070d76",
             "ord": "a2"
           },
           {
@@ -1005,7 +987,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @3xl:text-3xl",
                         "children": ["Hours"],
-                        "id": "291ad776-780c-43d7-84c9-6fb864d8e322",
+                        "id": "592b8f3f-404b-4221-86b3-7131cddedbf5",
                         "ord": "a0"
                       },
                       {
@@ -1023,7 +1005,7 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["Wed – Thu"],
-                                "id": "4dac9f19-5cf1-4da6-82db-1450d6bfb8c3",
+                                "id": "6a1d49b6-7726-4b1a-8729-44223b03b20d",
                                 "ord": "a0"
                               },
                               {
@@ -1031,11 +1013,11 @@
                                 "tag": "span",
                                 "class": "text-base text-secondary",
                                 "children": ["12:00 – 15:00 · 17:30 – 22:00"],
-                                "id": "7b18d2c8-10bb-4c8a-bc8d-47787547a68e",
+                                "id": "b80f5e83-a262-4062-a0c6-ee02e6053c47",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "9b0cfb38-54cd-455f-9d88-d075e7e7a854",
+                            "id": "c91596a7-55e0-417f-9463-ee2f2d5fade6",
                             "ord": "a0"
                           },
                           {
@@ -1048,7 +1030,7 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["Fri – Sat"],
-                                "id": "2bd62706-f09c-4d9d-b52e-e6d4afd10827",
+                                "id": "dd42452c-ac7b-49e7-908b-f8fe84fc38f4",
                                 "ord": "a0"
                               },
                               {
@@ -1056,11 +1038,11 @@
                                 "tag": "span",
                                 "class": "text-base text-secondary",
                                 "children": ["12:00 – 15:00 · 17:30 – 23:00"],
-                                "id": "53ff3f4c-92b6-4ae1-9d70-723eaf241a7a",
+                                "id": "7fdff755-867f-4346-b05f-cd676d6ce6ad",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f94bfc49-575d-4c10-8bd2-bddc6c499bcb",
+                            "id": "d9f063b6-569e-4b92-b86d-b7a5b4125c6d",
                             "ord": "a1"
                           },
                           {
@@ -1073,7 +1055,7 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["Sunday"],
-                                "id": "52da8a2a-a7f1-446f-99a6-004b0990f53d",
+                                "id": "f613c0a4-01b8-4a98-9736-dc87e747ce15",
                                 "ord": "a0"
                               },
                               {
@@ -1081,11 +1063,11 @@
                                 "tag": "span",
                                 "class": "text-base text-secondary",
                                 "children": ["12:00 – 16:00"],
-                                "id": "d33a835a-6004-4137-a8bf-4326b58d239c",
+                                "id": "5a0faf4d-7162-4165-989e-43f0b166d8bf",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "bf97ae56-4ece-43f8-b82b-d5f3cddddff0",
+                            "id": "87a6b904-6d8e-4544-8d6d-bf020f9d9c3e",
                             "ord": "a2"
                           },
                           {
@@ -1098,7 +1080,7 @@
                                 "tag": "span",
                                 "class": "text-base font-semibold text-base-content",
                                 "children": ["Mon – Tue"],
-                                "id": "1d33eaac-8c94-43a8-a740-072b25d542ad",
+                                "id": "f62f80f1-6cf5-4719-b115-7e4a2dba62a7",
                                 "ord": "a0"
                               },
                               {
@@ -1106,19 +1088,19 @@
                                 "tag": "span",
                                 "class": "text-base text-secondary",
                                 "children": ["Closed"],
-                                "id": "394141fc-5634-441b-b5c5-5bbae4dc84a6",
+                                "id": "4e7ec072-c191-442e-9af1-865c1d4a05d4",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "d6901202-2a6f-4e46-a7cb-1ad8e9899706",
+                            "id": "d52984ac-f381-4208-a1ef-a6512dfbab7b",
                             "ord": "a3"
                           }
                         ],
-                        "id": "f550c0ed-ea4a-4aa5-b56a-ed589140aed6",
+                        "id": "cb01ba48-3b0c-4e21-8665-2b0b7847f995",
                         "ord": "a1"
                       }
                     ],
-                    "id": "f69253c6-0c37-4060-baa9-374c3325ad2d",
+                    "id": "f7a9478e-d3d5-45ef-9a78-8c0fc3fb8274",
                     "ord": "a0"
                   },
                   {
@@ -1131,7 +1113,7 @@
                         "tag": "h2",
                         "class": "text-2xl font-bold tracking-tight text-base-content @3xl:text-3xl",
                         "children": ["Find us"],
-                        "id": "f5955741-259e-4b57-b339-3c9dd9aa7341",
+                        "id": "ba1a681b-1787-4cdc-8134-6e0d8618bfbf",
                         "ord": "a0"
                       },
                       {
@@ -1141,7 +1123,7 @@
                         "children": [
                           "18 Larkspur Lane, in the old print works off the market square. Street parking after 6pm, and the number 12 stops at the corner."
                         ],
-                        "id": "bb081451-2f74-415c-93f8-e1ef18aa33e8",
+                        "id": "48219fb2-5bb4-455f-99ec-6e048fb71875",
                         "ord": "a1"
                       },
                       {
@@ -1156,30 +1138,30 @@
                             "kind": "element",
                             "tag": "span",
                             "children": ["Directions & contact"],
-                            "id": "08ce2ede-3375-4c26-8566-a509dcb80519",
+                            "id": "ebcefa1b-eec2-427e-996d-787fd568708c",
                             "ord": "a0"
                           },
                           {
                             "kind": "element",
                             "tag": "span",
                             "children": ["→"],
-                            "id": "9a3ed2af-7b8f-4bfc-9da5-0f7ca964bc61",
+                            "id": "797deea4-76e1-467e-b481-3bc798693cc6",
                             "ord": "a1"
                           }
                         ],
-                        "id": "00d4d49e-f4ac-4ed2-ba20-5eb4920b836e",
+                        "id": "52ebd6b1-4395-45a0-89fd-699200378d23",
                         "ord": "a2"
                       }
                     ],
-                    "id": "ecd0a07d-9f32-4afd-8bc7-384508738f4b",
+                    "id": "be299fa1-e4a5-4b3e-85f9-c28cc37bba01",
                     "ord": "a1"
                   }
                 ],
-                "id": "ea7fc247-1674-49f7-bf1b-a38ad0b600ea",
+                "id": "767b728d-faca-428e-b27e-7a6ea2aff323",
                 "ord": "a0"
               }
             ],
-            "id": "ea1a1c83-98ae-43e0-807c-15b34f9f49d2",
+            "id": "32cbdd01-130b-49c2-9404-b0fe1dcdbd9f",
             "ord": "a3"
           }
         ]
@@ -1196,7 +1178,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "c9c7ff7f-8115-4723-8ca0-9a79af395b27",
+        "id": "d0eb3761-bbba-4ccb-9575-f3cf8e98746b",
         "children": [
           {
             "kind": "element",
@@ -1213,7 +1195,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["The menu"],
-                    "id": "8d4e5da4-9f13-4cdf-ba7d-93715b4b12f9",
+                    "id": "98cc31a5-6a82-4de5-8bd5-040a6e54bae6",
                     "ord": "a0"
                   },
                   {
@@ -1223,15 +1205,15 @@
                     "children": [
                       "Seasonal, changing, and cooked simply. This is roughly what you’ll find this week — the specials board fills in the rest. Let us know about allergies and we’ll steer you right."
                     ],
-                    "id": "5a5a8ec7-236c-49ba-9255-a1e3a8a91324",
+                    "id": "5b1f7412-9012-4a69-a35c-8aa0060ed815",
                     "ord": "a1"
                   }
                 ],
-                "id": "cab9cf9a-b889-44ff-b20d-1976e56e83c0",
+                "id": "eb9cb2e0-4ce6-41be-b77a-309f8b2896ac",
                 "ord": "a0"
               }
             ],
-            "id": "72778909-e196-4d87-b33a-0400a8fb56d6",
+            "id": "6fd302a8-9fd9-48f3-9e21-e5843d56a654",
             "ord": "a0"
           },
           {
@@ -1249,7 +1231,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
                     "children": ["To start"],
-                    "id": "45b2d190-d26d-4eeb-8d64-1b7cb4979e97",
+                    "id": "07d437fe-4e49-47ab-ac01-4bfb8aec6dcf",
                     "ord": "a0"
                   },
                   {
@@ -1257,7 +1239,7 @@
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
                     "children": ["Made for the middle of the table."],
-                    "id": "58b22726-d692-4582-8f76-23c92510df06",
+                    "id": "023d53dc-65b4-4e9a-b436-05f0a241f428",
                     "ord": "a1"
                   },
                   {
@@ -1280,7 +1262,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["House focaccia, whipped butter"],
-                                "id": "bd7551b0-a3df-4c57-984a-e15d63289fc3",
+                                "id": "97b2340e-a8bc-4422-9d96-b5750b30c9d5",
                                 "ord": "a0"
                               },
                               {
@@ -1288,11 +1270,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$6"],
-                                "id": "54e099ca-76ed-4075-9486-b1643801daad",
+                                "id": "7caabc04-11e7-4e45-ba90-32229846efde",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "3b63c82a-0983-417c-998e-f0e4274b8973",
+                            "id": "744679e4-d8fb-4c02-aae8-33c07a723ab1",
                             "ord": "a0"
                           },
                           {
@@ -1302,11 +1284,11 @@
                             "children": [
                               "Baked through the afternoon, salt-crusted, with cultured butter."
                             ],
-                            "id": "b7e3f66a-94e6-4c81-a0d9-a5a4aeaf7757",
+                            "id": "618f8011-ccd6-459b-b795-d606d5233761",
                             "ord": "a1"
                           }
                         ],
-                        "id": "41c6726a-ebc1-4f24-9bd0-f3071adcfe2f",
+                        "id": "15ce504f-8154-439d-9929-925cad81b24d",
                         "ord": "a0"
                       },
                       {
@@ -1324,7 +1306,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Burrata, grilled peaches, basil"],
-                                "id": "c62341d7-d863-4c99-a6ff-28a390fe6f38",
+                                "id": "5ec50495-892b-4699-b2c6-f08332ce85d3",
                                 "ord": "a0"
                               },
                               {
@@ -1332,11 +1314,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$13"],
-                                "id": "d8c1c51b-05b9-4931-a33b-95541a6918db",
+                                "id": "e9ae4982-6d3c-48e5-87cf-71f7e3f78c86",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "cfcc856e-a2e9-4680-a25a-51f94b2067c0",
+                            "id": "36284131-fd00-4fc2-ac44-b11d9dd0055f",
                             "ord": "a0"
                           },
                           {
@@ -1346,11 +1328,11 @@
                             "children": [
                               "Whole burrata, market peaches off the grill, aged balsamic."
                             ],
-                            "id": "57ba4c34-fe27-4ab3-b1bb-2b796a3de15d",
+                            "id": "5c6d9bef-bbb4-497c-bdd0-533775fd5904",
                             "ord": "a1"
                           }
                         ],
-                        "id": "eaf07ec3-2aa3-48c0-8fd4-951411908f3c",
+                        "id": "4b9b4f96-b80c-45e7-b9f5-4e6a01efe7ff",
                         "ord": "a1"
                       },
                       {
@@ -1368,7 +1350,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Chicory & walnut salad"],
-                                "id": "97b57137-7a50-44d0-b65d-a70ca35c875d",
+                                "id": "25c40e33-95d2-4cf0-8255-20eb2d9e37fc",
                                 "ord": "a0"
                               },
                               {
@@ -1376,11 +1358,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$10"],
-                                "id": "1b033216-ea8f-4ff3-af5b-c496963e9421",
+                                "id": "ff681a97-d1cd-4916-ba88-3e59023989ab",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "23e15833-a99e-46bd-bae8-129ded38be68",
+                            "id": "f679247f-1ea2-4615-ac1a-e8f3f078b2e4",
                             "ord": "a0"
                           },
                           {
@@ -1390,11 +1372,11 @@
                             "children": [
                               "Bitter leaves, toasted walnuts, a sharp mustard dressing, shaved hard cheese."
                             ],
-                            "id": "3d2cc98f-bbaa-4c2d-bedc-bac58f0a1819",
+                            "id": "2068120e-54b1-4f56-a26d-0dc33d0d9ad6",
                             "ord": "a1"
                           }
                         ],
-                        "id": "82e31b26-a012-4499-b1dd-d74591dce66c",
+                        "id": "726bd5bf-5736-4b2d-be4a-d03c423d5394",
                         "ord": "a2"
                       },
                       {
@@ -1412,7 +1394,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Soup of the day"],
-                                "id": "cd9f73db-4e84-4166-ad41-b7c9a2de3c79",
+                                "id": "af7a3dd1-ad04-4a62-a3ae-894caa9998fa",
                                 "ord": "a0"
                               },
                               {
@@ -1420,11 +1402,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$8"],
-                                "id": "bbb45b86-0876-4d85-a9a7-70b65f182c89",
+                                "id": "bf70e974-03e8-417c-a937-eed4f5f05017",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "c6b8d95e-36e5-4e36-9d8b-b1f2169ad88c",
+                            "id": "199a7c7e-a8f8-4310-9b00-5bdf0f42764f",
                             "ord": "a0"
                           },
                           {
@@ -1434,23 +1416,23 @@
                             "children": [
                               "Whatever’s best that morning — ask your server. Served with bread."
                             ],
-                            "id": "7358f799-c66c-4f5c-a17c-8fbf13546bb8",
+                            "id": "a83e1589-6841-4e81-aca9-a846d71ff5b5",
                             "ord": "a1"
                           }
                         ],
-                        "id": "55db1158-722d-4488-a604-b3905b919e35",
+                        "id": "dc93e0c8-4863-45fd-9c11-8526b5da0267",
                         "ord": "a3"
                       }
                     ],
-                    "id": "e104ef56-3948-4b8f-8485-60d0deb63eed",
+                    "id": "e5b20fc2-b411-4067-9bdb-0f9596e1a950",
                     "ord": "a2"
                   }
                 ],
-                "id": "e2a41770-0688-4b12-8adf-e899c2fa08e8",
+                "id": "58db1d25-215c-4387-9510-6693e3548e14",
                 "ord": "a0"
               }
             ],
-            "id": "6c2024f1-7b25-4f28-a995-a9b382eda83f",
+            "id": "eb53899a-44d5-4795-ba71-1b95a6b7eafc",
             "ord": "a1"
           },
           {
@@ -1468,7 +1450,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
                     "children": ["From the grill"],
-                    "id": "656a6c46-6a5d-4e05-b9be-b3787a32a688",
+                    "id": "d79a3f46-5c47-4b58-b9aa-4bfe3fa2465e",
                     "ord": "a0"
                   },
                   {
@@ -1476,7 +1458,7 @@
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
                     "children": ["Cooked over wood. Mains come as they are — sides are separate."],
-                    "id": "7c772c00-227d-455b-9e89-297bdde2870c",
+                    "id": "e2a99f96-859d-453e-97d9-1296d5842c6a",
                     "ord": "a1"
                   },
                   {
@@ -1499,7 +1481,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Dry-aged sirloin, for two"],
-                                "id": "cf34e529-42df-48a7-928f-3f1571a326b8",
+                                "id": "3fc0f435-6ade-4e6a-9e23-daedabb8dc7f",
                                 "ord": "a0"
                               },
                               {
@@ -1507,11 +1489,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$68"],
-                                "id": "3566cbc5-9508-407e-b0ba-94c031d72c9f",
+                                "id": "c7505f6f-86db-41e9-918a-3a693a188953",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "c43d9770-35af-47ac-a759-4e56288a2772",
+                            "id": "910fd985-3783-436f-87f9-3a3e027af7bd",
                             "ord": "a0"
                           },
                           {
@@ -1521,11 +1503,11 @@
                             "children": [
                               "35-day aged, carved at the table, with bone marrow butter and watercress."
                             ],
-                            "id": "bac12122-076a-4ab5-8e38-357a1b80fe2f",
+                            "id": "e9e4386f-5c9b-4e74-9a3d-bc1b4777a076",
                             "ord": "a1"
                           }
                         ],
-                        "id": "cd66d959-df55-497e-988c-2efe3628f8a8",
+                        "id": "d44f2893-d070-4b56-a4a3-9ddc5906258d",
                         "ord": "a0"
                       },
                       {
@@ -1543,7 +1525,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Whole market fish"],
-                                "id": "307872b6-2ab5-46ca-8afa-e90afe51981f",
+                                "id": "7299e83b-ac3f-4442-a63d-73a300ca9116",
                                 "ord": "a0"
                               },
                               {
@@ -1551,11 +1533,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$28"],
-                                "id": "eb236c94-801a-41bd-ae13-ec740c758cb1",
+                                "id": "9e577f40-1da2-4b0a-aa5b-44eaa5721070",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ebc2aaab-6067-4f36-80bb-a150810b0e67",
+                            "id": "0190471b-8f4e-4466-811d-11f3f8f1bccb",
                             "ord": "a0"
                           },
                           {
@@ -1565,11 +1547,11 @@
                             "children": [
                               "Today’s catch, grilled on the bone, lemon, capers, brown butter."
                             ],
-                            "id": "213b8da6-9ed9-4c27-b9cb-7fe82f55df99",
+                            "id": "983af9e7-f3db-4e17-a078-53e5b447065f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4e50ec69-fac3-49b1-8669-8363c9b68741",
+                        "id": "a451f258-c3f8-4251-8149-667629323ac7",
                         "ord": "a1"
                       },
                       {
@@ -1587,7 +1569,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Half chicken, under a brick"],
-                                "id": "840cc12f-a93f-4a8b-a044-e1910b2c65cf",
+                                "id": "ebe32678-ebca-4fab-9608-2b4be12ad655",
                                 "ord": "a0"
                               },
                               {
@@ -1595,11 +1577,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$24"],
-                                "id": "2c7e24a4-95e7-4b64-8ddc-8aeca0837be5",
+                                "id": "f6db72e4-0b6d-4410-b505-9d017b8aec5a",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "86d56721-62f1-4f08-aef7-77c1e4259242",
+                            "id": "d8a00d5c-582e-45a1-ac17-0b311bcc1150",
                             "ord": "a0"
                           },
                           {
@@ -1609,11 +1591,11 @@
                             "children": [
                               "Free-range, pressed crisp, with roast garlic and pan juices."
                             ],
-                            "id": "df7ab908-064e-4f58-a4ba-8dbc89abb9a9",
+                            "id": "e7607bf0-49c5-452a-9f76-1186cb75c660",
                             "ord": "a1"
                           }
                         ],
-                        "id": "8a05300b-9237-47ad-8bb3-5aeab4845808",
+                        "id": "6d681f16-7d92-4f25-a894-5cfc66f3b40c",
                         "ord": "a2"
                       },
                       {
@@ -1631,7 +1613,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Wild mushroom & barley"],
-                                "id": "83e208a3-13f0-4338-8e29-2d90f88de397",
+                                "id": "037db79e-bb8c-4e63-8980-f0d6fbd23ba2",
                                 "ord": "a0"
                               },
                               {
@@ -1639,11 +1621,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$19"],
-                                "id": "26192562-8b45-4851-b61e-9cd5742c1247",
+                                "id": "cca4d6aa-c3b0-4fa7-9b63-72d694dc71b0",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "1325f12e-8b6e-44f6-a5d1-200db86defc3",
+                            "id": "13b9cf3c-1118-4d68-93f5-728d9af43124",
                             "ord": "a0"
                           },
                           {
@@ -1653,23 +1635,23 @@
                             "children": [
                               "Pearl barley, seasonal mushrooms, aged parmesan, a poached egg."
                             ],
-                            "id": "804dac9d-54cb-41a1-b14c-59fa91a6de5f",
+                            "id": "1c8a0e26-cbf3-46d1-a2a3-934aab432eb1",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2f20ae5d-042a-4aec-accc-51e026ca980c",
+                        "id": "6155a30a-ad3e-4e47-853a-132041989934",
                         "ord": "a3"
                       }
                     ],
-                    "id": "6e04d819-90af-4692-b3ab-d5d2492e13b1",
+                    "id": "ab45e6ff-feaa-4ac4-878d-45cb0749f8fc",
                     "ord": "a2"
                   }
                 ],
-                "id": "36cd366c-c84a-427e-9886-af59c9521d57",
+                "id": "2ec34469-9a2c-4e3f-80b2-e9b0cd0f048b",
                 "ord": "a0"
               }
             ],
-            "id": "959f92c8-5fdd-4e8e-8350-5528179eeccd",
+            "id": "628f1c6e-61ba-494d-8760-468a66e5c554",
             "ord": "a2"
           },
           {
@@ -1687,7 +1669,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
                     "children": ["Sides"],
-                    "id": "976c03ae-a341-48e3-ab0d-42269326c0db",
+                    "id": "65aa18bb-0326-499d-86f2-3567edbf07f5",
                     "ord": "a0"
                   },
                   {
@@ -1710,7 +1692,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Skin-on fries, rosemary salt"],
-                                "id": "8707115b-dde2-4d52-8870-854f65aaf4d8",
+                                "id": "16301562-f9f0-449c-9bdb-0bfd8aaecbdd",
                                 "ord": "a0"
                               },
                               {
@@ -1718,11 +1700,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$6"],
-                                "id": "26867c94-8df2-4224-9651-8bbc2c1bd8d0",
+                                "id": "04c112b9-9f22-4406-b111-1f16ecbe8437",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "d17ef166-2745-45f0-9f16-053315cb80b0",
+                            "id": "474d14de-a7c6-4a4f-903d-9f83f170475f",
                             "ord": "a0"
                           },
                           {
@@ -1730,11 +1712,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [""],
-                            "id": "efb4adcf-a3af-4505-9bd3-6463aa6998df",
+                            "id": "26961b72-3ee6-47bc-be08-c8e059d70137",
                             "ord": "a1"
                           }
                         ],
-                        "id": "da724f38-ac9e-4fa5-a3fe-4c65cc6ce88b",
+                        "id": "6ee10089-b518-4c7b-9261-e9109bc501b0",
                         "ord": "a0"
                       },
                       {
@@ -1752,7 +1734,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Charred greens, chilli, lemon"],
-                                "id": "12990372-b0a7-437b-859f-87027b8ccbff",
+                                "id": "44d1e1fa-bdd6-46f2-a23b-23e9609e5add",
                                 "ord": "a0"
                               },
                               {
@@ -1760,11 +1742,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$7"],
-                                "id": "8231a6a2-fa0e-4e8b-9267-e31397bb3e3b",
+                                "id": "7e81825a-1fe6-4afc-9287-4818a00244b3",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "3248964e-0934-47b4-b061-9b9597a38ffa",
+                            "id": "bf8dcb59-bd68-4c6c-a5f0-0cdff36b6bbd",
                             "ord": "a0"
                           },
                           {
@@ -1772,11 +1754,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [""],
-                            "id": "ac2e0bba-cec0-4fcd-b2e2-a5fd9abc1a94",
+                            "id": "6808e1d6-199b-4709-aab2-da017b774162",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6e43e068-1792-47bf-bf0f-8359601c3c93",
+                        "id": "f1786467-eb65-4f01-9995-6119cf98280b",
                         "ord": "a1"
                       },
                       {
@@ -1794,7 +1776,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Roast potatoes, garlic & thyme"],
-                                "id": "e4218a1c-45a3-44df-ba8e-55e50ab9b9e3",
+                                "id": "1a00e331-e500-4e97-85aa-57f80c62a0c0",
                                 "ord": "a0"
                               },
                               {
@@ -1802,11 +1784,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$6"],
-                                "id": "fe7b723d-7c8f-4a59-9855-bc1fa1538972",
+                                "id": "9f51bf5e-a154-4799-ac84-58313db6c2ac",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b29373ff-54db-40ce-adb3-a22e4ddd6bd2",
+                            "id": "e0026cc0-8735-48d4-bbc2-e1880a6117dd",
                             "ord": "a0"
                           },
                           {
@@ -1814,23 +1796,23 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [""],
-                            "id": "c89be752-3ea3-4274-ab05-231c00880935",
+                            "id": "11983fe7-d01e-4125-aac0-17e820f692d0",
                             "ord": "a1"
                           }
                         ],
-                        "id": "15b78482-5cf6-4747-9b01-da8802dd9a73",
+                        "id": "7f79667b-b59f-4048-ba85-7ad5d9a9ab96",
                         "ord": "a2"
                       }
                     ],
-                    "id": "29c42994-f0f2-4a2f-8a93-8fd6a1269001",
+                    "id": "986e80f9-4bfc-4a4c-bee6-078c83fb4f50",
                     "ord": "a1"
                   }
                 ],
-                "id": "fdbef20c-96c5-4b70-8169-66c082df347c",
+                "id": "9c6b0e26-0b05-4adf-8cd2-c43873c7b187",
                 "ord": "a0"
               }
             ],
-            "id": "50aac78e-a3e5-464a-a09a-8f8f86c85185",
+            "id": "8caead2f-ae84-4444-9414-7b94ca722c32",
             "ord": "a3"
           },
           {
@@ -1848,7 +1830,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
                     "children": ["To finish"],
-                    "id": "dc74f0ca-a57b-40c1-aea7-925a821bd3be",
+                    "id": "5bccb258-2deb-4217-afbd-71fce2b5d573",
                     "ord": "a0"
                   },
                   {
@@ -1856,7 +1838,7 @@
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
                     "children": ["A short list — plus a cheese board from the dairy up the road."],
-                    "id": "35b80279-50da-4ef2-bd56-95d3fa0c1171",
+                    "id": "c88dad29-8c69-42c4-a7c1-79bcc893baa5",
                     "ord": "a1"
                   },
                   {
@@ -1879,7 +1861,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Dark chocolate & sea salt tart"],
-                                "id": "7e99af26-7aa7-4d63-a9d1-9d7836fb369e",
+                                "id": "4e743c6a-3b26-41ac-9100-30c89eed14bb",
                                 "ord": "a0"
                               },
                               {
@@ -1887,11 +1869,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$9"],
-                                "id": "ecd5ee0e-5123-4bb0-8c89-2f4090e7eb83",
+                                "id": "8f301f52-0402-4df9-9438-d8f389c0de77",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "8907b12b-cc33-403d-ade0-58f7c8a56f1b",
+                            "id": "088c7619-a28a-4f61-80ca-0c1f6ce7ef9c",
                             "ord": "a0"
                           },
                           {
@@ -1899,11 +1881,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": ["Bitter chocolate, flaky pastry, crème fraîche."],
-                            "id": "200b2884-6d45-446d-806b-d98cc6ceef81",
+                            "id": "0f6d616a-2225-4608-8b84-00f32abd7ff8",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a8d0b185-c3ed-4694-bfe8-a80ad683e03e",
+                        "id": "fb0faaec-990b-45e3-9fd0-fa975c9d47b4",
                         "ord": "a0"
                       },
                       {
@@ -1921,7 +1903,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Seasonal fruit crumble"],
-                                "id": "ba63814f-4057-40f0-8667-75cb11a7a3e8",
+                                "id": "06d97e7a-484b-4f3b-bc0f-8910b8990796",
                                 "ord": "a0"
                               },
                               {
@@ -1929,11 +1911,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$8"],
-                                "id": "cb006ba4-b453-446b-b1c5-640927aa68dd",
+                                "id": "1e77f262-6e31-4b2b-93ef-a97208ba6b5d",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ceaa7ef4-05ea-42dc-ace5-c3763feace80",
+                            "id": "3e67858b-9d33-442a-bcd8-cf5b53a8434e",
                             "ord": "a0"
                           },
                           {
@@ -1941,11 +1923,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": ["Whatever’s ripe, oat crumble, proper custard."],
-                            "id": "55522e92-8e8e-4a17-b8a2-c47201bb610d",
+                            "id": "e9417ebd-46ce-408f-8734-060fce9368e4",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ca2eee6c-014b-44a9-af37-5587d9bfb2c2",
+                        "id": "5baf63b0-a5e4-4919-8a38-4443825bf9ad",
                         "ord": "a1"
                       },
                       {
@@ -1963,7 +1945,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Cheese board"],
-                                "id": "08b7889d-46f4-469d-b31b-e071fb8d1467",
+                                "id": "bd157c0d-f954-4663-81e2-c5c4dbff8e72",
                                 "ord": "a0"
                               },
                               {
@@ -1971,11 +1953,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$14"],
-                                "id": "16e4daff-0bed-48bb-a785-f4531ab548af",
+                                "id": "f1eb7d40-e2c1-4e22-b3ec-050814872aea",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "e9cca3b2-ff46-4aa6-ab1f-fbd0470a2150",
+                            "id": "6a8bfc26-35b1-47b4-a9bc-7ddb16aaab14",
                             "ord": "a0"
                           },
                           {
@@ -1983,23 +1965,23 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": ["Three cheeses, quince, oatcakes, honeycomb."],
-                            "id": "6472deac-e296-4da4-a10b-2a3fe498f75e",
+                            "id": "c79a3810-3ad3-4737-92aa-da536c93d399",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7591d38e-635b-40c9-b838-693d509d24ad",
+                        "id": "43946ed8-ccff-49e2-907f-e605b304329e",
                         "ord": "a2"
                       }
                     ],
-                    "id": "e44e1fdc-81d5-4eca-921c-82b3a01f1960",
+                    "id": "f760bca0-39ef-4fa8-bfd9-bb2255a509dc",
                     "ord": "a2"
                   }
                 ],
-                "id": "a321232a-4476-48ed-9e6c-f3a5b61dcd88",
+                "id": "65f57a8e-39ef-4035-a43c-110d263ad6c4",
                 "ord": "a0"
               }
             ],
-            "id": "993d1879-229b-486d-8dd6-d580ef790aaa",
+            "id": "c169e665-57ca-4d3a-8cfd-aad5ef7ffa90",
             "ord": "a4"
           },
           {
@@ -2017,7 +1999,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
                     "children": ["To drink"],
-                    "id": "dad6f18a-c8b2-4fcd-8335-200d5c0a415f",
+                    "id": "09a2c6f4-3100-42e3-ae96-b46e2bb884dd",
                     "ord": "a0"
                   },
                   {
@@ -2027,7 +2009,7 @@
                     "children": [
                       "A short, low-intervention wine list, plus beer from the brewery two streets over."
                     ],
-                    "id": "3ef7a530-e380-4fda-9228-eb8c42c4326e",
+                    "id": "163b7264-0e21-4312-9c9e-9fadc0f4aa58",
                     "ord": "a1"
                   },
                   {
@@ -2050,7 +2032,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["House red / white / orange"],
-                                "id": "4bdfca62-097e-41d8-bddc-58cb269a1aea",
+                                "id": "2b71c7fc-9461-4399-8559-eebe13e96bb4",
                                 "ord": "a0"
                               },
                               {
@@ -2058,11 +2040,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$7"],
-                                "id": "9340b6e4-b7dc-44b3-954e-ee466183fa60",
+                                "id": "70a08324-978c-4949-8815-d4e7a702f655",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b54dd0a3-7100-4339-989a-8c5ae9624651",
+                            "id": "376ef98b-5d77-43b2-9ec0-cd86a1df7828",
                             "ord": "a0"
                           },
                           {
@@ -2070,11 +2052,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": ["By the glass or carafe — ask what’s open."],
-                            "id": "b1765fe4-97e5-485f-8152-45cb64221524",
+                            "id": "47f17f63-8453-442c-86cc-c165f0cd054f",
                             "ord": "a1"
                           }
                         ],
-                        "id": "9413759d-bfb8-4aa7-8178-7679ddb26506",
+                        "id": "6422a642-6779-4786-a87f-229ca3bf4c66",
                         "ord": "a0"
                       },
                       {
@@ -2092,7 +2074,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Local pale ale"],
-                                "id": "ffc977ad-a99b-4395-bc67-0de61913d14f",
+                                "id": "5266cbc5-b73c-4efe-b972-79a1945d5659",
                                 "ord": "a0"
                               },
                               {
@@ -2100,11 +2082,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$6"],
-                                "id": "7b95626f-7470-4f78-9fa8-e3a848cd4a76",
+                                "id": "cf850aa5-187c-4ba3-8757-99c6d862cd4c",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "ccafd5c4-c6c6-4e0d-b975-5a1617d0964a",
+                            "id": "a94e9b42-eea4-43f2-8eaf-5adec2dbbf68",
                             "ord": "a0"
                           },
                           {
@@ -2112,11 +2094,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": ["On tap, from two streets over."],
-                            "id": "d418f10d-079b-44f2-9da0-52529ccc743a",
+                            "id": "95877c92-9655-4f3a-ae08-9c5f41c648b8",
                             "ord": "a1"
                           }
                         ],
-                        "id": "66092515-e3be-481d-a368-173c0bad7edd",
+                        "id": "56b5c87a-6fdc-42d3-b12e-95b0113c4028",
                         "ord": "a1"
                       },
                       {
@@ -2134,7 +2116,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Non-alcoholic aperitif"],
-                                "id": "88b0fc54-d014-4fb2-9d9c-a0e488bc6656",
+                                "id": "531bd21e-d1f4-4990-979f-327bf4acf11f",
                                 "ord": "a0"
                               },
                               {
@@ -2142,11 +2124,11 @@
                                 "tag": "span",
                                 "class": "text-lg font-semibold text-primary",
                                 "children": ["$6"],
-                                "id": "12a40a2a-9fb7-46c5-9fe6-99a7a3e7d5ae",
+                                "id": "bcaab234-b41c-4000-95ba-34cfc8e14fc9",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "171badc4-80e4-49bc-a6bc-d7b4052f82c7",
+                            "id": "66d2a6ce-b88f-408e-b046-b3dd5c8aa1b9",
                             "ord": "a0"
                           },
                           {
@@ -2154,23 +2136,23 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": ["House-made, bitter and bright."],
-                            "id": "fcf3ed9c-3828-4a24-abc1-d4220dcdd35f",
+                            "id": "6ace3874-c0ad-4545-9b1d-acdb69570ac1",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ebcb7d65-5cc1-4fd3-821c-824e1328340c",
+                        "id": "93033d6e-1305-4abd-b886-f2865c839362",
                         "ord": "a2"
                       }
                     ],
-                    "id": "33e0b83f-e5b0-44e8-88c3-c184c8b1c377",
+                    "id": "8b43e493-48ac-459d-a28b-8cdf0d698a30",
                     "ord": "a2"
                   }
                 ],
-                "id": "e002784c-85f5-4b9b-a65a-0d5b164a54f5",
+                "id": "d1f7c578-5ce9-4d40-91d0-5a4091a26f0a",
                 "ord": "a0"
               }
             ],
-            "id": "63f52693-88b5-453b-8696-36b74629342c",
+            "id": "adac4e17-f37b-47fc-b035-3b141de555db",
             "ord": "a5"
           }
         ]
@@ -2187,7 +2169,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "85f8cef3-0027-4d2d-bc46-a945bc4ee378",
+        "id": "db5b3f27-efc6-4ccd-8ffb-5f990d1ddc56",
         "children": [
           {
             "kind": "element",
@@ -2204,7 +2186,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl",
                     "children": ["Reserve a table"],
-                    "id": "dfd12222-d228-49d6-a284-85cdcf234c00",
+                    "id": "5824d309-f65f-4579-a539-ad2f262b4949",
                     "ord": "a0"
                   },
                   {
@@ -2214,23 +2196,27 @@
                     "children": [
                       "Pick your party size and a time below — you’ll see live availability for the next few weeks. For parties of seven or more, or a private-room enquiry, drop us a line and we’ll look after it."
                     ],
-                    "id": "f1afb88a-e7e3-43de-b6e3-0a1feb375449",
+                    "id": "c9308f79-41c0-45c7-9e00-026933d0d7fe",
                     "ord": "a1"
                   }
                 ],
-                "id": "d176d8ed-5e06-48de-b9c5-132da7080d42",
+                "id": "bc0a6548-e649-4b8e-9dd6-5f3a598ab4f9",
                 "ord": "a0"
               }
             ],
-            "id": "8eb3abf6-5577-4bd4-b2fb-58455e6b8d90",
+            "id": "0b976d15-f2b6-4efb-8f30-5c33f8759ca1",
             "ord": "a0"
           },
           {
             "kind": "host",
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "props": {
+              "heading": "Book with us",
+              "subheading": "Choose a service to see open times and reserve your spot."
+            },
             "locked": "host",
-            "id": "39690158-c6d0-4f48-af24-7695805b21b5",
+            "id": "e7da880f-7dc1-4dcb-9238-1a640edb234f",
             "ord": "a1"
           },
           {
@@ -2253,7 +2239,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Good to know"],
-                        "id": "b8a3afba-827b-4c63-9f62-c22918c38608",
+                        "id": "e16c21aa-cc24-4f0b-8fa6-0804250542d3",
                         "ord": "a0"
                       },
                       {
@@ -2263,11 +2249,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "83b57427-2e28-4217-9fc8-87aa444e6e96",
+                        "id": "0ff48f40-0fe3-4640-8aa0-661e857131d4",
                         "ord": "a1"
                       }
                     ],
-                    "id": "13c1ac0c-b4c6-41a5-b7dd-f339685d8052",
+                    "id": "43a1c39e-fbe2-45d5-af47-c362569bf117",
                     "ord": "a0"
                   },
                   {
@@ -2285,7 +2271,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Table reservation"],
-                            "id": "a18a98d2-45b9-4543-b436-b35d001e484d",
+                            "id": "ff13c0d7-0c67-47c1-81e5-504deb977534",
                             "ord": "a0"
                           },
                           {
@@ -2295,7 +2281,7 @@
                             "children": [
                               "Tables are held for 15 minutes past your time. Plans change — just let us know by the day before and we’ll free your table for someone else. We’ll remind you the day before and a few hours ahead."
                             ],
-                            "id": "4c166eff-357d-415d-b685-4b8fe4ec0658",
+                            "id": "0fbf7094-f255-4803-998f-3cf8b474c73f",
                             "ord": "a1"
                           },
                           {
@@ -2305,11 +2291,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "e529e115-7141-4bac-a43f-4df4b9e24a9c",
+                            "id": "f524214c-6751-4678-81b5-0e5db6a5f73f",
                             "ord": "a2"
                           }
                         ],
-                        "id": "fa71bf3b-dd60-48a0-8e1d-aa73e6c791d2",
+                        "id": "3772c55c-129a-4cde-9a01-bdcc1042c076",
                         "ord": "a0"
                       },
                       {
@@ -2322,7 +2308,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Large party hold"],
-                            "id": "743b64db-977d-4ccd-a1d9-035b93c72675",
+                            "id": "289720b6-ef8b-447d-a976-51687ab4a47c",
                             "ord": "a0"
                           },
                           {
@@ -2332,7 +2318,7 @@
                             "children": [
                               "Parties of six place a card hold to secure the table — nothing is charged unless you cancel inside 48 hours or don’t show. It keeps the big tables fair for everyone."
                             ],
-                            "id": "49b6f2c1-0907-4adc-80e2-fa6d26953515",
+                            "id": "52293134-0a7f-435e-9319-55aae1ceceed",
                             "ord": "a1"
                           },
                           {
@@ -2340,23 +2326,23 @@
                             "tag": "p",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Change or cancel free up to 2 days before."],
-                            "id": "5bf83764-e6b1-4250-ae78-0ee60efb7510",
+                            "id": "41467f2d-dcee-4806-965e-d7d2505356ab",
                             "ord": "a2"
                           }
                         ],
-                        "id": "e60e67ad-f7ef-4f8b-bcf8-9684eb65eb91",
+                        "id": "126e9e73-fe25-4c90-8b61-69c2e8626295",
                         "ord": "a1"
                       }
                     ],
-                    "id": "8dec0f86-84df-4638-9e2b-b771505ca3d2",
+                    "id": "4454fd71-7e91-4874-b1a5-15ebdbfbfb78",
                     "ord": "a1"
                   }
                 ],
-                "id": "b9f5a26e-a1cc-4ee2-bd5e-6d7ea24962d7",
+                "id": "004ce6d6-7953-4e8f-b5fd-bae591b6c60a",
                 "ord": "a0"
               }
             ],
-            "id": "32eb6258-53bc-4293-9ef6-6b0b32c7d0ae",
+            "id": "191c8b30-31a0-433c-a397-6f7b7ea6b695",
             "ord": "a2"
           }
         ]
@@ -2373,7 +2359,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "a17cd61e-3579-49dd-abde-ee839dec37d7",
+        "id": "d0695bca-8775-4e6b-aab5-a4c812ba2fcf",
         "children": [
           {
             "kind": "element",
@@ -2390,7 +2376,7 @@
                     "tag": "h1",
                     "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
                     "children": ["About Larkspur"],
-                    "id": "d525c2c4-a906-47f8-9375-4acb4218f9b0",
+                    "id": "3bad631f-8c21-4099-809f-6afe9ba36dee",
                     "ord": "a0"
                   },
                   {
@@ -2400,7 +2386,7 @@
                     "children": [
                       "Larkspur is a neighbourhood bistro in an old print works off the market square. We opened with one idea: cook seasonal food simply, pour honest wine, and run the kind of room you’d want on your own street — the sort you can book for a birthday or fall into on a wet Tuesday."
                     ],
-                    "id": "fac3571a-6eb5-4673-ba01-bb25905f1184",
+                    "id": "cd00772a-b198-4f46-886e-2a4e17da0c62",
                     "ord": "a1"
                   },
                   {
@@ -2410,7 +2396,7 @@
                     "children": [
                       "The menu changes with the season and with what the market has that morning, so it’s never quite the same twice. We buy from growers and producers we know by name, cook most of it over wood, and make the bread, the pasta and the puddings in-house."
                     ],
-                    "id": "4d2081e9-b297-4107-ac0b-c4826be853d7",
+                    "id": "b6252a6d-d319-4143-b215-c7de5a57e0c6",
                     "ord": "a2"
                   },
                   {
@@ -2420,15 +2406,15 @@
                     "children": [
                       "The room is small on purpose. Book ahead for dinner, especially at the weekend — but there’s always a stool at the bar for a walk-in, a glass and a plate."
                     ],
-                    "id": "7cdb68a4-aeae-4546-84d2-e0a15380d67b",
+                    "id": "1b3b2841-87e4-4ebf-b166-55e2d1623f23",
                     "ord": "a3"
                   }
                 ],
-                "id": "fff6a088-7eef-48cc-87f1-6a5064c36029",
+                "id": "c3a8f3b1-6924-4eb7-a42f-bac3cce74610",
                 "ord": "a0"
               }
             ],
-            "id": "545edf8d-4a2c-490a-b7de-3ef741b9df8e",
+            "id": "b3ad34ed-a22a-4179-931e-bf9d5c34cb20",
             "ord": "a0"
           }
         ]
@@ -2445,7 +2431,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "249b7b0c-0500-48de-b750-5cc5a6738e62",
+        "id": "461962fc-d602-4e2f-ad44-a72314de1739",
         "children": [
           {
             "kind": "element",
@@ -2467,7 +2453,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Get in touch"],
-                        "id": "1e190511-539c-4f22-8705-d82d277aa134",
+                        "id": "fd2b8e55-5f46-45a3-9aa9-eb2dc64f35a6",
                         "ord": "a0"
                       },
                       {
@@ -2477,11 +2463,11 @@
                         "children": [
                           "Questions before you book? Send a note and Larkspur will get back to you — usually the same day."
                         ],
-                        "id": "a083d41f-2bea-4de7-a2ae-a35940019d92",
+                        "id": "be1e8d4d-3180-4288-98a3-45cc5fe95200",
                         "ord": "a1"
                       }
                     ],
-                    "id": "b88abc71-2976-45c2-8f4b-04d20c326d67",
+                    "id": "4889cbd6-4572-40d3-bfb8-16bdc4c466df",
                     "ord": "a0"
                   },
                   {
@@ -2494,7 +2480,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Call us"],
-                        "id": "15355b03-3c15-4a58-b5ea-97d100d8da98",
+                        "id": "aef0f236-ced3-464a-ab41-6cb33c4f6d53",
                         "ord": "a0"
                       },
                       {
@@ -2510,7 +2496,7 @@
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "290e2cc7-4a6a-4155-8229-7866f9e7ef36",
+                            "id": "10641a0a-c383-4afd-88dc-3aaf1ca749de",
                             "ord": "a0"
                           }
                         ],
@@ -2519,7 +2505,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "a96c522f-48e7-4597-b212-331e811876bb",
+                        "id": "c8ea56b1-e37b-4542-bd41-4f475804ce55",
                         "ord": "a1"
                       }
                     ],
@@ -2527,7 +2513,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "d7ef6d61-b6e8-401d-82da-7994989f63f8",
+                    "id": "5c9e511a-27ab-40e6-bfa4-a2e36d5e658e",
                     "ord": "a1"
                   },
                   {
@@ -2540,7 +2526,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Email us"],
-                        "id": "97f8274b-b89d-49ed-ac12-3e499213e849",
+                        "id": "ef4e4f85-28e4-4e5e-8680-e973dbf7f3d4",
                         "ord": "a0"
                       },
                       {
@@ -2556,7 +2542,7 @@
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "2d94b6ac-150f-42e7-b59d-2daf602801ec",
+                            "id": "4fb6c2cd-1e9f-4e00-92c4-79a60399352d",
                             "ord": "a0"
                           }
                         ],
@@ -2565,7 +2551,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "e2607be8-98f6-4b65-a2e4-bca301d20893",
+                        "id": "196347ca-0475-413e-bbaa-b995fcb0ff45",
                         "ord": "a1"
                       }
                     ],
@@ -2573,7 +2559,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "5aec6cd7-4b99-4837-a431-611a4f87fc73",
+                    "id": "394e0058-eb8a-4a44-97fc-c038ab2c3854",
                     "ord": "a2"
                   },
                   {
@@ -2591,7 +2577,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Your name"],
-                            "id": "0383b395-e143-4e41-8c1d-819a2f029cd1",
+                            "id": "7c9d33ec-a02a-4720-9154-d8984d3a6264",
                             "ord": "a0"
                           },
                           {
@@ -2603,11 +2589,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "21f0d5e1-6c81-49b9-bd2b-dcf60c6fad5b",
+                            "id": "ba6ade8c-164e-41a5-8fe9-448d7595f054",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c6a8cb54-258a-4b15-8aa5-947183cfe851",
+                        "id": "fc8f77c5-d5d1-4d79-9c1a-ad70d34cef75",
                         "ord": "a0"
                       },
                       {
@@ -2620,7 +2606,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Email address"],
-                            "id": "09218f10-1c22-479b-83c4-2b654940bae9",
+                            "id": "163fb1cc-1a00-4a5a-84c9-3c5720b3660f",
                             "ord": "a0"
                           },
                           {
@@ -2632,11 +2618,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "f9c73abd-7b50-4920-959a-4c5d905e8085",
+                            "id": "cc7cfb4f-34cc-4dd9-8434-7c9145b85b10",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e59250b9-75f5-4ea9-afb3-9626a1d2d544",
+                        "id": "7be69120-b30d-47a7-b45c-bf82e396606b",
                         "ord": "a1"
                       },
                       {
@@ -2649,7 +2635,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Phone number"],
-                            "id": "e067c568-26af-45ca-80b8-4c9204e7153d",
+                            "id": "9111e701-0dda-4661-8bfc-ef0ec6531c5d",
                             "ord": "a0"
                           },
                           {
@@ -2660,11 +2646,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "4dd52812-454e-4b71-bbd3-d41a4351a788",
+                            "id": "b0101d15-4477-4712-b534-4ad79c4d5e65",
                             "ord": "a1"
                           }
                         ],
-                        "id": "4cccc095-091a-4586-b680-ce6886bed872",
+                        "id": "df00d744-df24-4184-8554-a3311c16c5f8",
                         "ord": "a2"
                       },
                       {
@@ -2677,7 +2663,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["How can we help?"],
-                            "id": "2041eea2-8ee7-4dd5-9725-e9a9961dc24e",
+                            "id": "6f33ca7d-a2dd-4cd8-823e-0e38d3d51b8d",
                             "ord": "a0"
                           },
                           {
@@ -2687,11 +2673,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "cfd68561-9aa3-43a2-a641-700b0aa4f0b7",
+                            "id": "2fda9fd7-3692-48db-be99-df3f13e5b101",
                             "ord": "a1"
                           }
                         ],
-                        "id": "678fc1cf-1673-410b-9e37-f06e8c71baa6",
+                        "id": "65d46a25-95aa-4956-917f-2cc203ff9326",
                         "ord": "a3"
                       },
                       {
@@ -2707,11 +2693,11 @@
                               "type": "submit"
                             },
                             "children": ["Send my request"],
-                            "id": "9fcba755-69dd-40ae-959d-472b55bc6a8c",
+                            "id": "91a6e418-25eb-46c1-9e11-2ecae4e48061",
                             "ord": "a0"
                           }
                         ],
-                        "id": "30a8f28f-5de2-4524-b050-6501d3862fd3",
+                        "id": "d4e06721-c357-4b48-92ba-967843a2556a",
                         "ord": "a4"
                       }
                     ],
@@ -2722,15 +2708,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "f39d74c8-805c-40aa-9a2a-2d60a67e8775",
+                    "id": "26b6a60d-3116-40aa-a8d3-1973d40943c3",
                     "ord": "a3"
                   }
                 ],
-                "id": "6f657842-ca28-448e-80a7-671bdca6ea45",
+                "id": "8991703c-bf1e-42e6-adbb-cc6b712a626d",
                 "ord": "a0"
               }
             ],
-            "id": "76cded57-1e79-45ed-83a5-e25735e60b7c",
+            "id": "d798c05d-ea93-4264-8748-374a505f0370",
             "ord": "a0"
           },
           {
@@ -2748,7 +2734,7 @@
                     "tag": "h2",
                     "class": "text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl",
                     "children": ["Visit Larkspur"],
-                    "id": "cd87b9ec-394e-4d96-b155-9236686c8c0b",
+                    "id": "28240d4b-bf72-4ca1-afbc-849ac7952621",
                     "ord": "a0"
                   },
                   {
@@ -2758,7 +2744,7 @@
                     "children": [
                       "18 Larkspur Lane, in the old print works off the market square. Wed–Sun for lunch and dinner; closed Monday and Tuesday. Street parking after 6pm, and the number 12 stops at the corner."
                     ],
-                    "id": "d19e867b-5aea-4c80-9fa0-93ee80b6fa06",
+                    "id": "335e30d9-a4b8-4580-965b-c906321d6f63",
                     "ord": "a1"
                   },
                   {
@@ -2774,7 +2760,7 @@
                           "href": "/book"
                         },
                         "children": ["Reserve a table"],
-                        "id": "0e9d9d42-1f25-47a1-8fa1-f8c00e6e579a",
+                        "id": "c70586a7-cff0-4063-a665-51c2b0993697",
                         "ord": "a0"
                       },
                       {
@@ -2785,11 +2771,11 @@
                           "href": "mailto:hello@larkspur.example"
                         },
                         "children": ["Email us"],
-                        "id": "faf1ac3e-653d-4df0-b418-19372ca97e19",
+                        "id": "d3ddf63b-719c-46e1-b70b-43943094c85f",
                         "ord": "a1"
                       }
                     ],
-                    "id": "7df5e6af-55ef-4f0e-90af-975d269be927",
+                    "id": "8a5f8cb6-1db4-45fe-9d91-7af29fa60551",
                     "ord": "a2"
                   },
                   {
@@ -2799,15 +2785,15 @@
                     "children": [
                       "For large parties, private hire or press, email hello@larkspur.example and we’ll get back to you the same day."
                     ],
-                    "id": "f8387f31-1593-4372-9a58-507d72d5e535",
+                    "id": "ed53d36b-d7b6-417f-be7a-768f545b7eea",
                     "ord": "a3"
                   }
                 ],
-                "id": "dde6d3bc-2561-4849-977a-b820dea52c4b",
+                "id": "0d8633a2-95bc-40d9-ab55-6fd2a2f58c92",
                 "ord": "a0"
               }
             ],
-            "id": "1c090a36-818e-4e42-9346-5d295c820862",
+            "id": "7a1ae390-bf64-4a64-b1a0-f620d8e1d758",
             "ord": "a1"
           }
         ]

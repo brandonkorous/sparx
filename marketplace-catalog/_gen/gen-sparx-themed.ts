@@ -21,9 +21,35 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { SPARX_THEMES } from '../../wizeworks/packages/silica-catalog/src/themes';
+import { upgradeFrameChrome } from '../../wizeworks/packages/silica-catalog/src/upgrade-frame';
 import { resolveSparxTheme } from '../../wizeworks/packages/silica-catalog/src/resolve-sparx-theme';
 import { colorToHex } from '../../wizeworks/packages/site-themes/src/v2/color';
 import type { Theme } from '@wizeworks/silicaui-html';
+
+/** The golden bundle's frame, run through the platform's own upgrade-on-read before it is
+ *  cloned.
+ *
+ *  The site half of `sparx` is CAPTURED from the live Template property, so its header and
+ *  footer are as old as the last capture — and the capture predates both the live account
+ *  core and the live legal-links core. Every clone inherited that, which is how twenty one
+ *  designs came to ship a stamped "Sign in" that tells a signed-in customer they are a
+ *  stranger and offers them no route to the account holding their orders (issues 291, 313).
+ *
+ *  `upgradeFrameChrome` is exactly the repair the platform already applies to a stale stored
+ *  frame the first time its owner opens the studio. Applying it HERE means an installing
+ *  tenant gets the current chrome on day one instead of on their first visit to the builder,
+ *  which many never make. It is a no-op on a frame that is already current, so re-running
+ *  this generator after a fresh capture changes nothing.
+ *
+ *  The golden `sparx` bundle ITSELF is not written by any generator — it is the capture — so
+ *  it stays behind until the Template property is opened in the studio (which heals its
+ *  draft) and re-captured. That is the one bundle the chrome guard excepts, by name. */
+function healedSite(site: Record<string, unknown>): Record<string, unknown> {
+    const frame = site.frame as { root: unknown } | null | undefined;
+    if (!frame?.root) return site;
+    const healed = upgradeFrameChrome(frame.root as Parameters<typeof upgradeFrameChrome>[0]);
+    return healed.changed ? { ...site, frame: { ...frame, root: healed.root } } : site;
+}
 
 const here = dirname(fileURLToPath(import.meta.url));
 const catalog = join(here, '..'); // marketplace-catalog/
@@ -167,7 +193,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: ${JSON.stringify(opts.key)},
-  version: '1.4.0',
+  version: '1.5.0',
   name: ${JSON.stringify(opts.name)},
   summary: ${JSON.stringify(opts.summary)},
   vertical: ${JSON.stringify(opts.vertical)},
@@ -217,7 +243,7 @@ function manifestJson(opts: {
         category: 'blueprint',
         slug: opts.key,
         name: opts.name,
-        version: '1.4.0',
+        version: '1.5.0',
         tagline: opts.tagline,
         description: opts.summary,
         payload: 'blueprint.ts',
@@ -333,8 +359,9 @@ async function main(): Promise<void> {
             apply: true,
         };
 
-        // site.json = golden site with this theme's resolved token bag.
-        const site = { ...golden.site, theme: resolved };
+        // site.json = golden site with this theme's resolved token bag, and the chrome
+        // brought up to date — see `healedSite`.
+        const site = healedSite({ ...golden.site, theme: resolved });
 
         await fs.writeFile(join(dir, 'site.json'), json(site));
         await fs.writeFile(join(dir, 'content.json'), json(golden.content));

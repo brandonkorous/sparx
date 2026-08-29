@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-news-feed',
-  version: '1.4.3',
+  version: '1.5.0',
   name: 'News Feed',
   summary:
     'A dense front-page feed for a technology & business publication — a full-width lead over a rail of the day’s stories, a live journal, and a bespoke bylined article page, in a white-ground one-accent theme. Modelled on the tech-newsroom archetype; shipped as Frequency. Ships a light store (reports, a book, membership) to demonstrate content + commerce together.',

@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-outdoor-rugged',
-  version: '1.4.3',
+  version: '1.5.0',
   name: 'Outdoor Gear (Rugged)',
   summary:
     'A complete, working shop for an outdoor & adventure gear outfitter: a real catalogue of hardshells, down insulation, merino base layers, packs, a roll-top dry bag, trail socks, an insulated bottle, a headlamp and trekking poles — with categories, collections, a spec-forward PDP and a fully merchandised home page. Rugged field theme — muted stone-khaki ground, deep forest-green, a blaze-orange accent. Shipped as Ridgeline Supply.',

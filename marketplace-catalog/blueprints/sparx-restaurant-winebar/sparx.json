@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-restaurant-winebar",
   "name": "Wine bar",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "tagline": "A moody, working template for a wine bar that takes reservations.",
   "description": "A complete, working site for an evening wine bar: a real by-the-glass and small-plates menu, and a live reservations flow (tables and bar stools as bookable resources, party-size reservation services, evening hours, a relaxed cancellation policy) on the /reserve page. Moody low-lit theme — charcoal-wine ground, a lit burgundy, a brass accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Decant.",
   "payload": "blueprint.ts",

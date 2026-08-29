@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-b2b-packaging",
   "name": "Packaging Supplies (Wholesale)",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "tagline": "A dependable trade storefront for a packaging distributor.",
   "description": "A complete, working wholesale shop for a packaging & shipping-supplies distributor: a real trade catalogue priced by the case, bundle and roll — boxes, mailers, tape, cushioning, void-fill, stretch wrap, labels and a starter kit — with pack quantities and MOQs, a bespoke trade PDP with bulk breaks, and a home page that sells the account (bulk tiers, next-day dispatch, net-30). Kraft-industrial theme — corrugated tan, deep warehouse blue, safety-orange accent. Shipped as Boxwell Supply.",
   "payload": "blueprint.ts",

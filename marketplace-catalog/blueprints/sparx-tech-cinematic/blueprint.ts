@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-tech-cinematic',
-  version: '1.4.3',
+  version: '1.5.0',
   name: 'Tech Cinematic',
   summary:
     'A dark, spec-forward storefront for engineered hardware — a full-bleed cinematic hero over a repeating capability-band and shoppable-carousel rhythm, on a genuinely dark page with one electric-blue signal. Modelled on the tech/cinematic product archetype; shipped as Aphelion, a premium-audio brand.',

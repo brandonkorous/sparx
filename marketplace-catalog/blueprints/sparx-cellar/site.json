@@ -154,13 +154,9 @@
                               "children": ["Wholesale"]
                             },
                             {
-                              "tag": "a",
-                              "kind": "element",
-                              "attrs": {
-                                "href": "/account/login"
-                              },
-                              "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200",
-                              "children": ["Sign in"]
+                              "kind": "host",
+                              "component": "site.account-link",
+                              "class": "text-sm font-medium text-base-content rounded-btn px-3 py-2 hover:bg-base-200"
                             }
                           ]
                         }
@@ -174,13 +170,9 @@
                   "component": "site.theme-toggle"
                 },
                 {
-                  "tag": "a",
-                  "kind": "element",
-                  "attrs": {
-                    "href": "/account/login"
-                  },
-                  "class": "btn btn-ghost btn-sm",
-                  "children": ["Sign in"]
+                  "kind": "host",
+                  "component": "site.account-link",
+                  "class": "btn btn-ghost btn-sm"
                 },
                 {
                   "tag": "a",
@@ -332,7 +324,7 @@
                         "href": "/account"
                       },
                       "class": "text-sm text-base-content hover:text-primary",
-                      "children": ["Sign in"]
+                      "children": ["Your account"]
                     },
                     {
                       "tag": "a",
@@ -342,6 +334,15 @@
                       },
                       "class": "text-sm text-base-content hover:text-primary",
                       "children": ["Orders"]
+                    },
+                    {
+                      "tag": "a",
+                      "kind": "element",
+                      "attrs": {
+                        "href": "/account/returns"
+                      },
+                      "class": "text-sm text-base-content hover:text-primary",
+                      "children": ["Returns"]
                     },
                     {
                       "tag": "a",

@@ -7,7 +7,7 @@
       "subject": "Welcome to {{site.name}}",
       "preheader": "So glad you found us — here’s where to start.",
       "root": {
-        "id": "def-s-body-1253",
+        "id": "def-s-body-15",
         "kind": "body",
         "width": 600,
         "bg": "#f4f4f5",
@@ -18,7 +18,7 @@
         "colorScheme": "light dark",
         "children": [
           {
-            "id": "def-s-section-1242",
+            "id": "def-s-section-4",
             "kind": "section",
             "bg": "#ffffff",
             "bgAuto": true,
@@ -26,7 +26,7 @@
             "paddingY": 24,
             "children": [
               {
-                "id": "def-s-text-1239",
+                "id": "def-s-text-1",
                 "kind": "text",
                 "html": "Welcome, {{customer.firstName}}",
                 "align": "left",
@@ -37,12 +37,12 @@
                 "lineHeight": 36
               },
               {
-                "id": "def-s-spacer-1241",
+                "id": "def-s-spacer-3",
                 "kind": "spacer",
                 "height": 16
               },
               {
-                "id": "def-s-text-1240",
+                "id": "def-s-text-2",
                 "kind": "text",
                 "html": "Thanks for joining {{site.name}}. We put a lot of care into what we make and sell, and we’re glad you’re here to see it.",
                 "align": "left",
@@ -55,7 +55,7 @@
             ]
           },
           {
-            "id": "def-s-section-1250",
+            "id": "def-s-section-12",
             "kind": "section",
             "bg": "#f4f4f5",
             "bgAuto": true,
@@ -63,7 +63,7 @@
             "paddingY": 22,
             "children": [
               {
-                "id": "def-s-text-1243",
+                "id": "def-s-text-5",
                 "kind": "text",
                 "html": "Everything in one place",
                 "align": "left",
@@ -74,12 +74,12 @@
                 "lineHeight": 27
               },
               {
-                "id": "def-s-spacer-1244",
+                "id": "def-s-spacer-6",
                 "kind": "spacer",
                 "height": 4
               },
               {
-                "id": "def-s-text-1245",
+                "id": "def-s-text-7",
                 "kind": "text",
                 "html": "Your cart, orders, and favourites live in your account — sign in any time to pick up where you left off.",
                 "align": "left",
@@ -90,12 +90,12 @@
                 "lineHeight": 24
               },
               {
-                "id": "def-s-spacer-1246",
+                "id": "def-s-spacer-8",
                 "kind": "spacer",
                 "height": 18
               },
               {
-                "id": "def-s-text-1247",
+                "id": "def-s-text-9",
                 "kind": "text",
                 "html": "Here to help",
                 "align": "left",
@@ -106,12 +106,12 @@
                 "lineHeight": 27
               },
               {
-                "id": "def-s-spacer-1248",
+                "id": "def-s-spacer-10",
                 "kind": "spacer",
                 "height": 4
               },
               {
-                "id": "def-s-text-1249",
+                "id": "def-s-text-11",
                 "kind": "text",
                 "html": "Reply to any email from us and you’ll reach a real person — not a bot.",
                 "align": "left",
@@ -133,7 +133,7 @@
             "align": "left"
           },
           {
-            "id": "def-s-section-1252",
+            "id": "def-s-section-14",
             "kind": "section",
             "bg": "#ffffff",
             "bgAuto": true,
@@ -141,7 +141,7 @@
             "paddingY": 24,
             "children": [
               {
-                "id": "def-s-button-1251",
+                "id": "def-s-button-13",
                 "kind": "button",
                 "label": "Shop now",
                 "href": "{{site.url}}/shop",
@@ -168,7 +168,7 @@
       "subject": "Still thinking it over, {{customer.firstName}}?",
       "preheader": "Your favourites are waiting at {{site.name}}.",
       "root": {
-        "id": "def-s-body-1264",
+        "id": "def-s-body-26",
         "kind": "body",
         "width": 600,
         "bg": "#f4f4f5",
@@ -179,7 +179,7 @@
         "colorScheme": "light dark",
         "children": [
           {
-            "id": "def-s-section-1257",
+            "id": "def-s-section-19",
             "kind": "section",
             "bg": "#ffffff",
             "bgAuto": true,
@@ -187,7 +187,7 @@
             "paddingY": 24,
             "children": [
               {
-                "id": "def-s-text-1254",
+                "id": "def-s-text-16",
                 "kind": "text",
                 "html": "We’d love to see you again",
                 "align": "left",
@@ -198,12 +198,12 @@
                 "lineHeight": 36
               },
               {
-                "id": "def-s-spacer-1256",
+                "id": "def-s-spacer-18",
                 "kind": "spacer",
                 "height": 16
               },
               {
-                "id": "def-s-text-1255",
+                "id": "def-s-text-17",
                 "kind": "text",
                 "html": "It’s been a little while, {{customer.firstName}}. Whenever you’re ready, {{site.name}} is right where you left it.",
                 "align": "left",
@@ -216,7 +216,7 @@
             ]
           },
           {
-            "id": "def-s-section-1261",
+            "id": "def-s-section-23",
             "kind": "section",
             "bg": "#f4f4f5",
             "bgAuto": true,
@@ -224,7 +224,7 @@
             "paddingY": 18,
             "children": [
               {
-                "id": "def-s-text-1258",
+                "id": "def-s-text-20",
                 "kind": "text",
                 "html": "New since your last visit",
                 "align": "left",
@@ -235,12 +235,12 @@
                 "lineHeight": 29
               },
               {
-                "id": "def-s-spacer-1260",
+                "id": "def-s-spacer-22",
                 "kind": "spacer",
                 "height": 16
               },
               {
-                "id": "def-s-text-1259",
+                "id": "def-s-text-21",
                 "kind": "text",
                 "html": "A few fresh arrivals and returning favourites have landed — come take a look and see what’s caught our eye lately.",
                 "align": "left",
@@ -262,7 +262,7 @@
             "align": "left"
           },
           {
-            "id": "def-s-section-1263",
+            "id": "def-s-section-25",
             "kind": "section",
             "bg": "#ffffff",
             "bgAuto": true,
@@ -270,7 +270,7 @@
             "paddingY": 24,
             "children": [
               {
-                "id": "def-s-button-1262",
+                "id": "def-s-button-24",
                 "kind": "button",
                 "label": "See what’s new",
                 "href": "{{site.url}}/shop",

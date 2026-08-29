@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-lifecoach-wellness',
-  version: '1.3.3',
+  version: '1.4.0',
   name: 'Life Coach (Wellness)',
   summary:
     'A warm, encouraging site for a life & wellness coaching practice — a cream palette, a terracotta primary and a soft humanist serif, with hopeful photography carrying the page. Installs online booking from day one: a free discovery call plus real coaching sessions (life, mindset, confidence, balance, purpose), and three coaches you book by name as bookable resources with their own hours. Ships as "Brightpath Life Coaching".',

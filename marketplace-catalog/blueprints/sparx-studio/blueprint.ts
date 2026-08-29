@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-studio',
-  version: '1.4.0',
+  version: '1.5.0',
   name: 'Studio',
   summary:
     'The complete starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Studio look, tuned for design, photography, and creative studios. Install it, make it yours, and launch a polished working site in minutes.',

@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-electrician-modern",
   "name": "Electrician (Modern)",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "tagline": "A modern, high-tech template for electricians — book visits online from day one.",
   "description": "A sleek, high-tech electrical-contractor site — a near-black graphite palette with an electric-blue accent and a bold type-first hero, built for the modern home and business: EV chargers, smart-home wiring, solar and battery hookups, and panel upgrades. Installs a working booking flow: real visit types (site assessment, EV-charger consult, free estimate), three electricians you book by skill with their own hours, and a priority policy for commercial jobs. Ships as \"Voltline Electric\".",
   "payload": "blueprint.ts",

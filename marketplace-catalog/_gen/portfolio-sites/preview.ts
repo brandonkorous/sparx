@@ -27,6 +27,7 @@ import {
 } from '../../../wizeworks/packages/builder-schemas/src/silica-resolve';
 import { buildSilicaThemeCssFromTheme } from '../../../wizeworks/packages/site-themes/src/v2/silica-css';
 
+import { previewCssEntry } from '../template-sites/preview';
 import { composePortfolioSite, type PortfolioSiteSpec } from './harness';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -128,7 +129,13 @@ function runTailwind(
 
 function compilePreviewCss(slug: string, bodyHtml: string, scratchDir: string): string {
   const bodyPath = join(scratchDir, `preview-${slug}.body.html`);
-  const inputPath = join(repoRoot, 'apps', 'site', `_preview-${slug}.css`);
+  // Shared with the template previews rather than spelled again here. This line WAS a
+  // second copy — `join(repoRoot, 'apps', 'site', ...)` — and when the site app moved
+  // under `wizeworks/` only the template copy was updated, so all six portfolio
+  // generators threw ENOENT after writing their bundle: the run reported a valid
+  // bundle and a failure in the same breath, and the preview silently stopped being
+  // produced. One definition, one place to fix when the tree moves again.
+  const inputPath = previewCssEntry(slug);
   const outPath = join(scratchDir, `preview-${slug}.util.css`);
   const cli = join(here, '..', 'template-sites', 'tailwind-compile.mjs');
   const input = `@import 'tailwindcss';

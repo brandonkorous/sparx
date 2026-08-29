@@ -56,8 +56,12 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
 /** The payload version every portfolio bundle ships. BUMP whenever the emitted content
  *  changes — a marketplace artifact is IMMUTABLE per `(category, slug, version)`, so without
  *  a bump the catalog keeps serving the OLD payload and a fresh install never sees the new
- *  pages. 1.0.0 is the first, full five-page portfolio pass. */
-const BUNDLE_VERSION = '1.2.1';
+ *  pages. 1.0.0 is the first, full five-page portfolio pass.
+ *
+ *  1.3.0 carries the chrome the composite has been emitting since issue 291 — the
+ *  account link in the bar and the phone panel, and the legal links in the footer —
+ *  which the committed bundles had been a release behind on (issue 313). */
+const BUNDLE_VERSION = '1.3.0';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

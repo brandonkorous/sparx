@@ -14,7 +14,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-portfolio-developer',
-  version: '1.2.1',
+  version: '1.3.0',
   name: 'Developer Portfolio',
   summary:
     'A hire-me portfolio for a creative developer / technologist: a mono terminal hero, selected builds as bordered cards that light up on hover, a “Now” band of what’s running, and case-study pages that walk what it is, the hard part, the stack and what shipped. Dressed in a near-black terminal theme with a monospace body, acid-green primary and electric-cyan accent. The site is its own proof of taste. Shipped as Kade Nakamura.',

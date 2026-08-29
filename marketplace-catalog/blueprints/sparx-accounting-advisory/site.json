@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "30f15a12-c6e6-4967-9ca8-af3412a1e0d4",
+                  "id": "0d94e48f-4267-4abe-84d9-b0ee52002c3c",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "d166bbd7-cf49-4c94-a69a-4661a1f58df3",
+                      "id": "2bdc3dff-21ad-46cd-89c2-c90a95bb1a72",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "0f9d252e-4f2c-4d89-80dd-d9307b46d4ed",
+                      "id": "76b1a595-7263-4436-af61-ca1f600117f3",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "426e0e36-e999-4a1f-b8bf-8e719aa31d30",
+                      "id": "2d345793-a47a-4fe3-b956-6b6e1c52e814",
                       "ord": "a2"
                     }
                   ],
-                  "id": "2719b015-fa36-4688-9f4c-ae0ad9dbba14",
+                  "id": "d513ac2b-a67c-4403-9ee6-9e1fe795d530",
                   "ord": "a1"
                 },
                 {
@@ -88,26 +88,17 @@
                   "class": "ml-auto flex items-center gap-3",
                   "children": [
                     {
-                      "kind": "element",
-                      "tag": "a",
+                      "kind": "host",
+                      "component": "site.account-link",
                       "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
-                      "attrs": {
-                        "href": "/account/login"
-                      },
-                      "children": ["Sign in"],
-                      "slot": {
-                        "name": "secondary",
-                        "type": "link",
-                        "label": "Secondary link"
-                      },
-                      "id": "b1de1ada-14c9-4f9a-8145-4bf857099f5e",
+                      "id": "e10e17ae-9743-4fff-a856-92f3a4520e4c",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "74b4b866-80e9-4ae5-a6d6-2eb80556c046",
+                      "id": "3dae8d98-638d-4962-864c-1a6071952d4b",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +114,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "190b4efa-0eff-4513-948b-a57a5687ddcc",
+                      "id": "45d1aa4d-e6f1-4e13-898a-c8e5f7bfd9e7",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +132,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "8051809b-bb16-4108-aa30-e0b97395337a",
+                          "id": "ba168d3c-e000-4232-8dae-45ab495c31f8",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "a6fd76e0-2033-41a0-b348-44ce0a007bb4",
+                      "id": "1806444e-86cb-4cf1-b600-32544c7fcad4",
                       "ord": "a3"
                     }
                   ],
-                  "id": "c628a140-d4c5-4708-bbcf-52d3958f8c3a",
+                  "id": "f29582a8-8ffc-4312-81d6-b65dff90e0c2",
                   "ord": "a2"
                 }
               ],
-              "id": "5931e290-f420-4fc7-a841-ca6fea2bece4",
+              "id": "f3c381ed-92a1-40ca-94f0-a71933b9387e",
               "ord": "a0"
             },
             {
@@ -178,7 +169,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "c577af0f-6ab8-44f2-b528-f704056fddcf",
+                  "id": "d96bc2c9-cba1-46c1-aeb1-d7cdc97edb71",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +185,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "5778d1ef-3a5a-42fa-a0da-faa5e4e689df",
+                  "id": "7aa9ab71-a831-46bd-964d-96d4e5e6e59e",
                   "ord": "a1"
                 },
                 {
@@ -210,23 +201,14 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "783ff08c-d8dd-464f-9633-f22643936b37",
+                  "id": "04b3b21b-e86c-48af-820d-e2e6303ff208",
                   "ord": "a2"
                 },
                 {
-                  "kind": "component",
-                  "component": "Button",
+                  "kind": "host",
+                  "component": "site.account-link",
                   "class": "btn btn-ghost btn-sm mt-2 w-full",
-                  "props": {
-                    "label": "Sign in",
-                    "href": "/account/login"
-                  },
-                  "slot": {
-                    "name": "secondary",
-                    "type": "link",
-                    "label": "Secondary link"
-                  },
-                  "id": "88b821bd-915a-4f33-86d8-1cf2377039d7",
+                  "id": "621a3959-13ac-4335-b95d-e06cbd957c84",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +224,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "07edfd78-cb9d-49d6-a558-21574f954bc2",
+                  "id": "773cc324-52cd-49bb-ab35-0baac5efd96a",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "5ee52726-682f-482d-9792-d4eee9b11d52",
+              "id": "4e77e174-4f0e-4ca9-84df-8f2e6b59beb8",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "5fbb096e-7cdf-423a-8a68-910dbf061bfc",
+          "id": "2fa04194-5bd1-4bd6-b1b8-db1dbede8bd3",
           "ord": "a0"
         },
         {
@@ -270,7 +252,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "485e3133-4252-4983-9423-ccd5d921d0e3",
+          "id": "f8db64eb-f13e-485d-a84c-b0f967d9b8ef",
           "ord": "a1"
         },
         {
@@ -300,7 +282,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "2c591abb-4643-4ec2-b422-c5478942e25a",
+                          "id": "082a9f47-dcca-4276-8624-66b850153d2a",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +298,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "d85faf02-46a0-4c49-8dd8-4568afe9a4a3",
+                          "id": "b4dfe0e2-4089-4931-9ee3-1a5581836023",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +306,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "604361fe-abd5-467b-91ad-3a48a2a90f6f",
+                          "id": "351e36f4-e930-4aa0-99c5-a79fec7125b8",
                           "ord": "a2"
                         }
                       ],
-                      "id": "8a68738d-2b43-4293-9ce0-628559cbc853",
+                      "id": "44ef2bf0-a631-4f4d-a41b-ddc567e78aed",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +331,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "5885451b-be14-4f14-800a-9b0d4849fce4",
+                          "id": "4fc02577-a909-4256-a5fc-173ba8429c75",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +356,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "fba17830-e311-412c-90eb-b3ae2911aa2c",
+                                  "id": "1f685f25-578b-48e7-abac-a628311613e8",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "8e2384f0-27d9-472e-8559-d383f8332c2d",
+                              "id": "028a5424-5abf-4cb1-be73-fe7763b2f718",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +380,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "9cf5052d-80b6-4687-9b60-3c56b43a10a0",
+                                  "id": "d5832959-9b82-4aa8-9786-6ed06f6c7fe8",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "a7e059ba-ec42-490f-af11-42803691b2c7",
+                              "id": "f80db39e-7f55-4ef8-b7ac-c6b33c6504fa",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +404,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "aad32149-1253-4604-a608-36e4ed6401e3",
+                                  "id": "86f64874-5b8d-460a-84b3-62df37e12659",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "2be0df8c-251a-43eb-a34d-fa1ffa5da8eb",
+                              "id": "7148b871-ed1f-4f33-832b-5d4fe644f748",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +428,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "52e61386-9e29-4f7c-b06f-65819fbb7325",
+                                  "id": "f726de18-6898-4201-bbb0-51629494a0c0",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "a76e1a6e-9b33-426b-8abf-d608b130cfa5",
+                              "id": "f47ab6c9-ede6-470e-aa76-2f4b5add52c2",
                               "ord": "a3"
                             }
                           ],
-                          "id": "0384d7f8-a696-4069-9811-bc0ddbb4d962",
+                          "id": "6c9b584e-7d61-48fe-aa7c-a9efb9a92aff",
                           "ord": "a1"
                         }
                       ],
-                      "id": "58f43468-4671-4ff7-995b-c13ed86a1f64",
+                      "id": "6982fc4c-c7b0-45ec-81eb-98bc7fadb2d0",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +453,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "c0f7e8f3-8491-47b8-bf0a-08aba43cb97f",
+                          "id": "38e1c2fa-86e1-40aa-8ae0-2466e8395f9c",
                           "ord": "a0"
                         }
                       ],
-                      "id": "f41a6b45-39c7-4e4b-88cd-2bbce9234bbd",
+                      "id": "49d350ea-234f-4c07-8432-b44474002fb7",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +481,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "93fc142c-38b4-4385-b04c-39b292ce555e",
+                                  "id": "8c6f4620-5682-4999-93fa-0ee24b55de2b",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "101de2e8-5bd6-449a-8604-0dfd348340e2",
+                              "id": "34557c9d-ce31-4ead-8d42-be1e706b75f8",
                               "ord": "a0"
                             }
                           ],
-                          "id": "bdb00ee0-2418-46f2-bc54-750048c28fc6",
+                          "id": "09fbf165-3972-4f81-a35b-3946c551b8a3",
                           "ord": "a0"
                         }
                       ],
-                      "id": "f65a2228-09aa-4fdd-aa8c-962ea4ccf040",
+                      "id": "a8ab15cb-50dd-466a-baf6-51c217129a58",
                       "ord": "a3"
                     }
                   ],
-                  "id": "c80768e6-5cd0-4e05-9275-9ecddc9d4b6e",
+                  "id": "da4a1492-e431-43cc-b3bc-b986c052252c",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +520,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "783fb612-0558-4c2d-9e8e-e7868bd3c73f",
+                          "id": "c8d58674-83b6-41d9-8487-41cdb851cdd5",
                           "ord": "a0"
                         }
                       ],
-                      "id": "4191ba71-856e-4c45-a86a-c210690ffc4e",
+                      "id": "8deb443a-1476-45a6-b1ea-f5fee24e59e6",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +532,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "861ac6fe-049b-4119-9217-4943dc4cf216",
+                      "id": "3dc865c2-abb8-4b6b-81d8-8430685ced7e",
                       "ord": "a1"
                     }
                   ],
-                  "id": "8b9fa496-e4f2-4b06-a643-1152850d6beb",
+                  "id": "91356fe6-378a-4e84-b81c-914588e01806",
                   "ord": "a1"
                 }
               ],
-              "id": "ca2dfb5b-196b-41a5-a789-3dd3c5757087",
+              "id": "38572240-f8a1-460c-9162-7bfbd8ab7db4",
               "ord": "a0"
             }
           ],
-          "id": "eb40a00e-bd84-4d47-a97d-2a263c6949d5",
+          "id": "dad262d5-908e-44eb-a41b-17402086034b",
           "ord": "a2"
         }
       ],
-      "id": "e347c799-04aa-4f28-b032-9f9e9f763261"
+      "id": "d1a53b14-86ac-490c-a163-3532ccdb943e"
     }
   },
   "pages": [
@@ -580,7 +562,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "b363821b-7aff-49fe-b699-249f3a71f78e",
+        "id": "9c80b35a-66ef-495a-8b54-85d03e4fb1d2",
         "children": [
           {
             "kind": "element",
@@ -596,14 +578,14 @@
                   "alt": "A calm, glass-walled boardroom at dusk over a city skyline",
                   "loading": "eager"
                 },
-                "id": "b3ddc43a-bda7-4d3a-8754-ad7f6f72e85c",
+                "id": "778975f1-28dd-4be2-8eaa-eedb7d5d16be",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "3a6b80b2-6405-4ccf-820b-2badeeb8626b",
+                "id": "1f94ace4-f16f-45fe-8eb0-a88706898a2b",
                 "ord": "a1"
               },
               {
@@ -616,7 +598,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Advisory that works before the tax bill does"],
-                    "id": "bae871d3-e64a-4ab4-964e-3a3d2e2a252e",
+                    "id": "5eec2519-04fa-4ac3-a5c6-4ef12a61b6b8",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +608,7 @@
                     "children": [
                       "Proactive tax strategy, CFO-level insight and wealth planning for established businesses and high earners — built around where you’re going, not just what already happened."
                     ],
-                    "id": "da83836f-2b43-4a5b-8cf8-253e884ca3d6",
+                    "id": "e27ebb43-1e15-4036-bba8-219a6cb5bb1a",
                     "ord": "a1"
                   },
                   {
@@ -642,7 +624,7 @@
                           "href": "/book"
                         },
                         "children": ["Book a strategy consultation"],
-                        "id": "60eae40a-9047-40c5-9e44-8c629c5df353",
+                        "id": "f59dcfe7-6b6d-4594-9760-5ff4a184e2e5",
                         "ord": "a0"
                       },
                       {
@@ -653,19 +635,19 @@
                           "href": "/book"
                         },
                         "children": ["See how we work"],
-                        "id": "1b3c5f4c-b7ff-470b-8b77-e34e35a80f73",
+                        "id": "0aaf2fe4-9d0e-4052-ba5e-be6c4770530e",
                         "ord": "a1"
                       }
                     ],
-                    "id": "5c84a4e1-3faa-4eae-a76e-65844fc6323e",
+                    "id": "df29df4c-004d-455e-9d2f-38809fa80e95",
                     "ord": "a2"
                   }
                 ],
-                "id": "b1a7e81e-6335-4890-b891-78ff2036520a",
+                "id": "f45af3fb-872d-4f67-b18d-92a87658c9cf",
                 "ord": "a2"
               }
             ],
-            "id": "77e4cea8-13ad-4dc9-a2dc-02a5f1c06a07",
+            "id": "aae030a4-1196-4785-8884-142c96db83ab",
             "ord": "a0"
           },
           {
@@ -693,7 +675,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Proactive tax strategy"],
-                            "id": "236eef32-fae2-44d5-9def-c3bd451df7f8",
+                            "id": "2d9b6c22-1344-4769-9ff0-47c11996c2e3",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +685,11 @@
                             "children": [
                               "We plan the year, not just file it — the moves that lower next April’s bill are made in the months before it, together."
                             ],
-                            "id": "4861dfda-1610-4f32-8ad7-494819c2d13e",
+                            "id": "bcda1931-8823-48f8-8315-c60928cd8d74",
                             "ord": "a1"
                           }
                         ],
-                        "id": "eee969a0-8b6c-4915-b9be-3a54a2a0d5b3",
+                        "id": "68933c56-9d9a-47f0-91b0-b7475e6f835d",
                         "ord": "a0"
                       },
                       {
@@ -720,7 +702,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["A dedicated CPA advisor"],
-                            "id": "beec9868-86d3-4b98-974c-c750be6467b1",
+                            "id": "d8ec1834-33dd-40c2-b737-481c7c56e78a",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +712,11 @@
                             "children": [
                               "You work with one senior advisor who knows your numbers and your goals — not a rotating desk and a portal ticket."
                             ],
-                            "id": "3682ac8e-93aa-48c8-910d-727198dfc3b3",
+                            "id": "793b5e3c-d262-4511-a4cc-413aa0057707",
                             "ord": "a1"
                           }
                         ],
-                        "id": "3bc6547b-2f96-46e7-a75f-25764159d2ce",
+                        "id": "263a7b17-b6a1-4640-a45a-e976dea23135",
                         "ord": "a1"
                       },
                       {
@@ -747,7 +729,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Quarterly business reviews"],
-                            "id": "8ba6f86b-4b1a-4072-b34d-2118d2fe6c03",
+                            "id": "b26d2263-cee9-4271-8b46-249a0af0368b",
                             "ord": "a0"
                           },
                           {
@@ -757,23 +739,23 @@
                             "children": [
                               "A standing conversation about margins, cash and what’s next, so decisions are made on real figures instead of a gut feel."
                             ],
-                            "id": "a04efab3-ab39-4f0b-a6c5-d91f1b8bf8fe",
+                            "id": "c0166c49-7d81-4eba-9155-f4f1ca035755",
                             "ord": "a1"
                           }
                         ],
-                        "id": "eb0f19d4-4e06-418c-b57f-95f0dcf89d23",
+                        "id": "408a45de-257c-44ef-bfdf-659e13a24ad6",
                         "ord": "a2"
                       }
                     ],
-                    "id": "6680defa-687f-46e2-98ed-3c24ea0b1e23",
+                    "id": "7f482246-6ebe-454b-8a07-fdca43ed9364",
                     "ord": "a0"
                   }
                 ],
-                "id": "1e48fb94-9b06-4d05-b893-035a5fbab5fd",
+                "id": "9187c97d-2af6-47aa-966b-b865208ae470",
                 "ord": "a0"
               }
             ],
-            "id": "f1b268ab-b6a9-400d-aa70-99d2c0ef30d2",
+            "id": "f4f3deff-2d14-4cba-9f85-6e1be0989a55",
             "ord": "a1"
           },
           {
@@ -796,7 +778,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Ways to work with us"],
-                        "id": "4d1248fd-1040-48e4-8f1f-b4f41a9eef48",
+                        "id": "18f4b7bb-4775-4270-a545-cdf17395fade",
                         "ord": "a0"
                       },
                       {
@@ -806,11 +788,11 @@
                         "children": [
                           "Every relationship starts with a complimentary strategy call. Paid advisory sessions apply toward your engagement. Full details and live availability are on the booking page."
                         ],
-                        "id": "dc945dfb-9401-4783-9d06-28bd716dfe0a",
+                        "id": "2228bd54-302d-41fb-b3cc-554a25040e2f",
                         "ord": "a1"
                       }
                     ],
-                    "id": "fd69d12f-bc8b-4361-b3bb-64ae36c0765a",
+                    "id": "97a19ae3-0589-4391-bfc7-633855cd5ec7",
                     "ord": "a0"
                   },
                   {
@@ -836,7 +818,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Strategy consultation"],
-                                "id": "d1564935-206f-4119-a304-3f689be30748",
+                                "id": "d33359d0-3e81-4631-a8c5-e1ccd33f7886",
                                 "ord": "a0"
                               },
                               {
@@ -844,11 +826,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$0"],
-                                "id": "7ab7923f-ae6f-4029-8a73-fbc359b36b73",
+                                "id": "28fbe17a-19e4-471a-b9f0-fd094c0f0c18",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "289f0e68-76db-49e7-ae53-35616e5e13e4",
+                            "id": "92b607e8-0bb5-43af-9e22-d877617300b8",
                             "ord": "a0"
                           },
                           {
@@ -856,7 +838,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "3da438b4-9849-4fd9-8c58-8a14ed99abc8",
+                            "id": "5b9766b4-03bc-4ae5-8c31-e1c78a717808",
                             "ord": "a1"
                           },
                           {
@@ -864,11 +846,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["A complimentary call to map where we can help most."],
-                            "id": "0a50b28a-8526-4a81-a855-03e2dc69ab5d",
+                            "id": "17d45112-b72b-4e17-ade8-edf6f8222ba1",
                             "ord": "a2"
                           }
                         ],
-                        "id": "2d6c38b6-0c23-44fa-b9b1-9e52e4228208",
+                        "id": "0c6a9f2d-06c0-4f69-a7ce-1ad0e4dbd687",
                         "ord": "a0"
                       },
                       {
@@ -889,7 +871,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Tax strategy review"],
-                                "id": "fd4f211b-1e36-47b1-b41a-2c791c3d3fce",
+                                "id": "55e80505-b3f2-4627-bb07-75c615c904a5",
                                 "ord": "a0"
                               },
                               {
@@ -897,11 +879,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$450"],
-                                "id": "41428950-6225-4097-926b-838b210f20ce",
+                                "id": "f265c57f-7e7a-4b9e-a3fb-e3d59059419c",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "02f6c9cd-18a3-424a-b0fc-5831c4c2ece8",
+                            "id": "c9f9a0c0-e02c-44e2-b08d-df9d8cadd7bc",
                             "ord": "a0"
                           },
                           {
@@ -909,7 +891,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "eafcbe7c-7127-4cb4-88d7-983fbd981cac",
+                            "id": "9a1e146e-eef9-49b8-b1c9-41b30f0fea19",
                             "ord": "a1"
                           },
                           {
@@ -917,11 +899,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Forward-looking, multi-year tax planning."],
-                            "id": "c74ed931-d674-4838-93e0-346545f967c5",
+                            "id": "46b6f7cb-c85a-440b-9ce1-bfbb9cf3a516",
                             "ord": "a2"
                           }
                         ],
-                        "id": "4c849478-badf-44b2-ae05-281fce90a609",
+                        "id": "18d41b69-265e-4d3d-a679-4b50ea38f94c",
                         "ord": "a1"
                       },
                       {
@@ -942,7 +924,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["CFO advisory consult"],
-                                "id": "5c018027-76be-4c26-aa16-989a4861d09c",
+                                "id": "722077a3-1e8e-40d6-b697-913c50b75d66",
                                 "ord": "a0"
                               },
                               {
@@ -950,11 +932,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$550"],
-                                "id": "da0fa2ff-89fa-4509-95fa-4da84eff3733",
+                                "id": "9eb656c3-08ec-4cdf-9aea-7aade9f5ff23",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "0655e1f2-88e1-40c9-8710-0bc6604e38f2",
+                            "id": "8cb6071f-3841-434e-9f71-259ddb66ad5c",
                             "ord": "a0"
                           },
                           {
@@ -962,7 +944,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "d89c6a51-c07f-4e66-b583-faf1b3d7eb30",
+                            "id": "ad5633fd-9774-4af5-9e73-90b83a41d859",
                             "ord": "a1"
                           },
                           {
@@ -970,11 +952,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Cash flow, margins and the numbers behind the call."],
-                            "id": "d79b5ed2-5424-4322-833c-3bd5dc363636",
+                            "id": "abcca10e-05a9-41ce-843f-42e94c826032",
                             "ord": "a2"
                           }
                         ],
-                        "id": "1648a246-35a7-44ba-adef-6f0605ae911b",
+                        "id": "0a56dcce-9235-4515-9756-434ad9b1193e",
                         "ord": "a2"
                       },
                       {
@@ -995,7 +977,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Business valuation consult"],
-                                "id": "a7be23bf-780b-4dee-a05e-4922eea53164",
+                                "id": "b29c4b8d-cbc7-4e6f-93ab-438f9d6d8778",
                                 "ord": "a0"
                               },
                               {
@@ -1003,11 +985,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$750"],
-                                "id": "48b32317-01e3-4115-b91d-03847b0ea377",
+                                "id": "2369109c-f8a2-499d-83af-e5d7a902a18f",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "82e38304-35ee-45cc-8270-f0a4d02da732",
+                            "id": "89e1c0cb-6a12-4ad7-92fe-27631ba1b2a2",
                             "ord": "a0"
                           },
                           {
@@ -1015,7 +997,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "60f98600-c4a4-46f7-b545-1884a574ee05",
+                            "id": "e4642581-d11f-4e17-b894-81696071ba08",
                             "ord": "a1"
                           },
                           {
@@ -1023,11 +1005,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["A defensible number for a sale, buy-in or exit."],
-                            "id": "7ef38033-836e-4406-94e1-46549b37790b",
+                            "id": "cda620ea-135f-4725-b1ee-499412f108c7",
                             "ord": "a2"
                           }
                         ],
-                        "id": "665d591c-8599-43c9-99e3-bcca92bdfef1",
+                        "id": "6f8dfa11-0e1f-46e9-97ff-0a3cc4f61b91",
                         "ord": "a3"
                       },
                       {
@@ -1048,7 +1030,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Wealth planning consult"],
-                                "id": "30bc880a-4c0f-4e0f-9c09-46df21d23d8b",
+                                "id": "4d820479-8cd1-4714-9085-aa700006fdb4",
                                 "ord": "a0"
                               },
                               {
@@ -1056,11 +1038,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$500"],
-                                "id": "61c5cc70-7660-48ea-8372-1111622bee5c",
+                                "id": "50a153de-8c3a-4bbe-986b-406df872fb68",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "a1bfa52a-468f-42aa-875c-073c1f85d15b",
+                            "id": "6ead8b0b-9bd6-4c5b-9738-7a2d1bfe7dda",
                             "ord": "a0"
                           },
                           {
@@ -1068,7 +1050,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "33b8e973-4e09-4ce5-bc81-f18b0ec35504",
+                            "id": "9c6bd681-2265-46ae-bd83-a5ec030dc102",
                             "ord": "a1"
                           },
                           {
@@ -1076,11 +1058,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Tax-efficient wealth, business and personal, aligned."],
-                            "id": "101c27ae-caab-47dc-ba1a-6878a606aa32",
+                            "id": "20857774-be45-4b8b-8767-f6af8dc0b1af",
                             "ord": "a2"
                           }
                         ],
-                        "id": "d12097fd-aa9b-4aa0-b075-dc3e8353293f",
+                        "id": "6d3f5852-c1a3-4e21-ae86-9ae2b7434de0",
                         "ord": "a4"
                       },
                       {
@@ -1101,7 +1083,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Retirement planning consult"],
-                                "id": "557b10ca-9e9d-4802-8e73-348209917724",
+                                "id": "8ebe2b92-523c-455e-b035-ccbc1c278d54",
                                 "ord": "a0"
                               },
                               {
@@ -1109,11 +1091,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$450"],
-                                "id": "50eb3f4c-b63a-4b38-87ae-7ae38109ea23",
+                                "id": "ebed7f49-87f0-463a-9b59-7d83b4cdba47",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "6e8b16b4-4f89-49c3-a324-a9bde067f4e0",
+                            "id": "93b82e33-b766-431c-918b-0e42e31b6289",
                             "ord": "a0"
                           },
                           {
@@ -1121,7 +1103,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "ca0ecf00-ecc8-4181-9974-37646aa8eca4",
+                            "id": "824d2b85-b415-4ef0-8a11-2ad100c8a75c",
                             "ord": "a1"
                           },
                           {
@@ -1129,15 +1111,15 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Contribution strategy, exit timing and real income."],
-                            "id": "50ea27e5-d74b-429e-a007-e92b93b64ad7",
+                            "id": "24b299de-2f30-4948-a91f-8a12a213becd",
                             "ord": "a2"
                           }
                         ],
-                        "id": "e801014c-7b21-4867-ab22-3aea85812e57",
+                        "id": "31960911-931b-4831-a6ba-1e43cc5a0bae",
                         "ord": "a5"
                       }
                     ],
-                    "id": "4c5853c1-8a76-455e-b0b7-e96a22292155",
+                    "id": "22521c37-3cdd-423b-bb75-5302fa723d6c",
                     "ord": "a1"
                   },
                   {
@@ -1153,19 +1135,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "d6f8a57f-1753-4c92-984f-03bfe66a6c2e",
+                        "id": "ab2f26e9-7d6e-4200-b4b6-ded3f7cf2f48",
                         "ord": "a0"
                       }
                     ],
-                    "id": "570ca5d4-b309-4626-8ade-83a0acc51e53",
+                    "id": "66c29f65-dd27-4baf-b8e4-ca794fac42bd",
                     "ord": "a2"
                   }
                 ],
-                "id": "698c20e9-c09c-4bc5-9af3-cbe97baaaba4",
+                "id": "d65243e6-8d3b-4ee9-9a37-85c2126ac951",
                 "ord": "a0"
               }
             ],
-            "id": "08ef6e8b-6be2-4452-8c8c-537cf26b37be",
+            "id": "1683d72f-d5f3-4bfd-afd1-969054991f53",
             "ord": "a2"
           },
           {
@@ -1187,7 +1169,7 @@
                       "alt": "Advisors reviewing figures around a long table in soft light",
                       "loading": "lazy"
                     },
-                    "id": "a014bf60-2dcd-4c94-8720-98e8b4a55df9",
+                    "id": "43ad8a88-6433-4373-b354-49eef8622284",
                     "ord": "a0"
                   },
                   {
@@ -1200,7 +1182,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["The advisory approach"],
-                        "id": "0405a258-0256-4aae-b685-7e49f9577228",
+                        "id": "8e0b347b-5c62-4ad8-adb0-4d5fac8bd4f3",
                         "ord": "a0"
                       },
                       {
@@ -1210,7 +1192,7 @@
                         "children": [
                           "Most firms show up at tax time to record what already happened. We work the other way around — the strategy is set early, revisited every quarter, and measured against the goals you actually care about."
                         ],
-                        "id": "f408c0a2-d0ad-4a5f-985d-eac86db06223",
+                        "id": "826fc769-8ed0-4c13-8ba7-86a926bea9b6",
                         "ord": "a1"
                       },
                       {
@@ -1220,7 +1202,7 @@
                         "children": [
                           "The result is fewer surprises, a lower long-run tax burden, and a clear line of sight from this year’s decisions to where the business and your wealth are headed."
                         ],
-                        "id": "57b1cb06-1a8e-45f4-b32f-c68148e468d7",
+                        "id": "27c8d8b5-0cc8-4e65-9f7d-17d6375ab966",
                         "ord": "a2"
                       },
                       {
@@ -1236,23 +1218,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a strategy consultation"],
-                            "id": "77e03382-6bcd-4d10-a0ed-8c7a0fa71fc9",
+                            "id": "dbba5595-3eba-4b75-a871-9607dc4f6d52",
                             "ord": "a0"
                           }
                         ],
-                        "id": "b772809f-2e6b-4248-b05a-b6f74c0aaf9d",
+                        "id": "b5e27ba0-6181-494d-b008-b0b1780fc041",
                         "ord": "a3"
                       }
                     ],
-                    "id": "19310f87-3975-47e4-b09d-4fb2d30bd98e",
+                    "id": "71785180-d97a-4b9d-a85e-7c2e47919708",
                     "ord": "a1"
                   }
                 ],
-                "id": "637e350d-4b7a-44eb-8a2d-1c043698a8a7",
+                "id": "1b6cc0d7-9de0-49e0-8760-2f112910bad2",
                 "ord": "a0"
               }
             ],
-            "id": "7e9cee1a-e5ba-4c56-9447-ffdfd95dcfac",
+            "id": "5691e1ad-ad8f-420b-97b9-3ee1b9fb0086",
             "ord": "a3"
           },
           {
@@ -1275,7 +1257,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Your advisory team"],
-                        "id": "2fe3d0ef-1a19-47fd-8ad3-d7bc42b4e52e",
+                        "id": "c730a8f3-1abc-4c12-8981-44b0fed4c252",
                         "ord": "a0"
                       },
                       {
@@ -1285,11 +1267,11 @@
                         "children": [
                           "Book by name — you’ll work with the same advisor from the first call onward."
                         ],
-                        "id": "33c72b0b-7383-464d-bb4a-331ca0bb6896",
+                        "id": "51b5935f-c1e2-4136-a52f-2a9cffc63897",
                         "ord": "a1"
                       }
                     ],
-                    "id": "f9fc00a3-a4f3-4ec5-a56e-571dbe9350fb",
+                    "id": "4d85ebda-e2ff-4e61-9289-3985a8ac1bdb",
                     "ord": "a0"
                   },
                   {
@@ -1311,7 +1293,7 @@
                               "alt": "Elena Vasquez, CPA and managing partner",
                               "loading": "lazy"
                             },
-                            "id": "aa70b109-3ae3-4867-bcc2-5fa7bdf70ddf",
+                            "id": "2f4dd2e5-4bec-4abb-a035-45586a07bb5a",
                             "ord": "a0"
                           },
                           {
@@ -1324,7 +1306,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Elena Vasquez, CPA"],
-                                "id": "fb15006f-ec5f-4ad4-bb41-3a20b17965f1",
+                                "id": "a6cff8a2-3620-45da-bd93-b56f1776d67d",
                                 "ord": "a0"
                               },
                               {
@@ -1332,7 +1314,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Managing partner"],
-                                "id": "e7029699-f1b2-4b1c-ac36-7e583e57e1ae",
+                                "id": "d82f81d5-b126-41bf-bbd2-a386deb2e8c3",
                                 "ord": "a1"
                               },
                               {
@@ -1342,15 +1324,15 @@
                                 "children": [
                                   "Tax strategy, entity structuring and valuation for founders and high earners."
                                 ],
-                                "id": "8aef88e3-eec7-4139-9d43-6bdb74f77edb",
+                                "id": "e278f4d0-e589-4e54-b01f-3d4f76b5360d",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "7bf438c8-0337-4305-86c2-166b052be8b3",
+                            "id": "7ced2d40-6528-4f6d-b041-139e5f045b72",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1f9099e0-8ef8-4e48-99cc-2e46ab7dcde5",
+                        "id": "010afee2-b0f5-4b11-84cf-0bed64845095",
                         "ord": "a0"
                       },
                       {
@@ -1367,7 +1349,7 @@
                               "alt": "Marcus Bell, CPA and CFO advisory lead",
                               "loading": "lazy"
                             },
-                            "id": "23b84519-6d24-438c-95fa-549b548d2656",
+                            "id": "b82585c0-681d-4c60-a619-c4f6eb1df7d0",
                             "ord": "a0"
                           },
                           {
@@ -1380,7 +1362,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Marcus Bell, CPA"],
-                                "id": "89270296-0b26-4ec5-95d0-14e51f3659e2",
+                                "id": "6dd296fc-4734-4e70-a5e3-59cf5f495114",
                                 "ord": "a0"
                               },
                               {
@@ -1388,7 +1370,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["CFO advisory lead"],
-                                "id": "473087b7-aba8-4eb0-9e1b-cdda1fe28068",
+                                "id": "da31ce83-b4e2-40ab-a5cc-67fe9ea2205a",
                                 "ord": "a1"
                               },
                               {
@@ -1398,15 +1380,15 @@
                                 "children": [
                                   "Outsourced-CFO guidance — forecasting, margins and the decisions behind them."
                                 ],
-                                "id": "c94d2063-5cc4-4e67-911c-0fe46b27dce9",
+                                "id": "7450bbbe-0cbf-4a6f-a7b7-df33f3fbb34c",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "e2840b03-f934-4e03-b183-67fb0a18bc22",
+                            "id": "bcdd396e-d3b8-497c-8877-9dfeeb91295c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "1757d62d-9521-46db-9efd-f1bf29de945b",
+                        "id": "d105cf7b-319b-4940-9218-17252950a65b",
                         "ord": "a1"
                       },
                       {
@@ -1423,7 +1405,7 @@
                               "alt": "Priya Anand, CFP and wealth planning director",
                               "loading": "lazy"
                             },
-                            "id": "a4505135-bf9d-4191-90cd-c5569a0411b1",
+                            "id": "497acd0c-cff7-47e2-988b-228a73bc5ac1",
                             "ord": "a0"
                           },
                           {
@@ -1436,7 +1418,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Priya Anand, CFP"],
-                                "id": "8ced5628-f529-4c0b-9a66-b04b1bd2b798",
+                                "id": "b11e8bf0-213d-41ba-9567-e6c381a4ad59",
                                 "ord": "a0"
                               },
                               {
@@ -1444,7 +1426,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Wealth planning director"],
-                                "id": "f83ab278-afb0-44fa-94e1-67a72931303a",
+                                "id": "bfee9f12-5811-48fd-abfc-9431d04761f5",
                                 "ord": "a1"
                               },
                               {
@@ -1454,27 +1436,27 @@
                                 "children": [
                                   "Wealth, retirement and succession planning that ties business to personal."
                                 ],
-                                "id": "dd61ad20-a380-49eb-aa63-aa25872d220c",
+                                "id": "37ef59bd-40bd-4716-bf4b-619cc40d4018",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "a551334a-b7e5-4c02-a1d9-2ed9e3af3a5b",
+                            "id": "1a2532af-a421-4661-9977-e88969237bfc",
                             "ord": "a1"
                           }
                         ],
-                        "id": "987636ef-cd6d-4920-9f96-68f612808cbd",
+                        "id": "62c64638-6dc5-47a9-a5e2-7c897b1980f5",
                         "ord": "a2"
                       }
                     ],
-                    "id": "e0e155b8-3541-4f17-8bca-adbfff1ca81e",
+                    "id": "a6567949-64d7-4e94-b93f-a078030fff21",
                     "ord": "a1"
                   }
                 ],
-                "id": "af2d4ec5-793b-4b2e-b462-75aab9ed7701",
+                "id": "2805072a-d821-467a-a66e-98f5ac98e90c",
                 "ord": "a0"
               }
             ],
-            "id": "03862af9-7e9d-48d1-bbba-f5fa785553cb",
+            "id": "f501b134-e339-4df5-aae1-fc742df9784c",
             "ord": "a4"
           },
           {
@@ -1494,7 +1476,7 @@
                     "children": [
                       "“They restructured our entities and rebuilt our tax plan in the first quarter. We kept an extra $180K last year — and for the first time I actually understand why.”"
                     ],
-                    "id": "f7f3022d-065e-409f-94e1-df8aea133185",
+                    "id": "fc1d562f-a7e6-450c-83a9-87d94c97e14c",
                     "ord": "a0"
                   },
                   {
@@ -1502,15 +1484,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["Daniel R., founder of a $9M services firm"],
-                    "id": "103d639a-f089-47b5-9be4-8e8bb0b891fa",
+                    "id": "03448763-d955-4f9c-812e-35bfdc44e7a7",
                     "ord": "a1"
                   }
                 ],
-                "id": "e5e8a548-f429-4314-b842-231256faf49e",
+                "id": "90c0acc6-698f-4548-9241-f965d62b004c",
                 "ord": "a0"
               }
             ],
-            "id": "30427e87-b7bd-4989-9995-89f8b06a4b99",
+            "id": "69ddbd3d-1714-464f-8911-7bf4d6e916d3",
             "ord": "a5"
           },
           {
@@ -1528,7 +1510,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Start with a strategy conversation"],
-                    "id": "59866687-cd44-4e2d-8636-454401125b48",
+                    "id": "fe9a9a1c-46d7-4c10-87de-1b7c5c3d5ae5",
                     "ord": "a0"
                   },
                   {
@@ -1538,7 +1520,7 @@
                     "children": [
                       "A complimentary 45-minute call. Pick your advisor, choose a time, and see exactly where we can add value. It takes about a minute to book."
                     ],
-                    "id": "7be843bd-f22d-4f5e-ab03-776c173ded53",
+                    "id": "238c4921-dd11-4b75-85af-128be32020bf",
                     "ord": "a1"
                   },
                   {
@@ -1549,15 +1531,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a strategy consultation"],
-                    "id": "38674f77-c3ae-4a9c-8180-66df2b766e82",
+                    "id": "6998a435-20ec-40e4-85f2-2faebbbf440f",
                     "ord": "a2"
                   }
                 ],
-                "id": "0f1cf9df-2f63-4d96-bcb9-e3300d4c5953",
+                "id": "187af10a-394d-422b-9a2c-b189d5e47948",
                 "ord": "a0"
               }
             ],
-            "id": "7c2089cc-b88f-487f-b44e-00b7d5218cac",
+            "id": "f1688ecc-fc9d-4ebf-a87e-9715eb03f927",
             "ord": "a6"
           }
         ]
@@ -1574,7 +1556,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "cb26e3f6-ec9a-4534-ad72-6eac25ef4434",
+        "id": "e3b9f14a-faf7-42fc-8914-fad44bd06d41",
         "children": [
           {
             "kind": "element",
@@ -1590,14 +1572,14 @@
                   "alt": "Advisors reviewing figures around a long table in soft light",
                   "loading": "eager"
                 },
-                "id": "8cb84bec-e38a-46f0-af57-e9ed611668d3",
+                "id": "85d67f5a-2185-4b4b-af64-67a8f74f60c3",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "4c16a25f-3966-456f-8d52-b8f2e9eb74c2",
+                "id": "1eae720a-2387-4e08-ba96-cbef2c5c3fe9",
                 "ord": "a1"
               },
               {
@@ -1610,7 +1592,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book your consultation"],
-                    "id": "44f72ed7-8ea1-42ed-aec3-8c7936da4dc9",
+                    "id": "85534c21-2e88-49ca-a3f1-6f4e17eb0b3f",
                     "ord": "a0"
                   },
                   {
@@ -1620,7 +1602,7 @@
                     "children": [
                       "Choose a session to see the fee and live availability, then pick your advisor and a time that works. Every engagement begins with a complimentary strategy call."
                     ],
-                    "id": "5fd56c98-c380-4d4e-8541-ad1a1677c292",
+                    "id": "89016278-7f83-49c7-99ff-3a4284fd583b",
                     "ord": "a1"
                   },
                   {
@@ -1636,27 +1618,31 @@
                           "href": "/book"
                         },
                         "children": ["See sessions below"],
-                        "id": "0561f36b-527f-4308-ab3f-e0175e4b74bd",
+                        "id": "c33e68f3-5fb9-41a2-88fb-ad21f63d4ece",
                         "ord": "a0"
                       }
                     ],
-                    "id": "33e89ae2-8b78-4952-b0df-1e85f743ca93",
+                    "id": "5a36f4d0-d023-4967-a342-2e17f040be78",
                     "ord": "a2"
                   }
                 ],
-                "id": "90d49b61-c6cf-4035-a4c0-8c43b40690e8",
+                "id": "7bcb847d-ebed-45ab-84fc-038e34330cb9",
                 "ord": "a2"
               }
             ],
-            "id": "3086a0e4-b949-46dd-8378-5ae819bc7857",
+            "id": "db5f87c8-9f23-4ffd-a2a2-5c70a8553dd0",
             "ord": "a0"
           },
           {
             "kind": "host",
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "props": {
+              "heading": "Book with us",
+              "subheading": "Choose a service to see open times and reserve your spot."
+            },
             "locked": "host",
-            "id": "cbda85dc-2ffb-423b-9775-28444cbbf2a5",
+            "id": "c188a496-6157-4011-9c86-2f721b97da84",
             "ord": "a1"
           },
           {
@@ -1679,7 +1665,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Good to know"],
-                        "id": "559fe3f9-cfd7-4bc1-9205-fbba23e2626a",
+                        "id": "0698a1c1-521c-46df-86e8-c55a3be0686c",
                         "ord": "a0"
                       },
                       {
@@ -1689,11 +1675,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "3235b2b4-e909-44e3-ba35-c9ee11925576",
+                        "id": "7a34de4b-ef99-45d8-b0a7-b9719abe930d",
                         "ord": "a1"
                       }
                     ],
-                    "id": "60afb5db-9ed9-47f3-b3fd-946073a336c0",
+                    "id": "72c53b12-8ce8-4e73-9b70-43412e1b1629",
                     "ord": "a0"
                   },
                   {
@@ -1711,7 +1697,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Standard consultation"],
-                            "id": "1aaf4edd-8181-4f40-aa4b-19d6ae2ffc79",
+                            "id": "0873f834-0ef8-4d3b-8899-7d6a41c7abd8",
                             "ord": "a0"
                           },
                           {
@@ -1721,7 +1707,7 @@
                             "children": [
                               "Please give us at least 48 hours’ notice to reschedule or cancel. We send reminders two days and one day ahead, and again two hours before your call."
                             ],
-                            "id": "3d7a7be9-4e8e-4951-922c-2bc1906c6086",
+                            "id": "7137a799-14ad-45ab-b107-b79447c88dfb",
                             "ord": "a1"
                           },
                           {
@@ -1731,11 +1717,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 2 days before."
                             ],
-                            "id": "6e1ad17e-5987-4913-ac79-e665c2cdc3e6",
+                            "id": "8ce82213-6bd8-44d2-bf6e-4c70053d2039",
                             "ord": "a2"
                           }
                         ],
-                        "id": "986580f3-52a3-424c-9140-0a9ca7e3f4b3",
+                        "id": "3c856c8f-59d7-4984-b908-a7866067f818",
                         "ord": "a0"
                       },
                       {
@@ -1748,7 +1734,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Engagement deposit"],
-                            "id": "489f482c-5ef8-4f08-8463-a02d7e5a6c30",
+                            "id": "46a1c5a6-12c0-48fd-8f03-e8fb76a9a1a3",
                             "ord": "a0"
                           },
                           {
@@ -1758,7 +1744,7 @@
                             "children": [
                               "Paid advisory sessions hold a $150 deposit that applies to your engagement fee. Reschedule with 48 hours’ notice and it carries over in full."
                             ],
-                            "id": "4e205285-cd6c-47f7-8b2e-0945c77f992d",
+                            "id": "4ab4bc1e-ab72-4e6a-bfd1-d55c99c35e33",
                             "ord": "a1"
                           },
                           {
@@ -1768,23 +1754,23 @@
                             "children": [
                               "A $150 deposit holds your place. Change or cancel free up to 2 days before."
                             ],
-                            "id": "3af45d23-011d-4908-95db-faa3d44aeb66",
+                            "id": "e6d77912-b633-424b-8b2a-9eedca04fccf",
                             "ord": "a2"
                           }
                         ],
-                        "id": "63be9446-51c9-4c66-a2f9-f1b6d21a34ba",
+                        "id": "55f716c0-cd20-42c8-b82f-178fa5eb5705",
                         "ord": "a1"
                       }
                     ],
-                    "id": "9873b84c-eec6-4dd1-99be-e2c36412248a",
+                    "id": "4bd4f4d8-243c-4e1a-a12f-599b74551537",
                     "ord": "a1"
                   }
                 ],
-                "id": "cbec34a6-8103-446f-98f0-c79429782534",
+                "id": "1c28683d-5328-4a27-b9ed-7d9ba81afa00",
                 "ord": "a0"
               }
             ],
-            "id": "405c576a-0737-4fe8-a327-6ca9ed4b3301",
+            "id": "c31b465b-74f3-4e76-be51-3609915f66d1",
             "ord": "a2"
           }
         ]
@@ -1801,7 +1787,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "1ca2abd9-6129-4c66-9519-2f3acf952647",
+        "id": "d709b178-caad-4089-ba1c-025f7f1d3916",
         "children": [
           {
             "kind": "element",
@@ -1822,7 +1808,7 @@
                       "alt": "A calm, glass-walled boardroom at dusk over a city skyline",
                       "loading": "lazy"
                     },
-                    "id": "cbd718d9-6b0c-4e10-9dfc-bb3f9dc62bea",
+                    "id": "5ea4aab8-72e7-4301-a430-1fdb303375e7",
                     "ord": "a0"
                   },
                   {
@@ -1835,7 +1821,7 @@
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About Northpoint CPA"],
-                        "id": "9730d04b-72ba-49aa-9f0f-7a815d7ad088",
+                        "id": "9611b278-5f15-4420-95d9-79ff8a665c26",
                         "ord": "a0"
                       },
                       {
@@ -1845,7 +1831,7 @@
                         "children": [
                           "Northpoint CPA is a modern advisory and wealth practice for established businesses and the people who run them. We pair the rigor of a traditional CPA firm with the forward view of a CFO and the discipline of a private wealth office."
                         ],
-                        "id": "d08768f5-0ba3-44ff-9921-af2070ca2355",
+                        "id": "d1b0e411-ac54-4784-91c6-57536a59904c",
                         "ord": "a1"
                       },
                       {
@@ -1855,7 +1841,7 @@
                         "children": [
                           "We took the parts of accounting that clients value — the strategy, the counsel, the person who knows their whole picture — and made them the whole relationship, not the afterthought at year-end."
                         ],
-                        "id": "b401445b-56fe-4cff-b269-4b2a2cbb8bd4",
+                        "id": "bbe5a152-1a7a-48d0-ae9f-c32bb187110a",
                         "ord": "a2"
                       },
                       {
@@ -1871,23 +1857,23 @@
                               "href": "/book"
                             },
                             "children": ["Book a strategy consultation"],
-                            "id": "f91999e6-c852-4acb-9b1f-f9bbd27ef0d5",
+                            "id": "6a4fdd3e-589c-4e7e-a966-3dab42e74b2f",
                             "ord": "a0"
                           }
                         ],
-                        "id": "66320b56-8a55-44b4-9312-a00dd850a558",
+                        "id": "3614a952-13d1-472f-8772-fe6c7758b64a",
                         "ord": "a3"
                       }
                     ],
-                    "id": "bf301b2c-b94e-4e20-a2cb-639c3506e711",
+                    "id": "02a708e5-8a7a-482c-aaca-d873d04fe090",
                     "ord": "a1"
                   }
                 ],
-                "id": "adfd6b9d-cbf0-48bb-ac77-ef721023b373",
+                "id": "fa433105-69ac-4406-9963-daa7fc71fbe5",
                 "ord": "a0"
               }
             ],
-            "id": "11550891-8579-41c2-b282-8e5ab8668199",
+            "id": "24772ecf-6877-4edf-bf40-922edf508535",
             "ord": "a0"
           },
           {
@@ -1905,7 +1891,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["How we work"],
-                    "id": "7c295f2c-7db2-4e7e-b8ac-61b8ecdc8a26",
+                    "id": "89b3c4ad-073f-45e1-a434-3537a41ac325",
                     "ord": "a0"
                   },
                   {
@@ -1923,7 +1909,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Strategy first"],
-                            "id": "7638c5dc-a326-423d-9372-3d10cd77daf9",
+                            "id": "56e96027-54a7-4153-acf8-166724c4d74a",
                             "ord": "a0"
                           },
                           {
@@ -1933,11 +1919,11 @@
                             "children": [
                               "Every engagement opens with a real conversation about the business, the numbers and where you want to be in three years."
                             ],
-                            "id": "1b0eb56d-265a-465a-8c8b-61dbf38cc89d",
+                            "id": "85ff88a3-816e-4c79-b763-95be11f36c02",
                             "ord": "a1"
                           }
                         ],
-                        "id": "0b1b210c-971e-424e-9a24-89b7de8d3b4b",
+                        "id": "daf47a0e-161b-43a8-bd24-01800ca759af",
                         "ord": "a0"
                       },
                       {
@@ -1950,7 +1936,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["One advisor, whole picture"],
-                            "id": "10863003-afff-4905-a8ef-5164ba1cf72f",
+                            "id": "9388774a-5b95-49f8-9ea6-7b16f386778b",
                             "ord": "a0"
                           },
                           {
@@ -1960,11 +1946,11 @@
                             "children": [
                               "Your advisor holds the full view — tax, cash flow, valuation and personal wealth — so the advice is joined-up, never siloed."
                             ],
-                            "id": "37791408-6564-4145-980c-dee2195a952c",
+                            "id": "6e42ce6c-51c7-422d-be5d-d671e7979e16",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c5081912-9a7d-4381-9a5a-e3c7c50db398",
+                        "id": "6179e2ab-0662-4a3b-9202-e4a1747efd50",
                         "ord": "a1"
                       },
                       {
@@ -1977,7 +1963,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Measured every quarter"],
-                            "id": "a449c185-f616-40c3-a079-fc08cc7c18da",
+                            "id": "32667d4e-86ae-4917-9890-faa78816d474",
                             "ord": "a0"
                           },
                           {
@@ -1987,23 +1973,23 @@
                             "children": [
                               "We revisit the plan on a standing quarterly cadence, so strategy keeps pace with the business instead of drifting out of date."
                             ],
-                            "id": "7c59d5ee-147f-4509-b9c2-054c5bc625d8",
+                            "id": "5266cd61-493e-40df-9ffb-fb61255c9599",
                             "ord": "a1"
                           }
                         ],
-                        "id": "930820c1-d94e-48ba-8004-0ce155195e1b",
+                        "id": "689de0ca-5450-48ee-8cad-2f3cc356fbae",
                         "ord": "a2"
                       }
                     ],
-                    "id": "c45bcff1-47a6-4bc2-b782-54d052cd8495",
+                    "id": "c38e9ee9-81d2-41e8-8591-992760c2f10f",
                     "ord": "a1"
                   }
                 ],
-                "id": "b4c01b00-33f2-4319-92b9-6165c951fa86",
+                "id": "ee7c9f0c-9ffd-4ab1-afc4-fe45594db627",
                 "ord": "a0"
               }
             ],
-            "id": "4dd67289-4bd6-4207-b3c3-a854b800f5ea",
+            "id": "ab3c8e11-56c8-4a9a-81f3-b8e3d94dba12",
             "ord": "a1"
           }
         ]
@@ -2020,7 +2006,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "737efac9-90ad-4806-8620-8485239becf4",
+        "id": "a06df52e-fea3-4b85-ba90-dd115e465370",
         "children": [
           {
             "kind": "element",
@@ -2042,7 +2028,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Get in touch"],
-                        "id": "1ce5823e-868b-44b5-8cb1-bc307b409af0",
+                        "id": "a3db06e9-65e4-4f5f-a6e4-b84b6421165b",
                         "ord": "a0"
                       },
                       {
@@ -2052,11 +2038,11 @@
                         "children": [
                           "Questions before you book? Send a note and Northpoint CPA will get back to you — usually the same day."
                         ],
-                        "id": "db05e958-4e1e-4cb6-b2a4-41249159b67f",
+                        "id": "ff44a03d-1161-4610-97f9-6ff9ffd795d0",
                         "ord": "a1"
                       }
                     ],
-                    "id": "3fcc162a-9267-49ff-9f0b-24c2071f30ff",
+                    "id": "b117232a-bc25-4054-a987-61a9d5928f94",
                     "ord": "a0"
                   },
                   {
@@ -2069,7 +2055,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Call us"],
-                        "id": "52192f64-4583-406c-9120-8b804ef70f9a",
+                        "id": "f82d021f-244f-4228-8be5-670cd11f9701",
                         "ord": "a0"
                       },
                       {
@@ -2085,7 +2071,7 @@
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "5e16b030-d89a-46e0-b96b-6dcf7447c9d8",
+                            "id": "96b6dd8c-5760-4e42-9d89-ab3b676ad9a4",
                             "ord": "a0"
                           }
                         ],
@@ -2094,7 +2080,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "89707281-989c-49fc-8293-f9fac01ca366",
+                        "id": "8f05ff13-6cd3-4810-a960-4bbb306d48ab",
                         "ord": "a1"
                       }
                     ],
@@ -2102,7 +2088,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "758eec74-7823-4024-ab3f-95a61c339d6f",
+                    "id": "2c06e8e0-addc-4bed-a1aa-eca3bc7c414b",
                     "ord": "a1"
                   },
                   {
@@ -2115,7 +2101,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Email us"],
-                        "id": "9ae847d9-b3a1-4884-b8b0-70b41362770b",
+                        "id": "67de5c98-10a9-45a0-a1cc-b001c7e6ea69",
                         "ord": "a0"
                       },
                       {
@@ -2131,7 +2117,7 @@
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "d90a10fc-d8e4-4d72-8766-b6371a3f7a0a",
+                            "id": "0be4523d-d869-4524-bcb9-e369e176606d",
                             "ord": "a0"
                           }
                         ],
@@ -2140,7 +2126,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "cca04930-fad9-46aa-8558-be00c2c2d1d0",
+                        "id": "7eff64ce-77d9-4d5b-bfa1-aea33f237326",
                         "ord": "a1"
                       }
                     ],
@@ -2148,7 +2134,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "bb6addf3-c457-4fe7-b40d-e9057c9a7484",
+                    "id": "064ff022-15e2-47ab-9878-9fe9ef9bfac3",
                     "ord": "a2"
                   },
                   {
@@ -2166,7 +2152,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Your name"],
-                            "id": "47e2c6ec-b8b0-4a57-81e9-7d9b02970c25",
+                            "id": "feb7fe70-8b9a-407c-ac7b-6f0bd7df09fb",
                             "ord": "a0"
                           },
                           {
@@ -2178,11 +2164,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "bc1dfdf9-c044-4e20-8724-fb959dd7c5ff",
+                            "id": "2485b745-c0dc-423d-b2ea-706b3eafa035",
                             "ord": "a1"
                           }
                         ],
-                        "id": "5fa93ed5-253f-4962-a79a-e0b5a1700556",
+                        "id": "38110b50-e065-4e44-a8ea-d4408d58c18e",
                         "ord": "a0"
                       },
                       {
@@ -2195,7 +2181,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Email address"],
-                            "id": "6a5efb66-0815-4efe-b098-33819e7868f8",
+                            "id": "8b1262a2-a2b1-43fb-94e2-6a64960b2caa",
                             "ord": "a0"
                           },
                           {
@@ -2207,11 +2193,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "ecfb0c8e-dada-4d78-aff4-ac908e1bc371",
+                            "id": "1834a0aa-0dae-4db0-99f9-18ba0b0448ad",
                             "ord": "a1"
                           }
                         ],
-                        "id": "85f89547-1590-45c7-8c88-90ce771c7a07",
+                        "id": "7c2955db-434e-4ce9-a89b-d613a7c3cb82",
                         "ord": "a1"
                       },
                       {
@@ -2224,7 +2210,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Phone number"],
-                            "id": "d0809ff1-1a84-48a6-9d57-4754a145ab0c",
+                            "id": "fe7478bd-4f5c-4724-8f8f-c428b401c5ed",
                             "ord": "a0"
                           },
                           {
@@ -2235,11 +2221,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "aa51c4de-9113-41d9-992e-ce979b86de54",
+                            "id": "c3b39196-10e1-4ccb-a4e5-1e33c7251657",
                             "ord": "a1"
                           }
                         ],
-                        "id": "c3b37b61-6d6a-4f13-901f-463d770fa76e",
+                        "id": "2ea22379-a9ca-4a77-876c-f017db1164b6",
                         "ord": "a2"
                       },
                       {
@@ -2252,7 +2238,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["How can we help?"],
-                            "id": "066f4227-fcc9-43ff-aae5-3aea57bf6ae4",
+                            "id": "1d4d9334-fa71-4e82-8812-b54f392b30c3",
                             "ord": "a0"
                           },
                           {
@@ -2262,11 +2248,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "0408251c-095c-47ab-b7e9-6ac957e39f24",
+                            "id": "ce5449e2-eec2-4452-b1a0-4b5956608150",
                             "ord": "a1"
                           }
                         ],
-                        "id": "da279801-a233-46a2-ae1b-f5945e337470",
+                        "id": "f62039fb-e7b6-4643-96e3-702409f8e5f4",
                         "ord": "a3"
                       },
                       {
@@ -2282,11 +2268,11 @@
                               "type": "submit"
                             },
                             "children": ["Send my request"],
-                            "id": "5b5b0dcf-c071-4b84-8fe8-901296c6d02c",
+                            "id": "b45a1cb9-1128-4faf-a8a1-fdad7a23f924",
                             "ord": "a0"
                           }
                         ],
-                        "id": "753d1fe2-9ea9-47e0-b2de-f99f25fcea56",
+                        "id": "2aed9f98-2b06-493b-98ff-fce3c31ab2d6",
                         "ord": "a4"
                       }
                     ],
@@ -2297,15 +2283,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "d5939fc0-f7b1-49af-803b-a2b7f54ea29b",
+                    "id": "e74112c2-5b10-452c-9204-ee3d8484ad90",
                     "ord": "a3"
                   }
                 ],
-                "id": "9aa22986-523d-4975-ab9e-3267e1bd9563",
+                "id": "671a9133-7e14-4c07-b325-0ac0e839eb7a",
                 "ord": "a0"
               }
             ],
-            "id": "d68c1ab1-9e58-462d-8889-5c4d3998439c",
+            "id": "7a2efc65-e106-4365-830c-75ee6b463b82",
             "ord": "a0"
           },
           {
@@ -2328,7 +2314,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Visit the office"],
-                        "id": "f80c801b-f21e-4b81-845c-ccdb3038c767",
+                        "id": "2928f0d1-3714-4d4b-bfcc-1a341292436b",
                         "ord": "a0"
                       },
                       {
@@ -2342,7 +2328,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "e9d1ec39-2c7c-4839-a677-986934bf4db2",
+                        "id": "00bb30f5-09ca-43f0-b9f1-e016d5a42b29",
                         "ord": "a1"
                       },
                       {
@@ -2360,7 +2346,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday – Thursday"],
-                                "id": "37780fe3-dd12-4842-b92b-c1a2280dffd2",
+                                "id": "94558a39-c1a0-45fe-8552-93a3b9f04d08",
                                 "ord": "a0"
                               },
                               {
@@ -2368,11 +2354,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["8:30 – 5:30"],
-                                "id": "55de6c51-d85f-4209-bff7-18dd8a0db01f",
+                                "id": "3bb0fdfd-88ee-4f05-ba78-0824cf993d21",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "c566a599-fe75-42a8-97ab-82bea9447955",
+                            "id": "791a1f4f-a325-4278-901e-014beb5a79e0",
                             "ord": "a0"
                           },
                           {
@@ -2385,7 +2371,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Friday"],
-                                "id": "acfd8595-6df8-447d-91ad-559b8d125a00",
+                                "id": "5634830c-4cbe-4be5-928e-373157278e0d",
                                 "ord": "a0"
                               },
                               {
@@ -2393,11 +2379,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 5:00"],
-                                "id": "62e7a40a-9c57-4c39-8a3d-f4e32fcd0687",
+                                "id": "955a48a8-3bf7-43bf-8a9b-76ef04b617bc",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "8b090b86-433d-4934-940d-b50bd65175f2",
+                            "id": "6b88a3f9-791e-4923-955d-966d1436fc3e",
                             "ord": "a1"
                           },
                           {
@@ -2410,7 +2396,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "2653e3cb-c30f-4eb0-afde-5bb7b00fdcdc",
+                                "id": "4a019633-05e9-4804-9378-413b158d13ac",
                                 "ord": "a0"
                               },
                               {
@@ -2418,11 +2404,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["By appointment"],
-                                "id": "7b8de9cb-64b0-4458-a115-e011b06ef5f8",
+                                "id": "5c8efe11-c21a-492f-8bfa-2c612ff18f42",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "04575246-23a7-49be-a91e-4c2df3278cbe",
+                            "id": "76fbecf8-369c-41d2-b185-c930850d45fd",
                             "ord": "a2"
                           },
                           {
@@ -2435,7 +2421,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "00696bed-2d6c-4950-a683-c0d426cdb92a",
+                                "id": "945eb7b0-261a-4ead-960c-5d451781814b",
                                 "ord": "a0"
                               },
                               {
@@ -2443,19 +2429,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Closed"],
-                                "id": "433b2a7f-776b-4ff1-a369-3e4cfa2cc3b4",
+                                "id": "08bd615f-df0c-4087-9264-7b59697062af",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "4cc97e88-e3c3-4048-9476-9b55f952d12f",
+                            "id": "839f24f4-90da-464f-8041-3e8a96d16f4c",
                             "ord": "a3"
                           }
                         ],
-                        "id": "f4219565-17a0-4771-babc-17c35608c5bc",
+                        "id": "b0cebc39-1f93-428e-90fe-1ea8bb29b73a",
                         "ord": "a2"
                       }
                     ],
-                    "id": "d3735e55-5f63-4e34-be56-f1d24d8f2b7e",
+                    "id": "99f1afe8-9af6-4ef3-a8d9-ec8a114f85c3",
                     "ord": "a0"
                   },
                   {
@@ -2468,15 +2454,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "a7f081dd-7013-4019-b9b3-d740f92f253b",
+                    "id": "8d36a7ba-c0d7-4683-a638-bcdc80f76d64",
                     "ord": "a1"
                   }
                 ],
-                "id": "0a32f08b-32b2-4971-9bb5-c22abf7d62e7",
+                "id": "1a849820-5205-4660-baeb-a2330bc7f2b3",
                 "ord": "a0"
               }
             ],
-            "id": "84f94474-45b6-4082-809b-43303623a6b3",
+            "id": "7bbcacec-f5b9-413c-a4b2-d4d1930180b0",
             "ord": "a1"
           },
           {
@@ -2494,7 +2480,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than call?"],
-                    "id": "645547d1-bbd7-4275-9d16-912f8a7700d4",
+                    "id": "d4d13881-bf26-42d1-806c-88b192396118",
                     "ord": "a0"
                   },
                   {
@@ -2504,7 +2490,7 @@
                     "children": [
                       "See live availability and reserve your complimentary strategy call online — no phone tag."
                     ],
-                    "id": "88fd5ca2-5ffa-464d-a9b7-d07d3c3fed8f",
+                    "id": "bf610890-5513-4011-9b48-ff92fc7f62c2",
                     "ord": "a1"
                   },
                   {
@@ -2515,15 +2501,15 @@
                       "href": "/book"
                     },
                     "children": ["Book a strategy consultation"],
-                    "id": "d71a03d9-b7ca-44e5-b7d9-20a34147e5b2",
+                    "id": "90bbdcd4-ed7c-49c8-b7df-542af0591bea",
                     "ord": "a2"
                   }
                 ],
-                "id": "ce623d28-e226-459c-a904-4430452d558a",
+                "id": "909e1f96-ea6d-40e8-89f4-0a32c1e6ad7d",
                 "ord": "a0"
               }
             ],
-            "id": "781889c4-1251-40be-b417-fc84492b26d9",
+            "id": "777046b7-07b1-4606-90bc-c1b1fe6d3d52",
             "ord": "a2"
           }
         ]

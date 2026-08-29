@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-garage',
-  version: '1.4.0',
+  version: '1.5.0',
   name: 'Garage',
   summary:
     'The complete starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Garage look, tuned for vehicle service, repair, and parts. Install it, make it yours, and launch a polished working site in minutes.',

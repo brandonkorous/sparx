@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-electrical-supply',
-  version: '1.4.3',
+  version: '1.5.0',
   name: 'Electrical Supply (B2B / Wholesale)',
   summary:
     'A complete, working wholesale shop for an electrical wholesaler: a real trade catalogue sold by the reel, box and pack — twin & earth cable, consumer units, sockets & switches, LED downlights, circuit breakers, conduit and a tester — with categories, collections, a bespoke trade PDP (per-unit pricing, volume breaks, net-30), and a full merchandised home page. Cool electrical theme — slate ground, deep electric-blue, live-amber accent. Shipped as Livewire Trade.',

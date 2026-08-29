@@ -16,7 +16,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-boutique',
-  version: '1.4.0',
+  version: '1.5.0',
   name: 'Boutique',
   summary:
     'The complete starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Boutique look, tuned for small fashion retail. Install it, make it yours, and launch a polished working site in minutes.',

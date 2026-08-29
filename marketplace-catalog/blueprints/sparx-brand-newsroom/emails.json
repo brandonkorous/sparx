@@ -7,7 +7,7 @@
       "subject": "Welcome to {{site.name}}",
       "preheader": "Thanks for subscribing — here’s where to begin.",
       "root": {
-        "id": "def-s-body-1253",
+        "id": "def-s-body-15",
         "kind": "body",
         "width": 600,
         "bg": "#f4f4f5",
@@ -18,7 +18,7 @@
         "colorScheme": "light dark",
         "children": [
           {
-            "id": "def-s-section-1242",
+            "id": "def-s-section-4",
             "kind": "section",
             "bg": "#ffffff",
             "bgAuto": true,
@@ -26,7 +26,7 @@
             "paddingY": 24,
             "children": [
               {
-                "id": "def-s-text-1239",
+                "id": "def-s-text-1",
                 "kind": "text",
                 "html": "Welcome, {{customer.firstName}}",
                 "align": "left",
@@ -37,12 +37,12 @@
                 "lineHeight": 36
               },
               {
-                "id": "def-s-spacer-1241",
+                "id": "def-s-spacer-3",
                 "kind": "spacer",
                 "height": 16
               },
               {
-                "id": "def-s-text-1240",
+                "id": "def-s-text-2",
                 "kind": "text",
                 "html": "Thanks for subscribing to {{site.name}}. You’ll be first to read what we publish — the stories, the reporting, and the ideas we think are worth your time.",
                 "align": "left",
@@ -55,7 +55,7 @@
             ]
           },
           {
-            "id": "def-s-section-1250",
+            "id": "def-s-section-12",
             "kind": "section",
             "bg": "#f4f4f5",
             "bgAuto": true,
@@ -63,7 +63,7 @@
             "paddingY": 22,
             "children": [
               {
-                "id": "def-s-text-1243",
+                "id": "def-s-text-5",
                 "kind": "text",
                 "html": "Straight to your inbox",
                 "align": "left",
@@ -74,12 +74,12 @@
                 "lineHeight": 27
               },
               {
-                "id": "def-s-spacer-1244",
+                "id": "def-s-spacer-6",
                 "kind": "spacer",
                 "height": 4
               },
               {
-                "id": "def-s-text-1245",
+                "id": "def-s-text-7",
                 "kind": "text",
                 "html": "New pieces land here first — no noise, just the work we think is worth your time.",
                 "align": "left",
@@ -90,12 +90,12 @@
                 "lineHeight": 24
               },
               {
-                "id": "def-s-spacer-1246",
+                "id": "def-s-spacer-8",
                 "kind": "spacer",
                 "height": 18
               },
               {
-                "id": "def-s-text-1247",
+                "id": "def-s-text-9",
                 "kind": "text",
                 "html": "Start with the latest",
                 "align": "left",
@@ -106,12 +106,12 @@
                 "lineHeight": 27
               },
               {
-                "id": "def-s-spacer-1248",
+                "id": "def-s-spacer-10",
                 "kind": "spacer",
                 "height": 4
               },
               {
-                "id": "def-s-text-1249",
+                "id": "def-s-text-11",
                 "kind": "text",
                 "html": "Catch up on what we’ve been working on — our newest stories are waiting in the journal.",
                 "align": "left",
@@ -133,7 +133,7 @@
             "align": "left"
           },
           {
-            "id": "def-s-section-1252",
+            "id": "def-s-section-14",
             "kind": "section",
             "bg": "#ffffff",
             "bgAuto": true,
@@ -141,7 +141,7 @@
             "paddingY": 24,
             "children": [
               {
-                "id": "def-s-button-1251",
+                "id": "def-s-button-13",
                 "kind": "button",
                 "label": "Read the latest",
                 "href": "{{site.url}}/journal",

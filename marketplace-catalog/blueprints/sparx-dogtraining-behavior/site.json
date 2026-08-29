@@ -22,7 +22,7 @@
                   "props": {
                     "show": "both"
                   },
-                  "id": "23c2196b-5bbc-48b4-8cd1-235d006121ae",
+                  "id": "1e1aeb4d-9d45-4d8f-b4f6-fb4e95f7c823",
                   "ord": "a0"
                 },
                 {
@@ -43,7 +43,7 @@
                         "type": "link",
                         "label": "Product"
                       },
-                      "id": "5b65c38f-5c74-4baf-a918-4d0f4a3ae84a",
+                      "id": "919640df-b009-433e-8fd2-2c0d396a9e36",
                       "ord": "a0"
                     },
                     {
@@ -59,7 +59,7 @@
                         "type": "link",
                         "label": "Pricing"
                       },
-                      "id": "fa3b0df9-2e50-4df3-9031-439fd37bdb19",
+                      "id": "26bbf314-7b28-4693-9d64-26838bdc6368",
                       "ord": "a1"
                     },
                     {
@@ -75,11 +75,11 @@
                         "type": "link",
                         "label": "Docs"
                       },
-                      "id": "35b2b0cb-7f01-4143-b66c-2a0171fd0b72",
+                      "id": "379cc608-8804-4bce-9cbb-52a4ee858e63",
                       "ord": "a2"
                     }
                   ],
-                  "id": "4aebf002-f519-43bf-8d97-89878c6e73b6",
+                  "id": "40b59f74-b952-4869-b0a7-d9cab07b7162",
                   "ord": "a1"
                 },
                 {
@@ -88,26 +88,17 @@
                   "class": "ml-auto flex items-center gap-3",
                   "children": [
                     {
-                      "kind": "element",
-                      "tag": "a",
+                      "kind": "host",
+                      "component": "site.account-link",
                       "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
-                      "attrs": {
-                        "href": "/account/login"
-                      },
-                      "children": ["Sign in"],
-                      "slot": {
-                        "name": "secondary",
-                        "type": "link",
-                        "label": "Secondary link"
-                      },
-                      "id": "516145ee-33f8-40c2-9d6c-3bdea976bfcd",
+                      "id": "50ce0ece-28a5-4e57-be39-fe4d30558c7d",
                       "ord": "a0"
                     },
                     {
                       "kind": "host",
                       "component": "site.theme-toggle",
                       "class": "inline-flex items-center",
-                      "id": "cfad01c7-6404-4289-a45f-675e403af573",
+                      "id": "fcb8178e-19d8-40df-8610-75426718bfc5",
                       "ord": "a1"
                     },
                     {
@@ -123,7 +114,7 @@
                         "type": "link",
                         "label": "Primary action"
                       },
-                      "id": "6d7a50c2-151a-40ae-a52d-3a2ff29d7110",
+                      "id": "98a70829-fe7a-4dc7-90d0-47c6092682c2",
                       "ord": "a2"
                     },
                     {
@@ -141,20 +132,20 @@
                           "props": {
                             "name": "menu"
                           },
-                          "id": "ed6a9dd0-5660-45f7-b65b-4340a29a829f",
+                          "id": "08c5481a-d1e5-4729-8ee7-de05b1aa24b4",
                           "ord": "a0"
                         }
                       ],
                       "part": "trigger",
-                      "id": "60189986-38fd-4586-a8e8-b77b5cdf5e6d",
+                      "id": "7cc6b813-abd8-49e1-bfd0-503770c1ff28",
                       "ord": "a3"
                     }
                   ],
-                  "id": "d76ffb1d-f9e8-4d4a-89da-12a44d684e03",
+                  "id": "caddd547-7d3d-4950-a854-24b2b7adfdf8",
                   "ord": "a2"
                 }
               ],
-              "id": "462648ca-fe1d-4e33-8a67-4087a7c8463a",
+              "id": "9e6c480b-18fc-4c1f-b325-a7e4d4366f15",
               "ord": "a0"
             },
             {
@@ -178,7 +169,7 @@
                     "type": "link",
                     "label": "Product"
                   },
-                  "id": "01656467-f1f9-4e66-8c5b-ed53d17da869",
+                  "id": "06342a27-634c-4be9-9314-5b39808e48a4",
                   "ord": "a0"
                 },
                 {
@@ -194,7 +185,7 @@
                     "type": "link",
                     "label": "Pricing"
                   },
-                  "id": "1ed12847-a45a-4089-ae18-634438afbb40",
+                  "id": "56229b67-9e58-4307-a0c4-373e90fc8fed",
                   "ord": "a1"
                 },
                 {
@@ -210,23 +201,14 @@
                     "type": "link",
                     "label": "Docs"
                   },
-                  "id": "03fb7076-8112-40d8-b6df-db4125dfc842",
+                  "id": "b632d6f1-24e4-4850-8b27-d48c3ec7cd93",
                   "ord": "a2"
                 },
                 {
-                  "kind": "component",
-                  "component": "Button",
+                  "kind": "host",
+                  "component": "site.account-link",
                   "class": "btn btn-ghost btn-sm mt-2 w-full",
-                  "props": {
-                    "label": "Sign in",
-                    "href": "/account/login"
-                  },
-                  "slot": {
-                    "name": "secondary",
-                    "type": "link",
-                    "label": "Secondary link"
-                  },
-                  "id": "07afa8c1-badc-400e-8eaf-f9377fcdf51d",
+                  "id": "80ebff96-162b-408f-901b-33c6f0c9dc98",
                   "ord": "a3"
                 },
                 {
@@ -242,19 +224,19 @@
                     "type": "link",
                     "label": "Primary action"
                   },
-                  "id": "da64fef4-fed7-4ae7-b508-904c08f7c743",
+                  "id": "d6cc82ae-1835-45e6-a938-37a221245f1a",
                   "ord": "a4"
                 }
               ],
               "part": "panel",
-              "id": "73118933-eb1f-4b88-aebc-14470cbac2ff",
+              "id": "4145c3ac-d89c-4516-9ebc-8e85a238922f",
               "ord": "a1"
             }
           ],
           "behavior": {
             "type": "disclosure"
           },
-          "id": "ce292a99-c79c-4e93-99b8-6dfed43710cb",
+          "id": "8dfca804-342b-48b4-b79b-15f114c71f3a",
           "ord": "a0"
         },
         {
@@ -270,7 +252,7 @@
               "kind": "outlet"
             }
           ],
-          "id": "60ba185a-04c5-4c1f-9bc5-42251dbbf583",
+          "id": "34b0406f-8c29-46ef-908b-382758ead894",
           "ord": "a1"
         },
         {
@@ -300,7 +282,7 @@
                           "props": {
                             "show": "both"
                           },
-                          "id": "2b7fb41a-ccfa-4843-a30d-404f90954a8d",
+                          "id": "3006d298-c909-44cb-9354-2a3893a93038",
                           "ord": "a0"
                         },
                         {
@@ -316,7 +298,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "2623c1a5-2507-40b4-abce-62f1f7ac1b00",
+                          "id": "3ad491fe-a46b-470c-863a-a6605bca70b2",
                           "ord": "a1"
                         },
                         {
@@ -324,11 +306,11 @@
                           "tag": "ul",
                           "class": "mt-2 flex items-center gap-5",
                           "children": [],
-                          "id": "592aad85-dfc8-4ba5-9e4b-e24d7029ed5e",
+                          "id": "fe720630-a684-4b22-a825-e1b8628d0fd7",
                           "ord": "a2"
                         }
                       ],
-                      "id": "1c3c8c57-5bff-43dd-925b-4af74949d25b",
+                      "id": "16fea4b2-3be3-461b-bde8-8ad70cb59e1b",
                       "ord": "a0"
                     },
                     {
@@ -349,7 +331,7 @@
                           "attrs": {
                             "href": "/"
                           },
-                          "id": "549b5950-8040-4345-a41c-8e6620310f78",
+                          "id": "826df710-9f20-4dd0-8597-0c620744cc6a",
                           "ord": "a0"
                         },
                         {
@@ -374,11 +356,11 @@
                                     "type": "link",
                                     "label": "Features"
                                   },
-                                  "id": "eae3e12c-abba-43ee-9d6c-3422131a75b3",
+                                  "id": "c74af1c1-6228-4d3f-a929-4e40b4d93e27",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "da0ba9a5-0212-4508-9818-a2324c42965a",
+                              "id": "2703c9bf-a458-48b9-8da5-fb9955818834",
                               "ord": "a0"
                             },
                             {
@@ -398,11 +380,11 @@
                                     "type": "link",
                                     "label": "Pricing"
                                   },
-                                  "id": "e41b429c-1552-44fc-a693-04678b071135",
+                                  "id": "8f821790-5353-46b2-95a9-956054f14d84",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "6bf52933-1bb6-4914-af86-a18383563386",
+                              "id": "ab426770-f052-4ae3-b57e-975ded59697a",
                               "ord": "a1"
                             },
                             {
@@ -422,11 +404,11 @@
                                     "type": "link",
                                     "label": "Integrations"
                                   },
-                                  "id": "434ea076-19a9-4b85-8084-b8f5de5c0323",
+                                  "id": "bc099ee6-4b1a-474f-a5d4-1d839ac6c9f0",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "a3d4264a-d057-4183-9031-b6215368c1ba",
+                              "id": "83f1b883-9dbe-4d75-8a69-a9c9e903feff",
                               "ord": "a2"
                             },
                             {
@@ -446,19 +428,19 @@
                                     "type": "link",
                                     "label": "Changelog"
                                   },
-                                  "id": "a5830b8d-e788-4100-bfd0-3018e3ec052c",
+                                  "id": "fb2460ca-4d45-4618-b423-f726f4f4b2df",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "61554dd1-c9c9-4e5e-8850-6f4ffb923a3f",
+                              "id": "7b91d0eb-1fce-4c53-86b0-4d0e10344621",
                               "ord": "a3"
                             }
                           ],
-                          "id": "ebf17b6f-fc2a-4516-a74e-caad411e62b1",
+                          "id": "c21558c3-aca9-471b-9666-e7c1325d5de5",
                           "ord": "a1"
                         }
                       ],
-                      "id": "723c9852-d216-4156-8d37-57330b6edc87",
+                      "id": "737fb98c-1383-489b-931e-dd8ce320d648",
                       "ord": "a1"
                     },
                     {
@@ -471,11 +453,11 @@
                           "tag": "ul",
                           "class": "flex flex-col gap-2",
                           "children": [],
-                          "id": "44a45e44-b53a-473e-9bfb-541dbac0f3f9",
+                          "id": "c9d6ced8-1963-4101-8d7b-9f12254657c3",
                           "ord": "a0"
                         }
                       ],
-                      "id": "cd513417-626b-4c9c-8b77-f70e7353f839",
+                      "id": "1173e7c6-4f51-4032-b683-8a998203f1d3",
                       "ord": "a2"
                     },
                     {
@@ -499,23 +481,23 @@
                                   "props": {
                                     "heading": "Legal"
                                   },
-                                  "id": "5d94f71d-a1fc-486c-94c1-489fcec5f289",
+                                  "id": "594abd07-339c-4d81-bf0d-4ff0d2913dfe",
                                   "ord": "a0"
                                 }
                               ],
-                              "id": "76b0c3de-f3fd-4218-be9c-d435b1d631b2",
+                              "id": "c872bb8a-8ebd-4f36-952b-6f2caaf06e55",
                               "ord": "a0"
                             }
                           ],
-                          "id": "b9e3a326-fbd0-4ec2-afd3-ea1ff2de7cb3",
+                          "id": "d0bedad4-d6b9-4f36-82a5-a98dc4017698",
                           "ord": "a0"
                         }
                       ],
-                      "id": "5e7a667b-3da2-4f8b-87ea-e888f694e6c6",
+                      "id": "f7d05d35-1c74-4d3e-9aa8-228f3fdfbb45",
                       "ord": "a3"
                     }
                   ],
-                  "id": "f17b6dbd-585c-4ba7-b158-53d548bf82ac",
+                  "id": "617a34e4-72b3-4345-b884-84be168e5d14",
                   "ord": "a0"
                 },
                 {
@@ -538,11 +520,11 @@
                             "kind": "value",
                             "ref": "site.identity.name"
                           },
-                          "id": "e8dff33d-9a16-42c5-9cd6-ac195a6fa575",
+                          "id": "dea629c1-426a-4db5-9abe-1841c3eefa56",
                           "ord": "a0"
                         }
                       ],
-                      "id": "b3de0687-6d4e-40b3-afed-3a81a3abb1ed",
+                      "id": "f8510ac0-0fae-4493-b2eb-808e0d79be54",
                       "ord": "a0"
                     },
                     {
@@ -550,23 +532,23 @@
                       "tag": "ul",
                       "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
                       "children": [],
-                      "id": "65bdbd59-0e24-4b6b-854c-33a86bf7a4e0",
+                      "id": "d2e8aeb9-508a-4f58-9b1e-eeee4e33e9ec",
                       "ord": "a1"
                     }
                   ],
-                  "id": "db5de8b4-2476-4447-91bb-e1b71b2de681",
+                  "id": "c302c5c0-3b22-4c74-9bf0-968cdfadbf3e",
                   "ord": "a1"
                 }
               ],
-              "id": "ea20735c-71f8-4468-a21c-0fd0cff23f79",
+              "id": "aefbe76c-c29f-4671-b27e-b600f1c646ae",
               "ord": "a0"
             }
           ],
-          "id": "9396ec2d-f560-4ee9-8ad4-9c01085f887d",
+          "id": "64b86c63-7b76-4213-b07a-de553c5b9a11",
           "ord": "a2"
         }
       ],
-      "id": "03574630-01d5-4def-a314-ab7a1a5a318c"
+      "id": "09da256a-3c9c-4593-ac17-88b5db389d9e"
     }
   },
   "pages": [
@@ -580,7 +562,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "2022c671-a3f7-4f71-ad20-b98067a61680",
+        "id": "63db06e9-13b7-463c-a013-109799ff8ef3",
         "children": [
           {
             "kind": "element",
@@ -596,14 +578,14 @@
                   "alt": "A focused working dog holding a steady sit, eyes locked on its handler",
                   "loading": "eager"
                 },
-                "id": "a3b9fde4-d74d-4288-af24-eab1381923d3",
+                "id": "13c95a3c-4cd9-4f82-a649-3027fd6c79d4",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "b3011e6c-5ad6-4116-821e-7c4f15feb18a",
+                "id": "42b5c6f8-9746-4daa-a923-585effac78c1",
                 "ord": "a1"
               },
               {
@@ -616,7 +598,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Real behavior change, led by specialists"],
-                    "id": "2d1400df-9e64-45e8-8f54-a71a6991de06",
+                    "id": "68cea41b-9bea-4876-918b-040272aeca2c",
                     "ord": "a0"
                   },
                   {
@@ -626,7 +608,7 @@
                     "children": [
                       "Private training and board-and-train for the dogs other programs give up on — reactivity, aggression, puppy foundations and service-dog work. It starts with an assessment."
                     ],
-                    "id": "f2d82aa5-4fda-4a13-9c13-ef5cfc56065c",
+                    "id": "a3518713-a81c-463a-bfdc-222041cfa827",
                     "ord": "a1"
                   },
                   {
@@ -642,7 +624,7 @@
                           "href": "/book"
                         },
                         "children": ["Book an assessment"],
-                        "id": "3d98a824-f3e5-4485-9290-c57557c7e94c",
+                        "id": "fd07e6cb-7779-4283-8853-e95564bc04dd",
                         "ord": "a0"
                       },
                       {
@@ -653,19 +635,19 @@
                           "href": "/book"
                         },
                         "children": ["See services"],
-                        "id": "a4b6284e-9ffa-4a70-bd52-6e221aed7648",
+                        "id": "98555e69-5069-4558-b8c3-4b81455fef99",
                         "ord": "a1"
                       }
                     ],
-                    "id": "9e994531-768b-4294-beff-375bd0e66575",
+                    "id": "d152c3cd-223b-41c7-81e0-c63926c7564a",
                     "ord": "a2"
                   }
                 ],
-                "id": "de83631b-1854-4f1f-aec6-200b95404875",
+                "id": "3047c25d-a8aa-457a-813a-b67320ea5a79",
                 "ord": "a2"
               }
             ],
-            "id": "43dd9a24-2a9e-45fb-b558-0822fafcacc0",
+            "id": "add61bee-2c92-4ad5-a1bc-78fb73304d71",
             "ord": "a0"
           },
           {
@@ -693,7 +675,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Behavior specialists, not generalists"],
-                            "id": "ffc4eae5-0400-46b8-af3b-3deb1539880f",
+                            "id": "4cab1106-d48f-4832-a47b-5b0263093543",
                             "ord": "a0"
                           },
                           {
@@ -703,11 +685,11 @@
                             "children": [
                               "Every trainer here works cases full-time — reactivity, aggression, anxiety and obedience. You get the specialist your dog’s behavior actually calls for."
                             ],
-                            "id": "68e3d71e-4e91-45e4-bb61-f35177e6183e",
+                            "id": "afbf0464-0bf3-409b-a5a9-a7ce220e4c86",
                             "ord": "a1"
                           }
                         ],
-                        "id": "76129890-a17f-4e7a-94f0-4ac6322a0f14",
+                        "id": "c40b11f9-33f7-4dd0-8140-aba3e03d7c74",
                         "ord": "a0"
                       },
                       {
@@ -720,7 +702,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["A proven method, not guesswork"],
-                            "id": "12a9421c-632a-4788-a4c2-bd730273d6bd",
+                            "id": "5e7f4603-eec7-4537-acdb-c7a1d466392c",
                             "ord": "a0"
                           },
                           {
@@ -730,11 +712,11 @@
                             "children": [
                               "We assess first, then follow a clear, repeatable plan built on how dogs actually learn. You’ll know the why behind every step and how to measure progress."
                             ],
-                            "id": "37da194b-a03f-4af2-9588-7fd954d90202",
+                            "id": "25c8cf12-a47e-4079-aec2-31a554c32b08",
                             "ord": "a1"
                           }
                         ],
-                        "id": "ad711647-24b4-4256-87e6-6e9fbbb69230",
+                        "id": "09194f14-3b99-4745-a2e4-c7aadbf74cc0",
                         "ord": "a1"
                       },
                       {
@@ -747,7 +729,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["In-home & board-and-train"],
-                            "id": "b3ceaa0d-5d0a-483b-84e3-5520005db185",
+                            "id": "031cda83-79de-40ea-9bbe-6e61c74da716",
                             "ord": "a0"
                           },
                           {
@@ -757,11 +739,11 @@
                             "children": [
                               "Train where the behavior happens — in your home and your routine — or send your dog for immersive board-and-train and get the skills handed back to you."
                             ],
-                            "id": "80055fa2-3082-41fc-8b8b-e0bdbbca79ec",
+                            "id": "872e63e7-b80a-4778-9002-19fd102de5b1",
                             "ord": "a1"
                           }
                         ],
-                        "id": "76a79faf-159d-40a2-aa9b-21d7e5ba28d8",
+                        "id": "ece7210e-693c-4c87-bb96-ec652d08d104",
                         "ord": "a2"
                       },
                       {
@@ -774,7 +756,7 @@
                             "tag": "h2",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Lifetime support"],
-                            "id": "45cd58b5-f5d5-4d6a-9e4d-0b15d72e3803",
+                            "id": "81d572cc-2cea-4f51-85cc-3652480b36db",
                             "ord": "a0"
                           },
                           {
@@ -784,23 +766,23 @@
                             "children": [
                               "The relationship doesn’t end at the last session. Graduates keep access to follow-ups and guidance, so the results stick for the life of the dog."
                             ],
-                            "id": "191f40bb-f945-422f-b203-d51a81c69c04",
+                            "id": "29cb7bb5-301f-4f01-a291-58d21f1a652d",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f7fbd86c-f2cd-4b37-83ea-16c03d713ab3",
+                        "id": "716095ac-c04c-40f9-ae8e-38a4bd005379",
                         "ord": "a3"
                       }
                     ],
-                    "id": "9867fa7d-a581-4f46-a2f9-8df0358a7f7c",
+                    "id": "7f0af447-ee8d-4e2e-9aca-031436e55165",
                     "ord": "a0"
                   }
                 ],
-                "id": "af01fe71-59b4-4704-b312-ce698670d81d",
+                "id": "6bb8655b-9eaf-4ca5-903d-9a2534fa6483",
                 "ord": "a0"
               }
             ],
-            "id": "1febb09b-1172-4c5b-ab49-44dcff873ce1",
+            "id": "ef972e69-e3dd-4835-a7aa-636a1e3cac00",
             "ord": "a1"
           },
           {
@@ -823,7 +805,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["What we work on"],
-                        "id": "49c2b01f-efa8-4683-9f2e-105847f02484",
+                        "id": "3d4bc6ae-4208-4cf8-b0b1-3618d437893e",
                         "ord": "a0"
                       },
                       {
@@ -833,11 +815,11 @@
                         "children": [
                           "Every path starts with an assessment. Full pricing, session lengths and live availability are on the booking page."
                         ],
-                        "id": "5fdbeafa-c2cb-4da8-b0bd-85b6687de7d5",
+                        "id": "99ef93ff-2a26-45a1-9eac-5e88970e4b19",
                         "ord": "a1"
                       }
                     ],
-                    "id": "5c7e3397-55f1-4671-a9a5-76a2410332a7",
+                    "id": "512ef5e2-7341-44bc-a88d-fda2b69429d5",
                     "ord": "a0"
                   },
                   {
@@ -863,7 +845,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Behavior assessment"],
-                                "id": "238c923c-f37f-41e7-a623-ceb2af4f764c",
+                                "id": "e42836ca-44f8-4961-a4f3-88ef6869d47d",
                                 "ord": "a0"
                               },
                               {
@@ -871,11 +853,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$0"],
-                                "id": "154b8537-44bf-4686-992e-709ebf25e633",
+                                "id": "edffc21c-0fc4-4d2e-9a21-2a706662247e",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "f3955111-adfc-41c3-8b7c-19146a48f458",
+                            "id": "e0896f81-e3e7-4c8f-8e1b-15166e274214",
                             "ord": "a0"
                           },
                           {
@@ -883,7 +865,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "584afe88-2abe-454e-8751-6b4215d23497",
+                            "id": "250a539a-d0c2-4070-90be-85f4b6e39245",
                             "ord": "a1"
                           },
                           {
@@ -891,11 +873,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Meet, evaluate, and leave with a written plan."],
-                            "id": "a7405046-2050-48af-8fe9-50f40db262a3",
+                            "id": "49362dfd-b4fc-4fc5-b1a4-5c77f744061b",
                             "ord": "a2"
                           }
                         ],
-                        "id": "2c218385-07fa-41d2-adf3-8151d57b4d2b",
+                        "id": "857ab83c-6090-4e7e-b435-6608529be5ba",
                         "ord": "a0"
                       },
                       {
@@ -916,7 +898,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Private session"],
-                                "id": "c655737a-14a8-41df-9ad2-99aa0f924f23",
+                                "id": "5cf47885-9298-4220-9592-aef9f686d963",
                                 "ord": "a0"
                               },
                               {
@@ -924,11 +906,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$120"],
-                                "id": "56f33161-c02c-4f01-b63c-86270f18aed4",
+                                "id": "73ab0bbe-e3d7-4b57-94b2-3d2de7b64bc0",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "4c398ae0-f50f-4370-9b2a-fbda57077e52",
+                            "id": "701687c9-d1cb-4769-a652-be67f5cd352e",
                             "ord": "a0"
                           },
                           {
@@ -936,7 +918,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr"],
-                            "id": "fc5a3d52-ca73-4329-85de-8f31c6e6bead",
+                            "id": "2b441648-1e62-49d2-8e49-fcefd3d4ba63",
                             "ord": "a1"
                           },
                           {
@@ -944,11 +926,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["One-on-one coaching for dog and handler."],
-                            "id": "5dcc83a4-cf24-4ade-bcf9-1203f64bea5a",
+                            "id": "ee97fc9c-c485-4d0c-a643-271256b79a89",
                             "ord": "a2"
                           }
                         ],
-                        "id": "36b2c111-d0e8-4760-9f69-4fa682ad255c",
+                        "id": "a0a1b7e2-48dd-4246-9bba-170b255f0202",
                         "ord": "a1"
                       },
                       {
@@ -969,7 +951,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Puppy foundations consult"],
-                                "id": "f27950bf-5eee-4be0-a988-30c27224bd63",
+                                "id": "fef170bb-2cb9-4dc2-9d9a-6d633db91b6c",
                                 "ord": "a0"
                               },
                               {
@@ -977,11 +959,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$90"],
-                                "id": "32df78f7-0745-4a61-baed-e2e58cd8eb55",
+                                "id": "49e2f8a3-a576-4a72-8386-a9b36a3f58a4",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "b7cae612-60c8-4642-a80f-420e00c2ef7f",
+                            "id": "548eaea5-5985-41b4-b0f5-c40236752f7e",
                             "ord": "a0"
                           },
                           {
@@ -989,7 +971,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "7e72ef78-367f-41fb-8724-22f6184baf3b",
+                            "id": "2c1b6bd0-e9b6-40eb-893a-fd9949761731",
                             "ord": "a1"
                           },
                           {
@@ -997,11 +979,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Start right and skip the hard re-training."],
-                            "id": "aa8b5eb4-b481-4189-a46c-75c1b3da3a2e",
+                            "id": "e0c27782-5db6-46a9-83d4-a962223c1dfe",
                             "ord": "a2"
                           }
                         ],
-                        "id": "352ee5d4-eb07-418b-9496-26bc2505f4e0",
+                        "id": "441bec46-84c8-4fe0-a58e-527bfb77d808",
                         "ord": "a2"
                       },
                       {
@@ -1022,7 +1004,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Reactivity consult"],
-                                "id": "ef2849d7-571f-4298-85b7-b8b19ce0b136",
+                                "id": "d812118a-fbb2-4ebc-b541-1d23241b288d",
                                 "ord": "a0"
                               },
                               {
@@ -1030,11 +1012,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$140"],
-                                "id": "0463501d-6d86-40ae-9d9b-7915307444b9",
+                                "id": "cb1d3e9d-b9ee-4def-b59c-b15cea9e1504",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "90bda0ad-88ed-401c-9432-9f0feea2c2eb",
+                            "id": "23d47949-56cc-4343-b1ff-cdb11f3d3379",
                             "ord": "a0"
                           },
                           {
@@ -1042,7 +1024,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr 15 min"],
-                            "id": "1c50989e-dc2c-410a-8bdb-56f1e04c4c66",
+                            "id": "5750d416-b86d-440f-8a99-72d75daf4511",
                             "ord": "a1"
                           },
                           {
@@ -1050,11 +1032,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Bring the leash intensity down for good."],
-                            "id": "6cc37d13-47ee-46fc-82d4-efff81b5ebf5",
+                            "id": "1b9affee-57a8-441a-a14c-ec7887922476",
                             "ord": "a2"
                           }
                         ],
-                        "id": "8eb22da1-cedb-4dd8-a3b1-61d77b00023f",
+                        "id": "be5131d0-d701-4589-92ef-45fedab580dc",
                         "ord": "a3"
                       },
                       {
@@ -1075,7 +1057,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Aggression consult"],
-                                "id": "62e94b25-b403-4305-94ee-b115e17a2a4f",
+                                "id": "882c8d86-cd64-4837-8c3f-604b310a98bb",
                                 "ord": "a0"
                               },
                               {
@@ -1083,11 +1065,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$180"],
-                                "id": "20bdacfd-442d-4515-aa0c-62ee8d16b3be",
+                                "id": "b3888ce3-3751-405b-909a-61acff64cf1d",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "906e710d-28a4-4164-97be-e9d0eef89052",
+                            "id": "7f455cc8-b1f7-42a6-8739-4464d9ca35b3",
                             "ord": "a0"
                           },
                           {
@@ -1095,7 +1077,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["1 hr 30 min"],
-                            "id": "1cdb0d73-8af0-435c-a45c-ec563b1773b9",
+                            "id": "9ae859d2-5b7f-4d83-ac48-5ed4f00612b9",
                             "ord": "a1"
                           },
                           {
@@ -1103,11 +1085,11 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Serious behavior, assessed and handled safely."],
-                            "id": "23c2a6ba-1806-404e-bd90-f2ba0b546311",
+                            "id": "a17846ae-2f77-4e60-bdd2-45854751efdc",
                             "ord": "a2"
                           }
                         ],
-                        "id": "1e861a4d-f3db-400d-911b-19845164e02c",
+                        "id": "82bdd4be-e9b4-4f23-bd6e-a7c9e538b8b1",
                         "ord": "a4"
                       },
                       {
@@ -1128,7 +1110,7 @@
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
                                 "children": ["Board-and-train consult"],
-                                "id": "33df2694-bcc7-47ec-a5bd-a8c661870967",
+                                "id": "394aef25-ea11-44ae-bc64-5415dde6508b",
                                 "ord": "a0"
                               },
                               {
@@ -1136,11 +1118,11 @@
                                 "tag": "span",
                                 "class": "shrink-0 text-lg font-bold text-base-content",
                                 "children": ["$200"],
-                                "id": "9d83ebde-d6a7-4ca0-a9a8-789cd1d72308",
+                                "id": "48676212-f836-4b40-8d78-448e403a2a31",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "620b3e0d-9923-4d4a-9e21-a9837e81d923",
+                            "id": "3e8f47dd-7780-416e-b716-8af8fb4a3d4a",
                             "ord": "a0"
                           },
                           {
@@ -1148,7 +1130,7 @@
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                             "children": ["45 min"],
-                            "id": "d6e31ecc-1635-4de6-9e9b-5933c483dd30",
+                            "id": "0a3cd3a1-c7c3-4d0a-8c3c-96a696c9877c",
                             "ord": "a1"
                           },
                           {
@@ -1156,15 +1138,15 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": ["Immersive training, skills transferred to you."],
-                            "id": "1562b355-c742-4d61-a79f-9ecd74e12ff9",
+                            "id": "028dd21d-98d5-4d9c-aa18-8d271f6fc402",
                             "ord": "a2"
                           }
                         ],
-                        "id": "519c02c6-5071-41c8-9cf9-c7e0cc84c323",
+                        "id": "1bd2c9b2-5505-4ce0-9856-26c5b1827484",
                         "ord": "a5"
                       }
                     ],
-                    "id": "14e2aa93-a455-4e78-bb37-7597d59b1e60",
+                    "id": "5d348ed1-f892-45d8-b717-51cc756df9ff",
                     "ord": "a1"
                   },
                   {
@@ -1180,19 +1162,19 @@
                           "href": "/book"
                         },
                         "children": ["See everything & book"],
-                        "id": "f984401d-092e-4523-8a1a-f2eab8c9e497",
+                        "id": "660bf2c2-c8fa-40b4-92b8-6379074a9c2d",
                         "ord": "a0"
                       }
                     ],
-                    "id": "4e8ea8fc-5c01-489b-a2d1-acc21ef41883",
+                    "id": "5f80d3d8-7c07-47fd-af35-4b1fa0ab187e",
                     "ord": "a2"
                   }
                 ],
-                "id": "568eba9b-a998-48dd-895e-0c48083fa8c3",
+                "id": "b62b92e5-06eb-466f-95a7-248a3924c43b",
                 "ord": "a0"
               }
             ],
-            "id": "17d6b9e0-94f1-4555-9596-9e23bb209ba5",
+            "id": "114a289f-7abe-4283-a7bd-86318df31363",
             "ord": "a2"
           },
           {
@@ -1214,7 +1196,7 @@
                       "alt": "A trainer coaching a dog and owner through a calm leash exercise at home",
                       "loading": "lazy"
                     },
-                    "id": "9d48ee4b-6320-4068-9542-a3ae4ab0607e",
+                    "id": "718e894f-cb1e-4b4d-b67b-e507085deeb4",
                     "ord": "a0"
                   },
                   {
@@ -1227,7 +1209,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["The K9 Method: assess, plan, transform"],
-                        "id": "61f60250-6f1d-4af0-8fd5-b9c6f6f4a934",
+                        "id": "c887b58b-44d9-4851-a86d-7e462592e016",
                         "ord": "a0"
                       },
                       {
@@ -1237,7 +1219,7 @@
                         "children": [
                           "Most training fails because it treats symptoms and skips the cause. We do the opposite — a real assessment to understand why your dog does what it does, then a step-by-step plan that changes the behavior at its root."
                         ],
-                        "id": "af882eae-1a5f-45fa-ad17-a9785645916e",
+                        "id": "d5a71f32-fa96-4c7f-b155-02c49c3084ad",
                         "ord": "a1"
                       },
                       {
@@ -1247,7 +1229,7 @@
                         "children": [
                           "And we train you as much as the dog. When you understand the method and can run it yourself, the calm, confident dog you met in session is the one you keep at home."
                         ],
-                        "id": "1d0504e3-4baf-47be-b11c-f21512671dd5",
+                        "id": "0f12b6ed-ce40-4042-b0ac-510e280404e6",
                         "ord": "a2"
                       },
                       {
@@ -1263,23 +1245,23 @@
                               "href": "/book"
                             },
                             "children": ["Book an assessment"],
-                            "id": "5370a3d7-3ac7-46e5-96d3-fc8a24ffb748",
+                            "id": "2063538d-c13b-45bb-b827-697e3331d3f5",
                             "ord": "a0"
                           }
                         ],
-                        "id": "66658200-a912-42c7-8d1e-30a9573f5d6f",
+                        "id": "0bad31f5-c14c-4f57-b273-d9fc396f46bb",
                         "ord": "a3"
                       }
                     ],
-                    "id": "70b815d1-11e1-4269-bf5f-dbf98c69a05a",
+                    "id": "b4d4832e-a2b3-406f-937d-b09f856e238c",
                     "ord": "a1"
                   }
                 ],
-                "id": "68246a21-96b4-4c5c-ad6c-e8ad7b4ce036",
+                "id": "8db780fd-dec5-4dfe-9488-aea9d390ac8c",
                 "ord": "a0"
               }
             ],
-            "id": "ffa216be-0b78-42f9-a4a4-5ef9d2b95260",
+            "id": "80ff3c69-e770-4013-94f3-2beb1fca4d5d",
             "ord": "a3"
           },
           {
@@ -1302,7 +1284,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Your specialists"],
-                        "id": "69302060-0de4-4460-873e-bcd49aa25f57",
+                        "id": "5807caca-7603-434b-9403-fb84d205c5cf",
                         "ord": "a0"
                       },
                       {
@@ -1312,11 +1294,11 @@
                         "children": [
                           "Book by name — you’ll work with the specialist whose expertise fits your dog."
                         ],
-                        "id": "632b7c02-4a02-45a2-8866-69aee66b03d7",
+                        "id": "dacd5d45-e476-4702-97cc-2400dd4f6009",
                         "ord": "a1"
                       }
                     ],
-                    "id": "36f938ca-6acb-4f20-be81-fca1f18a5b31",
+                    "id": "390fe028-a7d9-41bb-a710-f0de95257c51",
                     "ord": "a0"
                   },
                   {
@@ -1338,7 +1320,7 @@
                               "alt": "Dana Cole, lead behavior specialist",
                               "loading": "lazy"
                             },
-                            "id": "4f720c6d-89bb-47d3-9f2b-4f41e39860da",
+                            "id": "dc9d384a-1221-4b24-941f-883df3dc99c8",
                             "ord": "a0"
                           },
                           {
@@ -1351,7 +1333,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Dana Cole"],
-                                "id": "c1b27da2-6bde-4059-8a45-5889222473d3",
+                                "id": "639660a8-315d-4bf4-916e-ff28fec43f67",
                                 "ord": "a0"
                               },
                               {
@@ -1359,7 +1341,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Lead behavior specialist"],
-                                "id": "523533e6-f42d-47d1-8804-5ff785178b08",
+                                "id": "8abd4e61-301e-41b8-a3b9-ec9fb351144f",
                                 "ord": "a1"
                               },
                               {
@@ -1369,15 +1351,15 @@
                                 "children": [
                                   "Fifteen years on complex behavior cases and service-dog foundations. Dana builds the plan the whole team trains to."
                                 ],
-                                "id": "8390a3b5-d5f8-4c35-8d89-d3f160476ec8",
+                                "id": "1a3e0a50-cee1-48f4-bf2d-6ecb2506953a",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "7540e750-b221-4e2f-b1e7-ede83b6525b1",
+                            "id": "9558899f-c880-484b-bdf3-0fae149125f2",
                             "ord": "a1"
                           }
                         ],
-                        "id": "e076efc2-c52e-45d6-8372-d54ec665d4be",
+                        "id": "d0928d27-c011-47ac-8694-8a13cbaafaa5",
                         "ord": "a0"
                       },
                       {
@@ -1394,7 +1376,7 @@
                               "alt": "Marcus Reyes, reactivity & aggression specialist",
                               "loading": "lazy"
                             },
-                            "id": "023d840d-fc7d-4e4a-ba23-977a3acf2594",
+                            "id": "80719aed-4777-4ac1-937a-e087676ebee3",
                             "ord": "a0"
                           },
                           {
@@ -1407,7 +1389,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Marcus Reyes"],
-                                "id": "6c4cc24f-f84a-4925-83a9-1af516870eb4",
+                                "id": "825cde51-a88b-4ca9-820d-0f15db41dd81",
                                 "ord": "a0"
                               },
                               {
@@ -1415,7 +1397,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Reactivity & aggression specialist"],
-                                "id": "b223acf3-940f-4786-aaf8-6bc536e5f738",
+                                "id": "38575b99-92e1-41ed-aaa3-569bbedc1b7e",
                                 "ord": "a1"
                               },
                               {
@@ -1425,15 +1407,15 @@
                                 "children": [
                                   "Calm under pressure with the toughest cases — leash reactivity, resource guarding and bite histories handled safely and humanely."
                                 ],
-                                "id": "b4fbaa40-bdef-4d2a-bfa1-9e3600484260",
+                                "id": "c7eaccb7-b896-4cc3-902c-4267e4c64b6c",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "aa57f623-c8df-406f-b20d-3e20d9d332a0",
+                            "id": "90b29700-2ac8-4a0f-9a1a-5edf632849ae",
                             "ord": "a1"
                           }
                         ],
-                        "id": "26953b03-2561-49bb-921e-d2dccc29bb87",
+                        "id": "316cd3b1-bacf-4dfe-afcc-52713e3edbbc",
                         "ord": "a1"
                       },
                       {
@@ -1450,7 +1432,7 @@
                               "alt": "Priya Shah, obedience & board-and-train specialist",
                               "loading": "lazy"
                             },
-                            "id": "3b9c9787-a2df-4123-9840-853a3e7a54cd",
+                            "id": "08bc20e1-b7e7-478f-9b4d-8a1fb3f53f2a",
                             "ord": "a0"
                           },
                           {
@@ -1463,7 +1445,7 @@
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
                                 "children": ["Priya Shah"],
-                                "id": "24e05592-4e64-4655-b9b9-756ca31d0037",
+                                "id": "958fa5c8-06b6-4c43-bb16-84cf4f0fbac0",
                                 "ord": "a0"
                               },
                               {
@@ -1471,7 +1453,7 @@
                                 "tag": "p",
                                 "class": "text-sm font-medium uppercase tracking-wide text-secondary",
                                 "children": ["Obedience & board-and-train specialist"],
-                                "id": "0b188a50-2746-45bd-8da0-050d62f53104",
+                                "id": "a4b0a1f1-152d-4de9-9fe0-101ff70a3723",
                                 "ord": "a1"
                               },
                               {
@@ -1481,27 +1463,27 @@
                                 "children": [
                                   "Runs the board-and-train program and rock-solid obedience work, then transfers every skill back to the owner."
                                 ],
-                                "id": "79c32d98-0ee2-4182-819e-3cdbcf2cce46",
+                                "id": "f117249a-185c-4795-8b27-679280269ca8",
                                 "ord": "a2"
                               }
                             ],
-                            "id": "9df36ae2-f563-4120-b155-b7266f5c9b45",
+                            "id": "0eacd3fc-30bf-4820-9b65-936434670adc",
                             "ord": "a1"
                           }
                         ],
-                        "id": "0c43c829-6784-4510-95f6-4d9f524ee8b7",
+                        "id": "8094b788-422c-47cc-882e-ef31354e65a1",
                         "ord": "a2"
                       }
                     ],
-                    "id": "d90d2111-f828-475c-9145-0c2427fb3efb",
+                    "id": "ca6cfbcf-a0c6-4d2c-9623-5cca5d748067",
                     "ord": "a1"
                   }
                 ],
-                "id": "5e02e5e1-82ff-408a-9801-79993850f5e8",
+                "id": "05f78c79-44c1-47db-9667-3ce31f68a624",
                 "ord": "a0"
               }
             ],
-            "id": "318cd0e3-83e5-4ad2-b6e2-8358d52ced2c",
+            "id": "8d49bdb4-e021-4dfb-804c-3e894a208b1f",
             "ord": "a4"
           },
           {
@@ -1521,7 +1503,7 @@
                     "children": [
                       "“We were ready to rehome our dog after two bad bites. Six weeks with K9 Method and he greets guests calmly at the door. They didn’t just fix the dog — they taught us how to keep him that way.”"
                     ],
-                    "id": "745a9d17-5821-428a-bdcf-47e81d0dfacb",
+                    "id": "2d392fd2-4d67-4492-942e-0e01d536b431",
                     "ord": "a0"
                   },
                   {
@@ -1529,15 +1511,15 @@
                     "tag": "p",
                     "class": "text-sm font-semibold uppercase tracking-wide opacity-80",
                     "children": ["The Alvarez family, K9 Method graduates"],
-                    "id": "e717ca0d-42fb-4198-a7bc-453503be1e14",
+                    "id": "24d4e280-117a-4967-91c8-fa0f8c35e8ff",
                     "ord": "a1"
                   }
                 ],
-                "id": "e121b05f-7f3e-4cd8-a390-7b0c258d16de",
+                "id": "40d7f60a-14af-4b53-83a8-fcb6186bb8ab",
                 "ord": "a0"
               }
             ],
-            "id": "c579c53d-2b6f-4259-afe1-d11ffe066f02",
+            "id": "39b8e24c-d28e-4fa6-a669-8a782304914b",
             "ord": "a5"
           },
           {
@@ -1555,7 +1537,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["It starts with an assessment"],
-                    "id": "fa7a5fc4-21b2-4665-8bec-e0bd12d63f85",
+                    "id": "31e6a1f4-8ee9-449c-b927-b10edad8e346",
                     "ord": "a0"
                   },
                   {
@@ -1565,7 +1547,7 @@
                     "children": [
                       "Tell us about your dog, meet a specialist, and walk away with a plan. Booking online takes about a minute."
                     ],
-                    "id": "db4856f9-a964-474f-82a5-b48183beaa5c",
+                    "id": "fa43228f-4c11-48fd-aef7-e5a5413f3c17",
                     "ord": "a1"
                   },
                   {
@@ -1576,15 +1558,15 @@
                       "href": "/book"
                     },
                     "children": ["Book an assessment"],
-                    "id": "85fa4248-08a7-4ed8-bb9a-e602f15a1f22",
+                    "id": "b10ec0cf-a016-4138-bea8-e9099c58ea7f",
                     "ord": "a2"
                   }
                 ],
-                "id": "85ff0fb8-60c4-44e0-97a0-3f3df0ede3a6",
+                "id": "fa97f77a-d70d-463b-901e-e9e75ce617c6",
                 "ord": "a0"
               }
             ],
-            "id": "044a00cb-d47a-40aa-91c1-34915c1b82f3",
+            "id": "d4cdb206-390d-417b-930e-8ae1772b30fb",
             "ord": "a6"
           }
         ]
@@ -1601,7 +1583,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "6b56d051-9909-4bc7-a2f5-124090b29a04",
+        "id": "b353caf8-1591-4240-93dd-a3341353a75f",
         "children": [
           {
             "kind": "element",
@@ -1617,14 +1599,14 @@
                   "alt": "A trainer coaching a dog and owner through a calm leash exercise at home",
                   "loading": "eager"
                 },
-                "id": "96f3e0c5-c1f8-429c-8f1c-e072706f98fa",
+                "id": "b397c94b-9245-4d62-8dfe-b9b70c611ecb",
                 "ord": "a0"
               },
               {
                 "kind": "element",
                 "tag": "div",
                 "class": "absolute inset-0 bg-black/65",
-                "id": "64486a3e-305d-4803-b944-77ce252ade82",
+                "id": "39a2cdfc-e688-40c5-ae97-121f0b131a2d",
                 "ord": "a1"
               },
               {
@@ -1637,7 +1619,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": ["Book your assessment"],
-                    "id": "5c7b2577-b17d-4dcc-87ab-bc859693ee57",
+                    "id": "ede34a8d-a172-49c7-b1e2-37e42c9c8e95",
                     "ord": "a0"
                   },
                   {
@@ -1647,7 +1629,7 @@
                     "children": [
                       "Choose a service to see prices and live availability, then pick your specialist and time. Every path begins with an assessment."
                     ],
-                    "id": "6f8408a0-d42f-4168-ba24-d6fcfbe5c1ef",
+                    "id": "e67faeae-ad95-4f3d-9908-f35a22dd3764",
                     "ord": "a1"
                   },
                   {
@@ -1663,27 +1645,31 @@
                           "href": "/book"
                         },
                         "children": ["See services below"],
-                        "id": "2a4d8bc1-f9c4-47d7-bd26-b4e7f4427a99",
+                        "id": "382025df-b87e-4301-92f8-4b82f852cfea",
                         "ord": "a0"
                       }
                     ],
-                    "id": "8d6e7ea5-06e9-4330-867d-23194b06d240",
+                    "id": "fbeee010-1d48-4560-85bb-f10f19b08395",
                     "ord": "a2"
                   }
                 ],
-                "id": "92f79d68-6fd1-4dd1-b83f-bbeb61e84f56",
+                "id": "d57d4330-0259-424f-8fde-151e2c89d9aa",
                 "ord": "a2"
               }
             ],
-            "id": "5c174d37-aa9c-4ef7-a72a-18229d7fb08b",
+            "id": "f0601518-49a3-4328-9825-313f988d4d75",
             "ord": "a0"
           },
           {
             "kind": "host",
             "component": "scheduling.services",
             "class": "mx-auto w-full max-w-5xl px-6 py-8",
+            "props": {
+              "heading": "Book with us",
+              "subheading": "Choose a service to see open times and reserve your spot."
+            },
             "locked": "host",
-            "id": "1e586f51-0ca1-4a0e-81e8-41c10a02a30d",
+            "id": "e3776ff4-d43b-43bb-8ffe-3d374970f4c3",
             "ord": "a1"
           },
           {
@@ -1706,7 +1692,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Good to know"],
-                        "id": "51dbc704-443a-49b7-8393-456a89d621a6",
+                        "id": "1b3bb121-76f4-4911-8bb4-8fe22be0ff0b",
                         "ord": "a0"
                       },
                       {
@@ -1716,11 +1702,11 @@
                         "children": [
                           "What happens once you pick a time — and how to change it if something comes up."
                         ],
-                        "id": "40800d23-6bdc-4a30-8b1a-29da87bb7535",
+                        "id": "18064e3b-451e-4fb9-9294-46cf27e35238",
                         "ord": "a1"
                       }
                     ],
-                    "id": "a584e100-d2fc-43cc-87ac-b3b8991835f2",
+                    "id": "49c5fb71-6350-4886-beaf-370f6f00efb8",
                     "ord": "a0"
                   },
                   {
@@ -1738,7 +1724,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Standard booking"],
-                            "id": "2a88e366-4bc5-4e8c-b1ad-36db950dfc64",
+                            "id": "2033ff77-3b1b-4856-81c8-b3d28b81a7ec",
                             "ord": "a0"
                           },
                           {
@@ -1748,7 +1734,7 @@
                             "children": [
                               "Please give us at least 24 hours’ notice to change or cancel a session. We send a reminder the day before and two hours ahead so it never sneaks up on you."
                             ],
-                            "id": "663e5e44-d199-4f93-8d76-35f5ce54be2e",
+                            "id": "d283b5fb-eb92-4dc1-aecb-6f5d1935fc44",
                             "ord": "a1"
                           },
                           {
@@ -1758,11 +1744,11 @@
                             "children": [
                               "No deposit to book. Change or cancel free up to 24 hours before."
                             ],
-                            "id": "fbce1c26-9376-4b39-a13e-3a49fe83cbf4",
+                            "id": "8e1f1170-8349-43d2-8018-a10fe80a1972",
                             "ord": "a2"
                           }
                         ],
-                        "id": "d15b5a99-f0d8-45cb-a053-a887f31a002c",
+                        "id": "c43be4b4-1f17-4e6a-a532-3a82fc6945f2",
                         "ord": "a0"
                       },
                       {
@@ -1775,7 +1761,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Board-and-train deposit"],
-                            "id": "126e46d0-2e8b-4cbe-abda-8f43a620bab4",
+                            "id": "66a7cf17-26ac-4f84-8bcc-4f612aafdb6e",
                             "ord": "a0"
                           },
                           {
@@ -1785,7 +1771,7 @@
                             "children": [
                               "Board-and-train places are limited, so a $200 deposit reserves your dog’s spot and comes off the program tuition. Reschedule with 48 hours’ notice and it carries over."
                             ],
-                            "id": "862f2673-c81e-4768-9b05-e986a662024a",
+                            "id": "f426106e-7cb1-401e-8b3c-84205eafdf6b",
                             "ord": "a1"
                           },
                           {
@@ -1795,23 +1781,23 @@
                             "children": [
                               "A $200 deposit holds your place. Change or cancel free up to 2 days before."
                             ],
-                            "id": "04cb4b56-ca0f-4fd3-917e-037dfc6f9631",
+                            "id": "b0ea2021-67e5-4de6-99c6-00d527f93448",
                             "ord": "a2"
                           }
                         ],
-                        "id": "7d4c2cba-ae3b-4b65-bfa3-226c0255d1f4",
+                        "id": "9ad8c8eb-75ff-4bc9-9775-3e275c60293e",
                         "ord": "a1"
                       }
                     ],
-                    "id": "b4e9582b-3c07-4434-ac63-5099394b7ea8",
+                    "id": "0e30d7a0-5507-4ab0-9738-4e1711c410a6",
                     "ord": "a1"
                   }
                 ],
-                "id": "78455b90-01bc-4e2c-a716-954cad003f3a",
+                "id": "304fa0cc-037e-458b-bf17-ca6929fe05d5",
                 "ord": "a0"
               }
             ],
-            "id": "2296b8f6-74a4-4bbd-85ee-f160ccabe9b2",
+            "id": "980ac3b3-8132-42a6-87f9-f827e6b2401d",
             "ord": "a2"
           }
         ]
@@ -1828,7 +1814,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "774371aa-dd94-4035-910c-d4e3b74e44ec",
+        "id": "a28809b7-30af-40b0-8f35-99adc5a7ce90",
         "children": [
           {
             "kind": "element",
@@ -1849,7 +1835,7 @@
                       "alt": "A focused working dog holding a steady sit, eyes locked on its handler",
                       "loading": "lazy"
                     },
-                    "id": "0f69de87-6559-495d-a778-c919c99121d1",
+                    "id": "f843065e-4348-416e-b6f6-42571b63bc9a",
                     "ord": "a0"
                   },
                   {
@@ -1862,7 +1848,7 @@
                         "tag": "h1",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["About K9 Method"],
-                        "id": "b1ceb600-1fd0-4cba-823f-877ad8fb8061",
+                        "id": "13efd0a0-08be-4451-85ae-117001e33a00",
                         "ord": "a0"
                       },
                       {
@@ -1872,7 +1858,7 @@
                         "children": [
                           "K9 Method exists for the dogs that group classes and quick fixes couldn’t reach — the reactive, the anxious, the ones with a bite history and an owner running out of options. We take those cases seriously, and we get results."
                         ],
-                        "id": "d5ec1173-05f8-4c1f-9f64-3e2e50493f57",
+                        "id": "ca2eeee1-1ed8-4343-9ceb-cd546bdb2d67",
                         "ord": "a1"
                       },
                       {
@@ -1882,7 +1868,7 @@
                         "children": [
                           "Our promise is simple: an honest assessment, a plan grounded in how dogs actually learn, and a specialist who treats your dog’s behavior — and your family’s safety — like it matters. Because it does."
                         ],
-                        "id": "3f4496fc-37a0-4547-ac01-10da9e65b78a",
+                        "id": "145e865d-026b-4cc3-98aa-b76175734735",
                         "ord": "a2"
                       },
                       {
@@ -1898,23 +1884,23 @@
                               "href": "/book"
                             },
                             "children": ["Book an assessment"],
-                            "id": "53c73b80-50ca-4fc9-b950-4839c1dafd7d",
+                            "id": "f9e4087e-5733-46fc-a226-f58b3486935a",
                             "ord": "a0"
                           }
                         ],
-                        "id": "4e6c1f91-63cf-462b-8812-0d7bc06ceafc",
+                        "id": "ec6921f6-4766-48b0-b1cf-019141953044",
                         "ord": "a3"
                       }
                     ],
-                    "id": "7cb8fe7a-66a5-4f98-b68f-996a48a58af6",
+                    "id": "0bc32b27-3fce-4100-8ed2-d4d802ddf3e6",
                     "ord": "a1"
                   }
                 ],
-                "id": "245db915-c95a-4e29-a129-a3db3b135f6f",
+                "id": "899b9b3e-5703-4c4b-9c65-58fa28d3e2b2",
                 "ord": "a0"
               }
             ],
-            "id": "64d404f7-b4aa-4ab2-8ca6-3c5464d9a3c1",
+            "id": "d40f62ee-3a44-46f9-954e-f4ed78657086",
             "ord": "a0"
           },
           {
@@ -1932,7 +1918,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                     "children": ["How we work"],
-                    "id": "36648958-0afa-4b98-b853-b743cdafb3f3",
+                    "id": "548c3be5-f3e0-48a9-b9ad-8f06d1e83ffc",
                     "ord": "a0"
                   },
                   {
@@ -1950,7 +1936,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Assessment first"],
-                            "id": "5a6a790a-aadb-4984-8065-dbc2f898f06e",
+                            "id": "e1196032-d18f-4618-9615-4e6d99f1f438",
                             "ord": "a0"
                           },
                           {
@@ -1960,11 +1946,11 @@
                             "children": [
                               "We never sell a program before we understand the dog. Every relationship starts with a real evaluation and a written plan you own."
                             ],
-                            "id": "4552af45-0dcb-4fde-8f18-60db7eaa9ad2",
+                            "id": "798e1702-1278-4fe1-952f-5f3c41c742f9",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7322dba2-4d08-4960-973c-0ba5f9550c7a",
+                        "id": "6c3475e6-a8df-4c64-a08a-6bb567ee50e9",
                         "ord": "a0"
                       },
                       {
@@ -1977,7 +1963,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Humane, modern methods"],
-                            "id": "674b2d4c-32c2-4274-b2d2-af2a94d4549d",
+                            "id": "48513e2d-74a0-4e2c-92f3-e2d55bece544",
                             "ord": "a0"
                           },
                           {
@@ -1987,11 +1973,11 @@
                             "children": [
                               "Clear, consistent, science-based training — no intimidation, no gimmicks. We change behavior by teaching, not by force."
                             ],
-                            "id": "1c87db71-5f6d-4a52-98c2-9542c70b95b7",
+                            "id": "1805b475-789a-42d2-8756-1fb877759639",
                             "ord": "a1"
                           }
                         ],
-                        "id": "7579b030-459c-454d-8cae-fa1d66c82323",
+                        "id": "fa2250d7-a851-4311-8fc9-dfd9069748ea",
                         "ord": "a1"
                       },
                       {
@@ -2004,7 +1990,7 @@
                             "tag": "h3",
                             "class": "text-xl font-semibold text-base-content",
                             "children": ["Built to last"],
-                            "id": "b42badf4-8d9b-4fda-b93d-312c64ff6781",
+                            "id": "3fbcc33d-e86d-47d0-8818-e888eaeb478c",
                             "ord": "a0"
                           },
                           {
@@ -2014,23 +2000,23 @@
                             "children": [
                               "We coach the owner as hard as the dog and back it with lifetime follow-up support, so the transformation holds for good."
                             ],
-                            "id": "b1ba7195-5b4b-4a71-9c6e-64ae42572142",
+                            "id": "96dcb31c-8f85-4020-80c2-17b225750482",
                             "ord": "a1"
                           }
                         ],
-                        "id": "2e737764-4812-4bdb-afd7-320457180471",
+                        "id": "37d13efe-03d8-419e-890d-bc193aacfd06",
                         "ord": "a2"
                       }
                     ],
-                    "id": "36a85ddb-48ee-49bd-a8fc-4a2d5e607458",
+                    "id": "c287efd2-aa1e-4d43-97c5-1d31c26e9957",
                     "ord": "a1"
                   }
                 ],
-                "id": "e72702cf-5155-4c85-9f53-913dd9660b54",
+                "id": "74ed3bef-fb80-4e0f-a574-6b49242ffe69",
                 "ord": "a0"
               }
             ],
-            "id": "76a31f5f-bab2-4c6c-a060-25629eb75c50",
+            "id": "4f9ceab4-8564-4dca-b927-799c1e74f334",
             "ord": "a1"
           }
         ]
@@ -2047,7 +2033,7 @@
         "tag": "div",
         "class": "flex flex-col",
         "label": "Page",
-        "id": "55f0e1e8-33e2-409f-872a-e93740593aba",
+        "id": "c33c86a4-9803-45c8-8bce-53fd93754906",
         "children": [
           {
             "kind": "element",
@@ -2069,7 +2055,7 @@
                         "tag": "h1",
                         "class": "text-4xl font-bold tracking-tight text-base-content @3xl:text-5xl",
                         "children": ["Get in touch"],
-                        "id": "0e06723f-f6ff-4abf-8bea-47d900fa0f63",
+                        "id": "cae09c18-202b-414e-9bbc-70ca5b8db4ac",
                         "ord": "a0"
                       },
                       {
@@ -2079,11 +2065,11 @@
                         "children": [
                           "Questions before you book? Send a note and K9 Method will get back to you — usually the same day."
                         ],
-                        "id": "d96c5d00-143b-4aa7-b767-5605843f290d",
+                        "id": "0626cd5a-2df0-40e3-b1bd-7ce3e44c35e6",
                         "ord": "a1"
                       }
                     ],
-                    "id": "37103cb0-bccc-4d1c-8c99-27ce90938c2f",
+                    "id": "cf66c634-cba1-44f9-a938-79226919cea8",
                     "ord": "a0"
                   },
                   {
@@ -2096,7 +2082,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Call us"],
-                        "id": "bbbe0354-4a4b-41ed-aea8-c8e48bbc925b",
+                        "id": "34eb7705-995c-4fbc-85c9-5117d99d0ebc",
                         "ord": "a0"
                       },
                       {
@@ -2112,7 +2098,7 @@
                               "kind": "value",
                               "ref": "site.identity.phone"
                             },
-                            "id": "04d3aa3b-8f79-4902-b839-fca766412c31",
+                            "id": "20d8f526-5b3b-4d2c-aa6c-143dc82b6061",
                             "ord": "a0"
                           }
                         ],
@@ -2121,7 +2107,7 @@
                           "ref": "site.identity.phoneHref",
                           "attr": "href"
                         },
-                        "id": "728756c6-4d39-49da-a3ee-e11dbda3ac01",
+                        "id": "e7b33b10-f82d-447f-bb66-032b38262391",
                         "ord": "a1"
                       }
                     ],
@@ -2129,7 +2115,7 @@
                       "kind": "visible",
                       "ref": "site.identity.phone"
                     },
-                    "id": "07c878dd-f282-4e16-bb0f-6fc24734a0c3",
+                    "id": "9805e574-b758-422e-aaeb-a52d0730d7d5",
                     "ord": "a1"
                   },
                   {
@@ -2142,7 +2128,7 @@
                         "tag": "span",
                         "class": "text-base font-medium text-base-content",
                         "children": ["Email us"],
-                        "id": "d5a8e7f0-9914-418f-990f-9fc88dba7ab0",
+                        "id": "c52f2edf-f225-416d-8133-a60d3982c645",
                         "ord": "a0"
                       },
                       {
@@ -2158,7 +2144,7 @@
                               "kind": "value",
                               "ref": "site.identity.email"
                             },
-                            "id": "074d79d6-11bf-4f8b-b21f-f1bafd9a3cc5",
+                            "id": "3a6060aa-8561-4d10-92de-fdcca7546238",
                             "ord": "a0"
                           }
                         ],
@@ -2167,7 +2153,7 @@
                           "ref": "site.identity.emailHref",
                           "attr": "href"
                         },
-                        "id": "2cf6139c-f40d-4168-a996-0ad4516d6dd8",
+                        "id": "6e261260-7ad4-408a-bdab-5ed5a4bad940",
                         "ord": "a1"
                       }
                     ],
@@ -2175,7 +2161,7 @@
                       "kind": "visible",
                       "ref": "site.identity.email"
                     },
-                    "id": "d279e0c6-1d86-4edf-bce6-badf94f8920b",
+                    "id": "31185429-e588-4103-b641-5c0367318237",
                     "ord": "a2"
                   },
                   {
@@ -2193,7 +2179,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Your name"],
-                            "id": "4c361767-9548-4850-add5-d93b14784e3d",
+                            "id": "78955220-e457-46f8-9138-50d999eafdee",
                             "ord": "a0"
                           },
                           {
@@ -2205,11 +2191,11 @@
                               "name": "name",
                               "required": true
                             },
-                            "id": "fe17bb27-f05c-41b3-8562-a8106b1255ea",
+                            "id": "608008b6-cbd7-4864-bee3-ab3ea61f8358",
                             "ord": "a1"
                           }
                         ],
-                        "id": "70ab8e63-d398-4300-8d08-37cba2cefe8a",
+                        "id": "021032de-7e63-47a5-9303-fb56601ed628",
                         "ord": "a0"
                       },
                       {
@@ -2222,7 +2208,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Email address"],
-                            "id": "307968e0-c64a-4b79-9abd-2521bba757df",
+                            "id": "b20f2b86-204b-43d5-8a29-2e89f4ed1a55",
                             "ord": "a0"
                           },
                           {
@@ -2234,11 +2220,11 @@
                               "name": "email",
                               "required": true
                             },
-                            "id": "0eccf4af-8b39-4108-8735-cec73a01c0bc",
+                            "id": "b2aed8ca-3a3e-4e38-a89c-d79c1cefeaf0",
                             "ord": "a1"
                           }
                         ],
-                        "id": "f6de21b2-3a9f-42a0-816a-b1171b5df411",
+                        "id": "328ba73d-df85-48a9-a125-96e5eed05a2e",
                         "ord": "a1"
                       },
                       {
@@ -2251,7 +2237,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["Phone number"],
-                            "id": "e2aa3e41-2562-4ac6-9f8d-bacd0227316d",
+                            "id": "db131f2d-5d93-4fe9-933d-37d51672f908",
                             "ord": "a0"
                           },
                           {
@@ -2262,11 +2248,11 @@
                               "type": "tel",
                               "name": "phone"
                             },
-                            "id": "63d887b4-290a-408c-be6f-fd0848c00fd5",
+                            "id": "c03dd901-f062-4aa0-accd-0269cd7fbccf",
                             "ord": "a1"
                           }
                         ],
-                        "id": "a379b0c3-44e1-430d-bb74-89772ee72ebb",
+                        "id": "0a74ed5d-c799-40d1-977b-979b61e17b6b",
                         "ord": "a2"
                       },
                       {
@@ -2279,7 +2265,7 @@
                             "tag": "span",
                             "class": "text-base font-medium text-base-content",
                             "children": ["How can we help?"],
-                            "id": "a3004b7a-bcf3-4675-8fd0-4e2c6040da19",
+                            "id": "0830b716-db21-43d2-9e07-f0c8d49df650",
                             "ord": "a0"
                           },
                           {
@@ -2289,11 +2275,11 @@
                             "attrs": {
                               "name": "message"
                             },
-                            "id": "c9fc0128-e04a-4b7b-862b-97629d0e67c9",
+                            "id": "35f83e2a-9cce-44a2-8ab6-d3220a85f97c",
                             "ord": "a1"
                           }
                         ],
-                        "id": "6bfd3785-45fb-4290-a6bf-4b34cf2db33c",
+                        "id": "7246b052-a0dc-40cd-93ce-f090ade51545",
                         "ord": "a3"
                       },
                       {
@@ -2309,11 +2295,11 @@
                               "type": "submit"
                             },
                             "children": ["Send my request"],
-                            "id": "79afe067-cb26-404e-a37b-0d7390e71768",
+                            "id": "200d32bc-92f6-4718-9c4f-cb1f014778b1",
                             "ord": "a0"
                           }
                         ],
-                        "id": "b2cfb0de-a55c-450d-b99e-73f7cbb78ca6",
+                        "id": "f0b5c359-8c5f-438d-8e87-9352daab46cc",
                         "ord": "a4"
                       }
                     ],
@@ -2324,15 +2310,15 @@
                       "kind": "action",
                       "ref": "submit"
                     },
-                    "id": "5a50cf55-67b4-48cb-9122-2c20d18b5a41",
+                    "id": "99af6a11-31bc-48a2-a8f4-7e9b12805c87",
                     "ord": "a3"
                   }
                 ],
-                "id": "6082624c-465f-4876-abad-ea6930044d83",
+                "id": "1fcbb4b5-6289-4e8f-9a9a-6fb4dfb79322",
                 "ord": "a0"
               }
             ],
-            "id": "d85ac4bd-d43b-4df2-a332-a31518f12b85",
+            "id": "70c7d68f-ea3f-4071-b66c-63521202ce73",
             "ord": "a0"
           },
           {
@@ -2355,7 +2341,7 @@
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
                         "children": ["Visit the training center"],
-                        "id": "3d0cbbf7-3326-48e6-8d26-0484e88b7e83",
+                        "id": "d3c17db5-cba7-4c75-b428-de2369787857",
                         "ord": "a0"
                       },
                       {
@@ -2367,7 +2353,7 @@
                           "kind": "value",
                           "ref": "site.identity.address"
                         },
-                        "id": "5747b5ae-62f8-4943-b2de-aa3ee9a67650",
+                        "id": "93128393-ec65-4d45-a6d9-01fdf178f888",
                         "ord": "a1"
                       },
                       {
@@ -2385,7 +2371,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Monday – Friday"],
-                                "id": "a0ee7842-f5a0-435e-bd0d-065f9ea483cc",
+                                "id": "b681f6eb-2517-4874-ac0b-f873ab35218e",
                                 "ord": "a0"
                               },
                               {
@@ -2393,11 +2379,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 7:00"],
-                                "id": "893bf999-f01e-480d-a74b-fe1f0a7200fa",
+                                "id": "506e5b60-cee6-44de-aacc-4023b4e1c06b",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "cf06fc1a-615c-48bd-bd0d-987c54024a01",
+                            "id": "d1982f14-a587-4337-97d1-b06cfa4c8964",
                             "ord": "a0"
                           },
                           {
@@ -2410,7 +2396,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Saturday"],
-                                "id": "cf2c4915-9c19-46d4-848f-a9fb52d1ab27",
+                                "id": "8b75bf15-639e-4926-af06-56ae0a3025c3",
                                 "ord": "a0"
                               },
                               {
@@ -2418,11 +2404,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["9:00 – 3:00"],
-                                "id": "215b4f5c-cce7-451a-9cd2-5ab0869565ce",
+                                "id": "7cb386f1-f6f2-4d57-af42-ee1d947d3f10",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "590e948d-1bb6-47ab-b035-02e414d8554c",
+                            "id": "aceb3b87-74e2-4f6a-a267-d93295d7ac58",
                             "ord": "a1"
                           },
                           {
@@ -2435,7 +2421,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["Sunday"],
-                                "id": "b8203e1b-a38d-4d2c-ac0c-53b435b71517",
+                                "id": "0c6e43ca-3183-4024-8399-90ba797dbd78",
                                 "ord": "a0"
                               },
                               {
@@ -2443,11 +2429,11 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["Closed"],
-                                "id": "45dc8f20-a28c-4aa8-9e34-5283d93bd260",
+                                "id": "4e1cac1b-c802-4bce-8e96-c0bae67c8ebf",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "203b64bf-94c1-43b5-bdf4-28ff89a19874",
+                            "id": "19f94b99-85f5-4582-9a1a-35cfb3505b5e",
                             "ord": "a2"
                           },
                           {
@@ -2460,7 +2446,7 @@
                                 "tag": "span",
                                 "class": "font-medium text-base-content",
                                 "children": ["In-home sessions"],
-                                "id": "80574022-e220-4167-903a-7c29e5d9dbe0",
+                                "id": "5f9352e1-94aa-44d4-b735-fcb1e88837a2",
                                 "ord": "a0"
                               },
                               {
@@ -2468,19 +2454,19 @@
                                 "tag": "span",
                                 "class": "text-base-content",
                                 "children": ["By appointment"],
-                                "id": "b8a20631-0f77-4a25-902c-33ba868b1e10",
+                                "id": "be9b6db9-7a77-46e2-a2d5-12ca55817717",
                                 "ord": "a1"
                               }
                             ],
-                            "id": "10360759-f754-4709-90bb-325b248e0295",
+                            "id": "f752604d-197b-478d-ab79-11b10c6e1179",
                             "ord": "a3"
                           }
                         ],
-                        "id": "2483a43a-1a4a-4ff3-a74b-a8faf349761f",
+                        "id": "41e55803-bed9-435a-820c-71a813e44603",
                         "ord": "a2"
                       }
                     ],
-                    "id": "40cd9958-3c93-4d1d-86b3-a07abae819e0",
+                    "id": "f1a372ef-fad6-4cc7-a7ed-8422ff806613",
                     "ord": "a0"
                   },
                   {
@@ -2493,15 +2479,15 @@
                       "zoom": 15,
                       "ratio": "classic"
                     },
-                    "id": "5f097f4f-b58d-4cc6-acaf-c8b0c7a0a2b8",
+                    "id": "b0ad862b-3002-4a04-813e-6439d48868dd",
                     "ord": "a1"
                   }
                 ],
-                "id": "723ae7fc-a4cd-4e06-a948-66c9e1141614",
+                "id": "318f6bd0-ee4b-4434-ab24-05ac9f21a547",
                 "ord": "a0"
               }
             ],
-            "id": "cb9b8548-d831-485f-82b4-4e1494ab58c2",
+            "id": "12f4f5ed-f8c6-44cc-b4b4-38c5aa057af1",
             "ord": "a1"
           },
           {
@@ -2519,7 +2505,7 @@
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight @3xl:text-4xl",
                     "children": ["Rather book than call?"],
-                    "id": "9b3c9814-6b87-43e5-a6a9-46519444a6a4",
+                    "id": "63cbd04d-9656-4d0e-aa34-a8e35ad3a107",
                     "ord": "a0"
                   },
                   {
@@ -2529,7 +2515,7 @@
                     "children": [
                       "See live availability and reserve your assessment online — no phone tag, no waiting on a callback."
                     ],
-                    "id": "705eb3e6-d73e-4481-9af6-c499b2a2d80a",
+                    "id": "9db704ce-5b40-4bba-a05c-7fb7c327a572",
                     "ord": "a1"
                   },
                   {
@@ -2540,15 +2526,15 @@
                       "href": "/book"
                     },
                     "children": ["Book an assessment"],
-                    "id": "8facb029-a23e-4fbd-b07e-80c7a09e40a1",
+                    "id": "0b61fecb-fe80-4995-880d-db5021586572",
                     "ord": "a2"
                   }
                 ],
-                "id": "20007f42-acb8-4f85-86be-9fb59d75624a",
+                "id": "a829c222-caa7-4642-91cd-65a78f1b313a",
                 "ord": "a0"
               }
             ],
-            "id": "b948e700-030a-4dc8-87b6-ccb91be3fc66",
+            "id": "1d6ecb1b-d91d-40a6-9f37-38668e4b16e2",
             "ord": "a2"
           }
         ]

@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-eventplanner-modern',
-  version: '1.3.3',
+  version: '1.4.0',
   name: 'Event Planner (Modern)',
   summary:
     'A bold, modern site for corporate & social event planners — a crisp near-white palette, a confident navy primary and a punchy coral accent, with a clean modern sans. Installs online booking for consultations: a real consult menu (discovery call through gala and brand-activation), three producers you book by name with their own hours, and a planning-deposit policy. Ships as "Assembly Events", a full-service event production studio.',

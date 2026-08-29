@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-petgroom-boutique',
-  version: '1.3.3',
+  version: '1.4.0',
   name: 'Pet Grooming (Boutique)',
   summary:
     'An upscale, boutique pet-spa site — a warm ivory ground, a deep-plum primary and a blush accent, with an elegant serif display and calm photography. Installs a working booking flow: a real spa menu (signature groom, breed hand styling, spa add-ons, cat grooming), three master groomers you book by name, two private suites as bookable rooms, and a deposit policy. Ships as "The Groom Room".',

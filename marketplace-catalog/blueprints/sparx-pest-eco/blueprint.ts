@@ -11,7 +11,7 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-pest-eco',
-  version: '1.3.3',
+  version: '1.4.0',
   name: 'Pest Control (Eco)',
   summary:
     'An eco, botanical pest-control site — a natural sage-and-clay palette on a soft cream ground, refined type and calm, natural photography. Installs a working booking flow: real inspections and treatments (free inspection, botanical treatment, natural rodent control, IPM assessment, ant and mosquito treatments, recurring-plan setup), three technicians you book by name with their own hours, and a low-toxicity promise safe for kids and pets. Ships as "GreenShield Pest Solutions".',

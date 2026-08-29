@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-wine-shop',
-  version: '1.4.3',
+  version: '1.5.0',
   name: 'Natural Wine Shop',
   summary:
     'A complete, working shop for a natural-wine bottle shop: a real catalogue of low-intervention bottles — a pét-nat, a skin-contact orange, a chillable red, a mineral white, a dry rosé, a magnum, a mixed six and a non-alc — with categories, collections, a bespoke bottle-shop PDP and a fully merchandised home page. Low-lit cellar theme — deep plum-charcoal ground, warm cream ink, a wine-garnet primary and a brass accent. Shipped as Sediment.',

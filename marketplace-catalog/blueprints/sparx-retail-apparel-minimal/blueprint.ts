@@ -15,7 +15,7 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-apparel-minimal',
-  version: '1.4.3',
+  version: '1.5.0',
   name: 'Fashion Boutique (Minimal)',
   summary:
     'A complete, working shop for a quiet-luxury clothing boutique: a real wardrobe of essentials — tees, an oxford shirt, heavyweight and fine knitwear, tailored and wide-leg trousers, an overcoat, a scarf and a leather tote — each sized XS–XL in a tight color palette, with categories, collections, a bespoke editorial PDP and a merchandised home page. Warm bone paper, near-black mono type, no accent — the clothes are the color. Shipped as Kestrel.',

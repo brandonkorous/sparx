@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-retail-records-vinyl",
   "name": "Record Shop (Vinyl)",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "tagline": "A dark, working storefront for an independent record shop.",
   "description": "A complete, working shop for an independent record store: a real catalogue of vinyl LPs across genres, a turntable, a slipmat, a record-cleaning kit, a tote and a monthly Wax Club subscription, with categories, collections, a bespoke crate-digger PDP and a full merchandised home page. Moody dark theme — near-black ground, hot-magenta primary, electric-cyan accent; the album covers carry the color. Shipped as Third Side Records.",
   "payload": "blueprint.ts",
