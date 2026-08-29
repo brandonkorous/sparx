@@ -93,4 +93,17 @@ module "dns" {
   # to that zone, or revert this to false and keep agconn.com's records in
   # AgConnect's state — what must not happen is two states writing them.
   agconn_dns_enabled = true
+
+  # OFF until the site is verified in-cluster. Turning this on REPOINTS the
+  # wize.works apex (the records carry `allow_overwrite`), so it is a cutover,
+  # not an adoption — same as kanNINJA's and AGCONN's switches above.
+  #
+  # The `admin` record in this zone is NOT gated by this and is unaffected; it
+  # has been serving the operator console for months.
+  #
+  # Preconditions in variables.tf. The one that fails confusingly is the TLS
+  # allow-list: without `wize.works` in api-rest's PLATFORM_HOSTNAMES, on-demand
+  # issuance is denied at the ask endpoint and the site presents a CERTIFICATE
+  # error rather than a 404 — which reads like DNS and is not.
+  wizeworks_dns_enabled = false
 }
