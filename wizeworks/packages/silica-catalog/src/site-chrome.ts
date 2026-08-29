@@ -704,7 +704,10 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
     // and nothing ever drew what she added (issue 326). The live core is the other
     // half. It renders NOTHING until she lists an account, so it costs a brand-new
     // site exactly what three nulls did, and starts working the moment she fills it in.
-    social1: hostCore(HOST_KEYS.siteSocialLinks, 'mt-2 flex items-center gap-1'),
+    // No class: this fills the block's FIRST social slot, so the core lands inside the row
+    // the block already spaces (`mt-2 flex items-center gap-5`), and `SocialLinks` lays the
+    // marks out itself. Anything here would be a third opinion about the same row.
+    social1: hostCore(HOST_KEYS.siteSocialLinks),
     social2: null,
     social3: null,
     col1: { text: 'Explore', href: '/' },

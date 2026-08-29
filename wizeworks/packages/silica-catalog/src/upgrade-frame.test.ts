@@ -451,13 +451,13 @@ describe('upgradeFrameChrome — healing hardcoded legal links', () => {
 });
 
 describe('upgradeFrameChrome — social links', () => {
-  /** Juniper Row's ACTUAL stored footer, read off `builder_layouts` (issue 326): the
-   *  brand column is `site.brand` + the blurb + an EMPTY `<ul>` where `siteFooter`
-   *  filled three social slots with null, all of it under `div > [header, main, footer]`.
+  /** Juniper Row's ACTUAL stored footer, read off `builder_layouts` (issue 326): the brand
+   *  column is `site.brand` + the blurb + the EMPTY `<ul>` left where `siteFooter` filled
+   *  three social slots with null, all of it under `div > [header, main, footer]`.
    *  Written from the row rather than from the factory for the reason issue 296 cost a
    *  whole repair: a fixture shaped the way the code expects proves nothing about the
    *  shape the database holds. */
-  const publishedFrame = (socialSlot: Node | null): Node =>
+  const columnsFooter = (socialSlot: Node | null): Node =>
     el('div', 'flex min-h-screen flex-col', {
       children: [
         el('header', '', { children: [el('nav', 'navbar', { children: [] })] }),
@@ -475,9 +475,85 @@ describe('upgradeFrameChrome — social links', () => {
                         ...(socialSlot ? [socialSlot] : []),
                       ],
                     }),
+                    // The SECOND link column, emptied by the seed — a `<ul>` with nothing
+                    // in it that is not the social row and must never be read as one.
                     el('div', 'flex flex-col gap-3', {
-                      children: [el('p', '', { text: 'Explore' })],
+                      children: [el('ul', 'flex flex-col gap-2', { children: [] })],
                     }),
+                  ],
+                }),
+                // The copyright row, whose own link trio the seed drops — the other empty
+                // `<ul>`, and the one that shares `items-center` with the social row.
+                el('div', 'mt-12 flex flex-col gap-4 border-t border-base-200 pt-6', {
+                  children: [
+                    el('p', 'text-sm', { text: '© Juniper Row' }),
+                    el('ul', 'flex flex-wrap items-center gap-x-6 gap-y-2', { children: [] }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+
+  /** The `newsletter` variant, which reserves its social row in the BOTTOM BAR beside the
+   *  copyright rather than beside the brand mark. Forty six shipped designs are shaped
+   *  this way, and a rule keyed on "the empty row next to the brand core" could not reach
+   *  a single one of them. */
+  const newsletterFooter = (): Node =>
+    el('div', 'flex min-h-screen flex-col', {
+      children: [
+        el('main', 'flex-1', { children: [{ kind: 'outlet' }] }),
+        el('footer', '@container bg-base-200 border-t border-base-300', {
+          children: [
+            el('div', 'mx-auto w-full max-w-6xl px-6 py-14', {
+              children: [
+                el('div', 'grid grid-cols-1 gap-10 @3xl:grid-cols-2', {
+                  children: [
+                    el('div', 'flex flex-col gap-4', {
+                      children: [
+                        hostCore(HOST_KEYS.siteBrand, 'wordmark', { show: 'both' }),
+                        el('p', 'max-w-sm text-sm', { text: 'Join the list.' }),
+                      ],
+                    }),
+                  ],
+                }),
+                el('div', 'mt-12 flex flex-col gap-4 border-t border-base-300 pt-6', {
+                  children: [
+                    el('p', 'text-sm', { text: '© Juniper Row' }),
+                    el('ul', 'flex items-center gap-5', { children: [] }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+      ],
+    });
+
+  /** The golden `sparx` capture and the twenty one designs cloned from it: a footer old
+   *  enough to predate the social slots AND the brand core, so its identity column is a
+   *  stamped name and blurb with nothing live in it. There is no row to take here — the
+   *  question is whether the core still reaches a business on one of these designs. */
+  const capturedFooter = (): Node =>
+    el('div', 'flex min-h-screen flex-col', {
+      children: [
+        el('main', 'flex-1', { children: [{ kind: 'outlet' }] }),
+        el('footer', '@container border-t border-base-300 bg-base-200 px-6 py-12', {
+          children: [
+            el('div', 'mx-auto grid max-w-6xl gap-10 @sm:grid-cols-2 @lg:grid-cols-4', {
+              children: [
+                el('div', 'flex flex-col gap-3', {
+                  children: [
+                    el('span', 'text-lg font-bold', { text: 'Juniper Row' }),
+                    el('p', 'max-w-xs text-sm', { text: 'Cut and sewn in Denver.' }),
+                  ],
+                }),
+                el('div', 'flex flex-col gap-3', {
+                  children: [
+                    el('h2', 'text-sm font-semibold', { text: 'Explore' }),
+                    el('a', 'text-sm', { text: 'Shop' }),
                   ],
                 }),
               ],
@@ -498,72 +574,102 @@ describe('upgradeFrameChrome — social links', () => {
     return out;
   };
 
-  it('puts the live core in the empty row a published footer left beside the brand', () => {
-    const frame = publishedFrame(el('ul', 'mt-2 flex items-center gap-5', { children: [] }));
+  const isSocial = (n: Node): boolean =>
+    n.kind === 'host' && n.component === HOST_KEYS.siteSocialLinks;
+
+  /** The element the core ended up inside, so a test can say WHERE and not just whether. */
+  const socialParent = (node: Node): { class?: string; children?: (Node | string)[] } | null => {
+    if (node.kind !== 'element') return null;
+    const children = node.children ?? [];
+    if (children.some((c) => typeof c !== 'string' && isSocial(c))) return node;
+    for (const c of children) {
+      if (typeof c === 'string') continue;
+      const found = socialParent(c);
+      if (found) return found;
+    }
+    return null;
+  };
+
+  it('takes the row the columns footer reserved beside the brand', () => {
+    const frame = columnsFooter(el('ul', 'mt-2 flex items-center gap-5', { children: [] }));
     const { root, changed } = upgradeFrameChrome(frame);
     expect(changed).toBe(true);
     expect(socialCores(root)).toHaveLength(1);
+
+    // Third child of the brand column, exactly where the empty `<ul>` sat: after the mark
+    // and the blurb.
+    const kids = socialParent(root)?.children ?? [];
+    expect(kids).toHaveLength(3);
+    expect((kids[0] as { component?: string }).component).toBe(HOST_KEYS.siteBrand);
+    expect(isSocial(kids[2] as Node)).toBe(true);
   });
 
-  it('keeps the row where the footer already reserved space for it', () => {
-    const frame = publishedFrame(el('ul', 'mt-2 flex items-center gap-5', { children: [] }));
-    const { root } = upgradeFrameChrome(frame);
-    const column = JSON.parse(JSON.stringify(root)) as Record<string, unknown>;
-    const find = (n: unknown): Record<string, unknown> | null => {
-      if (!n || typeof n !== 'object') return null;
-      const node = n as Record<string, unknown>;
-      const kids = Array.isArray(node.children) ? node.children : [];
-      if (kids.some((c) => (c as Record<string, unknown>)?.component === HOST_KEYS.siteBrand)) {
-        return node;
-      }
-      for (const c of kids) {
-        const hit = find(c);
-        if (hit) return hit;
-      }
-      return null;
-    };
-    const brandColumn = find(column);
-    const kids = (brandColumn?.children ?? []) as Record<string, unknown>[];
-    // Third child, exactly where the empty `<ul>` sat: after the mark and the blurb.
-    expect(kids[2]?.component).toBe(HOST_KEYS.siteSocialLinks);
+  it('takes the row the newsletter footer reserved beside the copyright', () => {
+    // The shape a brand-column rule structurally could not reach.
+    const { root, changed } = upgradeFrameChrome(newsletterFooter());
+    expect(changed).toBe(true);
+    expect(socialCores(root)).toHaveLength(1);
+    expect(socialParent(root)?.class).toContain('border-t');
   });
 
-  it('is idempotent — a second pass adds nothing', () => {
+  it('does not mistake an emptied link list for the reserved row', () => {
+    // Both of the footer's OTHER empty `<ul>`s are in this fixture, and neither is a social
+    // row: one is the seed's emptied second link column, the other the dropped copyright
+    // link trio — which even shares `items-center` with the real one.
+    const { root, changed } = upgradeFrameChrome(columnsFooter(null));
+    expect(socialCores(root)).toHaveLength(0);
+    expect(changed).toBe(false);
+  });
+
+  it('reaches the captured cohort, which never had a row at all', () => {
+    // Twenty two shipped designs. Declining here would mean a business on any of them can
+    // list her accounts in Site identity and never see them on her own site.
+    const { root, changed } = upgradeFrameChrome(capturedFooter());
+    expect(changed).toBe(true);
+    expect(socialCores(root)).toHaveLength(1);
+
+    // Under the blurb, in the identity column — never in a link column.
+    const kids = socialParent(root)?.children ?? [];
+    expect(kids).toHaveLength(3);
+    expect((kids[0] as { tag?: string }).tag).toBe('span');
+    expect(isSocial(kids[2] as Node)).toBe(true);
+  });
+
+  it('declines when a live column had the row and the author removed it', () => {
+    // The other side of the fixture above: a column carrying the brand CORE is from the era
+    // that shipped the row, so its absence is a decision rather than an omission. The
+    // captured cohort is told apart by having nothing live in that column at all.
+    const { root, changed } = upgradeFrameChrome(columnsFooter(null));
+    expect(socialCores(root)).toHaveLength(0);
+    expect(changed).toBe(false);
+  });
+
+  it('is idempotent — a second pass adds nothing, in either placement', () => {
     const once = upgradeFrameChrome(
-      publishedFrame(el('ul', 'mt-2 flex items-center gap-5', { children: [] }))
+      columnsFooter(el('ul', 'mt-2 flex items-center gap-5', { children: [] }))
     );
     const twice = upgradeFrameChrome(once.root);
     expect(twice.changed).toBe(false);
     expect(socialCores(twice.root)).toHaveLength(1);
+
+    const captured = upgradeFrameChrome(capturedFooter());
+    const again = upgradeFrameChrome(captured.root);
+    expect(again.changed).toBe(false);
+    expect(socialCores(again.root)).toHaveLength(1);
   });
 
-  it('declines rather than guessing when the author deleted the row', () => {
-    // No empty `<ul>` beside the brand. Inventing a placement in somebody's footer is
-    // worse than leaving it alone — she can drag the core in herself.
-    const { root, changed } = upgradeFrameChrome(publishedFrame(null));
-    expect(socialCores(root)).toHaveLength(0);
-    expect(changed).toBe(false);
-  });
-
-  it('leaves an empty list that is not beside the brand mark alone', () => {
-    const frame = el('div', '', {
-      children: [
-        el('main', 'flex-1', { children: [{ kind: 'outlet' }] }),
-        el('footer', '', {
-          children: [
-            // An author's own empty list, in a column with no brand mark in it.
-            el('div', '', { children: [el('ul', '', { children: [] })] }),
-          ],
-        }),
-      ],
-    });
-    const { root, changed } = upgradeFrameChrome(frame);
-    expect(socialCores(root)).toHaveLength(0);
-    expect(changed).toBe(false);
+  it('gives the core no row class of its own', () => {
+    // `SocialLinks` lays the marks out itself, so a second `gap-*` here would be settled by
+    // stylesheet order rather than by anything anyone wrote.
+    const { root } = upgradeFrameChrome(
+      columnsFooter(el('ul', 'mt-2 flex items-center gap-5', { children: [] }))
+    );
+    const [core] = socialCores(root) as { class?: string }[];
+    expect(core?.class).toBe('mt-2');
   });
 
   it('does not mutate the input tree', () => {
-    const frame = publishedFrame(el('ul', 'mt-2 flex itemsecenter gap-5', { children: [] }));
+    const frame = columnsFooter(el('ul', 'mt-2 flex items-center gap-5', { children: [] }));
     const before = JSON.stringify(frame);
     upgradeFrameChrome(frame);
     expect(JSON.stringify(frame)).toBe(before);

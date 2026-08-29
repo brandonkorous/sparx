@@ -546,8 +546,11 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     category: 'Your site',
     icon: 'share',
     hint: 'The social accounts you list in Site identity, as a row of marks. Always current, and hidden entirely until you add one. Put it in your footer.',
-    // A horizontal mark row, matching the slot the footer blocks already leave for it.
-    defaultClass: 'mt-2 flex items-center gap-1',
+    // POSITIONING ONLY. The renderer's own `SocialLinks` already lays the marks out as a
+    // wrapped row (`flex flex-wrap items-center gap-1`), so a row class here would be a
+    // second, conflicting one — two `gap-*` utilities on one element resolve by stylesheet
+    // order, not by the order they are written, which is a coin toss rather than a design.
+    defaultClass: 'mt-2',
     // Not pinned, for the same reason as the legal links: the tenant owns where their
     // socials sit, and a site with none would otherwise carry an undeletable empty row.
     pinned: false,

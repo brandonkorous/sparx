@@ -147,24 +147,129 @@ function upgradeLegalLinks(node: Node): Node | null {
   return changed ? { ...node, children: next } : null;
 }
 
-/** The seeded socials slot: an EMPTY `<ul>`. `siteFooter` filled the footer block's three
- *  social slots with `null`, which collapses the row to a bare list with nothing in it. */
-function isEmptySocialSlot(node: Node): boolean {
-  return isElement(node) && node.tag === 'ul' && (node.children ?? []).length === 0;
+/** The social row every footer block reserves, as the SEED leaves it: an empty `<ul>`
+ *  wearing the block's own row classes. `siteFooter` filled the three social slots with
+ *  `null` rather than publish three dead `#` links, which collapses the row to a bare
+ *  list with nothing in it.
+ *
+ *  Matched on `items-center` + `gap-5` LITERALLY, the way the legal pair is matched on
+ *  its hrefs, and measured before it was written. The alternative — "an empty `<ul>` in
+ *  the footer" — is ambiguous: the `columns` block leaves THREE, because the emptied
+ *  second link column (`flex flex-col gap-2`) and the dropped copyright-row link trio
+ *  (`flex flex-wrap items-center gap-x-6 gap-y-2`) collapse the same way. Those two are
+ *  link lists that happen to be empty; this is the row the block reserved for marks, and
+ *  the two classes are what separate them.
+ *
+ *  It replaced an earlier handle that looked for the empty row beside the `site.brand`
+ *  core, on the argument that beside the brand mark is where every variant seeds it. It
+ *  is not: the `newsletter` footer puts its social row in the BOTTOM BAR next to the
+ *  copyright, so that rule reached 123 of the 191 shipped designs and structurally could
+ *  not reach the other 46 — the same shape of miss the account link made by keying on a
+ *  slot the older frames were written before (issue 313). */
+function isSeededSocialRow(node: Node): boolean {
+  if (!isElement(node) || node.tag !== 'ul') return false;
+  if ((node.children ?? []).length > 0) return false;
+  const classes = (node.class ?? '').split(/\s+/);
+  return classes.includes('items-center') && classes.includes('gap-5');
 }
 
-/** The BRAND column of a footer — the element holding the `site.brand` core directly.
- *  Scoping to it is what keeps this repair from putting a business's Instagram somewhere
- *  arbitrary: the empty `<ul>` only means "socials" beside the brand mark, which is where
- *  every footer variant seeds it. */
-function isBrandColumn(node: Node): boolean {
+/** All the core needs, in either placement: a little air above it.
+ *
+ *  NOT the row's own `flex items-center gap-5`. `SocialLinks` lays the marks out itself
+ *  (`flex flex-wrap items-center gap-1`), so handing it a second row class puts two
+ *  `gap-*` utilities on one element, and which of them wins is decided by stylesheet
+ *  order rather than by anything written here. The row it replaces sits inside a column
+ *  that already spaces its children, so the layout the `<ul>` was carrying is not lost —
+ *  it was never the `<ul>`'s to carry once a component owns the row. */
+const SOCIAL_CORE_CLASS = 'mt-2';
+
+/** Put the live core where the block reserved the row. */
+function placeInReservedRow(node: Node): Node | null {
+  if (!isElement(node)) return null;
+  const children = node.children ?? [];
+
+  const index = children.findIndex((c) => typeof c !== 'string' && isSeededSocialRow(c));
+  if (index !== -1) {
+    const swapped = [...children];
+    swapped[index] = hostCore(HOST_KEYS.siteSocialLinks, SOCIAL_CORE_CLASS);
+    return { ...node, children: swapped };
+  }
+
+  let changed = false;
+  const next = children.map((child) => {
+    if (typeof child === 'string' || changed) return child;
+    const upgraded = placeInReservedRow(child);
+    if (!upgraded) return child;
+    changed = true;
+    return upgraded;
+  });
+  return changed ? { ...node, children: next } : null;
+}
+
+function containsTag(node: Node, tag: string): boolean {
   if (!isElement(node)) return false;
-  return (node.children ?? []).some(
-    (c) => typeof c !== 'string' && c.kind === 'host' && c.component === HOST_KEYS.siteBrand
-  );
+  if (node.tag === tag) return true;
+  return (node.children ?? []).some((c) => typeof c !== 'string' && containsTag(c, tag));
 }
 
-/** Put the live `site.social-links` core where the seeded empty row sits.
+function containsAnyHostCore(node: Node): boolean {
+  if (node.kind === 'host') return true;
+  const children = isElement(node) ? (node.children ?? []) : [];
+  return children.some((c) => typeof c !== 'string' && containsAnyHostCore(c));
+}
+
+/** The footer's own column grid — the same handle `siteFooter`'s `columnHome` uses, so
+ *  the two agree about what a footer's columns are. */
+function isColumnGrid(node: Node): boolean {
+  return isElement(node) && ` ${node.class ?? ''} `.includes(' grid ');
+}
+
+/** The cohort with NO reserved row: put the core at the foot of the identity column.
+ *
+ *  Twenty two shipped designs are clones of the golden `sparx` bundle, whose site half is
+ *  CAPTURED from the live Template property rather than generated — so its footer predates
+ *  the social slots entirely and predates the `site.brand` core with them. Its first column
+ *  is a stamped name and blurb: no link, no live core, nothing the platform can key on
+ *  except that absence, which is exactly what dates it.
+ *
+ *  So the column is identified by what a brand column has and a link column does not: no
+ *  anchors and no host cores anywhere inside it. A column carrying a live core is from the
+ *  era that HAD the row, and an author who deleted it there gets no replacement invented
+ *  for them — this places a row only where there was never one to delete.
+ *
+ *  Appended last, under the blurb, which is where the composite's own row sits. */
+function placeInIdentityColumn(node: Node): Node | null {
+  if (!isElement(node)) return null;
+  const children = node.children ?? [];
+
+  if (isColumnGrid(node)) {
+    const index = children.findIndex((c) => typeof c !== 'string' && isElement(c));
+    if (index === -1) return null;
+    const column = children[index] as Element;
+    if (containsTag(column, 'a') || containsAnyHostCore(column)) return null;
+    const swapped = [...children];
+    swapped[index] = {
+      ...column,
+      children: [
+        ...(column.children ?? []),
+        hostCore(HOST_KEYS.siteSocialLinks, SOCIAL_CORE_CLASS),
+      ],
+    };
+    return { ...node, children: swapped };
+  }
+
+  let changed = false;
+  const next = children.map((child) => {
+    if (typeof child === 'string' || changed) return child;
+    const upgraded = placeInIdentityColumn(child);
+    if (!upgraded) return child;
+    changed = true;
+    return upgraded;
+  });
+  return changed ? { ...node, children: next } : null;
+}
+
+/** Give a published footer somewhere to draw the tenant's own social accounts.
  *
  *  Clears this file's bar for a heal: the seed emptied the block's placeholder links and
  *  put nothing in their place, so EVERY published frame carries a dead slot. Site
@@ -173,32 +278,13 @@ function isBrandColumn(node: Node): boolean {
  *  field in sees exactly nothing, forever (issue 326). Seeding the core fixes the next
  *  tenant and leaves all of those broken, which is the whole test.
  *
- *  Takes the empty row's POSITION so the marks land where the footer already reserved
- *  space for them. When the author deleted the row, this does nothing at all rather than
- *  guess a new home — a repair that invents a placement is worse than one that declines. */
+ *  The reserved row first, because that is the position the footer was designed around.
+ *  The identity column only when there is no row anywhere in the footer — the captured
+ *  cohort, which never had one. Anything else declines: a repair that invents a placement
+ *  in somebody's footer is worse than one that leaves it alone, and the core is not
+ *  pinned, so she can drag it in wherever she likes. */
 function upgradeSocialLinks(node: Node): Node | null {
-  if (!isElement(node)) return null;
-  const children = node.children ?? [];
-
-  if (isBrandColumn(node)) {
-    const index = children.findIndex((c) => typeof c !== 'string' && isEmptySocialSlot(c));
-    if (index !== -1) {
-      const swapped = [...children];
-      swapped[index] = hostCore(HOST_KEYS.siteSocialLinks, 'mt-2 flex items-center gap-1');
-      return { ...node, children: swapped };
-    }
-    return null;
-  }
-
-  let changed = false;
-  const next = children.map((child) => {
-    if (typeof child === 'string' || changed) return child;
-    const upgraded = upgradeSocialLinks(child);
-    if (!upgraded) return child;
-    changed = true;
-    return upgraded;
-  });
-  return changed ? { ...node, children: next } : null;
+  return placeInReservedRow(node) ?? placeInIdentityColumn(node);
 }
 
 /** The exact href the starter navbar used to author for its secondary link. Matched
@@ -393,10 +479,13 @@ function hasLinkTo(node: Node, href: string): boolean {
  *      every published site the moment a customer signs in, so seeding the core fixes the
  *      next tenant and leaves every existing one telling their own customers they are
  *      strangers (issue 291).
- *   4. **Social links** — put the live `site.social-links` core in the empty `<ul>` the
- *      seed left beside the brand mark. Same bar again: Site identity promises the links
- *      appear in the footer, the resolver supplies them on every render, and no published
- *      frame has a node that asks for them (issue 326). */
+ *   4. **Social links** — put the live `site.social-links` core in the row the footer
+ *      block reserved for marks and the seed left empty, or — for the captured cohort,
+ *      whose footer predates the slots — at the foot of the identity column. Same bar
+ *      again: Site identity promises the links appear in the footer, the resolver supplies
+ *      them on every render, and no published frame has a node that asks for them
+ *      (issue 326). Measured against all 191 shipped designs rather than argued: the first
+ *      handle read "the empty row beside the brand core" and reached 122 of them. */
 export function upgradeFrameChrome(root: Node): { root: Node; changed: boolean } {
   if (!isElement(root)) return { root, changed: false };
 
