@@ -33,6 +33,7 @@ import {
 import { PLACEHOLDER_IMAGE } from '@wizeworks/silica-catalog';
 
 import {
+  isNotFound,
   listCollectionProducts,
   listProducts,
   type PublicCollection,
@@ -442,6 +443,34 @@ function setAtPath(root: DataSources, dottedKey: string, value: unknown): void {
   cursor[segs[segs.length - 1] ?? ''] = value;
 }
 
+/**
+ * What a list source does when its fetch REJECTS.
+ *
+ * A list that could not be READ is not a list that is EMPTY (issue 324). Every one of
+ * these catches used to be `.catch(() => setAtPath(root, key, []))`, which is the same
+ * sentence: whatever went wrong, tell the visitor there is nothing here. On Juniper Row
+ * that put "Nothing in the shop just yet. Check back soon." on the homepage of a shop
+ * with 16 published garments, in her own voice, the whole time api-rest was unreachable.
+ *
+ * So only a 404 resolves to `[]` — the collection or content type genuinely is not
+ * there, which is a fact about the site and true to say. Anything else (a dead socket, a
+ * 5xx, a malformed envelope) is rethrown, the page fails, and `app/error.tsx` says the
+ * page did not load and offers the retry. That is already what a product page does in
+ * the same outage; this is the listings catching up with it.
+ *
+ * Rethrowing rather than marking the strip is deliberate. The fix has to reach sites
+ * that are ALREADY PUBLISHED, and their trees are stored rows — a new "could not load"
+ * node in the block factory would only ever appear on pages authored after it (the
+ * lesson of issue 296, where a repair shipped with eight passing tests and repaired
+ * zero tenants). Behaviour at render time reaches all of them today.
+ */
+function emptyOnlyIfGone(root: DataSources, ...keys: readonly string[]) {
+  return (err: unknown): void => {
+    if (!isNotFound(err)) throw err;
+    for (const key of keys) setAtPath(root, key, []);
+  };
+}
+
 /** A currency-aware host formatter: unwrap image objects + render `price` fields as
  *  the site's currency (falling back to the shared `$` formatter's number path). */
 function makeFormat(currency: string, locale: string) {
@@ -726,10 +755,13 @@ export async function buildSilicaHost(
             root[PINS_ROOT] = pins;
           }
         })
-        .catch(() => {
-          if (catalogOnBase) setAtPath(root, 'commerce.product', []);
-          if (p.featured) setAtPath(root, 'commerce.featured', []);
-        })
+        .catch(
+          emptyOnlyIfGone(
+            root,
+            ...(catalogOnBase ? ['commerce.product'] : []),
+            ...(p.featured ? ['commerce.featured'] : [])
+          )
+        )
     );
   }
 
@@ -743,7 +775,7 @@ export async function buildSilicaHost(
           setAtPath(root, 'commerce.product', products);
           recordCatalogPaging(products.length, total);
         })
-        .catch(() => setAtPath(root, 'commerce.product', []))
+        .catch(emptyOnlyIfGone(root, 'commerce.product'))
     );
   }
 
@@ -763,10 +795,13 @@ export async function buildSilicaHost(
           if (p.fresh) setAtPath(root, 'commerce.new', bounded(items, 'commerce.new'));
           if (p.related) setAtPath(root, 'commerce.related', bounded(items, 'commerce.related'));
         })
-        .catch(() => {
-          if (p.fresh) setAtPath(root, 'commerce.new', []);
-          if (p.related) setAtPath(root, 'commerce.related', []);
-        })
+        .catch(
+          emptyOnlyIfGone(
+            root,
+            ...(p.fresh ? ['commerce.new'] : []),
+            ...(p.related ? ['commerce.related'] : [])
+          )
+        )
     );
   }
 
@@ -786,7 +821,7 @@ export async function buildSilicaHost(
               .map((i) => toSilicaProduct(i, tenantSlug))
           )
         )
-        .catch(() => setAtPath(root, `commerce.category.${handle}`, []))
+        .catch(emptyOnlyIfGone(root, key))
     );
   }
 
@@ -819,7 +854,7 @@ export async function buildSilicaHost(
           paging.push(entry);
           setListMeta(root, key, shown.length, entry);
         })
-        .catch(() => setAtPath(root, key, []))
+        .catch(emptyOnlyIfGone(root, key))
     );
   }
 

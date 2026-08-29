@@ -354,6 +354,31 @@ export async function listCollections(tenantSlug: string): Promise<PublicCollect
   return data;
 }
 
+/**
+ * Did an api-rest read fail because the thing is NOT THERE, or because we could not ASK?
+ *
+ * The two look identical at a `catch` and mean opposite things to a shopper. "This
+ * collection was deleted" is a fact about the shop and renders as empty; "api-rest is
+ * unreachable" is a fact about us and must never render as a shop with nothing in it
+ * (issue 324). `publicGet` throws with the envelope's `code`, so a 404 from `notFound()`
+ * arrives as `NOT_FOUND` and a dead socket arrives as a bare fetch `TypeError` with no
+ * code at all — which is exactly the distinction, and why the default here is "could not
+ * ask" rather than "nothing found".
+ */
+export function isNotFound(err: unknown): boolean {
+  return (err as { code?: string } | null)?.code === 'NOT_FOUND';
+}
+
+/** Thrown when no source could answer a listing. Not zero results — no answer. Callers
+ *  let it reach the page so `app/error.tsx` says the page did not load, which is what
+ *  the product page already does in the same outage. */
+export class CatalogUnavailableError extends Error {
+  constructor() {
+    super('api-rest: the catalog could not be read');
+    this.name = 'CatalogUnavailableError';
+  }
+}
+
 export async function getCollection(
   tenantSlug: string,
   handle: string
@@ -366,7 +391,7 @@ export async function getCollection(
     );
     return data;
   } catch (err) {
-    if ((err as { code?: string }).code === 'NOT_FOUND') return null;
+    if (isNotFound(err)) return null;
     throw err;
   }
 }
@@ -563,7 +588,9 @@ export async function searchProducts(
         facets: indexed?.total === listed.total ? indexed.facets : {},
       };
     }
-    return indexed ?? EMPTY_LISTING(filters);
+    // Neither source answered. NOT a shop with nothing in it — see below.
+    if (!indexed) throw new CatalogUnavailableError();
+    return indexed;
   }
 
   const indexed = await askIndex();
@@ -571,7 +598,18 @@ export async function searchProducts(
   // holds nothing for this tenant yet. Ask the database before telling a shopper the
   // shop is empty — when it really is, the fallback returns nothing either.
   if (!indexed || indexed.items.length === 0) {
-    return (await catalogFallback(tenantSlug, filters)) ?? EMPTY_LISTING(filters);
+    const listed = await catalogFallback(tenantSlug, filters);
+    // BOTH said "I could not answer", and the listing has no third source to try. It
+    // used to fabricate a zero here, which is how Juniper Row's shop came to read
+    // "0 products · Nothing in the shop yet" over 16 published garments while a product
+    // page on the same site correctly said it had failed to load (issue 324).
+    //
+    // The zero is the dangerous shape precisely because it renders as a finished page:
+    // her heading, her copy, her footer, `200 OK`, and one sentence telling every
+    // visitor that this business has nothing to sell. Throwing hands the page to
+    // `app/error.tsx`, which says what happened and offers the retry.
+    if (!listed) throw new CatalogUnavailableError();
+    return listed;
   }
   return indexed;
 }
@@ -591,15 +629,10 @@ function browsing(filters: ProductSearchFilters): boolean {
   return true;
 }
 
-function EMPTY_LISTING(filters: ProductSearchFilters): ProductSearchResult {
-  return {
-    items: [],
-    total: 0,
-    page: filters.page ?? 1,
-    perPage: filters.perPage ?? 24,
-    facets: {},
-  };
-}
+// There was an `EMPTY_LISTING(filters)` here — a hand-built `{ items: [], total: 0 }`
+// returned when no source could answer. It is gone rather than unused: the only way to
+// reach a zero on this path is now for a source to have actually said zero, which is
+// the whole of issue 324. Keeping the constructor around is keeping the loaded gun.
 
 /**
  * The catalog itself. What a business sells, from Postgres.
@@ -720,8 +753,8 @@ export async function getProductsByIds(
 /** Hydrate FULL products (options + variants + images) for the Builder data spine
  *  (docs/98 Pillar 7) — by a hand-picked id list (entity pins, order preserved), a
  *  collection id, a category id, or — with none of those — the whole catalog (the
- *  `all` source), capped by `limit`. Returns [] (never throws) so a builder page
- *  degrades to empty rather than erroring. */
+ *  `all` source), capped by `limit`. Returns [] for a source that is GONE, so a stale
+ *  binding degrades to empty; anything else throws (issue 324). */
 export async function getProductsFull(
   tenantSlug: string,
   opts: {
@@ -752,8 +785,13 @@ export async function getProductsFull(
       [`commerce:${tenantSlug}:products`]
     );
     return data;
-  } catch {
-    return [];
+  } catch (err) {
+    // A gone collection/category is empty, and that is true to say. An unreachable
+    // api-rest is not (issue 324) — with no `collection`/`category`/`ids` this call IS
+    // the whole catalog, so swallowing it put an empty shop on a builder page for the
+    // same reason it put one on a silica page.
+    if (isNotFound(err)) return [];
+    throw err;
   }
 }
 

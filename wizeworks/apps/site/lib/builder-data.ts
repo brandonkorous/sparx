@@ -21,7 +21,7 @@ import {
 } from '@wizeworks/builder-schemas';
 
 import { getEntriesByIds, publicGet, type ApiEntry, type BlogPostBody } from './content';
-import { listProducts, type PublicProductListItem } from './commerce';
+import { isNotFound, listProducts, type PublicProductListItem } from './commerce';
 import { mediaUrl } from './media';
 import type { ResolvedSite } from './site-context';
 import { loadCommerceData, productToBuilderRecord } from './builder-commerce-data';
@@ -65,6 +65,18 @@ function setAtPath(root: DataSources, dottedKey: string, value: unknown): void {
     cursor = cursor[seg] as Record<string, unknown>;
   }
   cursor[segs[segs.length - 1] ?? ''] = value;
+}
+
+/** A list that could not be READ is not a list that is EMPTY (issue 324). Only a 404 —
+ *  the content type or catalog genuinely is not there — resolves to `[]`; anything else
+ *  is rethrown so the page says it did not load instead of telling the visitor this
+ *  business has nothing. Mirrors silica-data's `emptyOnlyIfGone`, which carries the full
+ *  reasoning. */
+function emptyOnlyIfGone(root: DataSources, key: string) {
+  return (err: unknown): void => {
+    if (!isNotFound(err)) throw err;
+    setAtPath(root, key, []);
+  };
 }
 
 /**
@@ -299,7 +311,7 @@ export async function loadBuilderData(
             );
           }
         })
-        .catch(() => setAtPath(root, `cms.${type}`, []))
+        .catch(emptyOnlyIfGone(root, `cms.${type}`))
     );
   }
   if (commerce) {
@@ -319,7 +331,7 @@ export async function loadBuilderData(
             );
           }
         })
-        .catch(() => setAtPath(root, 'commerce.product', []))
+        .catch(emptyOnlyIfGone(root, 'commerce.product'))
     );
   }
 
