@@ -2,10 +2,11 @@
 
 // Business details — who the business IS, as a legal entity.
 //
-// This is the account's own record, and it is deliberately NOT a site: a
-// business is "WizeWorks", registered as "WizeWorks LLC", and it may run a site
-// called "sparx". Sites have their own names and brands; this is the entity
-// behind them, and it is what a customer-facing DOCUMENT is issued by.
+// This is the account's own record, and it is deliberately NOT a site: the name
+// customers know a business by, the name it is registered under, and the name of
+// any site it runs are three different strings. Sites have their own names and
+// brands; this is the entity behind them, and it is what a customer-facing
+// DOCUMENT is issued by.
 //
 // Nothing here is required. A business fills it in over time, and an invoice
 // renders with whatever is known rather than blocking on a field nobody set —

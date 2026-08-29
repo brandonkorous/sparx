@@ -117,7 +117,7 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const openItem = (row: BarcodeRow, event: { shiftKey: boolean; altKey: boolean }) => {
     if (!row.productId) return;
-    ctx.open('commerce.products.detail', { id: row.productId }, { target: targetFor(event) });
+    ctx.open('commerce.product.detail', { id: row.productId }, { target: targetFor(event) });
   };
 
   const body = () => {

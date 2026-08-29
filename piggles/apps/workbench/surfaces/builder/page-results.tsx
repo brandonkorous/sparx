@@ -85,7 +85,7 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
   const staleAfterFailure = Boolean(error) && rows.length > 0;
 
   const openEditor = (row: PageResultRow, event: { shiftKey: boolean; altKey: boolean }) => {
-    ctx.open('builder.studio', { pageId: row.pageId }, { target: targetFor(event) });
+    ctx.open('builder.page', { pageId: row.pageId }, { target: targetFor(event) });
   };
 
   return (

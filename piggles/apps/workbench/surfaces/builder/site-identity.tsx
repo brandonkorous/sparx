@@ -454,12 +454,9 @@ function IdentityEditor({
             <SocialLinksEditor socials={socials} setSocials={setSocials} />
           </FormSection>
 
-          {/* Where the rest of it lives. This surface owns the CONTENT of the header
-              and footer — the name, the logo, the links — and says so twice above, but
-              their arrangement and colors are the editor's. Until silicaui 0.36 a host
-              could only ever open that editor on a page BODY, so pointing here would
-              have landed the operator somewhere they still had to go hunting from.
-              `{mode}` lands them on the surface being named. */}
+          {/* This surface owns the CONTENT of the header and footer; their arrangement
+              and colors are the editor's. Two panes, not one pane and a `mode` — the
+              whole-site editor was split per document, and the modes went with it. */}
           <div className="border-base-300 flex flex-wrap items-center gap-3 border-t pt-5">
             <Text className="flex-1 text-base">
               How your header and footer are arranged — and your colors, type, and shapes — are
@@ -470,7 +467,7 @@ function IdentityEditor({
               variant="outline"
               color="module"
               onClick={(event) => {
-                ctx.open('builder.studio', { mode: 'layout' }, { target: targetFor(event) });
+                ctx.open('builder.layout', undefined, { target: targetFor(event) });
               }}
             >
               <Icon glyph={faWindowMaximize} className="size-4" aria-hidden />
@@ -481,7 +478,7 @@ function IdentityEditor({
               variant="outline"
               color="module"
               onClick={(event) => {
-                ctx.open('builder.studio', { mode: 'theme' }, { target: targetFor(event) });
+                ctx.open('builder.theme', undefined, { target: targetFor(event) });
               }}
             >
               <Icon glyph={faPalette} className="size-4" aria-hidden />

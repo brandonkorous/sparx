@@ -148,7 +148,7 @@ export function BarcodeConflictsSurface({ ctx }: { ctx: SurfaceContext }) {
                   color="neutral"
                   size="sm"
                   onClick={() => {
-                    ctx.open('commerce.products.detail', { id: row.productId }, { target: 'tab' });
+                    ctx.open('commerce.product.detail', { id: row.productId }, { target: 'tab' });
                   }}
                 >
                   Open the item

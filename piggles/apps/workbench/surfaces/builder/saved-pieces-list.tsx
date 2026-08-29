@@ -116,8 +116,10 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.open('builder.component', { key: piece.key }, { target: targetFor(event) });
   };
 
+  // A piece is MADE on a page — build it, select it, "Save as a piece" — so this
+  // opens the page editor, which asks which page when it is given none.
   const openEditor = (event: { shiftKey: boolean; altKey: boolean }) => {
-    ctx.open('builder.studio', undefined, { target: targetFor(event) });
+    ctx.open('builder.page', undefined, { target: targetFor(event) });
   };
 
   if (isError) {

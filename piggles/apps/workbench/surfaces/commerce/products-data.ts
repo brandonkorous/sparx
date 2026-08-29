@@ -788,6 +788,13 @@ export function useInvalidateProduct() {
     // A list row shows title, status, price range and variant count, so almost
     // any write moves it.
     void queryClient.invalidateQueries({ queryKey: productKeys.lists() });
+    // "How many products searching cannot find" is derived from the catalog too,
+    // just through another service — so a catalog write moves it exactly the way
+    // it moves a list row. Without this, deleting nine products left the notice
+    // above the list saying "Searching your shop won't find 16 of your products"
+    // over a pane reading `Showing 1-7 of 7`, and the pane's own Refresh did not
+    // settle it because that refetches the products query alone (issue 325).
+    void queryClient.invalidateQueries({ queryKey: ['search', 'status'] });
     if (!productId) return;
     void queryClient.invalidateQueries({ queryKey: productKeys.detail(productId) });
     if (!facet) return;

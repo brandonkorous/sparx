@@ -6,7 +6,7 @@
 // This pane is MANAGE-only: a piece is created in the studio (build, select,
 // "save as a piece"), so there is no `{ id: 'new' }` state here. The identity
 // (name, description) is edited on an explicit Save, last-write-wins, like every
-// other editor; the DESIGN is edited in `builder.studio`, which this pane hands
+// other editor; the DESIGN is edited in `builder.piece`, which this pane hands
 // off to rather than trying to render — a faithful visual preview needs the
 // tenant compile, and that lives in the editor.
 //
@@ -47,6 +47,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { tenantSymbolId } from '../../lib/studio/saved-pieces';
 import {
   countBlocks,
   formatDate,
@@ -218,11 +219,10 @@ function ManagePiece({
   };
 
   const editDesign = (event: { shiftKey: boolean; altKey: boolean }) => {
-    // Hands the visual editing to the studio. The piece is materialized there as the
-    // symbol `tenant:<key>`, so the key is all that travels and the studio enters
-    // that master (`ApplyInitialPiece`). Editing it updates every place it appears.
+    // The piece pane opens the master itself, so every page using it repaints as
+    // this is edited. It takes the SYMBOL id, not the library key.
     const target = event.altKey ? 'window' : event.shiftKey ? 'beside' : 'tab';
-    ctx.open('builder.studio', { componentId: piece.key }, { target });
+    ctx.open('builder.piece', { pieceId: tenantSymbolId(piece.key) }, { target });
   };
 
   const onDelete = async () => {

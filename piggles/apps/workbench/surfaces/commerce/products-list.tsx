@@ -99,7 +99,8 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
   // anything changed inside a grace window, so lag is not counted and a real
   // shortfall is. `null` means the check itself could not run — said nothing
   // about, never rendered as zero.
-  const unfindable = unfindableProductCount(useSearchStatus().data);
+  const searchStatus = useSearchStatus();
+  const unfindable = unfindableProductCount(searchStatus.data);
   const sellableCount = rows.filter((row) => row.status === 'active').length;
   // The OTHER way a live shop quietly sells nothing, and the crueller of the
   // two: the customer is turned away at the last step, after choosing, typing an
@@ -107,6 +108,16 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const paymentsReady = usePaymentsReady();
   /** A refetch failed but the previous window is still on screen. */
   const staleAfterFailure = Boolean(error) && rows.length > 0;
+
+  /** Refresh means everything the pane is showing, not just the rows. The
+   *  notices above the list are read off their own queries, so refetching the
+   *  products alone left "Searching your shop won't find 16 of your products"
+   *  standing over a list of 7 while the control reported it had updated —
+   *  which teaches her that Refresh does not refresh (issue 325). */
+  const refreshPane = () => {
+    void refetch();
+    void searchStatus.refetch();
+  };
 
   /** Anything that changes which rows match returns to the first window and
    *  drops the selection — chosen rows that no longer match would act
@@ -200,9 +211,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
             onCreate={create}
             isFetching={isFetching}
             updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-            }}
+            onRefresh={refreshPane}
           />
         }
       />

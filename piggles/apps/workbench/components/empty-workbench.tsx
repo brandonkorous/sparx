@@ -2,10 +2,10 @@
 
 // Nothing open.
 //
-// Reachable on the stack in a way it never was on the dock: closing the last
-// pane on a phone leaves a genuinely empty screen, where on desktop the grid
-// still framed the space. An empty screen with no way out is a dead end, so
-// this always offers the way back in.
+// Closing the last pane on a phone leaves a genuinely empty screen. An empty
+// screen with no way out is a dead end, so this always offers the way back in —
+// `piggles.home`, this console's Home. `workbench.home` is sparx's and is not
+// registered here, so it opened nothing and left the dead end this prevents.
 
 import { faGrid } from '@fortawesome/pro-solid-svg-icons';
 
@@ -27,7 +27,7 @@ export function EmptyWorkbench() {
           <Button
             color="module"
             onClick={() => {
-              controller.open('workbench.home');
+              controller.open('piggles.home');
             }}
           >
             Start here

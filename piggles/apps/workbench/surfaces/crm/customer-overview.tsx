@@ -108,18 +108,27 @@ function Kpi({ label, value, hint }: { label: string; value: string; hint?: stri
 }
 
 function WorthKpis({ customer }: { customer: Customer }) {
+  // `totalSpent` is money RECEIVED (SUM of amountPaid); `orderCount` counts every
+  // order placed. Dividing one by the other is "what each order has actually
+  // brought in" and NOT the size of an order — the label has to say which, or a
+  // customer with three unpaid orders reads as worth nothing (issue 323).
   const spent = Number(customer.totalSpent);
   const orders = customer.orderCount;
   const avg = orders > 0 ? spent / orders : 0;
+  const nothingCollected = orders > 0 && spent === 0;
 
   return (
     // Commerce's data, so the band reads as Selling — the one signal that these
     // numbers come from orders, not something typed into the CRM.
     <ModuleScope module="commerce">
       <div className="grid grid-cols-2 gap-3 @2xl:grid-cols-4">
-        <Kpi label="Total spent" value={formatMoney(spent)} />
+        <Kpi
+          label="Paid you so far"
+          value={formatMoney(spent)}
+          hint={nothingCollected ? 'None of their orders has been paid yet' : undefined}
+        />
         <Kpi label="Orders" value={orders.toLocaleString()} />
-        <Kpi label="Average order" value={orders > 0 ? formatMoney(avg) : '—'} />
+        <Kpi label="Average paid per order" value={orders > 0 ? formatMoney(avg) : '—'} />
         <Kpi
           label="Last order"
           value={orders > 0 ? describeOrderRecency(customer.lastOrderAt) : 'None yet'}

@@ -587,7 +587,7 @@ function SealedActions({
             size="sm"
             variant="ghost"
             onClick={(event) => {
-              ctx.open('crm.orders.detail', { id: box.orderId }, { target: targetFor(event) });
+              ctx.open('commerce.order.detail', { id: box.orderId }, { target: targetFor(event) });
             }}
           >
             Open {box.orderNumber}

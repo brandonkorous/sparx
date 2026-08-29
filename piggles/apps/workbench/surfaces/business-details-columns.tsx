@@ -29,11 +29,15 @@ export function BusinessMainColumn({
         title="Business"
         description="Who you are as a business. This is what gets printed on invoices, receipts and purchase orders — it is not the name of any of your sites."
       >
+        {/* No placeholder. Every placeholder in this form is a FORMAT hint
+            ("Suite, unit, floor", "US", "USD") and a business name has no
+            format, so the only thing one can hold is an example — which is how
+            this box came to suggest the name of the company selling her the
+            software (issue 321). The label and description say what goes here. */}
         <TextField
           label="Business name"
           value={form.businessName}
           onChange={set('businessName')}
-          placeholder="WizeWorks"
           description="The name customers know you by. It may differ from your registered company name."
         />
         <div className="grid gap-4 @lg:grid-cols-2">

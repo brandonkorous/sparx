@@ -57,7 +57,7 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
   const uncosted = rows.filter((r) => r.valueCents === null).length;
 
   const open = (variantId: string, event: { shiftKey: boolean; altKey: boolean }) => {
-    ctx.open('inventory.stock.detail', { variantId }, { target: targetFor(event) });
+    ctx.open('inventory.stock.item', { variantId }, { target: targetFor(event) });
   };
 
   const body = () => {
