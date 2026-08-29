@@ -54,6 +54,7 @@ function LoadBroadcast({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     data: broadcast,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -64,6 +65,8 @@ function LoadBroadcast({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="broadcast"
             title="Could not load this broadcast"
             description="This is a problem reaching the server, or the broadcast no longer exists. Nothing has been changed."
             onRetry={() => {

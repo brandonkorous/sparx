@@ -67,7 +67,7 @@ const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 export function SubmissionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSubmission(id);
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useSubmission(id);
 
   useEffect(() => {
     if (data) ctx.setTitle(submitterLabel(data));
@@ -78,6 +78,8 @@ export function SubmissionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="submission"
             title="Could not load this submission"
             description="This is a problem reaching the server. The submission itself is unaffected — nothing has been lost."
             onRetry={() => {

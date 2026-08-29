@@ -228,6 +228,7 @@ function ManageSupplier({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     data: supplier,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -240,6 +241,8 @@ function ManageSupplier({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   if (isError) {
     return (
       <LoadError
+        error={error}
+        noun="supplier"
         title="Could not load this supplier"
         description="This is a problem reaching the server, or the supplier has been disconnected. Nothing has been changed."
         onRetry={() => {
@@ -897,16 +900,22 @@ function pricingValueLabel(kind: PricingKind): string {
 function LoadError({
   title,
   description,
+  error,
+  noun,
   onRetry,
 }: {
   title: string;
   description?: string;
+  error?: unknown;
+  noun?: string;
   onRetry: () => void;
 }) {
   return (
     <div className={`${PANE_SHELL} p-2`}>
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneLoadError
+          error={error}
+          noun={noun}
           title={<>{title}</>}
           description={
             <>{description ?? 'This is a problem reaching the server. Please try again.'}</>

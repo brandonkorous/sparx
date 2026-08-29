@@ -29,6 +29,23 @@ import type { RefundWords } from './refund-words';
  * arrives at the moment somebody presses a button, which is the only moment
  * either sentence can be written.
  */
+/**
+ * The sale code coming back, when undoing this order gives it back.
+ *
+ * A whole order undone releases the customer's use of any code on it, so they can
+ * use the sale again — which nothing did until issue 312. It belongs in the confirm
+ * for the same reason the money already is: it is a consequence of the press, and
+ * she should read it before the press rather than hear it from the customer.
+ *
+ * Empty for a PARTIAL refund, where the sale stands and the code stays spent.
+ */
+function codeComesBack(order: Order, whole: boolean): string {
+  if (!whole || order.discountTotal <= 0) return '';
+  // "them", not the name again: both confirms have already named the customer in
+  // the sentence or the title above this one.
+  return ' The sale code on it goes back to them, to use again.';
+}
+
 export function useOrderRisk(orderId: string) {
   const toast = useToast();
   const confirm = useConfirm();
@@ -39,7 +56,7 @@ export function useOrderRisk(orderId: string) {
     const currency = order.currency;
     const ok = await confirm({
       title: `Refund ${formatMoney(amount, currency)} to ${customerName(order.customer)}?`,
-      description: says.confirm,
+      description: says.confirm + codeComesBack(order, amount >= order.total - order.refundTotal),
       confirmLabel: `Refund ${formatMoney(amount, currency)}`,
       cancelLabel: 'Leave it as it is',
       color: 'danger',
@@ -84,6 +101,7 @@ export function useOrderRisk(orderId: string) {
         (order.amountPaid > 0
           ? `${formatMoney(order.amountPaid, currency)} has already been paid and is NOT refunded by this — you refund that separately.`
           : 'No money has come in, so there is nothing to refund.') +
+        codeComesBack(order, true) +
         ' A cancelled order cannot be reopened.',
       confirmLabel: 'Cancel the order',
       cancelLabel: 'Leave it as it is',

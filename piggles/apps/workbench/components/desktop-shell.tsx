@@ -28,6 +28,7 @@ import type { ZoomLevel } from '@/lib/window-zoom';
 import type { ConsoleNavApp } from '@/lib/console/nav';
 import type { ShortcutList } from '@/lib/console/shortcut-lists';
 import { ChromeColumn } from './chrome-column';
+import { SkipToWorkspace, WORKSPACE_ID } from './skip-to-workspace';
 import { Topbar } from './topbar';
 
 interface DesktopShellProps {
@@ -98,6 +99,8 @@ export function DesktopShell({
       <FeedbackProvider theme={theme} activeSite={activeSite}>
         <StudioSessionProvider>
           <div className="bg-base-300 flex h-dvh w-full flex-col overflow-hidden">
+            <SkipToWorkspace />
+
             {/* ABOVE the top bar, inside the h-dvh column — so the bar takes its
                 own height off the shell rather than pushing the dock below the
                 fold. It renders nothing when there is nothing to say, which is
@@ -142,7 +145,15 @@ export function DesktopShell({
                 setRailExpanded={setRailExpanded}
               />
 
-              <main className="piggles-dock-host min-w-0 flex-1 p-1" data-guide="workspace">
+              <main
+                id={WORKSPACE_ID}
+                // `-1` so it can be focused by the skip control without joining
+                // the tab order itself, which would put a stop in front of every
+                // pane for no gain.
+                tabIndex={-1}
+                className="piggles-dock-host min-w-0 flex-1 p-1 focus:outline-none"
+                data-guide="workspace"
+              >
                 {/* Waits for the site key AND the presentation: restoring Site
                   A's arrangement under Site B strands panels, and learning the
                   presentation second drags every off-to-one-side window back

@@ -159,6 +159,8 @@ export function TranslationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               <Card>
                 <PaneLoadError
                   module={MODULE}
+                  error={source.error ?? translations.error}
+                  noun="product"
                   icon={<Icon glyph={faLanguage} className="size-6" aria-hidden />}
                   title="Could not load this product"
                   description={translationErrorMessage(

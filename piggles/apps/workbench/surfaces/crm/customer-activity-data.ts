@@ -102,7 +102,13 @@ export function activityTypeLabel(type: string): string {
     file: 'File',
     'order.placed': 'Order placed',
     'order.paid': 'Order paid',
-    'order.fulfilled': 'Order fulfilled',
+    // The stored type is `order.shipped`, not `order.fulfilled` — that is the
+    // topic name, and this map had the topic. So the hand-written label was for
+    // a row that is never written, and the rows that ARE written fell through to
+    // the generic humaniser and read "Shipped" beside "Order placed".
+    'order.shipped': 'Order shipped',
+    'order.delivered': 'Order delivered',
+    'order.cancelled': 'Order cancelled',
     'order.refunded': 'Order refunded',
     'email.opened': 'Email opened',
     'email.clicked': 'Email clicked',

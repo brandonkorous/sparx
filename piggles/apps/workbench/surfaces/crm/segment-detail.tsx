@@ -86,13 +86,23 @@ export function SegmentDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function SegmentLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: segment, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSegment(id);
+  const {
+    data: segment,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useSegment(id);
 
   if (isError) {
     return (
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="segment"
             title="Could not load this segment"
             description="This is a problem reaching the server, or the segment has been removed. Nothing has been changed."
             onRetry={() => {

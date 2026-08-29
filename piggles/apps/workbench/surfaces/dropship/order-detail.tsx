@@ -75,6 +75,7 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     data: order,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -98,6 +99,8 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="supplier order"
             title="Could not load this supplier order"
             description="This is a problem reaching the server, or the order no longer exists. Nothing has been changed."
             onRetry={() => {

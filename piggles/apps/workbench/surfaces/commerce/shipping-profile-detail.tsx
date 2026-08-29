@@ -81,6 +81,7 @@ function ProfileLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     data: profile,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -91,6 +92,8 @@ function ProfileLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="product group"
             title="Could not load this product group"
             description="This is a problem reaching the server. The group itself is unaffected."
             onRetry={() => {

@@ -69,6 +69,7 @@ export function SavedPieceDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     data: piece,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -96,6 +97,8 @@ export function SavedPieceDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="piece"
             title="Could not load this piece"
             description="This is a problem reaching the server. The piece itself is unaffected."
             onRetry={() => {

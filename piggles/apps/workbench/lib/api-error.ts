@@ -1,9 +1,34 @@
-// What to SAY when a write comes back refused.
+// What to SAY when a write comes back refused, and what a failed READ means.
 //
 // Eighty-two data modules had written this out by hand, one per app, and the
 // wording it produced could be the schema layer describing itself.
 
 import { ApiError } from '@wizeworks/api-client';
+
+/**
+ * "There is no such record here" — as opposed to "something went wrong".
+ *
+ * Nine data modules had declared this identically, so nine surfaces could ask
+ * the question and the other hundred could not. It belongs beside the other
+ * thing every surface asks of an error.
+ */
+export function isNotFound(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 404;
+}
+
+/**
+ * WHY a pane has nothing to show, decided from the error rather than assumed.
+ *
+ * `<PaneLoadError>` has always been able to tell these apart and defaulted to
+ * `unreachable`, which is a CLAIM: a 404 came back in milliseconds and the
+ * screen said the server could not be reached, over a "Try again" that could
+ * only ever fail. Deep-linking a record from another business, opening a saved
+ * layout pinned to a deleted one, and following an old bookmark all land here
+ * (persona issue 286).
+ */
+export function paneLoadReason(error: unknown): 'missing' | 'unreachable' {
+  return isNotFound(error) ? 'missing' : 'unreachable';
+}
 
 /**
  * The server's own sentence for a 4xx, or the caller's plain one.

@@ -103,13 +103,23 @@ export function TaxZoneDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function ZoneLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: zone, isPending, isError, isFetching, dataUpdatedAt, refetch } = useTaxZone(id);
+  const {
+    data: zone,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useTaxZone(id);
 
   if (isError) {
     return (
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="tax place"
             title="Could not load this tax place"
             description="This is a problem reaching the server. Nothing has been lost."
             onRetry={() => {

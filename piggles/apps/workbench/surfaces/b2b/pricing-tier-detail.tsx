@@ -114,6 +114,8 @@ function TierLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         <div className={`${PANE_SHELL} p-2`}>
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneLoadError
+              error={tierQuery.error}
+              noun="tier"
               title="Could not load this tier"
               description="This is a problem reaching the server. The tier itself is unaffected — nothing has been lost."
               onRetry={() => {

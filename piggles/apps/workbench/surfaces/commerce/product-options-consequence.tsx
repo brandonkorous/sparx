@@ -12,7 +12,8 @@ import {
   Button,
   Text,
 } from '@wizeworks/silicaui-react';
-import { consequenceLines, type Consequence } from './product-options-plan';
+import type { Consequence } from './product-options-plan';
+import { consequenceLines } from './product-options-words';
 
 export function ConsequenceCard({
   consequence,

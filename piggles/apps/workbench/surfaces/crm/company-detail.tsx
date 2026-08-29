@@ -188,13 +188,23 @@ export function CompanyDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function CompanyLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: account, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAccount(id);
+  const {
+    data: account,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useAccount(id);
 
   if (isError) {
     return (
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="company"
             title="Could not load this company"
             description="This is a problem reaching the server, or the account has been removed. Nothing has been changed."
             onRetry={() => {

@@ -137,6 +137,8 @@ export function DashboardViewSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 overflow-y-auto">
           <PaneLoadError
+            error={dashboard.error}
+            noun="dashboard"
             icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="Could not load this dashboard"
             description={analyticsErrorMessage(

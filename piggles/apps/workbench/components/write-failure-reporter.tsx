@@ -31,7 +31,7 @@
 // happened.
 
 import { useEffect } from 'react';
-import { useQueryClient } from '@wizeworks/query';
+import { callerHandledError, useQueryClient } from '@wizeworks/query';
 import { useToast } from '@wizeworks/silicaui-react';
 import { describeWriteFailure } from '../lib/api/write-failure';
 import { readWriteMeta } from '../lib/api/write-meta';
@@ -66,10 +66,19 @@ export function WriteFailureReporter(): null {
 
       // Nobody asked for this write, so its failure is not theirs to hear.
       if (meta.housekeeping === true) return;
-      // The call site is handling it. `onError` on the mutation itself, not on
-      // the observer: a component's own `mutate(vars, { onError })` also lands
-      // here, and both mean the same thing — somebody downstream is speaking.
+      // The call site is handling it, so it owns the conversation. Two forms
+      // mean the same thing and both count: `onError` on the useMutation itself,
+      // and `onError` passed to a component's own `mutate(vars, { onError })`.
+      //
+      // The second used to be missed, and this comment used to claim it "also
+      // lands here". It does not — TanStack keeps per-call handlers in the
+      // observer's private `#mutateOptions`, and the mutation the cache carries
+      // is built from the hook's options alone. So 496 call sites that had just
+      // apologised in their own words got a second toast saying the same
+      // sentence, one of which never dismisses itself (issue 304). @wizeworks/query's
+      // useMutation now records the answer where the cache can read it.
       if (typeof event.mutation.options.onError === 'function') return;
+      if (callerHandledError(event.mutation.meta)) return;
 
       addToast({
         title: meta.writing ? `Couldn't save ${meta.writing}` : "That didn't save",

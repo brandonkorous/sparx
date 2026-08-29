@@ -39,14 +39,8 @@ import {
   toDraft,
   type OptionDraft,
 } from './product-options-draft';
-import {
-  committedToast,
-  consequenceLines,
-  consequenceOf,
-  countOf,
-  planOf,
-  rebindToast,
-} from './product-options-plan';
+import { consequenceOf, planOf } from './product-options-plan';
+import { committedToast, consequenceLines, countOf, rebindToast } from './product-options-words';
 import { OptionCard } from './product-options-card';
 import { ConsequenceCard } from './product-options-consequence';
 
@@ -58,7 +52,10 @@ export function ProductOptionsTab({ product }: { ctx: SurfaceContext; product: P
   const confirm = useConfirm();
 
   const options = useProductOptions(product.id);
-  const variants = useProductVariants(product.id);
+  // Retired versions too: one whose choice is being put back comes back with it,
+  // and a summary that cannot see them calls their combinations blank and sends
+  // somebody to recreate versions that already exist (issue 305).
+  const variants = useProductVariants(product.id, true);
   const commitLattice = useSaveProductLattice(product.id);
 
   const saved = useMemo(() => toDraft(options.data ?? []), [options.data]);

@@ -439,6 +439,7 @@ function EditEntry({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     data: entry,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -505,6 +506,8 @@ function EditEntry({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="page"
             title="Could not load this"
             description="This is a problem reaching the server. The content itself is unaffected."
             onRetry={() => {

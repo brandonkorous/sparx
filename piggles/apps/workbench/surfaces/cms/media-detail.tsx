@@ -81,7 +81,15 @@ const KIND_NOUN: Record<MediaKind, string> = {
 
 export function MediaDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
-  const { data: asset, isPending, isError, isFetching, dataUpdatedAt, refetch } = useMediaAsset(id);
+  const {
+    data: asset,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useMediaAsset(id);
 
   useEffect(() => {
     if (asset) ctx.setTitle(asset.filename);
@@ -93,6 +101,8 @@ export function MediaDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className={`${PANE_SHELL} p-2`}>
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneLoadError
+              error={error}
+              noun="file"
               title="Could not load this file"
               description="This is a problem reaching the server. The file itself is unaffected."
               onRetry={() => {

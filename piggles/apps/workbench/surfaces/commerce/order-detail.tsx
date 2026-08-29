@@ -34,7 +34,15 @@ import { useOrder, useOrderFulfillments, useOrderPayments, useOrderRefunds } fro
 export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
 
-  const { data: order, isPending, isError, isFetching, dataUpdatedAt, refetch } = useOrder(id);
+  const {
+    data: order,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useOrder(id);
   const { data: sites } = useSites();
   const payments = useOrderPayments(id);
   const fulfillments = useOrderFulfillments(id);
@@ -66,6 +74,8 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="order"
             title="Could not load this order"
             description="This is a problem reaching the server. The order itself is unaffected — nothing has been changed or lost."
             onRetry={() => {

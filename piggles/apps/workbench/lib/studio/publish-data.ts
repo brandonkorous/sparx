@@ -26,6 +26,11 @@ export interface PublishState {
   frameUnpublished: boolean;
   lastPublishedAt: string | null;
   neverPublished: boolean;
+  /** Capabilities the saved chrome has that the LIVE site does not — each with the
+   *  sentence to show. Distinct from `frameUnpublished`, which only says something
+   *  differs: the platform repairs stale chrome on the author's behalf, so that flag
+   *  is routinely true of changes she did not make. */
+  liveChromeGaps: { core: string; says: string; source: 'saved' | 'waiting' }[];
 }
 
 export function usePublishState() {

@@ -51,7 +51,15 @@ const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 /* ── Managing: the tabbed shell ─────────────────────────────────────────── */
 
 function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: product, isPending, isError, isFetching, dataUpdatedAt, refetch } = useProduct(id);
+  const {
+    data: product,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useProduct(id);
 
   useEffect(() => {
     if (product) ctx.setTitle(product.title);
@@ -64,11 +72,26 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="product"
             title="Could not load this product"
             description="This is a problem reaching the server. The product itself is unaffected — nothing has been lost."
             onRetry={() => {
               void refetch();
             }}
+            actions={
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={(event) => {
+                  ctx.open('commerce.products.list', undefined, {
+                    target: event.shiftKey ? 'beside' : 'tab',
+                  });
+                }}
+              >
+                Browse products
+              </Button>
+            }
           />
         </Card>
       </div>

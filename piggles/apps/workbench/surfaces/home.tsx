@@ -72,6 +72,7 @@ import { useFirstName } from '@/lib/api/shell-data';
 import { FirstRunPanel } from './first-run';
 import { ACTIONS, isClear, needsYou, quietLine, SIGNALS } from './home/signals';
 import { TemplateUpdatePanel } from './home/template-update';
+import { SiteRefreshPanel } from './home/site-refresh';
 import { SignalRow } from './home/signal-row';
 import { greeting, todayLine, useAttention } from '@/lib/console/home-data';
 
@@ -144,6 +145,7 @@ export function PigglesHomeSurface({ ctx }: { ctx: SurfaceContext }) {
         {/* An OFFER, not a demand — so it sits outside "What needs you" and out
             of the quiet line. Renders nothing when every design is current. */}
         <TemplateUpdatePanel ctx={ctx} />
+        <SiteRefreshPanel ctx={ctx} />
 
         {counting || waiting.length > 0 ? (
           <section className="mt-8">

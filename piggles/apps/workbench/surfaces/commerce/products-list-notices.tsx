@@ -23,13 +23,15 @@ import { useReindexSearch } from './products-data';
 export function ProductsListNotices({
   ctx,
   cannotBePaid,
-  invisibleShop,
+  unfindableCount,
   staleAfterFailure,
   onRetry,
 }: {
   ctx: SurfaceContext;
   cannotBePaid: boolean;
-  invisibleShop: boolean;
+  /** Products on sale that searching cannot find. `null` when there are none,
+   *  or when nothing could measure it — the two are the same silence here. */
+  unfindableCount: number | null;
   staleAfterFailure: boolean;
   onRetry: () => void;
 }) {
@@ -58,18 +60,25 @@ export function ProductsListNotices({
           </Button>
         </Alert>
       ) : null}
-      {invisibleShop ? (
+      {unfindableCount !== null ? (
         // INFO, not warning. Since issue 203 the shop falls back to the catalog
         // when this list is empty, so what is broken is the search box beside it
         // — not the shop, and not louder than nobody being able to pay her.
         <Alert color="info" className="m-2">
           <AlertContent>
-            <AlertTitle>Searching your shop won’t find these</AlertTitle>
+            {/* The NUMBER is in the heading, because "some of your products" is
+                the sentence she cannot act on. Four is checkable against a
+                catalog she knows; "some" is a shrug. */}
+            <AlertTitle>
+              Searching your shop won’t find{' '}
+              {unfindableCount === 1
+                ? 'one of your products'
+                : `${String(unfindableCount)} of your products`}
+            </AlertTitle>
             <AlertDescription>
-              Your products are on your site and people can buy them. What isn’t working is the
-              search box and the filters beside your shop — those look things up in a separate list,
-              and yours is empty, so a customer searching for something by name may be told you
-              don’t have it.
+              They are on your site and people can buy them. What isn’t working is the search box
+              and the filters beside your shop — those look things up in a separate list, and these
+              are not in it, so a customer searching for one by name is told you don’t have it.
             </AlertDescription>
           </AlertContent>
           <Button

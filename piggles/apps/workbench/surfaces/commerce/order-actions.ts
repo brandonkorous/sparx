@@ -129,10 +129,13 @@ export function useCancelOrder(id: string) {
 }
 
 /**
- * Refund money already taken for an order. The server settles this through the
- * tenant's payment gateway and THEN records it (see api-rest lib/order-refund.ts), so
- * a success here means the money really moved — and a 4xx carries the gateway's own
- * reason, which `orderErrorMessage` surfaces verbatim.
+ * Refund money already taken for an order. If a gateway is holding the charge
+ * the server reverses it there and THEN records it (see api-rest
+ * lib/order-refund.ts), so a success means the money really moved and a 4xx
+ * carries the gateway's own reason, which `orderErrorMessage` surfaces verbatim.
+ * If the money was handed over — cash, a cheque, a transfer — there is nothing
+ * to call, and a success means it is written down for the shop to hand back.
+ * `refundWords` says which of those two happened, off the same fact.
  */
 export function useRefundOrder(id: string) {
   const queryClient = useQueryClient();

@@ -42,6 +42,7 @@ export function BlueprintDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     data: blueprint,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -56,6 +57,8 @@ export function BlueprintDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="design"
             title="Could not load this design"
             description="This is a problem reaching the server, or the design is no longer in the catalog. Your site is unaffected."
             onRetry={() => {

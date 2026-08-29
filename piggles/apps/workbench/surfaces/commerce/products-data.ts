@@ -225,8 +225,13 @@ export interface Variant {
   isDefault: boolean;
   position: number;
   /** Where this variant sits in the lattice — one option-value id per axis.
-   *  Empty on a product with no options. */
+   *  Empty on a product with no options, and on a RETIRED one whose value was
+   *  removed: the ids cascade away with it. `metadata.latticeCoordinate` is what
+   *  survives that — see lastCoordinate below. */
   optionValueIds: string[];
+  /** The platform's own scratch space on a variant (`customFields` is the
+   *  tenant's). Read it through a named helper, never by key at a call site. */
+  metadata: Record<string, unknown>;
   imageCount: number;
   createdAt: string;
   updatedAt: string;
@@ -1134,6 +1139,29 @@ export class LatticeRebindError extends Error {
     super('The choices were saved, but some versions could not be put back on the grid.');
     this.name = 'LatticeRebindError';
   }
+}
+
+/**
+ * Where a retired version used to sit, when its option-value ids are gone.
+ *
+ * Removing a choice deletes its values, and the assignments that recorded each
+ * variant's position cascade with them — so a version retired that way has no
+ * coordinate left to match on. The server writes the coordinate down as text
+ * before that happens and puts it back when the lattice can hold it again; this
+ * reads the same record, so the summary can say "these come back" instead of
+ * "these have no price". Written by lattice-memory.ts in @wizeworks/commerce.
+ */
+export function lastCoordinate(variant: Variant): LatticeCoordinate[] | null {
+  const held = variant.metadata.latticeCoordinate;
+  if (!Array.isArray(held) || held.length === 0) return null;
+  const points: LatticeCoordinate[] = [];
+  for (const entry of held) {
+    if (typeof entry !== 'object' || entry === null) return null;
+    const point = entry as Record<string, unknown>;
+    if (typeof point.option !== 'string' || typeof point.value !== 'string') return null;
+    points.push({ option: point.option, value: point.value });
+  }
+  return points;
 }
 
 function coordinateKey(option: string, value: string): string {
@@ -2970,14 +2998,30 @@ export interface SearchCollectionStat {
   documents: number;
 }
 
+export interface SearchStatus {
+  collections: SearchCollectionStat[];
+  /** Products on sale that searching cannot find. `null` means the check could
+   *  not run — say nothing, never render it as none. */
+  productsMissing: number | null;
+}
+
 export function useSearchStatus() {
   return useQuery({
     queryKey: ['search', 'status'],
-    queryFn: () => api.get<{ collections: SearchCollectionStat[] }>('/v1/search/status'),
+    queryFn: () => api.get<SearchStatus>('/v1/search/status'),
     // A search-side hiccup must never take the products list down with it.
     retry: false,
     staleTime: 60_000,
   });
+}
+
+/** How many of her products are on sale but cannot be found by searching, or
+ *  null when nothing measured it. Distinct from a document COUNT: twelve
+ *  documents look exactly like sixteen until something knows there should be
+ *  sixteen, which is why the count alone left four of Devi's products silently
+ *  unfindable (issue 318). */
+export function unfindableProductCount(data: SearchStatus | undefined): number | null {
+  return data?.productsMissing ?? null;
 }
 
 /** How many PRODUCT documents this business has in search, or null when the

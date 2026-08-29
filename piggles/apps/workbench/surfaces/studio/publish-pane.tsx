@@ -25,6 +25,7 @@ import {
   type SiteCheckReport,
 } from '../../lib/studio/publish-data';
 import { PublishChecks } from './publish-checks';
+import { PublishGaps } from './publish-gaps';
 import { PublishReleases } from './publish-releases';
 
 /** What is outstanding, in one sentence someone can act on. */
@@ -90,6 +91,7 @@ export function PublishPaneSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className="bg-base-200 flex h-full min-h-0 flex-col gap-4 overflow-auto p-4">
       <Waiting state={state.data ?? null} publishing={publish.isPending} onPublish={goLive} />
+      <PublishGaps state={state.data ?? null} />
       <PublishChecks report={report} running={check.isPending} onRun={runCheck} />
       <PublishReleases />
     </div>

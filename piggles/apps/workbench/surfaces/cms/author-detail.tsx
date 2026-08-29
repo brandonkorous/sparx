@@ -274,7 +274,15 @@ function CreateAuthor({ ctx }: { ctx: SurfaceContext }) {
 /* ── Edit / manage ──────────────────────────────────────────────────────── */
 
 function EditAuthor({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: author, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAuthor(id);
+  const {
+    data: author,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useAuthor(id);
 
   const [draft, setDraft] = useState<Draft | null>(null);
   const initialRef = useRef<string>('');
@@ -306,6 +314,8 @@ function EditAuthor({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="author"
             title="Could not load this author"
             description="This is a problem reaching the server. The author itself is unaffected."
             onRetry={() => {

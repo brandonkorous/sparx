@@ -1,12 +1,10 @@
 // What committing the Options draft would DO — worked out before anyone presses
-// anything, and written as sentences a shop owner can read.
-//
-// Pure data. The tab shows `consequenceLines` above the form and again in the
-// confirm; `planOf` is what the server is sent.
+// anything. Pure data; the sentences it turns into live in
+// product-options-words.ts, and `planOf` is what the server is sent.
 
 import { cleanDraft, type OptionDraft } from './product-options-draft';
 import {
-  formatCents,
+  lastCoordinate,
   type LatticeCoordinate,
   type LatticePlan,
   type ProductOption,
@@ -20,12 +18,62 @@ export interface Consequence {
   keep: { variant: Variant; coordinate: LatticeCoordinate[] }[];
   /** The one version ADOPTED onto a brand-new grid — see the note below. */
   adopted: { variant: Variant; coordinate: LatticeCoordinate[] } | null;
+  /**
+   * Retired versions the new grid can hold again, so the server will put them
+   * back where they were. Their combinations are NOT blank, which is the whole
+   * reason this is counted separately: reading them as blank is what sent
+   * somebody to recreate five versions that already existed (issue 305).
+   */
+  returning: { variant: Variant; coordinate: LatticeCoordinate[] }[];
   /** Versions whose place no longer exists. */
   retire: Variant[];
   /** Combinations that would have no price yet. */
   blank: number;
   /** Removing every axis leaves these with no choice attached. */
   loose: Variant[];
+}
+
+const same = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
+const keyOf = (coordinate: LatticeCoordinate[]) =>
+  coordinate
+    .map((point) => `${point.option.trim().toLowerCase()}=${point.value.trim().toLowerCase()}`)
+    .join('|');
+
+/** Where this version sits in the NEW lattice, by the ids it holds. */
+function placeById(
+  variant: Variant,
+  clean: ReturnType<typeof cleanDraft>
+): LatticeCoordinate[] | null {
+  // Survival is decided by IDENTITY, not by text. A draft row that came from the
+  // server still carries the server's id as its key, so a version sitting on
+  // "Small" is still sitting on it after someone renames it to "S" — which
+  // matching on the name would have got exactly backwards, quietly retiring
+  // every SKU on the product over a typo fix.
+  const held = new Set(variant.optionValueIds);
+  const coordinate: LatticeCoordinate[] = [];
+  for (const option of clean) {
+    const kept = option.values.find((value) => held.has(value.key));
+    if (!kept) return null;
+    coordinate.push({ option: option.name, value: kept.value });
+  }
+  return coordinate;
+}
+
+/** Where this version USED to sit, when the ids that said so are gone. */
+function placeByMemory(
+  variant: Variant,
+  clean: ReturnType<typeof cleanDraft>
+): LatticeCoordinate[] | null {
+  const remembered = lastCoordinate(variant);
+  if (remembered?.length !== clean.length) return null;
+  const coordinate: LatticeCoordinate[] = [];
+  for (const option of clean) {
+    const point = remembered.find((entry) => same(entry.option, option.name));
+    const value = point && option.values.find((candidate) => same(candidate.value, point.value));
+    if (!value) return null;
+    coordinate.push({ option: option.name, value: value.value });
+  }
+  return coordinate;
 }
 
 export function consequenceOf(
@@ -35,12 +83,14 @@ export function consequenceOf(
 ): Consequence {
   const clean = cleanDraft(draft);
   const live = variants.filter((variant) => variant.deletedAt === null);
+  const retired = variants.filter((variant) => variant.deletedAt !== null);
 
   if (clean.length === 0) {
     return {
       combinations: 0,
       keep: [],
       adopted: null,
+      returning: [],
       retire: [],
       blank: 0,
       loose: saved.length > 0 ? live : [],
@@ -53,21 +103,18 @@ export function consequenceOf(
   const stranded: Variant[] = [];
 
   for (const variant of live) {
-    // Survival is decided by IDENTITY, not by text. A draft row that came from
-    // the server still carries the server's id as its key, so a version sitting
-    // on "Small" is still sitting on it after someone renames it to "S" — which
-    // matching on the name would have got exactly backwards, quietly retiring
-    // every SKU on the product over a typo fix.
-    const held = new Set(variant.optionValueIds);
-    const coordinate: LatticeCoordinate[] = [];
-    for (const option of clean) {
-      const kept = option.values.find((value) => held.has(value.key));
-      if (!kept) break;
-      coordinate.push({ option: option.name, value: kept.value });
-    }
-
-    if (coordinate.length === clean.length) keep.push({ variant, coordinate });
+    const coordinate = placeById(variant, clean);
+    if (coordinate) keep.push({ variant, coordinate });
     else stranded.push(variant);
+  }
+
+  // A retired version still sitting on a live coordinate stays where it is; one
+  // whose ids are gone comes back if the lattice can hold what it remembers.
+  const returning: Consequence['returning'] = [];
+  for (const variant of retired) {
+    const coordinate =
+      variant.optionValueIds.length > 0 ? placeById(variant, clean) : placeByMemory(variant, clean);
+    if (coordinate) returning.push({ variant, coordinate });
   }
 
   // ── Adoption ────────────────────────────────────────────────────────────
@@ -93,14 +140,20 @@ export function consequenceOf(
       }
     : null;
 
-  const filled = keep.length + (adopted ? 1 : 0);
+  // Blank means nothing is sitting there at all — a combination held by a
+  // retired version is occupied, and offering to create a second one on top is
+  // what wrote duplicate codes carrying no stock.
+  const occupied = new Set(
+    [...keep, ...(adopted ? [adopted] : []), ...returning].map((entry) => keyOf(entry.coordinate))
+  );
 
   return {
     combinations,
     keep,
     adopted,
+    returning,
     retire: adopted ? [] : stranded,
-    blank: Math.max(0, combinations - filled),
+    blank: Math.max(0, combinations - occupied.size),
     loose: [],
   };
 }
@@ -120,99 +173,12 @@ export function planOf(draft: OptionDraft[], consequence: Consequence): LatticeP
         position: valueIndex,
       })),
     })),
+    // `returning` is deliberately NOT here: assign-options refuses a retired
+    // variant, and the server puts those back itself inside the same
+    // transaction that rebuilds the lattice (lattice-memory.ts).
     place: [...consequence.keep, ...(consequence.adopted ? [consequence.adopted] : [])].map(
       (entry) => ({ variantId: entry.variant.id, coordinate: entry.coordinate })
     ),
     retire: consequence.retire.map((variant) => variant.id),
-  };
-}
-
-/* ── The same thing in sentences ────────────────────────────────────────── */
-
-export function consequenceLines(consequence: Consequence): string[] {
-  const lines: string[] = [];
-
-  if (consequence.loose.length > 0) {
-    const count = consequence.loose.length;
-    lines.push('Shoppers stop choosing anything — this goes back to being sold one way.');
-    lines.push(
-      `${countOf(count, 'version', 'versions')} stay${count === 1 ? 's' : ''} on sale with no choice attached (${skus(consequence.loose)}). Retire the ones you do not want on the Variants tab.`
-    );
-    return lines;
-  }
-
-  lines.push(
-    `${countOf(consequence.combinations, 'combination', 'combinations')} can be sold in all.`
-  );
-
-  if (consequence.adopted) {
-    const { variant, coordinate } = consequence.adopted;
-    lines.push(
-      `Your existing version ${variant.sku} (${formatCents(variant.priceCents, variant.currency)}) becomes ${coordinate.map((point) => point.value).join(' · ')}, keeping its price and code.`
-    );
-  }
-  if (consequence.keep.length > 0) {
-    const count = consequence.keep.length;
-    lines.push(
-      `${countOf(count, 'version', 'versions')} ${count === 1 ? 'keeps its' : 'keep their'} price and code.`
-    );
-  }
-  if (consequence.blank > 0) {
-    const count = consequence.blank;
-    lines.push(
-      `${countOf(count, 'combination', 'combinations')} will have no price, so ${count === 1 ? 'it cannot' : 'they cannot'} be bought until you set ${count === 1 ? 'one' : 'them'} on the Variants tab.`
-    );
-  }
-  if (consequence.retire.length > 0) {
-    const count = consequence.retire.length;
-    lines.push(
-      `${countOf(count, 'version', 'versions')} ${count === 1 ? 'loses its place and stops' : 'lose their place and stop'} being sold — ${skus(consequence.retire)}. Past orders keep their record, and you can bring ${count === 1 ? 'it' : 'them'} back.`
-    );
-  }
-  if (consequence.combinations > 100) {
-    lines.push(
-      'That is a lot to keep priced and in stock. Most businesses find more than a hundred hard to manage.'
-    );
-  }
-  return lines;
-}
-
-function skus(variants: Variant[]): string {
-  const shown = variants.slice(0, 4).map((variant) => variant.sku);
-  const rest = variants.length - shown.length;
-  return rest > 0 ? `${shown.join(', ')} and ${String(rest)} more` : shown.join(', ');
-}
-
-export function countOf(count: number, one: string, many: string): string {
-  return `${String(count)} ${count === 1 ? one : many}`;
-}
-
-/* ── What to tell her afterwards ────────────────────────────────────────── */
-
-export interface Told {
-  title: string;
-  description: string;
-  type: 'success' | 'warning';
-}
-
-export function committedToast(consequence: Consequence): Told {
-  const blank = consequence.blank;
-  return {
-    title: 'This product is sold differently now',
-    description:
-      blank > 0
-        ? `${countOf(blank, 'combination', 'combinations')} still ${blank === 1 ? 'needs a price' : 'need a price'} — set them on the Variants tab.`
-        : 'Every combination has a price.',
-    type: 'success',
-  };
-}
-
-/** The axes DID change; only the re-placing failed. Saying "nothing was saved"
- *  here sends someone to redo work that is already stored. */
-export function rebindToast(count: number): Told {
-  return {
-    title: 'The choices were changed, but some versions lost their place',
-    description: `${countOf(count, 'version', 'versions')} now ${count === 1 ? 'has' : 'have'} no place in the grid. Open the Variants tab to put ${count === 1 ? 'it' : 'them'} right.`,
-    type: 'warning',
   };
 }

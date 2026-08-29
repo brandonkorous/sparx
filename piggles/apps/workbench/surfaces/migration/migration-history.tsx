@@ -21,6 +21,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { entityLabel, runTone, useMigrationRuns, type RunSummary } from './data';
+import { landedBreakdown } from './run-outcome';
 import type { CanonicalEntity } from '@wizeworks/migration';
 
 /** Registry module for this pane, so the brand draws the right picture in the
@@ -42,11 +43,22 @@ function when(iso: string): string {
 
 function RunRow({ run, onOpen }: { run: RunSummary; onOpen: () => void }) {
   const landed = run.importedCount + run.updatedCount;
+  // Without this the row reads the same for a run that added twenty five people and
+  // a run that overwrote twenty five — see run-outcome.
+  const breakdown = landedBreakdown(
+    { imported: run.importedCount, updated: run.updatedCount },
+    run.dryRun
+  );
   return (
     // A silica Card rather than a hand-rolled base-100 box: on Piggles' warm
     // surfaces a hairline barely separates anything, and Card carries the
     // resting shadow that does (DESIGN.md §4).
-    <Card className="flex flex-wrap items-center gap-3 p-4">
+    //
+    // `shrink-0` because the list around it is a flex column that scrolls: without
+    // it every row shrank to share the visible height instead of the column
+    // scrolling, so each card was drawn 65px tall over 108px of content and the
+    // bottom line of every row was cut in half.
+    <Card className="flex shrink-0 flex-wrap items-center gap-3 p-4">
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex flex-wrap items-center gap-2">
           <Heading level={3} className="text-base">
@@ -80,6 +92,7 @@ function RunRow({ run, onOpen }: { run: RunSummary; onOpen: () => void }) {
           {run.dryRun ? 'would come across' : 'brought across'}
           {run.errorCount > 0 ? ` · ${run.errorCount.toLocaleString()} skipped` : ''}
         </Text>
+        {breakdown === null ? null : <Text className="text-end text-sm">{breakdown}</Text>}
       </div>
 
       <Button variant="ghost" size="sm" onClick={onOpen}>

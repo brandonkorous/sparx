@@ -131,6 +131,7 @@ function ManageInstruction({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     data: prompt,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -143,6 +144,8 @@ function ManageInstruction({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   if (isError) {
     return (
       <LoadError
+        error={error}
+        noun="instruction"
         title="Could not load this instruction"
         description="This is a problem reaching the server, or the instruction has been deleted. Nothing has been changed."
         onRetry={() => {
@@ -783,16 +786,22 @@ function InstructionEditor({
 function LoadError({
   title,
   description,
+  error,
+  noun,
   onRetry,
 }: {
   title: string;
   description?: string;
+  error?: unknown;
+  noun?: string;
   onRetry: () => void;
 }) {
   return (
     <div className={`${PANE_SHELL} p-2`}>
       <Card className="min-h-0 flex-1 items-center justify-center">
         <PaneLoadError
+          error={error}
+          noun={noun}
           title={<>{title}</>}
           description={
             <>{description ?? 'This is a problem reaching the server. Please try again.'}</>

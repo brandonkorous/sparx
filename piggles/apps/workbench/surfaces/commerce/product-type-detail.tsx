@@ -315,6 +315,7 @@ function LoadType({ ctx, typeKey }: { ctx: SurfaceContext; typeKey: string }) {
     data: type,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -329,6 +330,8 @@ function LoadType({ ctx, typeKey }: { ctx: SurfaceContext; typeKey: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="product type"
             title="Could not load this product type"
             description="This is a problem reaching the server. The type itself is unaffected."
             onRetry={() => {

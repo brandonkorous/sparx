@@ -141,13 +141,23 @@ export function TicketDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function TicketLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: view, isPending, isError, isFetching, dataUpdatedAt, refetch } = useTicket(id);
+  const {
+    data: view,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useTicket(id);
 
   if (isError) {
     return (
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="request"
             title="Could not load this request"
             description="This is a problem reaching the server, or the request has been removed. Nothing has been changed."
             onRetry={() => {

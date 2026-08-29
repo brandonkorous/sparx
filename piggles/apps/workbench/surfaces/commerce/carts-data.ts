@@ -181,18 +181,25 @@ export function cartStateFrom(input: {
   recoveredAt?: string | null;
   expiresAt: string | null;
 }): CartState {
+  // `abandonedAt` is asked FIRST, because it is the only one of the two that
+  // says what is true right now — coming back clears it, going quiet again sets
+  // it. `recoveredAt` is history and stays set, so a basket she won back and
+  // then lost again reads as walked away, which is where the work is. Asking it
+  // the other way round left such a basket filed as a success forever.
+  if (input.abandonedAt) {
+    return {
+      label: 'Walked away',
+      tone: 'warning',
+      detail: input.recoveredAt
+        ? 'The shopper came back to this cart once and has left it again without paying.'
+        : 'The shopper filled this cart but left without paying.',
+    };
+  }
   if (input.recoveredAt) {
     return {
       label: 'Came back',
       tone: 'success',
       detail: 'This cart was abandoned and the shopper returned to it.',
-    };
-  }
-  if (input.abandonedAt) {
-    return {
-      label: 'Walked away',
-      tone: 'warning',
-      detail: 'The shopper filled this cart but left without paying.',
     };
   }
   if (input.expiresAt && new Date(input.expiresAt).getTime() < Date.now()) {

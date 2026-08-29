@@ -36,7 +36,7 @@ import { faBox } from '@fortawesome/pro-solid-svg-icons';
 import { useListSelection } from '../../lib/workbench/selection';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
-  indexedProductCount,
+  unfindableProductCount,
   usePaymentsReady,
   useProducts,
   useSearchStatus,
@@ -85,14 +85,21 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const selection = useListSelection<ProductRow>(rows, { keyOf: (row) => row.id });
 
   // Is the shop actually findable? The public listing reads the SEARCH INDEX,
-  // not this table, so a catalog that never got indexed renders "No products
-  // found" to every visitor while this screen shows a full, healthy list.
+  // not this table, so a product missing from it renders "No products found" to
+  // a visitor searching for it by name while this screen shows a full, healthy
+  // list.
   //
-  // Only "none at all" is reported. A count that merely disagrees could be a
-  // worker a few seconds behind, and crying wolf on that would train people to
-  // ignore the one message that matters. `null` means the check itself could not
-  // run — said nothing about, never rendered as zero.
-  const indexed = indexedProductCount(useSearchStatus().data);
+  // THE GAP, not the total. This read "only none at all is reported", on the
+  // reasoning that a count which merely disagrees could be a worker a few seconds
+  // behind and crying wolf would train people to ignore it. The reasoning is
+  // right and the discriminator was wrong: it made "the indexer is two seconds
+  // late" and "four products have been missing since Tuesday" the same signal, so
+  // it reported neither. Four of a sixteen-product catalog were unfindable for
+  // six days while this screen said nothing (issue 318). The server now excludes
+  // anything changed inside a grace window, so lag is not counted and a real
+  // shortfall is. `null` means the check itself could not run — said nothing
+  // about, never rendered as zero.
+  const unfindable = unfindableProductCount(useSearchStatus().data);
   const sellableCount = rows.filter((row) => row.status === 'active').length;
   // The OTHER way a live shop quietly sells nothing, and the crueller of the
   // two: the customer is turned away at the last step, after choosing, typing an
@@ -204,7 +211,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <ProductsListNotices
           ctx={ctx}
           cannotBePaid={paymentsReady === false && sellableCount > 0}
-          invisibleShop={indexed === 0 && sellableCount > 0}
+          unfindableCount={unfindable !== null && unfindable > 0 ? unfindable : null}
           staleAfterFailure={staleAfterFailure}
           onRetry={() => {
             void refetch();

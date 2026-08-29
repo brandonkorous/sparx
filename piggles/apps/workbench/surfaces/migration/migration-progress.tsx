@@ -22,7 +22,40 @@ import { faCheckCircle, faDownload, faSpinner } from '@fortawesome/pro-solid-svg
 
 import { Icon } from '@piggles/ui';
 import { ReportProblemButton } from '../../components/feedback/report-problem-button';
-import { downloadText, entityLabel, problemsCsv, runTone, useMigrationRun } from './data';
+import { downloadText, entityLabel, problemsCsv, useMigrationRun } from './data';
+import type { RunEntityRollup } from './data';
+import { landedBreakdown, landedTotals, runHeadline } from './run-outcome';
+
+/** One kind of record — how many landed, and how many of those were already here. */
+function EntityCard({ entity, dryRun }: { entity: RunEntityRollup; dryRun: boolean }) {
+  // The big number is new AND already-here added together, which is the one number
+  // that cannot tell an import from an overwrite. It stays, because it answers "did
+  // my file go through"; the line under it answers "what did it do".
+  const breakdown = landedBreakdown(entity, dryRun);
+
+  return (
+    <div className="border-base-300 bg-base-100 flex flex-col gap-1 rounded-xl border p-4">
+      <div className="flex items-center justify-between gap-2">
+        <Heading level={3} className="text-base">
+          {entityLabel(entity.entity)}
+        </Heading>
+        {entity.done ? (
+          <Icon glyph={faCheckCircle} className="text-success size-4" aria-hidden />
+        ) : (
+          <Icon glyph={faSpinner} className="size-4 animate-spin" aria-hidden />
+        )}
+      </div>
+      <Text className="text-2xl font-semibold tabular-nums">
+        {(entity.imported + entity.updated).toLocaleString()}
+      </Text>
+      <Text className="text-sm">
+        of {entity.rowCount.toLocaleString()} {dryRun ? 'would come over' : 'brought over'}
+        {entity.errors > 0 ? ` · ${entity.errors.toLocaleString()} need a look` : ''}
+      </Text>
+      {breakdown === null ? null : <Text className="text-sm">{breakdown}</Text>}
+    </div>
+  );
+}
 
 /** Live progress once the run has started. */
 export function RunProgress({ runId }: { runId: string }) {
@@ -31,39 +64,17 @@ export function RunProgress({ runId }: { runId: string }) {
   if (isPending || data === undefined) return <Text>Starting…</Text>;
 
   const { run, problems } = data;
-  const running = run.status === 'running';
+  const landed = landedTotals(run.entities);
+  // What the run is CALLED lives in run-outcome, so the history list afterwards
+  // cannot describe the same run differently from this screen.
+  const headline = runHeadline(run, landed);
 
   return (
     <div className="flex flex-col gap-4">
-      <Alert color={runTone(run.status)} variant="soft">
+      <Alert color={headline.tone} variant="soft">
         <AlertContent>
-          <AlertTitle>
-            {/* A practice run must not claim to be moving anything WHILE it runs.
-                The finished state said "nothing was saved" correctly, but for the
-                minute before that the screen read "Bringing your business over…"
-                — which is the one sentence a nervous person is watching for, and
-                it was not true. */}
-            {running
-              ? run.dryRun
-                ? 'Trying it out — nothing is being saved…'
-                : 'Bringing your business over…'
-              : run.status === 'failed'
-                ? 'Some of this did not land'
-                : run.dryRun
-                  ? 'Practice run finished — nothing was saved'
-                  : 'Your business is here'}
-          </AlertTitle>
-          <AlertDescription>
-            {running
-              ? run.dryRun
-                ? 'We are checking every row against what you already have. Nothing is being written to your business.'
-                : 'You can close this and come back — it keeps going without you.'
-              : run.status === 'failed'
-                ? 'The rest did come across. Nothing below has to be done again — bringing the same file in a second time updates what is here rather than duplicating it.'
-                : run.dryRun
-                  ? 'This is exactly what a real import would do. Run it for real when you are ready.'
-                  : 'Everything below is now in your account.'}
-          </AlertDescription>
+          <AlertTitle>{headline.title}</AlertTitle>
+          <AlertDescription>{headline.description}</AlertDescription>
           {/* A part-landed migration is the worst thing to leave someone alone with:
               they can see a number that is wrong and have no way to know which half
               of their business is missing. The run id is what lets us answer that
@@ -81,7 +92,7 @@ export function RunProgress({ runId }: { runId: string }) {
                 'What happened per kind of record:',
                 ...run.entities.map(
                   (entity) =>
-                    `  ${entityLabel(entity.entity)}: ${(entity.imported + entity.updated).toLocaleString()} of ${entity.rowCount.toLocaleString()} came over, ${entity.errors.toLocaleString()} did not`
+                    `  ${entityLabel(entity.entity)}: ${(entity.imported + entity.updated).toLocaleString()} of ${entity.rowCount.toLocaleString()} came over (${entity.imported.toLocaleString()} new, ${entity.updated.toLocaleString()} already here), ${entity.errors.toLocaleString()} did not`
                 ),
                 ...(problems.length === 0
                   ? []
@@ -105,29 +116,7 @@ export function RunProgress({ runId }: { runId: string }) {
 
       <div className="grid gap-3 @2xl:grid-cols-2">
         {run.entities.map((entity) => (
-          <div
-            key={entity.entity}
-            className="border-base-300 bg-base-100 flex flex-col gap-1 rounded-xl border p-4"
-          >
-            <div className="flex items-center justify-between gap-2">
-              <Heading level={3} className="text-base">
-                {entityLabel(entity.entity)}
-              </Heading>
-              {entity.done ? (
-                <Icon glyph={faCheckCircle} className="text-success size-4" aria-hidden />
-              ) : (
-                <Icon glyph={faSpinner} className="size-4 animate-spin" aria-hidden />
-              )}
-            </div>
-            <Text className="text-2xl font-semibold tabular-nums">
-              {(entity.imported + entity.updated).toLocaleString()}
-            </Text>
-            <Text className="text-sm">
-              of {entity.rowCount.toLocaleString()}{' '}
-              {run.dryRun ? 'would come over' : 'brought over'}
-              {entity.errors > 0 ? ` · ${entity.errors.toLocaleString()} need a look` : ''}
-            </Text>
-          </div>
+          <EntityCard key={entity.entity} entity={entity} dryRun={run.dryRun} />
         ))}
       </div>
 

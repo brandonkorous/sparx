@@ -34,8 +34,8 @@ export interface OrderFacts {
    *  bottom half of the pane turns on it: somebody collecting has no carrier,
    *  no tracking number, and no warehouse walk that means anything. */
   plan: DeliveryPlan;
-  /** Money taken, less anything already given back. Rounded to cents so
-   *  floating-point noise cannot offer a $0.0000001 refund. */
+  /** Money the shop is still holding. Rounded to cents so floating-point noise
+   *  cannot offer a $0.0000001 refund. */
   refundableAmount: number;
   /** One source for all three sentences about this refund. */
   refundSays: RefundWords;
@@ -49,10 +49,12 @@ export function orderFacts(
   const cancellable =
     order.status !== 'cancelled' && order.status !== 'delivered' && order.status !== 'refunded';
 
-  const refundableAmount = Math.max(
-    0,
-    Math.round((Number(order.amountPaid) - Number(order.refundTotal ?? 0)) * 100) / 100
-  );
+  // `amountPaid` IS the money still held: the server writes it as captured minus
+  // refunded. Taking `refundTotal` off again subtracted every earlier refund a
+  // second time, so an order holding $128.00 of a customer's money offered
+  // $86.00 — and after that went through the row hid itself, leaving $42.00 of
+  // hers with the shop and no control to give it back (issue 303).
+  const refundableAmount = Math.max(0, Math.round(Number(order.amountPaid) * 100) / 100);
 
   // Whether a refund has anywhere to go. Money the business took by hand never
   // passed through a gateway, so "back to the card it was paid with" is a

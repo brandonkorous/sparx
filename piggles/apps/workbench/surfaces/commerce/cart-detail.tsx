@@ -50,7 +50,7 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
 
-  const { data, isPending, isError, refetch } = useCart(id);
+  const { data, isPending, isError, error, refetch } = useCart(id);
   const recover = useRecoverCart(id);
 
   // The tab is where a cart says whose it is — a basket has no name of its own,
@@ -65,6 +65,8 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="basket"
             title="Could not load this cart"
             description="This is a problem reaching the server. The cart itself is unaffected — nothing has been changed or lost."
             onRetry={() => {
@@ -100,7 +102,10 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const cart: CartDetail = data;
   const state = cartStateFrom(cart);
   const shopper = cartShopperName(null, cart.contact);
-  const canRecover = Boolean(cart.abandonedAt) && !cart.recoveredAt;
+  // Not `&& !cart.recoveredAt`: a basket that came back once and went quiet
+  // again is abandoned again, and she can win it back again. `recoveredAt` is
+  // the history of that, not a door that closes (persona issue 289).
+  const canRecover = Boolean(cart.abandonedAt);
 
   const lines = cart.items.length;
   const facts = [

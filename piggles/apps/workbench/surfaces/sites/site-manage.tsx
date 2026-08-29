@@ -18,7 +18,7 @@ import { ManageToolbar, RareMoves } from './site-manage-actions';
 
 export function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const toast = useToast();
-  const { data: site, isError, isPending, refetch, isFetching, dataUpdatedAt } = useSite(id);
+  const { data: site, isError, error, isPending, refetch, isFetching, dataUpdatedAt } = useSite(id);
   const { data: modules } = useModuleStates();
   const { data: domains } = useDomains();
   const update = useUpdateSite(id);
@@ -55,6 +55,8 @@ export function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="site"
             title="Could not load this site"
             description="This is a problem reaching the server. Nothing about the site has changed."
             onRetry={() => {

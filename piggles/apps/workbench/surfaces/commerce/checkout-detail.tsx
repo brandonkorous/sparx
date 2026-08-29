@@ -104,7 +104,7 @@ export function CheckoutSessionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
 
-  const { data, isPending, isError, refetch } = useCheckoutSession(id);
+  const { data, isPending, isError, error, refetch } = useCheckoutSession(id);
   const expire = useExpireCheckoutSession(id);
 
   // A session has no name of its own, so the tab carries the shopper plus the
@@ -119,6 +119,8 @@ export function CheckoutSessionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="checkout"
             title="Could not load this checkout"
             description="This is a problem reaching the server. The session itself is unaffected — nothing has been changed or lost."
             onRetry={() => {

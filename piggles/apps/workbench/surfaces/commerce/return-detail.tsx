@@ -64,7 +64,15 @@ function ReturnIdentity({ detail }: { detail: ReturnDetail }) {
 
 export function ReturnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
-  const { data: detail, isPending, isError, isFetching, dataUpdatedAt, refetch } = useReturn(id);
+  const {
+    data: detail,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useReturn(id);
 
   const orderNumber = detail?.orderNumber ?? null;
   useEffect(() => {
@@ -76,6 +84,8 @@ export function ReturnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="return"
             title="Could not load this return"
             description="This is a problem reaching the server. The return itself is unaffected — nothing has been changed or lost."
             onRetry={() => {

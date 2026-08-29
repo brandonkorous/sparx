@@ -130,13 +130,15 @@ export function TaskDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function TaskLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: task, isPending, isError, isFetching, dataUpdatedAt, refetch } = useTask(id);
+  const { data: task, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useTask(id);
 
   if (isError) {
     return (
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="task"
             title="Could not load this task"
             description="This is a problem reaching the server, or the task has been removed. Nothing has been changed."
             onRetry={() => {

@@ -159,6 +159,7 @@ function DomainLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     data: domain,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -169,6 +170,8 @@ function DomainLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="list"
             title="Could not load this list"
             description="This is a problem reaching the server. The list itself is unaffected — nothing has been lost."
             onRetry={() => {

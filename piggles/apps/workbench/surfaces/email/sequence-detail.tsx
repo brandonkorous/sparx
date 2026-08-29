@@ -169,6 +169,7 @@ function LoadSequence({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     data: sequence,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -179,6 +180,8 @@ function LoadSequence({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="sequence"
             title="Could not load this sequence"
             description="This is a problem reaching the server, or the sequence no longer exists. Nothing has been changed."
             onRetry={() => {

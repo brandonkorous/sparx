@@ -145,6 +145,7 @@ export function AutomationRunDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     data: run,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -159,6 +160,8 @@ export function AutomationRunDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="run"
             title="Could not load this run"
             description="This is a problem reaching the server, or the run no longer exists."
             onRetry={() => {

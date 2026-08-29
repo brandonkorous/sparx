@@ -481,7 +481,15 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
 
 export function SubscriptionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
-  const { data: sub, isPending, isError, refetch, isFetching, dataUpdatedAt } = useSubscription(id);
+  const {
+    data: sub,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isFetching,
+    dataUpdatedAt,
+  } = useSubscription(id);
 
   const customerName = sub?.customerName ?? null;
   useEffect(() => {
@@ -508,6 +516,8 @@ export function SubscriptionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           <div className={`${PANE_SHELL} p-2`}>
             <Card className="min-h-0 flex-1 items-center justify-center">
               <PaneLoadError
+                error={error}
+                noun="repeat order"
                 title="Could not load this repeat order"
                 description="This is a problem reaching the server. The repeat order itself is unaffected — nothing has been changed or lost."
                 onRetry={() => {

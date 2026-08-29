@@ -79,6 +79,7 @@ function ZoneLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     data: zone,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -89,6 +90,8 @@ function ZoneLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="delivery region"
             title="Could not load this delivery region"
             description="This is a problem reaching the server. The region itself is unaffected — nothing has been lost."
             onRetry={() => {

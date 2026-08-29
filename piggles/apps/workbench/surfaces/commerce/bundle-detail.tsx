@@ -140,13 +140,23 @@ export function BundleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function BundleLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: bundle, isPending, isError, isFetching, dataUpdatedAt, refetch } = useBundle(id);
+  const {
+    data: bundle,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useBundle(id);
 
   if (isError) {
     return (
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="bundle"
             title="Could not load this bundle"
             description="This is a problem reaching the server. The bundle itself is unaffected."
             onRetry={() => {

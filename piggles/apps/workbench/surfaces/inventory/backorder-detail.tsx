@@ -73,7 +73,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
   const toast = useToast();
   const confirm = useConfirm();
-  const { data, isLoading, isError, isFetching, dataUpdatedAt, refetch } = useBackorder(id);
+  const { data, isLoading, isError, error, isFetching, dataUpdatedAt, refetch } = useBackorder(id);
   const update = useUpdateBackorder(id);
   const notify = useMarkBackorderNotified(id);
   const cancel = useCancelBackorder(id);
@@ -107,6 +107,8 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 overflow-y-auto">
           <PaneLoadError
+            error={error}
+            noun="commitment"
             module={MODULE}
             icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
             title="Could not load that commitment"

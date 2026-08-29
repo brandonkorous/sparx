@@ -102,14 +102,21 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     listed: false,
   },
   {
+    // Listed, unlike its neighbour above, and sectionless beside 'Move in' for the
+    // same reason. This carried `listed: false` and a set of search keywords at the
+    // same time, which cannot both be true: the launcher only reads the keywords of
+    // surfaces it lists, so typing "Past moves" — its own name — into the search box
+    // answered "Nothing matches that", and the only way in was one button on one
+    // other screen. It takes no params, so opening it by name is meaningful; that is
+    // exactly what makes it different from `platform.migrate.run` above.
     key: 'platform.migrate.history',
     title: 'Past moves',
     module: 'platform',
     icon: faClockRotateLeft,
     component: MigrationHistorySurface,
     singleton: true,
-    listed: false,
     keywords: ['migration history', 'past imports', 'previous moves'],
+    order: 4,
   },
 
   // NOTE: sparx's `workbench.home` ("Start here") is deliberately NOT registered

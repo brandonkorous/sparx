@@ -263,7 +263,15 @@ function ConnectDomain({ ctx }: { ctx: SurfaceContext }) {
 function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const toast = useToast();
   const confirm = useConfirm();
-  const { data: domain, isPending, isError, isFetching, dataUpdatedAt, refetch } = useDomain(id);
+  const {
+    data: domain,
+    isPending,
+    isError,
+    error,
+    isFetching,
+    dataUpdatedAt,
+    refetch,
+  } = useDomain(id);
   const { data: sites } = useSites();
 
   const verify = useVerifyDomain(id);
@@ -280,6 +288,8 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="address"
             title="Could not load this address"
             description="This is a problem reaching the server. The address itself is unaffected."
             onRetry={() => {

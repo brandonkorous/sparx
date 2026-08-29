@@ -105,6 +105,8 @@ function InvoiceLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         <div className={`${PANE_SHELL} p-2`}>
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneLoadError
+              error={invoiceQuery.error}
+              noun="invoice"
               title="Could not load this invoice"
               description="This is a problem reaching the server. The invoice itself is unaffected — nothing has been lost."
               onRetry={() => {

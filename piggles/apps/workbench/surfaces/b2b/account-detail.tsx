@@ -168,6 +168,8 @@ function AccountLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={accountQuery.error}
+            noun="account"
             title="Could not load this account"
             description="This is a problem reaching the server. The account itself is unaffected — nothing has been lost."
             onRetry={() => {

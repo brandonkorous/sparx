@@ -234,6 +234,7 @@ function CustomerLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     data: customer,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -244,6 +245,8 @@ function CustomerLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="customer"
             title="Could not load this customer"
             description="This is a problem reaching the server, or the customer has been removed. Nothing has been changed."
             onRetry={() => {

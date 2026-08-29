@@ -29,7 +29,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = usePayout(id);
+  const { data, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = usePayout(id);
 
   useEffect(() => {
     if (data) ctx.setTitle(`Deposit · ${formatDate(data.arrivalDate)}`);
@@ -62,6 +62,8 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneLoadError
+              error={error}
+              noun="deposit"
               icon={<Icon glyph={faMoneyBill} className="size-6" aria-hidden />}
               title="Could not load this deposit"
               description="Something went wrong reaching the server. Try again in a moment."

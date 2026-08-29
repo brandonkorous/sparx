@@ -130,13 +130,15 @@ export function DealDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function DealLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
-  const { data: deal, isPending, isError, isFetching, dataUpdatedAt, refetch } = useDeal(id);
+  const { data: deal, isPending, isError, error, isFetching, dataUpdatedAt, refetch } = useDeal(id);
 
   if (isError) {
     return (
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="deal"
             title="Could not load this deal"
             description="This is a problem reaching the server, or the deal has been removed. Nothing has been changed."
             onRetry={() => {

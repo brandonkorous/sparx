@@ -56,6 +56,26 @@ export function useLayout() {
   });
 }
 
+/**
+ * Ask the platform to put its own improvements into the saved header and footer.
+ *
+ * `useLayout` holds its tree at `staleTime: Infinity`, so the repair that rides along
+ * with that read never happens again once the pane is open — which is exactly the case
+ * Home's offer lands in (issue 315). This asks for it outright, then re-reads so an open
+ * pane shows the result rather than the tree it fetched an hour ago.
+ */
+export function useRepairLayout() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<{ repaired: boolean }>('/v1/builder/layouts/silica/repair', {}),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: LAYOUT_KEY });
+      void queryClient.invalidateQueries({ queryKey: ['builder', 'publish-state'] });
+      void queryClient.invalidateQueries({ queryKey: ['builder', 'silica-site'] });
+    },
+  });
+}
+
 export interface LayoutSaveResult {
   written: boolean;
   reloadHints: string[];

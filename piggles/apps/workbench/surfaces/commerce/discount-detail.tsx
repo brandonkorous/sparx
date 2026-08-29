@@ -47,6 +47,7 @@ function DiscountLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     data: discount,
     isPending,
     isError,
+    error,
     isFetching,
     dataUpdatedAt,
     refetch,
@@ -57,6 +58,8 @@ function DiscountLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
           <PaneLoadError
+            error={error}
+            noun="discount"
             title="Could not load this discount"
             description="This is a problem reaching the server, or the discount has been retired. Nothing has been changed."
             onRetry={() => {

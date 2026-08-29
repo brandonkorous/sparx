@@ -62,7 +62,7 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
   const toast = useToast();
   const confirm = useConfirm();
-  const { data, isLoading, isError, isFetching, dataUpdatedAt, refetch } =
+  const { data, isLoading, isError, error, isFetching, dataUpdatedAt, refetch } =
     useConsignmentSettlement(id);
   const refresh = useRefreshSettlement(id);
   const close = useCloseSettlement(id);
@@ -90,6 +90,8 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
       <div className={PANE_SHELL}>
         <Card className="min-h-0 flex-1 overflow-y-auto">
           <PaneLoadError
+            error={error}
+            noun="settlement"
             module={MODULE}
             icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
             title="Could not load that settlement"

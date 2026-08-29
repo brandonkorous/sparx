@@ -62,6 +62,8 @@ export function QuoteDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className={`${PANE_SHELL} p-2`}>
           <Card className="min-h-0 flex-1 items-center justify-center">
             <PaneLoadError
+              error={quoteQuery.error}
+              noun="quote"
               title="Could not load this quote"
               description="This is a problem reaching the server. The quote itself is unaffected — nothing has been lost."
               onRetry={() => {
