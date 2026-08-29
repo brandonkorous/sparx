@@ -343,6 +343,72 @@ function checkZoneProse() {
   return 0;
 }
 
+/**
+ * The company that SELLS the software, named in the console where a tenant runs
+ * their own business.
+ *
+ * Case-sensitive on purpose: `WizeWorks` is how the brand is written when it is
+ * being shown to somebody, and `@wizeworks/...` — every import specifier in the
+ * tree — is not. Matching the rendered spelling separates the two without an
+ * exception list.
+ */
+const OPERATOR_NAME = /(?<![\w@/_.`-])WizeWorks(?![\w/_`-])/;
+
+/**
+ * A third gap, and neither existing check could see it.
+ *
+ * `checkBrandProse` walks `wizeworks/` only. `countOtherBrandProse` walks
+ * `piggles/` but looks for **sparx** and requires four words — so `WizeWorks` as
+ * a one-word placeholder is invisible to both. That is how the field asking Devi
+ * what her business is called came to suggest `WizeWorks`, on the screen whose
+ * own description says the answer gets printed on her invoices (issue 321).
+ *
+ * Scoped to `piggles/apps/workbench`, which is the only Piggles surface a TENANT
+ * operates. `piggles/apps/web` names WizeWorks LLC correctly and often — it is
+ * the real legal entity in the terms, the data-processing agreement and the
+ * footer copyright — and `piggles/apps/account` is literally where a customer
+ * deals with WizeWorks. Neither belongs in this rule.
+ *
+ * No exception list and no `isSentence` floor: inside the console the operator's
+ * name has nothing to do, at any length. Measured before it was written — one
+ * hit in the whole console, and it was the defect.
+ */
+function checkOperatorInConsole() {
+  const problems = [];
+  let scanned = 0;
+  const root = path.join(ROOT, 'piggles', 'apps', 'workbench');
+  if (!fs.existsSync(root)) {
+    console.error(`\n✖ the console is not at ${rel(root)} — this check scanned nothing.\n`);
+    return 1;
+  }
+  for (const file of walk(root)) {
+    const name = rel(file);
+    if (!BRAND_PROSE_EXTENSIONS.has(path.extname(file))) continue;
+    if (isTestFile(name)) continue;
+    scanned += 1;
+    const source = code(fs.readFileSync(file, 'utf8'));
+    source.split('\n').forEach((line, index) => {
+      for (const match of line.matchAll(STRING_LITERAL)) {
+        const text = match[2];
+        if (!OPERATOR_NAME.test(text)) continue;
+        problems.push(`${name}:${index + 1}: ${text.trim().slice(0, 110)}`);
+      }
+    });
+  }
+  if (problems.length) {
+    console.error(`\n✖ the operator's name inside the console — ${problems.length}:\n`);
+    for (const problem of problems) console.error('   ' + problem);
+    console.error(
+      `\n   mypiggles is where a tenant runs THEIR business. The company they buy the\n` +
+        `   software from has no name to make there — least of all in a field asking\n` +
+        `   what their own business is called. Say the tenant's, or say nothing.\n`
+    );
+    return problems.length;
+  }
+  console.log(`✓ the operator named in the console: 0 (${scanned} files)`);
+  return 0;
+}
+
 /** Only sparx. Piggles naming itself inside its own tree is the product
  *  speaking; naming the OTHER brand is the leak. */
 const OTHER_BRAND = /(?<![\w@/_.`-])(sparx)(?![\w/_`-])(?!\.\w)/i;
@@ -561,6 +627,7 @@ failures += scan(
 failures += checkBanned(banned);
 failures += checkBrandProse();
 failures += checkZoneProse();
+failures += checkOperatorInConsole();
 failures += checkOtherBrandProse(countOtherBrandProse(), update);
 failures += checkRatchet(counts, update, banned);
 

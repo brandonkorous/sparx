@@ -262,6 +262,23 @@ pre-push guard. It fails on:
   exception list, and it should stay empty** — a sentence that genuinely needs a
   zone has a host or a tenant nearby to read one from. It prints its denominator
   on success and fails outright if its scan ever returns no files.
+- **the operator's name inside a console** — `WizeWorks`, written as the brand is
+  written when it is shown to somebody, in any string under
+  `piggles/apps/workbench/**`. A third gap that neither rule above could see:
+  the brand-prose rule walks `wizeworks/` only, and the `@sparx/*` companion
+  walks `piggles/` but looks for the other BRAND and requires four words — so a
+  one-word placeholder was invisible to both. That is how the field asking a shop
+  owner what her business is called came to suggest `WizeWorks`, on the screen
+  whose own description says the answer gets printed on her invoices
+  (`piggles/docs/personas/issues/321`). Scoped to the console because that is the
+  only Piggles surface a TENANT operates: `apps/web` names WizeWorks LLC
+  correctly in the terms, the data-processing agreement and the footer
+  copyright, and `apps/account` is literally where a customer deals with
+  WizeWorks. Case-sensitive, which is what separates the rendered brand from the
+  `@wizeworks/...` specifier on every other line in the tree — so no exception
+  list, and no `isSentence` floor either: inside the console the operator's name
+  has nothing to do at any length. Prints its denominator on success and fails
+  outright if the console ever moves out from under it.
 - `@sparx/*` usage under `piggles/` growing past its baseline, and any use of
   `@sparx/brand` there at all
 
@@ -280,9 +297,11 @@ firing on all of them is a rule somebody switches off. **No brand hexes** (RULE
 A red check blocks the push. That is intentional — `--no-verify` is not an
 acceptable bypass. And a new guard must be shown to go **red** before it is
 trusted green; reverting `packages/email/src/silica/frame.ts`'s credit line to
-"Sent with sparx" is the ready-made red case for the brand-prose rule, and
-putting `sparx.zone` back into any refusal in `routes/v1/domains.ts` is the one
-for the zone rule. Both were run red before this paragraph was written.
+"Sent with sparx" is the ready-made red case for the brand-prose rule, putting
+`sparx.zone` back into any refusal in `routes/v1/domains.ts` is the one for the
+zone rule, and restoring `placeholder="WizeWorks"` on the Business name field in
+`piggles/apps/workbench/surfaces/business-details-columns.tsx` is the one for the
+operator rule. All three were run red before this paragraph was written.
 
 ## Environment
 
