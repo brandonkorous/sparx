@@ -79,6 +79,10 @@ export function usePublishState() {
         frameUnpublished: false,
         lastPublishedAt: null,
         neverPublished: false,
+        // Empty for the same reason as every flag above it: a read that failed
+        // knows nothing about the live site, and "your visitors are missing
+        // these" invented from a network error is worse than saying nothing.
+        liveChromeGaps: [],
       })),
   });
 }

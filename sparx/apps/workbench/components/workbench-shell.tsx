@@ -36,6 +36,7 @@ import { BillingBanner } from './billing/billing-banner';
 import { Launcher } from './launcher';
 import { ModulePanel } from './module-panel';
 import { RecentsRecorder } from './recents-recorder';
+import { SkipToWorkspace, WORKSPACE_ID } from './skip-to-workspace';
 import { UpdateNotifier } from './update-notifier';
 import { FeedbackProvider } from './feedback/provider';
 import { DeepLinkArrival } from './deep-link-arrival';
@@ -277,6 +278,8 @@ export function WorkbenchShell({
     <WorkbenchProvider windowId={windowId} role="main">
       <FeedbackProvider theme={theme} activeSite={activeSite}>
         <div className="bg-base-300 flex h-dvh w-full flex-col overflow-hidden">
+          <SkipToWorkspace />
+
           {/* The chrome renders IMMEDIATELY, even before the site key resolves —
             a present toolbar that fills in its workspace name a beat later reads
             as loading; an absent one reads as broken. The switcher self-hides
@@ -387,7 +390,15 @@ export function WorkbenchShell({
               </ChromeBoundary>
             </div>
 
-            <main data-tour="dock" className="min-w-0 flex-1 p-1">
+            <main
+              id={WORKSPACE_ID}
+              // `-1` so it can be focused by the skip control without joining
+              // the tab order itself, which would put a stop in front of every
+              // pane for no gain.
+              tabIndex={-1}
+              data-tour="dock"
+              className="min-w-0 flex-1 p-1 focus:outline-none"
+            >
               {/* The dock waits for the site key — restoring Site A's layout and
                 then discovering we're on Site B would strand entity panes. With
                 the cookie handed down at SSR this is resolved on the first paint
