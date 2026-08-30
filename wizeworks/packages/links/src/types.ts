@@ -46,6 +46,23 @@ export interface AppRoute {
   /** Plural heading for the command palette's grouped results ("Products"). */
   readonly entityLabel?: string;
   /**
+   * Which product this route belongs to, when a path means different things in
+   * each. Absent is the default and covers all but one route: the address is the
+   * same wherever it is read.
+   *
+   * It exists because both consoles read THIS table, and each has a Home screen
+   * that is not the other's. Every product's front door should be `/home` --
+   * that is what a person typing it expects from either -- and one table cannot
+   * spell one path twice without a way to say which is which.
+   *
+   * Resolution is a preference, never a filter: `matchPath` prefers a route
+   * carrying the caller's brand and otherwise takes the unbranded one, so a
+   * console asking for a path that varies by nothing still gets the one row.
+   * That is what lets a single branded route exist without every other row
+   * having to declare a brand.
+   */
+  readonly brand?: string;
+  /**
    * Paths that still resolve here but are never emitted. These are the addresses
    * already sitting in people's inboxes — `/settings/billing` went out with
    * every Stripe return, `/chat/:id` with every staff chat notification. A link

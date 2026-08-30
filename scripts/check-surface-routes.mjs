@@ -58,10 +58,11 @@ const SURFACE_KEY = /^[a-z][a-z0-9-]*(?:\.[a-z0-9-]+)+$/;
 // NOT a way to make the check quiet: anything not listed here still fails, so a new
 // unaddressed surface is caught the day it lands.
 //
-//   piggles.home — both consoles read ONE route table and `/home` already belongs to
-//   sparx's `workbench.home`. Giving the Piggles console's Home an address needs the
-//   table to be able to say which brand a path is for, which is issue 328.
-const NO_ADDRESS_YET = new Set(['piggles.home']);
+// EMPTY, and it should stay that way. `piggles.home` was the one entry: both consoles
+// read ONE route table, `/home` already belonged to sparx's `workbench.home`, and the
+// Piggles console's Home had no address at all (issue 328). The table can now say which
+// product a path is for, so both front doors are `/home` and the entry is gone.
+const NO_ADDRESS_YET = new Set([]);
 
 // Dead `open()` calls that already existed when this direction was first checked
 // (2026-08-29, issue 327). Listed by exact call site rather than by key, so the

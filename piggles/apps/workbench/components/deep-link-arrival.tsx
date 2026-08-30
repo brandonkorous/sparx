@@ -29,13 +29,9 @@ import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { useSites, useModuleStates, switchSite } from '../lib/api/shell-data';
 import { useWorkbench } from '../lib/workbench/context';
 import { useConfirm } from '../lib/confirm';
-import {
-  applyDeepLink,
-  clearSwitchAttempt,
-  noteSwitchAttempt,
-  readDeepLink,
-  resolveDeepLink,
-} from '../lib/workbench/deep-link';
+import { readDeepLink } from '../lib/workbench/deep-link';
+import { clearSwitchAttempt, noteSwitchAttempt } from '../lib/workbench/deep-link-switch';
+import { applyDeepLink, resolveDeepLink } from '../lib/workbench/deep-link-resolve';
 
 export function DeepLinkArrival({ siteKey }: { siteKey: string | null }) {
   const { controller } = useWorkbench();

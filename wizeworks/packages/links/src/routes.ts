@@ -37,6 +37,10 @@ import type { AppRoute } from './types';
 export const ROUTES: readonly AppRoute[] = [
   /* ── The workbench itself ─────────────────────────────────────────────── */
   { path: '/home', surface: 'workbench.home' },
+  // The other console's Home, at the same address. Not an alias and not a second
+  // name for one screen: each product has its own front door, and a person typing
+  // `/home` into either expects to land on theirs. See `AppRoute.brand`.
+  { path: '/home', surface: 'piggles.home', brand: 'piggles' },
   { path: '/pulse', surface: 'platform.pulse' },
   { path: '/feedback', surface: 'platform.feedback.list' },
   {

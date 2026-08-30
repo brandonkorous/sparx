@@ -116,8 +116,17 @@ function readQuery(search: string | URLSearchParams | undefined): URLSearchParam
  * Returns null for anything the table does not know, INCLUDING `/` — the
  * workbench root is "your layout, as you left it", which is the absence of a
  * destination rather than a destination of its own.
+ *
+ * `brand` names the product doing the asking, for the handful of addresses that
+ * mean something different in each. Omit it and the unbranded route answers,
+ * which is every route but one — so a caller that has no brand to give is not
+ * choosing wrong, it is choosing the shared answer.
  */
-export function matchPath(pathname: string, search?: string | URLSearchParams): MatchedLink | null {
+export function matchPath(
+  pathname: string,
+  search?: string | URLSearchParams,
+  brand?: string
+): MatchedLink | null {
   const path = normalizePath(pathname);
   if (path === '/') return null;
 
@@ -125,7 +134,15 @@ export function matchPath(pathname: string, search?: string | URLSearchParams): 
   const candidates = byLength.get(parts.length);
   if (!candidates) return null;
 
+  // A brand-specific route wins over the unbranded one at the same address, and
+  // the unbranded one is kept as the answer for every caller that is not it.
+  // Held rather than returned immediately so precedence stays a property of the
+  // table: an unbranded route that matched FIRST is still the fallback, and a
+  // branded route later in the bucket does not get to jump a more literal one.
+  let fallback: MatchedLink | null = null;
+
   for (const candidate of candidates) {
+    if (candidate.route.brand !== undefined && candidate.route.brand !== brand) continue;
     const params: Record<string, string> = {};
     let matched = true;
 
@@ -162,12 +179,16 @@ export function matchPath(pathname: string, search?: string | URLSearchParams): 
       params[key] ??= value;
     }
 
-    return site === undefined
-      ? { surface: candidate.route.surface, params }
-      : { surface: candidate.route.surface, params, site };
+    const matchedLink: MatchedLink =
+      site === undefined
+        ? { surface: candidate.route.surface, params }
+        : { surface: candidate.route.surface, params, site };
+
+    if (candidate.route.brand !== undefined) return matchedLink;
+    fallback ??= matchedLink;
   }
 
-  return null;
+  return fallback;
 }
 
 /** decodeURIComponent, but a malformed escape yields the raw segment rather than throwing. */

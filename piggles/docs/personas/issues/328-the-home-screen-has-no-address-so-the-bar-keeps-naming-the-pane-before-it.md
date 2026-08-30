@@ -1,12 +1,13 @@
 # 328 — Home has no address, so the bar goes on naming whatever she was looking at before
 
-**Status:** open
+**Status:** fixed
 **Severity:** minor
 **Found by:** P03 · Juniper Row · while adding the open-call check for [327]
 **Surface:** mypiggles › Home, and the browser address bar
 **Filed:** 2026-08-29
-**Blocked on:** decision — one route table serves two consoles, and `/home` is
-already taken by sparx's Home
+**Fixed:** 2026-08-29
+**Confirmed by:** `/home` opening this console's Home, and the address check going
+red when the route is taken away
 
 ## What happened
 
@@ -87,26 +88,54 @@ and any OTHER unaddressed surface still fails. Same shape as
 [[feedback_structural_checks_go_blind]]: the check was green over a file it was
 not looking at.
 
-## The fix, and why it is not made here
+## The fix
 
-Three ways to give it an address, and the choice is a product one about a URL
-people will paste:
+**A brand on the route.** `AppRoute` gains an optional `brand`, `/home` appears
+twice, and each console resolves its own. This was written up as a decision
+between three options, two of which would have given the Piggles console a
+second-choice address permanently. It was not a decision worth anybody's time:
+every product's front door should be `/home`, because that is what a person
+typing it expects from either, and the only thing standing in the way was that
+one table could not spell one path twice.
 
-1. **A brand on the route.** `AppRoute` gains an optional brand, `/home` exists
-   twice, and each console resolves its own. Cleanest, and it is the only option
-   that lets both products call their front door `/home` — which is what someone
-   typing it will expect from either. Touches the shared package and the sparx
-   console's resolver, so it is not a Piggles-side change.
-2. **A different path for Piggles' Home** — `/start`, say. One line, no shared
-   contract touched, and it works today. It also means the Piggles console's home
-   is at an address that reads like a second-choice name, permanently, because
-   these are persisted in saved layouts and in links people have sent.
-3. **Leave it.** Home stays unlinkable and the bar stays stale.
+**Nothing in the sparx console changed, and nothing had to.** The two directions
+are not symmetrical:
 
-Option 1 is right and option 2 is cheap. Picking between them is Brandon's — it
-decides what a Piggles customer's home address IS.
+- `buildPath` is keyed by SURFACE, and each Home is its own surface, so both
+  already build `/home` with no notion of brand at all.
+- `matchPath` is the only ambiguous direction, so it takes the brand as an
+  optional third argument. Absent, the unbranded route answers — which is what
+  sparx passes today and what every other caller passes for every other address.
+
+So a brand is a PREFERENCE, never a filter: a console asking for a path that
+varies by nothing still gets the one shared row. That is what lets a single
+branded route exist without all 340 others having to declare a brand.
+
+Two invariants moved with it, both in `test/routes.test.ts`:
+
+- **"no duplicate path"** becomes **"no duplicate path within a brand"**. Two
+  rows for one path in one brand is still the ambiguity it was guarding.
+- **A branded route must have a shared route to fall back to.** Without one, a
+  console that did not ask for that brand gets nothing — a silent dead link,
+  which is the thing this table exists to make impossible.
+- The **round trip** now asks as the product that owns the route. It is a
+  property within a brand, not across them.
+
+`piggles.home` came off `NO_ADDRESS_YET` in
+[check-surface-routes.mjs](../../../../scripts/check-surface-routes.mjs), and that
+list is now **empty** — 341 surfaces, all addressed, none recorded as an
+exception. Proved red by deleting the route: the check names `piggles.home` and
+exits 1.
+
+## Confirmed by
+
+The check, red then green, and 60 tests in `@wizeworks/links` including four that
+pin the behaviour directly: each product's Home at the same path, both building
+`/home`, every non-varying address still resolving for a branded caller, and an
+unknown brand getting the shared answer rather than nothing.
 
 ## Rating effect
 
 Against `Home`. Small, and only visible to someone who reads the address bar or
-tries to share a link.
+tries to share a link — but it was the last surface in either console without an
+address, and the exception list it lived on is now empty.
