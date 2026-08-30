@@ -275,8 +275,22 @@ export function storageKeysOf(src: string): string[] {
  *
  * Variants are consulted first and win: a variant is what the page actually
  * downloads, and the original it was derived from is usually several times larger.
+ *
+ * A STORED ZERO IS NOT A WEIGHT, and is dropped for the same reason a missing row
+ * is. No image file is zero bytes, so a 0 in that column never means "weighs
+ * nothing" — it means nobody ever measured it. The rows carrying one are the
+ * remote pictures: a media asset whose key is somebody else's URL is registered
+ * without being downloaded, so there is nothing local to weigh. That is 2,901 of
+ * the 3,109 assets in the dev database, and every one of them was being added to a
+ * page's total as zero and left out of the unsized count — so a site built
+ * entirely from hot-linked 1600px photographs measured as pure markup and passed
+ * the weight budget outright, which is the exact outcome the paragraph above says
+ * this must not produce.
  */
-async function imageWeights(tx: TxClient, sources: string[]): Promise<Record<string, number>> {
+export async function imageWeights(
+  tx: TxClient,
+  sources: string[]
+): Promise<Record<string, number>> {
   if (sources.length === 0) return {};
 
   const candidates = new Map<string, string[]>();
@@ -300,8 +314,14 @@ async function imageWeights(tx: TxClient, sources: string[]): Promise<Record<str
   ]);
 
   const byKey = new Map<string, number>();
-  for (const row of assets) byKey.set(row.key, Number(row.byteSize));
-  for (const row of variants) byKey.set(row.key, Number(row.byteSize));
+  for (const row of assets) {
+    const bytes = Number(row.byteSize);
+    if (bytes > 0) byKey.set(row.key, bytes);
+  }
+  for (const row of variants) {
+    const bytes = Number(row.byteSize);
+    if (bytes > 0) byKey.set(row.key, bytes);
+  }
 
   const weights: Record<string, number> = {};
   for (const [src, keys] of candidates) {

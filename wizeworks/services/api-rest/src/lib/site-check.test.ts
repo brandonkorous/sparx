@@ -9,7 +9,7 @@ vi.mock('@wizeworks/auth', () => ({
     Promise.resolve(moduleStates.get(key) ?? false),
 }));
 
-const { linkTargets, silicaPagesOf, skippedPagesOf, storageKeysOf } =
+const { imageWeights, linkTargets, silicaPagesOf, skippedPagesOf, storageKeysOf } =
   await import('./site-check.js');
 
 const CTX: PropertyContext = {
@@ -261,5 +261,48 @@ describe('pages the check could not open', () => {
       }))
     );
     expect(kept.length + skippedPagesOf(rows).length).toBe(rows.length);
+  });
+});
+
+// A picture nobody weighed must not be reported as weighing nothing.
+//
+// The weight budget exists to tell an owner her page is too heavy, and it reads
+// `byteSize` off the media library. A REMOTE picture -- a media asset whose key is
+// somebody else's URL -- is registered without ever being downloaded, so that
+// column is 0. Not "small": unmeasured. 2,901 of the 3,109 assets in the dev
+// database are in that state, so a site built out of hot-linked 1600px photographs
+// was measuring as pure markup and passing the budget outright.
+describe('imageWeights', () => {
+  function weighTx(assets: { key: string; byteSize: number }[], variants: typeof assets = []) {
+    return {
+      mediaVariant: { findMany: vi.fn().mockResolvedValue(variants) },
+      mediaAsset: { findMany: vi.fn().mockResolvedValue(assets) },
+    } as unknown as TxClient;
+  }
+
+  it('reports a real file by its real size', async () => {
+    const tx = weighTx([{ key: 'tenant/originals/x/ash-overshirt-bone.jpg', byteSize: 26395 }]);
+    const weights = await imageWeights(tx, ['/media/tenant/originals/x/ash-overshirt-bone.jpg']);
+    expect(Object.values(weights)[0]).toBe(26395);
+  });
+
+  it('leaves a picture stored as zero bytes OUT, so it counts as unsized', async () => {
+    // The engine adds every weight it is handed and reports only what it was NOT
+    // handed as unsized -- so entering a 0 here is a confident claim of free.
+    const src = 'https://images.unsplash.com/photo-1778918006381?w=1600';
+    const tx = weighTx([{ key: src, byteSize: 0 }]);
+    expect(await imageWeights(tx, [src])).toEqual({});
+  });
+
+  it('does not let a zero-byte VARIANT overwrite a real original', async () => {
+    // Variants win over originals on purpose -- a variant is what the page
+    // downloads -- but winning with an unmeasured 0 would lose the one real number.
+    const key = 'tenant/originals/x/hero.jpg';
+    const tx = weighTx([{ key, byteSize: 900_000 }], [{ key, byteSize: 0 }]);
+    expect(await imageWeights(tx, [`/media/${key}`])).toEqual({ [`/media/${key}`]: 900_000 });
+  });
+
+  it('still leaves a source that matches nothing out', async () => {
+    expect(await imageWeights(weighTx([]), ['/media/tenant/originals/x/gone.jpg'])).toEqual({});
   });
 });
