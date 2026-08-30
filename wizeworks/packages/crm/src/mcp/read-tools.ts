@@ -44,7 +44,9 @@ export const getCustomers: McpToolDefinition = {
     leadStatus: LeadStatus.optional(),
     tag: z.string().max(63).optional(),
     q: z.string().max(255).optional(),
-    sortBy: z.enum(['updatedAt', 'createdAt', 'totalSpent', 'lastOrderAt']).optional(),
+    sortBy: z
+      .enum(['updatedAt', 'createdAt', 'totalSpent', 'totalOrdered', 'lastOrderAt'])
+      .optional(),
     ...PaginationArgs,
   }),
   run: (ctx, input) =>

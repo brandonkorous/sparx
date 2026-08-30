@@ -16,6 +16,13 @@ import { seedPrimaryProperty } from '../helpers.js';
 
 const CRON_TOKEN_HEADER = 'x-sparx-internal-cron-token';
 
+// READ, never assumed. `test/setup.ts` sets this with `??=` on purpose — its own
+// header calls the fallbacks "a floor for environments with no .env at all (CI),
+// not a silent override of the developer's" — so on any machine that HAS a .env
+// the app runs with that value and a literal here can never match. These four
+// tests were 401 locally and green in CI for exactly that reason.
+const CRON_TOKEN = process.env.SPARX_INTERNAL_CRON_TOKEN ?? 'test-cron-token-1234567890abcdef';
+
 interface ActiveCrmTenant {
   tenantId: string;
 }
@@ -77,7 +84,7 @@ describe('internal CRM cron endpoints', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/internal/crm/partition-rollover',
-      headers: { [CRON_TOKEN_HEADER]: 'test-cron-token-1234567890abcdef' },
+      headers: { [CRON_TOKEN_HEADER]: CRON_TOKEN },
     });
     expect(res.statusCode).toBe(200);
     const body = res.json();
@@ -93,7 +100,7 @@ describe('internal CRM cron endpoints', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/internal/crm/automation-triggers',
-      headers: { [CRON_TOKEN_HEADER]: 'test-cron-token-1234567890abcdef' },
+      headers: { [CRON_TOKEN_HEADER]: CRON_TOKEN },
     });
     expect(res.statusCode).toBe(200);
     const body = res.json();
@@ -112,7 +119,7 @@ describe('internal CRM cron endpoints', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/internal/crm/overdue-reminders',
-      headers: { [CRON_TOKEN_HEADER]: 'test-cron-token-1234567890abcdef' },
+      headers: { [CRON_TOKEN_HEADER]: CRON_TOKEN },
     });
     expect(res.statusCode).toBe(200);
     const body = res.json();
@@ -126,7 +133,7 @@ describe('internal CRM cron endpoints', () => {
     const res = await app.inject({
       method: 'POST',
       url: '/internal/crm/segment-recompute',
-      headers: { [CRON_TOKEN_HEADER]: 'test-cron-token-1234567890abcdef' },
+      headers: { [CRON_TOKEN_HEADER]: CRON_TOKEN },
     });
     expect(res.statusCode).toBe(200);
     const body = res.json();

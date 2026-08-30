@@ -63,7 +63,7 @@ export interface ListCustomersFilter {
   take?: number;
   skip?: number;
   // Sort: lastOrderAt desc | totalSpent desc | updatedAt desc | createdAt desc
-  sortBy?: 'score' | 'lastOrderAt' | 'totalSpent' | 'updatedAt' | 'createdAt';
+  sortBy?: 'score' | 'lastOrderAt' | 'totalSpent' | 'totalOrdered' | 'updatedAt' | 'createdAt';
 }
 
 export async function list(
@@ -106,10 +106,20 @@ export async function list(
     // the timestamps are required), so "Recent order" listed everybody who has
     // never ordered ahead of everybody who has. On a real business that is most
     // of the list: Juniper Row's only buyer sat at row 30 of 30 (issue 322).
+    //
+    // ONLY on the nullable one. Prisma accepts the `{ sort, nulls }` form for a
+    // nullable column and REJECTS it outright on a required one, so applying it
+    // to every sort threw `Expected SortOrder, provided Object` on the default
+    // view — the whole list, not an edge (issue 331).
+    const orderBy =
+      sortField === 'lastOrderAt'
+        ? { lastOrderAt: { sort: 'desc', nulls: 'last' } as const }
+        : { [sortField]: 'desc' as const };
+
     const [items, total] = await Promise.all([
       tx.customer.findMany({
         where,
-        orderBy: { [sortField]: { sort: 'desc', nulls: 'last' } },
+        orderBy,
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
       }),
@@ -1065,6 +1075,7 @@ function serializeCustomer(c: Customer): Record<string, unknown> {
     doNotContact: c.doNotContact,
     tags: c.tags,
     totalSpent: c.totalSpent.toString(),
+    totalOrdered: c.totalOrdered.toString(),
     orderCount: c.orderCount,
     deletedAt: c.deletedAt?.toISOString() ?? null,
   };

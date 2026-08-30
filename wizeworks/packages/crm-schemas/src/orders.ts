@@ -12,6 +12,11 @@ import { Uuid } from './common';
 export const OrderStatus = z.enum(['placed', 'fulfilled', 'delivered', 'cancelled', 'refunded']);
 export type OrderStatus = z.infer<typeof OrderStatus>;
 
+/** The one status that does not count toward a customer's figures — an order
+ *  that never happened. Shared so the rollup that computes those figures and any
+ *  list shown BESIDE them describe the same orders (issue 332). */
+export const UNCOUNTED_ORDER_STATUS: OrderStatus = 'cancelled';
+
 export const OrderPaymentStatus = z.enum(['unpaid', 'partially_paid', 'paid', 'refunded']);
 export type OrderPaymentStatus = z.infer<typeof OrderPaymentStatus>;
 
@@ -96,6 +101,10 @@ export type UpdateOrderInput = z.infer<typeof UpdateOrderInput>;
 export const ListOrdersInput = z.object({
   customerId: Uuid.optional(),
   status: OrderStatus.optional(),
+  // Only orders that count toward the customer's figures. For a list rendered
+  // BESIDE those figures — the customer card's Recent orders — so the rows and
+  // the totals above them describe one population (issue 332).
+  countedOnly: z.boolean().optional(),
   paymentStatus: OrderPaymentStatus.optional(),
   channel: OrderChannel.optional(),
   propertyId: Uuid.optional(), // origin-site filter (docs/58 — the dashboard Site filter)

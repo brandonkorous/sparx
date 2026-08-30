@@ -19,6 +19,7 @@ import {
   CancelOrderInput,
   CreateOrderInput,
   ListOrdersInput,
+  UNCOUNTED_ORDER_STATUS,
   UpdateOrderInput,
 } from '@wizeworks/crm-schemas';
 import { afterCommit, withTenant } from '@wizeworks/db';
@@ -89,6 +90,9 @@ export async function list(
     const where: Prisma.OrderWhereInput = {
       ...(filter.customerId ? { customerId: filter.customerId } : {}),
       ...(filter.status ? { status: filter.status } : {}),
+      // An explicit status wins: asking for cancelled orders and getting none
+      // would be the worse surprise.
+      ...(filter.countedOnly && !filter.status ? { status: { not: UNCOUNTED_ORDER_STATUS } } : {}),
       ...(filter.paymentStatus ? { paymentStatus: filter.paymentStatus } : {}),
       ...(filter.channel ? { channel: filter.channel } : {}),
       ...(filter.propertyId ? { propertyId: filter.propertyId } : {}),

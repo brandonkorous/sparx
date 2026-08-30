@@ -12,8 +12,9 @@
 //   • `authUserId` is NOT a FK to staff `users` (which is staff-only per
 //     docs/16 §2 Layer 1). It will FK to a customer-auth-layer table when
 //     that module lands. Stored as plain UUID for now.
-//   • `totalSpent` / `orderCount` are denormalized fast-read columns
-//     updated by the order-event consumer. Never written inline.
+//   • `totalSpent` / `totalOrdered` / `orderCount` are denormalized fast-read
+//     columns, RECOMPUTED from the orders by `recomputeCustomerCommerce` inside
+//     the transaction that changed one. Never nudged, never written inline.
 //   • `mergedIntoCustomerId` carries the dedup audit trail — soft-deleted
 //     duplicates retain a pointer to the surviving primary.
 
@@ -106,6 +107,18 @@ model Customer {
   scoreOffset Int @default(0) @map("score_offset")
 
   totalSpent   Decimal   @default(0) @map("total_spent") @db.Decimal(12, 2)
+  /// What this customer's ORDERS are worth, as against `totalSpent`, which is
+  /// what they have handed over. The two come apart on any shop taking manual
+  /// payment, where "ordered but not yet paid" is the normal state rather than
+  /// an edge case, and the card showing only the second reported $0.00 above
+  /// three orders worth $502 (issue 323).
+  ///
+  /// NET OF REFUNDS, `SUM(total - refundTotal)`, for the same reason `totalSpent`
+  /// is: the refund path already writes `amountPaid` net, so a gross figure
+  /// beside a net one would put two different populations on one card, which is
+  /// the defect this column exists to close. It also matches what a return
+  /// means -- a fully refunded order is worth nothing to the person who sold it.
+  totalOrdered Decimal   @default(0) @map("total_ordered") @db.Decimal(12, 2)
   orderCount   Int       @default(0) @map("order_count")
   firstOrderAt DateTime? @map("first_order_at") @db.Timestamptz
   lastOrderAt  DateTime? @map("last_order_at") @db.Timestamptz
@@ -182,6 +195,7 @@ model Customer {
   @@index([tenantId, companyId])
   @@index([tenantId, lastOrderAt(sort: Desc)])
   @@index([tenantId, totalSpent(sort: Desc)])
+  @@index([tenantId, totalOrdered(sort: Desc)])
   @@index([tenantId, updatedAt(sort: Desc)])
   @@index([authUserId])
   @@map("customers")

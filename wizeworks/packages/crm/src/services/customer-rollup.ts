@@ -46,6 +46,25 @@
 // received. A shop owner reading a column headed "Total spent" is asking what
 // this person has paid them, so that is what it answers, and an unpaid order now
 // correctly contributes nothing until it is paid.
+//
+// ── And what "total ordered" means ───────────────────────────────────────────
+//
+// The other half of the same question, because separating them left the shop
+// taking manual payment with no answer at all: Juniper Row's customer card read
+// "$0.00 across 3 orders" above a list of orders worth $502, and every figure on
+// it was arithmetically correct (issue 323). `totalOrdered` is what those orders
+// are WORTH, whether or not the money has arrived.
+//
+// NET OF REFUNDS — `SUM(total - refundTotal)` — for the same reason `totalSpent`
+// is net. A gross figure beside a net one puts two populations on one card,
+// which is the defect this closes rather than repeats, and it is what a return
+// means: an order the money went back on is worth nothing to the person who sold
+// it. A PARTIAL refund reduces it by what went back rather than discarding the
+// order, which is why this subtracts rather than filters.
+//
+// The order still counts in `orderCount` either way. A fully refunded order is a
+// real event in the relationship, and dropping it would make "3 orders" disagree
+// with the three orders listed underneath it — the same contradiction again.
 
 // ── Why the lifecycle stage is derived here too ──────────────────────────────
 //
@@ -67,16 +86,20 @@
 // person set by hand on the customer's own pane is never walked back — the one
 // thing it does is stop a buyer being filed as a stranger.
 
+import { UNCOUNTED_ORDER_STATUS } from '@wizeworks/crm-schemas';
 import type { TxClient } from '@wizeworks/db';
 
-/** Orders that never happened do not count toward anything. */
-const COUNTED = { not: 'cancelled' } as const;
+/** Orders that never happened do not count toward anything. Shared with the
+ *  order list's `countedOnly`, so a list beside these figures shows the same
+ *  orders they were computed from (issue 332). */
+const COUNTED = { not: UNCOUNTED_ORDER_STATUS } as const;
 
 /** Stages a purchase does not move: the person is already known to have bought. */
 const SETTLED: readonly string[] = ['customer', 'evangelist'];
 
 export interface CustomerCommerceRollup {
   totalSpent: string;
+  totalOrdered: string;
   orderCount: number;
   firstOrderAt: Date | null;
   lastOrderAt: Date | null;
@@ -96,7 +119,7 @@ export async function recomputeCustomerCommerce(
   const [totals, dates, current] = await Promise.all([
     tx.order.aggregate({
       where: { tenantId, customerId, status: COUNTED },
-      _sum: { amountPaid: true },
+      _sum: { amountPaid: true, total: true, refundTotal: true },
       _count: { _all: true },
     }),
     tx.order.aggregate({
@@ -107,8 +130,18 @@ export async function recomputeCustomerCommerce(
     tx.customer.findUnique({ where: { id: customerId }, select: { lifecycleStage: true } }),
   ]);
 
+  // Summed separately and subtracted here rather than in SQL: Prisma's aggregate
+  // has no expression form, and two sums over the same filtered set are one scan
+  // either way.
+  const ordered = Number(totals._sum.total ?? 0) - Number(totals._sum.refundTotal ?? 0);
+
   const rollup: CustomerCommerceRollup = {
     totalSpent: (totals._sum.amountPaid ?? 0).toString(),
+    // Never below zero. A refund larger than the order it belongs to is a data
+    // fault rather than a customer worth negative money, and a negative here
+    // would render as "-$42.00 of orders", which is the unreadable figure the
+    // increment version of this file already produced once.
+    totalOrdered: Math.max(ordered, 0).toFixed(2),
     orderCount: totals._count._all,
     firstOrderAt: dates._min.placedAt ?? null,
     lastOrderAt: dates._max.placedAt ?? null,
@@ -124,6 +157,7 @@ export async function recomputeCustomerCommerce(
     where: { id: customerId },
     data: {
       totalSpent: rollup.totalSpent,
+      totalOrdered: rollup.totalOrdered,
       orderCount: rollup.orderCount,
       firstOrderAt: rollup.firstOrderAt,
       lastOrderAt: rollup.lastOrderAt,

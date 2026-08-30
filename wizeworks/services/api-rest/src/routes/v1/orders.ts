@@ -76,6 +76,12 @@ const ListQuery = z.object({
     .transform((v) => v === 'true')
     .optional(),
   status: z.string().optional(),
+  // Only orders that count toward a customer's figures, for a list rendered
+  // beside them (issue 332). Not the same as any one status.
+  counted_only: z
+    .enum(['true', 'false'])
+    .transform((v) => v === 'true')
+    .optional(),
   payment_status: z.string().optional(),
   // High-level origin bucket — storefront | b2b_portal | admin | import | mcp |
   // marketplace (docs/106 §4.4). The dashboard Orders "Channel" filter.
@@ -107,6 +113,7 @@ const orderRoutes: FastifyPluginAsync = (app) => {
       companyId: q.b2b_account_id,
       b2bOnly: q.b2b_only,
       status: q.status,
+      countedOnly: q.counted_only,
       paymentStatus: q.payment_status,
       channel: q.channel,
       propertyId: q.property,

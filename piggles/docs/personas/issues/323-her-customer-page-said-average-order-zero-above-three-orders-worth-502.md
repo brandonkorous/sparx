@@ -7,7 +7,7 @@
 **Filed:** 2026-08-29
 **Fixed:** 2026-08-29
 **Confirmed by:** reopened Anneliese Vogt as Devi — every figure on the card is now true
-**Blocked on:** decision (the missing figure only; see What this does NOT fix)
+**Blocked on:** pipeline (the migration is authored; the column lands with the release)
 
 ## What happened
 
@@ -98,31 +98,86 @@ saying so, rather than leaving a bare `$0.00` to be read as "worth nothing".
 
 That makes every figure on the card true. It does not make the card complete.
 
-**2. The number she actually wants needs a column, so it is not attempted.**
-"What are this customer's orders worth" and "what does she owe me" both need the
-sum of order VALUES, and `customers` carries only `total_spent` (paid),
-`order_count`, and the two dates. Adding `total_ordered` to the rollup is a
-schema change, and this repo's rule is that a migration is authored and handed to
-the pipeline rather than run from a laptop.
+**2. The number she actually wants: `total_ordered`.** "What are this customer's
+orders worth" and "what does she owe me" both need the sum of order VALUES, and
+`customers` carried only `total_spent` (paid), `order_count` and the two dates.
 
-It also needs a decision that is not mine: **does a refunded order count toward
-what a customer's orders are worth?** Anneliese's $170 refund says yes under one
-reading (she did buy it) and no under another (the money went back). The answer
-changes both the average and any "owed" figure, so it is stated here rather than
-picked quietly. `Blocked on: decision` for that half.
+**Does a refunded order count toward what a customer's orders are worth?** This
+was written up as a decision for Brandon. It should not have been: the codebase
+had already answered it, one file away.
 
-## What this does NOT fix
+`customer-rollup.ts` says of `total_spent`, in its own header, that it is
+"`Order.amountPaid`, which the refund path already writes net (a $170 order
+refunded $42 carries `amountPaid` 128.00)". **`total_spent` is net of refunds.**
+So a GROSS `total_ordered` beside it would put two different populations on one
+card — which is precisely the defect this whole issue is about, rebuilt in a new
+pair. Net is the only answer that makes the card internally consistent.
 
-**She still cannot see what her customers' orders are worth, or what she is
-owed.** Part 2 above: it needs `total_ordered` on the rollup, which is a
-migration, and it needs the refund question answered first. Both are recorded
-rather than guessed. Until then the card is honest about being about money
-received, and silent about the rest.
+It is also the ordinary accounting answer (net sales are gross minus returns) and
+what every comparable platform reports for what a customer is worth. A fully
+refunded order is worth nothing to the person who sold it.
 
-**Sell › How selling is going still says "Average order" for a different
-quantity** — the real average order value, correctly computed there. Two screens
-now use two labels for two things, which is right, but nothing yet stops the two
-from being confused if somebody reads them a week apart.
+So: **net of refunds**, `SUM(total - refund_total)` over non-cancelled orders.
+Three consequences worth stating, because each could have gone the other way:
+
+- A **partial** refund reduces the figure by what went back rather than
+  discarding the order — which is why it subtracts rather than filters.
+- A fully refunded order **stays in `order_count`**. Dropping it would make
+  "3 orders" disagree with the three orders listed underneath, which is this
+  issue's own contradiction moved to a different pair.
+- It is **clamped at zero**. A refund larger than its order is a data fault, not
+  a customer worth minus money — and the increment version of this file already
+  shipped "-$42.00" once.
+
+The migration is **authored, not run**
+([20270428000000_what_a_customers_orders_are_worth](../../../../wizeworks/packages/db/prisma/migrations/20270428000000_what_a_customers_orders_are_worth/migration.sql)),
+per this repo's rule, and it BACKFILLS rather than defaulting to zero — a derived
+column starting at 0 on every existing row reads as a measurement of nothing, and
+a customer who never orders again would read $0.00 forever.
+
+**3. The card now answers both questions**, in the same four tiles:
+
+| Tile                 | Says                                                   |
+| -------------------- | ------------------------------------------------------ |
+| Their orders come to | `total_ordered`, with the real average order beneath   |
+| Paid you so far      | `total_spent`, with "$X still to come" when it is owed |
+| Orders               | the count, unchanged                                   |
+| Last order           | unchanged                                              |
+
+The gap between the first two IS what she is owed, and because both are net of
+refunds the gap is money outstanding rather than money returned.
+
+**"Average paid per order" is gone**, and that matters: it was a true label for a
+quantity nobody wants. The average is now order VALUE over orders placed — the
+same quantity Sell › How selling is going means by "Average order", so the two
+screens finally mean the same thing by the same word.
+
+**4. And the LIST, because the card alone was half the surface.** The customers
+list showed one money column, `totalSpent`, labelled "Total spent" — accurate,
+and useless here. Three of Devi's six buyers read $0.00, so sorting by it put her
+best customer (Anneliese, $332 of orders) below her smallest (Jo Kim, $105).
+
+That column now shows what their orders come to. **Nothing is lost on a shop that
+takes payment at checkout** — there the two figures are identical — and it is the
+only one that ranks a shop taking manual payment correctly. Both remain sort
+options, renamed to say which is which: **Orders come to** and **Paid you**.
+`totalOrdered` was added to the sort contract end to end: the service, the REST
+route's schema, the MCP `list_customers` tool, and the console.
+
+## Confirmed against her real data
+
+The migration was applied to the dev database and the client regenerated
+(Brandon stopped dev so it could be), and the backfill lands correctly:
+
+| Customer           | Orders come to | Paid you | Orders |
+| ------------------ | -------------- | -------- | ------ |
+| Marguerite Adeyemi | $582.60        | $72.00   | 3      |
+| Anneliese Vogt     | **$332.00**    | $0.00    | 3      |
+| Ravi Naidoo        | $138.00        | $138.00  | 2      |
+
+Anneliese is the refund decision made visible: $502 placed, $170 refunded,
+$332 net. Marguerite is $510.60 outstanding — on the card that used to say her
+average order was $24.00.
 
 ## Confirmed by
 

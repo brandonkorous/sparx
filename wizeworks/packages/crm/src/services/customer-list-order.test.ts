@@ -38,17 +38,29 @@ describe('customerService.list ordering', () => {
     expect(args().orderBy).toEqual({ lastOrderAt: { sort: 'desc', nulls: 'last' } });
   });
 
-  it('carries nulls-last on every sort, so a field that becomes nullable is safe', async () => {
-    for (const sortBy of ['score', 'totalSpent', 'updatedAt', 'createdAt'] as const) {
+  // NOT on the required ones, and this assertion used to say the opposite.
+  //
+  // Prisma rejects the `{ sort, nulls }` object on a non-nullable column, so the
+  // blanket version threw on every sort including the default — and this test
+  // passed the whole time, because it asserts the query SHAPE against a mocked
+  // client that validates nothing. The real client is what says no (issue 331).
+  it('sorts the required fields plainly, because Prisma refuses nulls on them', async () => {
+    for (const sortBy of [
+      'score',
+      'totalSpent',
+      'totalOrdered',
+      'updatedAt',
+      'createdAt',
+    ] as const) {
       findMany.mockClear();
       await list(CTX, { sortBy });
-      expect(args().orderBy).toEqual({ [sortBy]: { sort: 'desc', nulls: 'last' } });
+      expect(args().orderBy).toEqual({ [sortBy]: 'desc' });
     }
   });
 
-  it('defaults to recently changed, unchanged by this fix', async () => {
+  it('defaults to recently changed', async () => {
     await list(CTX, {});
-    expect(args().orderBy).toEqual({ updatedAt: { sort: 'desc', nulls: 'last' } });
+    expect(args().orderBy).toEqual({ updatedAt: 'desc' });
   });
 });
 
