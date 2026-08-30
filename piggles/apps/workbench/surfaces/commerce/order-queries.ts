@@ -19,6 +19,9 @@ export type SortDirection = 'asc' | 'desc';
 export interface OrderQuery {
   q?: string;
   status?: string;
+  /** Only the orders that count toward a customer's figures — cancelled ones
+   *  left out. For a list shown BESIDE those figures. */
+  countedOnly?: boolean;
   paymentStatus?: string;
   /** Scope the list to one customer — the customer's-side lens on Selling. The
    *  endpoint (`GET /v1/orders?customer_id=`) is the join; there is no separate
@@ -38,6 +41,7 @@ export function useOrders(query: OrderQuery) {
         .list<Order>('/v1/orders', {
           ...(query.q ? { q: query.q } : {}),
           ...(query.status ? { status: query.status } : {}),
+          ...(query.countedOnly ? { counted_only: 'true' } : {}),
           ...(query.paymentStatus ? { payment_status: query.paymentStatus } : {}),
           ...(query.customerId ? { customer_id: query.customerId } : {}),
           sort_by: query.sortBy,

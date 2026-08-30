@@ -43,7 +43,7 @@ import { FormSection } from '../../components/form-section';
 import { ListMembership } from './list-membership';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
-import { customerName, customerTypeMeta } from './customers-data';
+import { customerName, customerTypeMeta } from './customer-display';
 import { useAccounts } from './companies-data';
 import {
   segmentErrorMessage,

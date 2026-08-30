@@ -49,7 +49,8 @@ import { AssociationsPanel } from './associations-panel';
 import { ScorePanel } from './score-panel';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
-import { customerName, useCustomers } from './customers-data';
+import { useCustomers } from './customers-data';
+import { customerName } from './customer-display';
 import { usePipelines, stageTypeMeta, type Pipeline } from './pipelines-data';
 import {
   dealErrorMessage,

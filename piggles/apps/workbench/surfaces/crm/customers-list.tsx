@@ -23,18 +23,20 @@ import { SavedViewsMenu, viewFilterValue, viewFilters } from './saved-views-menu
 import { scoreBand, useActiveScoringModel } from './scoring-data';
 import type { SavedView } from './workspace-data';
 import {
-  LIFECYCLE_STAGES,
-  RELATIONSHIP_TYPES,
-  customerName,
-  customerTypeMeta,
-  formatMoney,
-  lifecycleStageMeta,
   useCustomers,
   type Customer,
   type CustomerSort,
   type CustomerType,
   type LifecycleStage,
 } from './customers-data';
+import {
+  LIFECYCLE_STAGES,
+  RELATIONSHIP_TYPES,
+  customerName,
+  customerTypeMeta,
+  formatMoney,
+  lifecycleStageMeta,
+} from './customer-display';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
@@ -57,7 +59,8 @@ function shortDate(iso: string | null): string {
 
 const SORTS: { value: CustomerSort; label: string }[] = [
   { value: 'lastOrderAt', label: 'Recent order' },
-  { value: 'totalSpent', label: 'Total spent' },
+  { value: 'totalOrdered', label: 'Orders come to' },
+  { value: 'totalSpent', label: 'Paid you' },
   { value: 'updatedAt', label: 'Recently changed' },
   { value: 'createdAt', label: 'Newest added' },
 ];
@@ -283,7 +286,11 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <th className="hidden @md:table-cell">Company</th>
                 <th>Stage</th>
                 {scored ? <th className="text-right">Score</th> : null}
-                <th className="text-right">Total spent</th>
+                {/* What their orders COME TO, not what has arrived. Identical on a shop
+                    that takes payment at checkout, and the only one that ranks a shop
+                    taking manual payment correctly — Devi's best customer showed $0.00
+                    and sorted below her smallest (issue 323). */}
+                <th className="text-right">Orders come to</th>
                 <th className="hidden text-right @lg:table-cell">Last order</th>
               </tr>
             </thead>
@@ -352,7 +359,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
                       </td>
                     ) : null}
                     <td className="text-right font-mono text-sm tabular-nums">
-                      {formatMoney(row.totalSpent)}
+                      {formatMoney(row.totalOrdered)}
                     </td>
                     <td className="hidden text-right text-sm @lg:table-cell">
                       {shortDate(row.lastOrderAt)}

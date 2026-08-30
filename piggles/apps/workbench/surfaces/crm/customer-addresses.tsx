@@ -29,15 +29,14 @@ import { faLocationDot, faPencil, faPlus, faTrashCan } from '@fortawesome/pro-so
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
 import { FormSection } from '../../components/form-section';
+import { customerErrorMessage, type CustomerAddress } from './customers-data';
 import {
-  customerErrorMessage,
   useAddAddress,
   useCustomerAddresses,
   useDeleteAddress,
   useUpdateAddress,
-  type CustomerAddress,
   type CustomerAddressInput,
-} from './customers-data';
+} from './customer-attachments-data';
 
 const TYPE_ITEMS: Record<string, string> = {
   shipping: 'Delivery',

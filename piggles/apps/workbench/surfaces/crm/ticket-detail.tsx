@@ -49,7 +49,8 @@ import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
-import { customerName, useCustomers } from './customers-data';
+import { useCustomers } from './customers-data';
+import { customerName } from './customer-display';
 import { EngagementComposer } from './engagement-composer';
 import { usePipelines } from './pipelines-data';
 import {

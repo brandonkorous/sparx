@@ -96,16 +96,7 @@ import {
 } from './customer-related';
 import { CustomerBookingsTab } from './customer-bookings';
 import {
-  LEAD_STATUSES,
-  LIFECYCLE_STAGES,
-  RELATIONSHIP_TYPES,
   customerErrorMessage,
-  customerInitials,
-  customerName,
-  customerTypeMeta,
-  leadStatusMeta,
-  lifecycleStageMeta,
-  joinedMonth,
   useCreateCustomer,
   useCustomer,
   useDeleteCustomer,
@@ -116,6 +107,17 @@ import {
   type LeadStatus,
   type LifecycleStage,
 } from './customers-data';
+import {
+  LEAD_STATUSES,
+  LIFECYCLE_STAGES,
+  RELATIONSHIP_TYPES,
+  customerInitials,
+  customerName,
+  customerTypeMeta,
+  leadStatusMeta,
+  lifecycleStageMeta,
+  joinedMonth,
+} from './customer-display';
 
 // The focused single column a NEW customer is created in — no profile to show yet.
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';

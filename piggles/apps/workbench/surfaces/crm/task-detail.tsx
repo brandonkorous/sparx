@@ -41,7 +41,8 @@ import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
 import { useViewer } from '../../lib/api/shell-data';
-import { customerName, useCustomers } from './customers-data';
+import { useCustomers } from './customers-data';
+import { customerName } from './customer-display';
 import {
   TASK_PRIORITIES,
   TASK_STATUSES,

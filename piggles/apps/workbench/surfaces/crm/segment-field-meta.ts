@@ -12,7 +12,7 @@ import {
   customerTypeMeta,
   leadStatusMeta,
   lifecycleStageMeta,
-} from './customers-data';
+} from './customer-display';
 import { PAYMENT_TERM_PRESETS } from '../../lib/payment-terms';
 import type { FieldMeta } from './segment-fields';
 

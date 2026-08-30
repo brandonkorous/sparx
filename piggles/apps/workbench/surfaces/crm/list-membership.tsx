@@ -33,7 +33,8 @@ import { Table } from '../../components/table';
 import { faUserMinus, faUserPlus } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
-import { customerName, useCustomers } from './customers-data';
+import { useCustomers } from './customers-data';
+import { customerName } from './customer-display';
 import {
   MEMBERSHIP_SOURCE_LABEL,
   useAddListMembers,

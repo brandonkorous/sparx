@@ -34,13 +34,13 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useViewer } from '../../lib/api/shell-data';
+import { type Customer } from './customers-data';
 import {
   customerName,
   customerTypeMeta,
   formatMoney,
   lifecycleStageMeta,
-  type Customer,
-} from './customers-data';
+} from './customer-display';
 import {
   confidenceMeta,
   mergeErrorMessage,

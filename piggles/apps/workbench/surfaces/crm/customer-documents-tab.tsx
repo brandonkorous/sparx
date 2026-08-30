@@ -16,13 +16,12 @@ import { Button, Card, EmptyState, Text, useToast } from '@wizeworks/silicaui-re
 import { faDownload, faFileText, faTrashCan, faUpload } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useConfirm } from '../../lib/confirm';
+import { customerErrorMessage, type CustomerDocument } from './customers-data';
 import {
-  customerErrorMessage,
   useAddDocument,
   useCustomerDocuments,
   useDeleteDocument,
-  type CustomerDocument,
-} from './customers-data';
+} from './customer-attachments-data';
 import { useMediaAssets, useUploadMedia, type MediaAsset } from '../commerce/products-data';
 
 const ACCEPT = 'application/pdf,image/*';
