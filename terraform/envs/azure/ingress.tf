@@ -119,5 +119,5 @@ module "dns" {
   # The failure that reads like DNS and is not: without all three names in
   # api-rest's PLATFORM_HOSTNAMES, on-demand issuance is denied at the ask
   # endpoint and the site presents a CERTIFICATE error rather than a 404.
-  rocketease_dns_enabled = false
+  rocketease_dns_enabled = true
 }
