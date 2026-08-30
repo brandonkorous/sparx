@@ -3,10 +3,10 @@
 // `lintSite(site)` walks the composed document of every page — the shared header and
 // footer, the page body, and every saved component expanded — and reports what a
 // visitor will run into: links that go nowhere, images with no description, headings
-// that skip a level, buttons nothing is wired to, styling that emits no CSS, and
-// pages that share or lack search metadata. Alongside the findings it reports what
-// each page WEIGHS (slice 12) — markup bytes, picture bytes, styling that emits no
-// CSS — as a measurement rather than a defect.
+// that skip a level, buttons nothing is wired to, styling that emits no CSS, pages
+// that share or lack search metadata, and pages nothing links to. Alongside the
+// findings it reports what each page WEIGHS (slice 12) — markup bytes, picture bytes,
+// styling that emits no CSS — as a measurement rather than a defect.
 //
 // Pure: no network, no database, no clock. It leans on `@wizeworks/silica-catalog` for
 // two things it must not answer twice — which classes the platform's CSS actually

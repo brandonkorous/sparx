@@ -193,7 +193,8 @@ export type LintRuleId =
   | 'seo-description-duplicate'
   | 'seo-page-hidden'
   // Addressing
-  | 'page-address-duplicate';
+  | 'page-address-duplicate'
+  | 'page-unreachable';
 
 /** Which authored tree a finding lives in — the tree the fix happens in, which is
  *  not always the page it was seen on. A broken link in the footer belongs to the

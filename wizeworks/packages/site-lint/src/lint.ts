@@ -21,6 +21,7 @@ import { checkContent } from './content';
 import { mergeFindings, type RawFinding } from './finding';
 import { checkLinks, resolveTargets } from './links';
 import { checkAddresses } from './addresses';
+import { checkReach, linkedPaths } from './reach';
 import { checkSeo } from './seo';
 import { checkDuplicateIds, checkStructure } from './structure';
 import type { LintSeverity, LintStatus, SiteLintInput, SiteLintReport } from './types';
@@ -81,6 +82,15 @@ export function lintSite(input: SiteLintInput): SiteLintReport {
   }
   for (const finding of checkAddresses(input.addressing ?? input.pages)) {
     sightings.push({ finding, page: finding.origin.ownerName });
+  }
+  // Only when something was actually walked. With no inventories the reached set is
+  // empty for want of looking rather than for want of links, and every page on the
+  // site would report as unreachable — see `checkReach`.
+  if (inventories.length > 0) {
+    const reached = linkedPaths(inventories);
+    for (const finding of checkReach(input.addressing ?? input.pages, reached)) {
+      sightings.push({ finding, page: finding.origin.ownerName });
+    }
   }
   for (const finding of checkSeo(input.pages)) {
     sightings.push({ finding, page: finding.origin.ownerName });

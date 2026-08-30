@@ -22,12 +22,12 @@ import type { PageAddress } from './types';
 import type { RawFinding } from './finding';
 
 /** A record template is addressed by its record, never by a slug of its own. */
-function isTemplate(page: PageAddress): boolean {
+export function isTemplate(page: PageAddress): boolean {
   return page.kind === 'collection' || page.recordType != null;
 }
 
 /** What a visitor would type to reach this page. `null` slug means home. */
-function addressOf(page: PageAddress): string {
+export function addressOf(page: PageAddress): string {
   const slug = (page.slug ?? '').trim();
   if (!slug || slug === '/') return '/';
   return slug.startsWith('/') ? slug : `/${slug}`;
