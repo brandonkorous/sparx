@@ -162,14 +162,21 @@ export function SignInForm({ next, google }: { next: string; google: boolean }) 
     // A backup code is longer than a TOTP code and is the thing people reach for
     // when their phone is the problem. Accepting either from one field means
     // nobody has to work out which box their code belongs in while locked out.
-    const res =
-      code.trim().length > 6
-        ? await twoFactor.verifyBackupCode({ code: code.trim() })
-        : await twoFactor.verifyTotp({ code: code.trim() });
+    const usedBackup = code.trim().length > 6;
+    const res = usedBackup
+      ? await twoFactor.verifyBackupCode({ code: code.trim() })
+      : await twoFactor.verifyTotp({ code: code.trim() });
     setBusy(false);
 
     if (res.error) {
-      setError('That code was not right. Codes change every 30 seconds — try the current one.');
+      // One message for two causes sends half of them to redo what they just
+      // did: a backup code never changes, so "try the current one" is advice
+      // she cannot act on, at the moment she is locked out (issue 333).
+      setError(
+        usedBackup
+          ? 'That backup code was not right. Each one works only once, so if you have used it already, try the next on your list.'
+          : 'That code was not right. Codes change every 30 seconds, so try the current one.'
+      );
       return;
     }
     leaveFor(next);
@@ -223,12 +230,19 @@ export function SignInForm({ next, google }: { next: string; google: boolean }) 
         </div>
 
         <Field>
-          <FieldLabel>Your six-digit code</FieldLabel>
+          {/* NOT "six-digit", and NOT a numeric keypad. Both are true of the app
+              code and false of a backup code (`6XWyo-LajdX`), which the line
+              above offers and this field then refuses to accept on a phone
+              (issue 333). */}
+          <FieldLabel>Your code</FieldLabel>
           <FieldControl
             render={<Input size="lg" />}
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            inputMode="numeric"
+            inputMode="text"
+            autoCapitalize="off"
+            autoCorrect="off"
+            spellCheck={false}
             autoComplete="one-time-code"
             required
           />
