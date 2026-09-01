@@ -21,6 +21,7 @@ import { z } from 'zod';
 import { withRequestTenant } from '@wizeworks/api-core/db';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
+import { storedPath } from '../../../lib/seo-audit.js';
 
 const ActivityQuery = z.object({
   limit: z.coerce.number().int().min(1).max(50).optional(),
@@ -142,7 +143,7 @@ const seoReportRoutes: FastifyPluginAsync = (app) => {
           entityType: a.entityType,
           entityId: a.entityId,
           title: a.title,
-          path: a.path,
+          path: storedPath(a.path),
           score: a.score,
           grade: a.grade,
           fixFirst: a.fixFirst,

@@ -38,6 +38,26 @@ export interface LegalTemplate {
   requirement: LegalRequirement;
   /** The rich-text document stored under the page entry's `body` field. */
   doc: LegalDoc;
+  /**
+   * Facts this starter STATES that the platform cannot know, written as the owner
+   * would read them back.
+   *
+   * Three of these templates put a NUMBER in the prose — a return window, a
+   * processing time, a refund time — and a number on a published policy page is
+   * indistinguishable from a decision. A shop that posts twice a week ships a page
+   * promising one to two business days, and the page is the one that governs when
+   * a customer disputes it.
+   *
+   * The numbers stay, because a policy page with a blank in it is worse than one
+   * with a sensible default, and because issue 267 settled that NOTHING in this
+   * body may address the owner — a shopper reads it. So the warning lives where
+   * only the owner sees it: the checklist reads this list and says which
+   * sentences are still guesses (issue 375).
+   *
+   * Absent means the starter asserts nothing specific about how this business
+   * works — privacy, terms and cookies describe the platform's own behavior.
+   */
+  assumes?: readonly string[];
 }
 
 // ─── doc builders ────────────────────────────────────────────────────────────
@@ -214,6 +234,11 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
       h('Refunds'),
       p('Once we receive and inspect your return, refunds are issued per our Refund Policy.')
     ),
+    assumes: [
+      'that returns are accepted for 30 days after delivery',
+      'that items must come back unused and in their original packaging',
+      'that any non-returnable item is pointed out at checkout',
+    ],
   },
   {
     legalKind: 'shipping',
@@ -246,6 +271,10 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
         'We are not responsible for carrier delays, but we will help you resolve issues with lost or damaged shipments — contact us with your order number.'
       )
     ),
+    assumes: [
+      'that you pack and send an order within one to two working days',
+      'that tracking is sent when an order ships',
+    ],
   },
   {
     legalKind: 'refund',
@@ -272,6 +301,10 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
       h('Contact'),
       p('Questions about a refund? Contact us with your order number and we will help.')
     ),
+    assumes: [
+      'that a refund is paid within five to ten working days of being approved',
+      'that you keep the original delivery charge unless something arrived wrong',
+    ],
   },
 ] as const;
 

@@ -108,6 +108,24 @@ export const APPS: readonly PigglesAppDef[] = [
     modules: ['seo', 'social'],
   },
   {
+    id: 'campaigns',
+    label: 'Campaigns',
+    purpose: 'Run a promotion as steps, and see where people stop',
+    // With the web group, after Get Found: your presence, then being found, then
+    // the paths you build for people to follow. A campaign is landing pages and
+    // the steps between them, so it belongs beside the site rather than in Sell —
+    // it is just as often a sign-up or an enquiry as a sale.
+    group: 'web',
+    // 45 rather than a renumber: the web group stays contiguous (20, 30, 40, 45)
+    // and Sell still opens at 50.
+    navOrder: 45,
+    // Off the rail for a new business, like Automations and Connections — an
+    // advanced thing to reach for, never a thing withheld. Everything in All apps
+    // is included; this only decides what starts on the rail.
+    defaultEnabled: false,
+    modules: ['funnels'],
+  },
+  {
     id: 'sell',
     label: 'Sell',
     purpose: 'Products, services, orders and checkout',

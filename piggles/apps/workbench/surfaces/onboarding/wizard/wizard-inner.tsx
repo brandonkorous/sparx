@@ -9,11 +9,8 @@ import { OnboardingLayout } from '../onboarding-layout';
 import { useOnboardingActions } from '../../../lib/onboarding/api';
 import { useStoryModel } from '../../../lib/onboarding/use-story-model';
 import { resolveModules, starterStory } from '../../../lib/onboarding/story-state';
-import {
-  SWITCHBOARD_MODULES,
-  effectiveModuleOn,
-  isSellingSelected,
-} from '../../../lib/onboarding/modules';
+import { SWITCHBOARD_MODULES } from '../../../lib/onboarding/modules';
+import { effectiveModuleOn, isSellingSelected } from '../../../lib/onboarding/module-graph';
 import type {
   OnboardingStepKey,
   PendingDomain,

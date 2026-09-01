@@ -46,12 +46,13 @@ import {
   formatMoney,
   loadTone,
   RESULT_WINDOWS,
+  salesUntraced,
   seoTone,
   usePageResults,
   type PageResultRow,
   type ResultWindow,
 } from './page-results-data';
-import { productCopyWith } from '../../lib/product';
+import { ReportFootnotes } from './page-results-notes';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -82,6 +83,9 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const rows = data?.pages ?? [];
   const commerce = data?.commerce ?? false;
+  // Sales happened and none of them could be tied to a page, so no row's money
+  // columns are a measurement. See `salesUntraced`.
+  const untraced = data ? salesUntraced(data) : false;
   const staleAfterFailure = Boolean(error) && rows.length > 0;
 
   const openEditor = (row: PageResultRow, event: { shiftKey: boolean; altKey: boolean }) => {
@@ -198,14 +202,14 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
                         {/* Orders alongside the rate, because a rate on its own is
                             unreadable at small numbers — "20%" of five people is one
                             sale, and the owner needs to know which they are looking at. */}
-                        {row.conversionPct == null
+                        {untraced || row.conversionPct == null
                           ? '—'
                           : `${formatCount(row.orders)} (${String(row.conversionPct)}%)`}
                       </td>
                     ) : null}
                     {commerce ? (
                       <td className="text-right">
-                        {row.revenueCents > 0 ? formatMoney(row.revenueCents) : '—'}
+                        {!untraced && row.revenueCents > 0 ? formatMoney(row.revenueCents) : '—'}
                       </td>
                     ) : null}
                     <td className="hidden @2xl:table-cell">
@@ -235,51 +239,6 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
           </>
         )}
       </Card>
-    </div>
-  );
-}
-
-/**
- * The caveats, stated where the numbers are rather than left for someone to
- * discover by being confused.
- *
- * Each one exists because leaving it out would make an honest number read as a wrong
- * one: sales are credited to the page that BROUGHT the buyer in, not the one they
- * checked out from; some visits belong to no row here at all; and a load time
- * measured on four visits is not a fact about the page.
- *
- * The leftovers note names cart/checkout/sign-in/legal, NOT products and posts. It
- * used to name those, and that was true while a record template had no address and
- * therefore no row — every product view fell through to this sentence. Now the
- * template owns its prefix and its traffic is rolled up into a real row above, so
- * naming products here would send an owner hunting for a row that is already there.
- */
-function ReportFootnotes({ report }: { report: ReturnType<typeof usePageResults>['data'] }) {
-  if (!report) return null;
-  const otherViews = report.otherPaths.reduce((sum, row) => sum + row.views, 0);
-
-  return (
-    <div className="flex flex-col gap-2 p-3">
-      {report.commerce ? (
-        <p className="text-base">
-          Sales are credited to the page that brought the buyer to your site that day — not the page
-          they bought from. So your home page can earn credit for a sale that happened three clicks
-          later, which is the point: that is the page that did the work.
-        </p>
-      ) : null}
-      {otherViews > 0 ? (
-        <p className="text-base">
-          {productCopyWith(
-            'builder.pages.otherViews',
-            `Another ${formatCount(otherViews)} visits landed on addresses no page here owns — your cart, checkout, sign-in and legal pages, which Piggles builds for you. They are counted in your traffic figures but have no row above.`,
-            { count: formatCount(otherViews) }
-          )}
-        </p>
-      ) : null}
-      <p className="text-base">
-        “Time to appear” is measured in your visitors&rsquo; own browsers, so a page nobody has
-        opened has no measurement rather than a fast one.
-      </p>
     </div>
   );
 }

@@ -12,44 +12,34 @@
 // one button, because from where the author stands it is one question.
 
 import { useEffect } from 'react';
-import type { DocumentKind, DocumentRef, StudioDoc, StudioSession } from '@wizeworks/studio';
+import { faEye } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
+import type { DocumentRef, StudioDoc, StudioSession } from '@wizeworks/studio';
 import { useSessionSnapshot } from '@wizeworks/studio/react';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { DocumentNotOpen, NoDocumentNamed, refFrom } from './document-pane';
 import { useStudioBinding } from '../../lib/studio/provider';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PreviewEmail } from './preview-email';
 import { PreviewSite } from './preview-site';
 
-const KINDS = new Set<DocumentKind>(['page', 'layout', 'theme', 'component', 'email']);
+/** Why this pane follows what is open, rather than loading a copy of its own. */
+const WHY =
+  'A preview follows whatever you have open, so what you see here is always the thing you are editing.';
 
-function refFrom(params: SurfaceContext['params']): DocumentRef | null {
-  const { docKind, docId } = params;
-  if (typeof docKind !== 'string' || typeof docId !== 'string') return null;
-  return KINDS.has(docKind as DocumentKind) ? { kind: docKind as DocumentKind, id: docId } : null;
-}
+const GLYPH = <Icon glyph={faEye} className="size-6" aria-hidden />;
 
 export function PreviewPaneSurface({ ctx }: { ctx: SurfaceContext }) {
   const { session } = useStudioBinding();
   const ref = refFrom(ctx.params);
 
-  if (!ref) {
-    return (
-      <div className="bg-base-200 flex h-full items-center justify-center p-6 text-center">
-        <p className="text-base-content">
-          Open this from the thing you want to see — a page, your header and footer, a saved piece
-          or an email.
-        </p>
-      </div>
-    );
-  }
+  if (!ref) return <NoDocumentNamed icon={GLYPH} what="to see" />;
 
   // Split at the session, because the half below SUBSCRIBES to it and
   // `useSessionSnapshot` throws outright with no `<StudioProvider>` above it. The
   // provider does not exist until the site resolves, so a pane opened during boot
   // has to wait here rather than reach for a session that is not there yet.
-  if (!session) {
-    return <PaneWaiting label="Open the page, header, piece or email first…" />;
-  }
+  if (!session) return <PaneWaiting label="Finding your website…" />;
 
   return <PreviewForDocument ctx={ctx} session={session} ref_={ref} />;
 }
@@ -73,9 +63,7 @@ function PreviewForDocument({
 
   // The document has to be OPEN: a preview is about a document, and giving this pane
   // a loader of its own is how it ends up previewing something nobody is editing.
-  if (!doc) {
-    return <PaneWaiting label="Open the page, header, piece or email first…" />;
-  }
+  if (!doc) return <DocumentNotOpen ctx={ctx} ref_={ref_} icon={GLYPH} why={WHY} />;
 
   return doc.kind === 'email' ? (
     <PreviewEmail emailId={doc.id} name={doc.name} />

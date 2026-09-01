@@ -1,5 +1,6 @@
 import {
   faAddressCard,
+  faArrowProgress,
   faBagShopping,
   faBoxesStacked,
   faCalendarClock,
@@ -33,6 +34,10 @@ export const APP_ICONS: Record<string, IconDefinition> = {
   site: faGlobe,
   content: faNewspaper,
   get_found: faMagnifyingGlass,
+  // The same glyph the Campaigns surfaces already carry, so the rail door and
+  // the pane it opens are recognisably one thing. Steps with a path through
+  // them, which is what a campaign is.
+  campaigns: faArrowProgress,
   sell: faBagShopping,
   stock: faBoxesStacked,
   customers: faUsers,

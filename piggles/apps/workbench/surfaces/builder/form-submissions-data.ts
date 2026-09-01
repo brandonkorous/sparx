@@ -29,7 +29,6 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
-import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
@@ -57,7 +56,9 @@ export interface FormSubmission {
   formNodeId: string;
   /** The page it was submitted from; null is the home page. */
   pageSlug: string | null;
-  /** The author's label for the form ("Contact form"), snapshotted at submit. */
+  /** The author's label for the form, SNAPSHOTTED at submit — what it was called
+   *  then, not what it is called now. Name a row from `forms` instead (`formNamer`):
+   *  a form renamed after somebody used it otherwise appears twice in one inbox. */
   formName: string | null;
   name: string | null;
   email: string | null;
@@ -78,10 +79,14 @@ export interface FormSubmission {
   updatedAt: string;
 }
 
-/** A distinct form that has received submissions, for the "which form" filter. */
+/** A distinct form that has received submissions, for the "which form" filter.
+ *  `formName` here is the form's CURRENT name, resolved server-side from the form
+ *  definition, so this list is what names the rows. `pageSlug` is the fallback for a
+ *  form nobody has named. */
 export interface SubmissionFormRef {
   formNodeId: string;
   formName: string | null;
+  pageSlug: string | null;
   count: number;
 }
 
@@ -184,168 +189,4 @@ export function useDeleteSubmission(id: string) {
       void queryClient.invalidateQueries({ queryKey: formsKeys.lists() });
     },
   });
-}
-
-/* ── Saying what a state means ──────────────────────────────────────────── */
-
-export type Tone = 'success' | 'warning' | 'error' | 'info' | 'neutral';
-
-/** What a submission's status means, in an operator's words, with the tone that
- *  carries the state's color on a `<Badge>`. */
-export function submissionState(status: string): { label: string; tone: Tone; detail: string } {
-  switch (status) {
-    case 'new':
-      return {
-        label: 'New',
-        tone: 'info',
-        detail: 'Nobody has dealt with this yet.',
-      };
-    case 'read':
-      return {
-        label: 'Read',
-        tone: 'neutral',
-        detail: 'This has been opened, but not yet marked as handled.',
-      };
-    case 'archived':
-      return {
-        label: 'Handled',
-        tone: 'success',
-        detail:
-          'This has been dealt with and filed away. You can move it back to your inbox at any time.',
-      };
-    case 'spam':
-      return {
-        label: 'Spam',
-        tone: 'warning',
-        detail: 'This was flagged as junk. It stays here so nothing is silently lost.',
-      };
-    default:
-      return { label: status || 'Unknown', tone: 'neutral', detail: '' };
-  }
-}
-
-/** A human name for a submission, for the list, the tab and the detail heading.
- *  Prefers who sent it, then how to reach them, then a clear placeholder — never
- *  a blank row. */
-export function submitterLabel(
-  submission: Pick<FormSubmission, 'name' | 'email' | 'phone'>
-): string {
-  if (submission.name && submission.name.trim() !== '') return submission.name.trim();
-  if (submission.email && submission.email.trim() !== '') return submission.email.trim();
-  if (submission.phone && submission.phone.trim() !== '') return submission.phone.trim();
-  return 'Anonymous';
-}
-
-/** What the form is called, in the words the owner set — or a plain fallback. */
-export function formLabel(submission: Pick<FormSubmission, 'formName' | 'formNodeId'>): string {
-  if (submission.formName && submission.formName.trim() !== '') return submission.formName.trim();
-  return 'Untitled form';
-}
-
-/** Where on the site it was submitted from, in plain words. */
-export function pageLabel(pageSlug: string | null): string {
-  return pageSlug && pageSlug.trim() !== '' ? `/${pageSlug}` : 'Home page';
-}
-
-/**
- * The server's own sentence for a 4xx, shown verbatim — the forms routes explain
- * the real problem ("Invalid status.") better than a status code can. A 5xx
- * carries no such sentence, so it falls back to the caller's wording.
- */
-export function submissionErrorMessage(error: unknown, fallback: string): string {
-  return apiErrorMessage(error, fallback);
-}
-
-/* ── Formatting ─────────────────────────────────────────────────────────── */
-
-/** Medium date, or an em dash for nothing. */
-export function formatDate(value: string | null | undefined): string {
-  if (!value) return '—';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
-  return date.toLocaleDateString(undefined, { dateStyle: 'medium' });
-}
-
-/** Date and time together — for the moment a submission arrived. */
-export function formatDateTime(value: string | null | undefined): string {
-  if (!value) return '—';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '—';
-  return date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
-}
-
-/** A byte count in the units a person reads. */
-export function formatBytes(bytes: number): string {
-  if (!Number.isFinite(bytes) || bytes <= 0) return '0 bytes';
-  const units = ['bytes', 'KB', 'MB', 'GB'];
-  const power = Math.min(units.length - 1, Math.floor(Math.log(bytes) / Math.log(1024)));
-  if (power === 0) return `${String(bytes)} bytes`;
-  const value = bytes / 1024 ** power;
-  return `${value.toFixed(value < 10 ? 1 : 0)} ${units[power]}`;
-}
-
-/** Turn a field key ("full_name", "phoneNumber") into a readable label. */
-export function humanizeKey(key: string): string {
-  const spaced = key
-    .replace(/[_-]+/g, ' ')
-    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
-    .replace(/\s+/g, ' ')
-    .trim();
-  if (spaced === '') return key;
-  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
-}
-
-/* ── Export ─────────────────────────────────────────────────────────────── */
-
-/** One row of the exported spreadsheet. */
-function csvEscape(value: string): string {
-  return `"${value.replace(/"/g, '""')}"`;
-}
-
-/**
- * Build a two-column (Field, Value) spreadsheet of one submission — everything
- * they sent plus where it came from — as CSV text. A spreadsheet, not JSON,
- * because the person exporting owns a business, not a codebase, and this opens
- * straight into the tool they already use.
- */
-export function submissionToCsv(submission: FormSubmission, siteName: string | null): string {
-  const rows: [string, string][] = [
-    ['Form', formLabel(submission)],
-    ['Page', pageLabel(submission.pageSlug)],
-    ...(siteName ? ([['Site', siteName]] as [string, string][]) : []),
-    ['Submitted', formatDateTime(submission.createdAt)],
-    ['Status', submissionState(submission.status).label],
-  ];
-
-  const seen = new Set<string>();
-  for (const [key, value] of Object.entries(submission.fields)) {
-    seen.add(key);
-    rows.push([humanizeKey(key), value]);
-  }
-  // Promoted contact fields that a form somehow didn't echo into `fields`.
-  for (const [key, value] of [
-    ['name', submission.name],
-    ['email', submission.email],
-    ['phone', submission.phone],
-    ['message', submission.message],
-  ] as const) {
-    if (!seen.has(key) && value && value.trim() !== '') rows.push([humanizeKey(key), value]);
-  }
-
-  const body = ['Field,Value', ...rows.map(([k, v]) => `${csvEscape(k)},${csvEscape(v)}`)].join(
-    '\r\n'
-  );
-  // A UTF-8 BOM so spreadsheet apps read accented characters correctly.
-  return `\uFEFF${body}`;
-}
-
-/** A safe, dated filename for the exported submission. */
-export function submissionCsvName(submission: FormSubmission): string {
-  const stamp = submission.createdAt.slice(0, 10);
-  const who = submitterLabel(submission)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 40);
-  return `submission-${stamp}${who ? `-${who}` : ''}.csv`;
 }

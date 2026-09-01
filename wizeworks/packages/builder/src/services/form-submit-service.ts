@@ -305,12 +305,21 @@ export interface SubmissionCounts {
 }
 
 /** One distinct form that has received at least one submission, for the inbox's
- *  "which form" filter. `formName` is the author's snapshot label (may be null on
- *  a form whose settings panel was never opened); `count` is how many submissions
- *  it has, across every status. */
+ *  "which form" filter. `count` is how many submissions it has, across every status.
+ *
+ *  `formName` is the author's snapshot label and is USUALLY NULL — it comes from
+ *  `FormDefinition.config.name`, and no console surface sets it (this comment used to
+ *  say "a form whose settings panel was never opened", which assumed a panel that does
+ *  not exist). So the picker read "Untitled form (1)" for every entry, which is no
+ *  filter at all once a site has two forms.
+ *
+ *  `pageSlug` is what it falls back to. It is on every submission row already, and a
+ *  form node lives on exactly one page, so the `_max` below is that page rather than an
+ *  arbitrary pick. Issue 353. */
 export interface SubmissionFormRef {
   formNodeId: string;
   formName: string | null;
+  pageSlug: string | null;
   count: number;
 }
 
@@ -324,15 +333,63 @@ export async function submissionForms(ctx: ServiceContext): Promise<SubmissionFo
     tx.formSubmission.groupBy({
       by: ['formNodeId'],
       _count: { _all: true },
-      _max: { formName: true, createdAt: true },
+      _max: { formName: true, pageSlug: true, createdAt: true },
       orderBy: { _max: { createdAt: 'desc' } },
     })
   );
+  const live = await liveFormNames(
+    ctx,
+    grouped.map((row) => row.formNodeId)
+  );
   return grouped.map((row) => ({
     formNodeId: row.formNodeId,
-    formName: row._max.formName,
+    // The form's name NOW, not the copy frozen onto whichever row `_max` picked.
+    formName: live.get(row.formNodeId) ?? row._max.formName,
+    pageSlug: row._max.pageSlug,
     count: row._count._all,
   }));
+}
+
+/**
+ * What each of these forms is called TODAY, read from the form definition.
+ *
+ * `FormSubmission.formName` is a SNAPSHOT taken at submit time, and that is the
+ * right thing for a stored row to hold — it records what the form was called when
+ * somebody filled it in. It is the wrong thing to put on a screen.
+ *
+ * An owner named her contact form "Messages from my website" after two people had
+ * already used it. Her inbox then listed the same form twice: two rows under the
+ * name she chose, and two under `/contact`, which is not a name at all but the
+ * address of the page. Nothing was wrong with the data; the screen was reading the
+ * history instead of the fact (issue 372).
+ *
+ * A name someone types is theirs everywhere it applies, including on what already
+ * happened, so the live name wins and the snapshot stays in the column as the
+ * record it is. An empty config name is not a name — it is the default nobody
+ * filled in — and is normalized away here exactly as `listForms` does it, so
+ * "unnamed" means one thing across the panel, the picker and the inbox.
+ */
+async function liveFormNames(
+  ctx: ServiceContext,
+  formNodeIds: string[]
+): Promise<Map<string, string>> {
+  const names = new Map<string, string>();
+  if (formNodeIds.length === 0) return names;
+
+  // Tenant-scoped, NOT property-scoped: the inbox spans every site the tenant
+  // owns, and a submission outlives the site it came from.
+  const rows = await withTenant(ctx, (tx) =>
+    tx.formDefinition.findMany({
+      where: { formNodeId: { in: formNodeIds } },
+      select: { formNodeId: true, config: true, updatedAt: true },
+      orderBy: { updatedAt: 'asc' },
+    })
+  );
+  for (const row of rows) {
+    const name = readSilicaFormConfig(row.config).name.trim();
+    if (name !== '') names.set(row.formNodeId, name);
+  }
+  return names;
 }
 
 /** Tenant-wide list (across sites) of form submissions, newest first. */

@@ -599,6 +599,30 @@ variable "rocketease_ai_text_capacity" {
   default     = 50
 }
 
+variable "rocketease_ai_transcribe_capacity" {
+  description = <<-EOT
+    Requests per minute for whisper. NOT thousands of tokens - whisper is
+    billed and quota'd per REQUEST, unlike every other deployment here.
+
+    The eastus2 limit on 2026-09-01 is 3 RPM and 2 were already allocated
+    elsewhere in the subscription, so 1 is what is actually available. That is
+    60 videos an hour, which is far past anything this feature will ask for.
+  EOT
+  type        = number
+  default     = 1
+}
+
+variable "rocketease_ai_speech_capacity" {
+  description = <<-EOT
+    Thousands of tokens per minute for gpt-4o-mini-tts. The eastus2 limit on
+    2026-09-01 is 600 and a voice-over is a few hundred characters, so this is
+    nowhere near a constraint - 30 is chosen to leave the rest of the quota
+    available rather than because more would not be granted.
+  EOT
+  type        = number
+  default     = 30
+}
+
 variable "rocketease_ai_video_capacity" {
   description = <<-EOT
     Rate ceiling for the Sora 2 deployment. This subscription's GlobalStandard
@@ -666,9 +690,33 @@ locals {
   # deprecation, so a stale pin only bites on a rebuild.
   #
   # The video data plane is NOT the images one. It is the v1 async job API
-  # (/openai/v1/video/generations/jobs), the model travels in the BODY rather
+  # (/openai/v1/videos - NOT the /video/generations/jobs path Azure's own sora
+  # docs describe, which 404s), the model travels in the BODY rather
   # than the URL path, and a job takes one to five minutes - so it is polled,
   # never run inline.
+  # SPEECH. gpt-4o-mini-tts, the same account again. Voice-over is the only
+  # thing this serves, and it is a different data plane AGAIN: /audio/speech,
+  # which answers with the audio bytes directly rather than with a job to poll.
+  #
+  # Version pinned for the deprecation reason the others document. eastus2
+  # offered 2025-03-20 and 2025-12-15 on 2026-09-01; this takes the later.
+  # TRANSCRIPTION, for caption TIMINGS rather than for reading unknown audio.
+  # We wrote the script, so the words are already known; what is missing is
+  # when each one is said, and only the transcriber can answer that.
+  #
+  # whisper rather than gpt-4o-transcribe because WORD-level timestamps are
+  # documented for whisper and not confirmed for the newer models. Guessing a
+  # vendor contract is what cost a day on sora (docs/bugs/B-006), so this takes
+  # the model whose capability is certain and leaves the faster one to a live
+  # check. Note it is Standard, not GlobalStandard - whisper offers no other.
+  rocketease_ai_transcribe_deployment = "rocketease-transcribe"
+  rocketease_ai_transcribe_model      = "whisper"
+  rocketease_ai_transcribe_version    = "001"
+
+  rocketease_ai_speech_deployment = "rocketease-speech"
+  rocketease_ai_speech_model      = "gpt-4o-mini-tts"
+  rocketease_ai_speech_version    = "2025-12-15"
+
   rocketease_ai_video_deployment = "rocketease-video"
   rocketease_ai_video_model      = "sora-2"
   rocketease_ai_video_version    = "2025-12-08"
@@ -778,6 +826,46 @@ resource "azurerm_cognitive_deployment" "rocketease_text" {
   version_upgrade_option = "OnceCurrentVersionExpired"
 }
 
+resource "azurerm_cognitive_deployment" "rocketease_transcribe" {
+  count                = local.rocketease_ai_count
+  name                 = local.rocketease_ai_transcribe_deployment
+  cognitive_account_id = azurerm_cognitive_account.rocketease[0].id
+
+  model {
+    format  = "OpenAI"
+    name    = local.rocketease_ai_transcribe_model
+    version = local.rocketease_ai_transcribe_version
+  }
+
+  sku {
+    # Standard, and capacity is REQUESTS per minute here rather than thousands
+    # of tokens. See the variable.
+    name     = "Standard"
+    capacity = var.rocketease_ai_transcribe_capacity
+  }
+
+  version_upgrade_option = "OnceCurrentVersionExpired"
+}
+
+resource "azurerm_cognitive_deployment" "rocketease_speech" {
+  count                = local.rocketease_ai_count
+  name                 = local.rocketease_ai_speech_deployment
+  cognitive_account_id = azurerm_cognitive_account.rocketease[0].id
+
+  model {
+    format  = "OpenAI"
+    name    = local.rocketease_ai_speech_model
+    version = local.rocketease_ai_speech_version
+  }
+
+  sku {
+    name     = "GlobalStandard"
+    capacity = var.rocketease_ai_speech_capacity
+  }
+
+  version_upgrade_option = "OnceCurrentVersionExpired"
+}
+
 resource "azurerm_cognitive_deployment" "rocketease_video" {
   count                = local.rocketease_ai_count
   name                 = local.rocketease_ai_video_deployment
@@ -841,6 +929,26 @@ locals {
       # silently changes what drafting sends.
       value = "2024-10-21"
       type  = "api version; chat/completions data plane. Confirmed against a live call 2026-08-31"
+    }
+    "AZURE-OPENAI-SPEECH-DEPLOYMENT" = {
+      # Presence of this is what makes voice-over offerable. Absent, the video
+      # panel still works and simply offers no voice - the two are independent
+      # on purpose, the same way images do not depend on the text model.
+      value = azurerm_cognitive_deployment.rocketease_speech[0].name
+      type  = "deployment name; not secret. /audio/speech returns bytes, not a job"
+    }
+    "AZURE-OPENAI-SPEECH-API-VERSION" = {
+      # A FOURTH api-version. /audio/speech and /audio/transcriptions are the
+      # same data plane and share this one.
+      value = "2025-04-01-preview"
+      type  = "api version; /audio/speech and /audio/transcriptions"
+    }
+    "AZURE-OPENAI-TRANSCRIBE-DEPLOYMENT" = {
+      # Captions need WORD TIMINGS, which only the transcriber can give. We
+      # already know the words - we wrote them - so this is alignment, not
+      # recognition, and a wrong word is a caption that does not match the audio.
+      value = azurerm_cognitive_deployment.rocketease_transcribe[0].name
+      type  = "deployment name; not secret. Used for word timings, not for reading unknown audio"
     }
     "AZURE-OPENAI-VIDEO-DEPLOYMENT" = {
       # Presence of this is what makes video generation offerable at all; the

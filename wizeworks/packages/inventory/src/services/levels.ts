@@ -8,9 +8,10 @@ import { Prisma, withTenant } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { publishInventoryEvent } from '../events';
 import type { ServiceContext } from '../errors';
 
-import { ensureVariantExists, ensureWarehouseActive } from './internal';
+import { ensureVariantExists, ensureWarehouseActive, syncProductInStock } from './internal';
 import { LOW_STOCK_SQL, SELLABLE_SQL } from './low-stock';
 
 export interface InventoryLevelRow {
@@ -119,7 +120,7 @@ export async function levelsForWarehouse(
 
 export async function setReorderPolicy(ctx: ServiceContext, rawInput: unknown): Promise<void> {
   const input = SetReorderPolicyInput.parse(rawInput);
-  await withTenant(ctx, async (tx) => {
+  const level = await withTenant(ctx, async (tx) => {
     await ensureWarehouseActive(tx, input.warehouseId);
     await ensureVariantExists(tx, input.variantId);
 
@@ -147,6 +148,16 @@ export async function setReorderPolicy(ctx: ServiceContext, rawInput: unknown): 
       },
     });
 
+    // The reorder point is HALF of `isLowStock`, so setting it can make a level
+    // low without a single unit moving — and `syncProductInStock` is otherwise
+    // only reached from paths where stock CHANGED. Without this the
+    // denormalized `Product.lowStock` never catches up, and the shop and the
+    // console disagree in silence: the console's low-stock list reads the levels
+    // directly and says "1 running low", while a rule-based collection built on
+    // `low_stock` matches nothing and greets shoppers with "Nothing in this
+    // collection yet". Observed on a real storefront (issue 370).
+    await syncProductInStock(tx, input.variantId);
+
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -165,7 +176,44 @@ export async function setReorderPolicy(ctx: ServiceContext, rawInput: unknown): 
         },
       },
     });
+
+    return tx.inventoryLevel.findUnique({
+      where: {
+        variantId_warehouseId: {
+          variantId: input.variantId,
+          warehouseId: input.warehouseId,
+        },
+      },
+      select: { onHand: true, allocated: true, reorderPoint: true },
+    });
   });
+
+  // AFTER the commit, never inside it — a rolled-back write must not emit a
+  // phantom event (see ../events.ts).
+  //
+  // Setting a threshold your stock is already under makes an item low without
+  // moving a unit, and nothing else will say so: every other `inventory.low`
+  // comes off a movement. Without this the item is low in the database and
+  // invisible to everything downstream — the automation that reorders it, and
+  // the reprojection that puts it on a rules-driven shelf — until the next time
+  // somebody happens to touch the stock. Same condition the ledger uses, so the
+  // two agree about what "low" means.
+  if (level && level.reorderPoint !== null) {
+    const available = level.onHand - level.allocated;
+    if (available <= level.reorderPoint) {
+      await publishInventoryEvent({
+        tenantId: ctx.tenantId,
+        actorId: ctx.userId ?? null,
+        topic: 'inventory.low',
+        data: {
+          variantId: input.variantId,
+          warehouseId: input.warehouseId,
+          available,
+          reorderPoint: level.reorderPoint,
+        },
+      });
+    }
+  }
 }
 
 /**
@@ -196,6 +244,12 @@ export async function setSafetyBufferOnTx(
     },
     update: { safetyBuffer: input.safetyBuffer },
   });
+
+  // The buffer is subtracted by BOTH `isLowStock` and `isOutOfStock`, so raising
+  // it can take a product from sellable to sold out, or from fine to running
+  // low, with no movement to trigger the usual resync. Here rather than in the
+  // public wrapper so the sync mapping's atomic path gets it too.
+  await syncProductInStock(tx, input.variantId);
 }
 
 export async function setSafetyBuffer(ctx: ServiceContext, rawInput: unknown): Promise<void> {

@@ -4,10 +4,33 @@
 // At order time we recompute the buyer's salted, daily-rotating visitor hash from
 // the checkout request's IP + UA — the SAME `deriveVisitor` the analytics beacon
 // uses at ingestion, so the two definitions can never drift (docs/128 §8) — look
-// up that visitor's EARLIEST pageview today, and copy the DERIVED source / host /
-// landing-path onto the order. The hash is a lookup key, never a stored column
-// (docs/128 §2, §4): storing it would freeze an identity designed to expire at
-// UTC midnight, which is the property that keeps sparx sites consent-free.
+// up that visitor's EARLIEST pageview in the window, and copy the DERIVED source /
+// host / landing-path onto the order. The hash is a lookup key, never a stored
+// column (docs/128 §2, §4): storing it would freeze an identity designed to expire
+// at UTC midnight, which is the property that keeps sparx sites consent-free.
+//
+// ── THE WINDOW IS TWO DAYS, NOT ONE ─────────────────────────────────────────
+//
+// It used to be today only, because the hash rotates at UTC midnight and there is
+// deliberately no identifier that survives the night. But nothing was stopping us
+// asking for YESTERDAY's hash: the salt is the same, the IP and UA are the same,
+// and the day is just a string in the input — so the previous day's hash is
+// derivable at order time from the request in hand, used once, and thrown away
+// exactly like today's. Nothing new is stored and nothing new outlives the
+// rotation, so the consent-free position is unchanged.
+//
+// What it buys is the normal path for anything people think about before buying:
+// read the page last night, buy this morning. That sale used to count for no page
+// at all, and page-level revenue therefore under-credited hardest exactly the
+// businesses whose pages do the most work. On Juniper Row it was total — 0 of 14
+// orders traced.
+//
+// Two days, and no further. Each extra day is another hash to derive and another
+// day of raw events to scan, and the honest ceiling is bounded anyway: a buyer
+// whose IP or user-agent changed overnight (a phone that moved cell, a browser
+// that updated) does not match yesterday's hash at all. The report already says
+// when it could not place a sale rather than printing a zero (issue 359), which
+// stays the floor under all of this.
 //
 // Runs POST-COMMIT off the checkout-complete handler and MUST NOT affect the
 // order (docs/128 §6.2): the order is already placed, so every failure here is
@@ -33,11 +56,16 @@ export interface ResolveOrderAttributionInput {
   now: Date;
 }
 
-/** UTC midnight of `now`. The visitor hash already encodes the day, so any row
- *  carrying it is same-day by construction — but bounding the scan by the day lets
+/** UTC midnight of `now`. Each visitor hash already encodes its own day, so a row
+ *  carrying one is in-window by construction — but bounding the scan by date lets
  *  the (tenant_id, created_at, visitor_hash) index serve the lookup. */
 function startOfUtcDay(now: Date): Date {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+}
+
+/** The same instant one day earlier, for deriving the previous day's hash. */
+function dayBefore(now: Date): Date {
+  return new Date(now.getTime() - 24 * 60 * 60 * 1000);
 }
 
 /**
@@ -51,17 +79,26 @@ export async function resolveOrderAttribution(input: ResolveOrderAttributionInpu
     // A bot / no-UA hit is dropped at ingestion, so its hash can never match a
     // stored pageview — we still stamp resolvedAt below so the order isn't
     // re-scanned and reports count it honestly as unattributed.
-    const { visitorHash } = deriveVisitor(tenantId, ip, userAgent, now);
+    const yesterday = dayBefore(now);
+    // Both hashes, derived from the same request and discarded with it. They
+    // differ only in the day string, so a buyer whose IP and UA are unchanged
+    // since yesterday is findable across the rotation without anything being
+    // stored that survives it.
+    const hashes = [
+      deriveVisitor(tenantId, ip, userAgent, now).visitorHash,
+      deriveVisitor(tenantId, ip, userAgent, yesterday).visitorHash,
+    ];
 
     await withTenant({ tenantId }, async (tx) => {
-      // First touch within the day = the event that ACQUIRED this visitor
-      // (docs/128 §3). Last-touch inside a day mostly credits the tenant's own
-      // site for a visitor it already had.
+      // First touch within the window = the event that ACQUIRED this visitor
+      // (docs/128 §3). Last-touch mostly credits the tenant's own site for a
+      // visitor it already had — so yesterday's pageview, when there is one,
+      // rightly outranks this morning's return visit.
       const firstTouch = await tx.siteAnalyticsEvent.findFirst({
         where: {
-          visitorHash,
+          visitorHash: { in: hashes },
           type: 'pageview',
-          createdAt: { gte: startOfUtcDay(now) },
+          createdAt: { gte: startOfUtcDay(yesterday) },
         },
         orderBy: { createdAt: 'asc' },
         select: { source: true, campaign: true, referrerHost: true, path: true },
@@ -71,9 +108,10 @@ export async function resolveOrderAttribution(input: ResolveOrderAttributionInpu
         where: { id: orderId },
         data: {
           // Found → the derived acquisition. Not found → resolvedAt only, which
-          // records an honest "we looked and there was no same-day web traffic"
-          // (staff / B2B / POS / phone / renewal, or a visit on another day —
-          // docs/128 §5), distinct from "never looked" (resolvedAt IS NULL).
+          // records an honest "we looked and there was no web traffic from this
+          // buyer in the last two days" (staff / B2B / POS / phone / renewal, or
+          // a visit longer ago than the window — docs/128 §5), distinct from
+          // "never looked" (resolvedAt IS NULL).
           attributionSource: firstTouch?.source ?? null,
           // The email campaign carries across the same visit→order bridge (docs/impl
           // transactional-email Slice 10), so "Revenue by traffic source" can drill

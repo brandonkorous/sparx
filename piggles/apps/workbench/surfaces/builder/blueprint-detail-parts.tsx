@@ -154,7 +154,10 @@ export function BlueprintContentsSection({
   return (
     <FormSection
       title="What this adds to your site"
-      description="Everything comes in as drafts you can change — nothing here replaces what you already have."
+      // NOT "nothing here replaces what you already have" — it does. What is true
+      // of every install, whichever site it goes to, is the drafts. What it does
+      // to THAT site is said beside the site picker, where the site is known.
+      description="Everything comes in as drafts you can change, and nothing is live until you publish it."
     >
       {empty ? (
         <Text className="text-sm">

@@ -30,6 +30,7 @@
     "check:piggles-nav": "node piggles/scripts/check-nav-vocabulary.mjs",
     "check:piggles-toolbars": "node piggles/scripts/check-toolbar-primary.mjs",
     "check:piggles-theme": "node piggles/scripts/check-theme-opacity.mjs",
+    "check:piggles-apps": "node piggles/scripts/check-apps.mjs",
     "provision:piggles-stripe": "node piggles/scripts/provision-stripe.mjs",
     "check:webhooks": "node scripts/check-webhook-events.mjs",
     "check:billing-plans": "node scripts/check-billing-plans.mjs",

@@ -14,10 +14,13 @@
 // website".
 
 import { useEffect } from 'react';
-import type { DocumentKind, DocumentRef, StudioDoc, StudioSession } from '@wizeworks/studio';
+import { faClockRotateLeft } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
+import type { DocumentRef, StudioDoc, StudioSession } from '@wizeworks/studio';
 import { useSessionSnapshot } from '@wizeworks/studio/react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { DocumentNotOpen, NoDocumentNamed, refFrom } from './document-pane';
 import { useStudioBinding } from '../../lib/studio/provider';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -28,36 +31,23 @@ import {
 import { HistoryRows } from './history-rows';
 import { useRestore, type RestoreState } from './use-restore';
 
-const KINDS = new Set<DocumentKind>(['page', 'layout', 'theme', 'component', 'email']);
+/** Why this pane follows what is open, rather than loading a copy of its own. */
+const WHY =
+  'Earlier versions follow whatever you have open, so this list always describes the thing you are editing.';
 
-function refFrom(params: SurfaceContext['params']): DocumentRef | null {
-  const { docKind, docId } = params;
-  if (typeof docKind !== 'string' || typeof docId !== 'string') return null;
-  return KINDS.has(docKind as DocumentKind) ? { kind: docKind as DocumentKind, id: docId } : null;
-}
+const GLYPH = <Icon glyph={faClockRotateLeft} className="size-6" aria-hidden />;
 
 export function HistoryPaneSurface({ ctx }: { ctx: SurfaceContext }) {
   const { session } = useStudioBinding();
   const ref = refFrom(ctx.params);
 
-  if (!ref) {
-    return (
-      <div className="bg-base-200 flex h-full items-center justify-center p-6 text-center">
-        <p className="text-base-content">
-          Open this from the thing you want the history of — a page, your header and footer, a saved
-          piece or an email.
-        </p>
-      </div>
-    );
-  }
+  if (!ref) return <NoDocumentNamed icon={GLYPH} what="the history of" />;
 
   // Split at the session, because the half below SUBSCRIBES to it and
   // `useSessionSnapshot` throws outright with no `<StudioProvider>` above it. The
   // provider does not exist until the site resolves, so a pane opened during boot
   // has to wait here rather than reach for a session that is not there yet.
-  if (!session) {
-    return <PaneWaiting label="Open the page, header, piece or email first…" />;
-  }
+  if (!session) return <PaneWaiting label="Finding your website…" />;
 
   return <HistoryForDocument ctx={ctx} session={session} ref_={ref} />;
 }
@@ -82,9 +72,7 @@ function HistoryForDocument({
   // The document has to be OPEN for its history to be readable: history is about a
   // document, and this pane has no loader of its own on purpose — two loaders for one
   // document is how a pane ends up showing a version of it nobody is editing.
-  if (!doc) {
-    return <PaneWaiting label="Open the page, header, piece or email first…" />;
-  }
+  if (!doc) return <DocumentNotOpen ctx={ctx} ref_={ref_} icon={GLYPH} why={WHY} />;
 
   return <DocumentHistory doc={doc} ref_={ref_} />;
 }

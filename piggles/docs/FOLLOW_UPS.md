@@ -1,8 +1,8 @@
 # Piggles — follow-ups
 
-**Version:** 1.2
+**Version:** 1.12
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-18
+**Last Updated:** 2026-09-01
 
 Things found while building that need a **decision** or **work outside the slice
 that surfaced them**. One line per item in the register, detail below it.
@@ -20,65 +20,13 @@ This is not a bug list and not a backlog:
 **When you close one, delete it and say so in the commit.** A register of
 resolved items stops being read.
 
-| #   | Item                                             | Kind     | Bites when                            |
-| --- | ------------------------------------------------ | -------- | ------------------------------------- |
-| 1   | The console shows no trial or lifecycle notice   | Gap      | A trial ends                          |
-| 2   | The module vocabulary is re-declared elsewhere   | Defect   | A module is added to the platform     |
-| 3   | Piggles activations are absent from the WW board | Decision | Someone asks what Piggles tenants use |
-| 4   | The console declares deps it does not import     | Decision | The first Piggles Dockerfile          |
-| 5   | "Is Google configured" is asked in two places    | Defect   | A second social provider is added     |
-| 6   | "Keep me signed in" stops at the domain boundary | Defect   | A customer restarts their browser     |
-| 7   | Every passwordless path is dead in local dev     | Gap      | Anyone forgets a dev password         |
+| #   | Item                                                     | Kind     | Bites when                               |
+| --- | -------------------------------------------------------- | -------- | ---------------------------------------- |
+| 3   | Piggles activations are absent from the WW board         | Decision | Someone asks what Piggles tenants use    |
+| 4   | The console declares deps it does not import             | Decision | The first Piggles Dockerfile             |
+| 8   | sparx's sign-in offers a Google button that may not work | Defect   | A sparx deployment without the OAuth env |
 
 ---
-
-## 1. The console shows no trial or lifecycle notice
-
-**Kind:** gap (created deliberately, needs the Piggles version building) ·
-**Bites when:** a trial runs out
-
-The shared workbench carries two pieces of lifecycle chrome —
-`components/billing/billing-banner.tsx` (the full-width escalation: trial
-heads-up → countdown → grace → suspended) and `components/billing/trial-chip.tsx`
-(the quiet always-there countdown in the toolbar). **Neither is mounted in the
-Piggles console**, on purpose: both open sparx's bill surface, and the console
-must never show a price (piggles/CLAUDE.md RULE #2).
-
-But every Piggles tenant IS on a 14-day trial — `provisionTenant` stamps
-`trialEndsAt` for both brands — and the console is where the person actually
-is. As it stands they would find out the trial ended by the site going dark.
-
-What is needed is the Piggles form of the same ladder: a notice in the console
-that says what is happening in plain language and links OUT to getpiggles for
-the part that involves money. RULE #2's split is the spec — "My Piggles carries
-the quick path: one meter's state at the point of friction and the one-tap
-action for that meter", and "the console never knows a price". So the console
-renders a label it is handed; the account service decides what it says.
-
-Open sub-question worth settling first: **does Piggles have a 14-day trial at
-all?** It is inherited from `provisionTenant` rather than chosen, and the
-source pack's commercial docs should be read before the notice is written —
-building a countdown for a trial nobody decided on is the wrong order.
-
-## 2. The module vocabulary is re-declared elsewhere
-
-**Kind:** defect · **Bites when:** a module is added to the platform
-
-`ALL_MODULES` in `wizeworks/packages/modules` is now THE list, and `api-rest`'s
-`MODULE_SLUGS` derives from it rather than repeating it. That fixed one copy —
-the one whose own comment recorded that `inventory` and `finance` had each
-fallen out of sync, with the symptom that the module typechecks everywhere and
-then **cannot be turned on at all** (the activation toggle refuses the slug as
-"Request validation failed").
-
-The same comment warned that there are others: _"several other lists re-declare
-the vocabulary."_ They have not been found or fixed. Every one of them is the
-same latent failure, and the failure is silent in exactly the way that costs the
-most time.
-
-Do this as a sweep: grep an existing slug (`dropship` is distinctive) across the
-repo, and for each list that turns up, either derive it from `ALL_MODULES` or
-write down why it legitimately differs.
 
 ## 3. Piggles module activations are absent from the WizeWorks board
 
@@ -127,75 +75,34 @@ This becomes a real decision at deployment, because
 missing from an app image, and it is currently blind to both Piggles apps (see
 STATUS). Whatever is decided here has to be what that checker enforces.
 
-## 5. "Is Google configured" is answered in two places
+---
 
-**Kind:** defect · **Bites when:** a second social provider is added, or the env
-changes on one deployment and not another
+## 8. sparx's sign-in offers a Google button that may not work
 
-`wizeworks/packages/auth/src/server.ts` registers the Google provider only when
-`GOOGLE_CLIENT_ID` **and** `GOOGLE_CLIENT_SECRET` are both set, and adds the One
-Tap plugin under the same condition. The account app now renders its "Continue
-with Google" button only under that same condition, which it re-states in
-`piggles/apps/account/lib/social.ts` — because a button that is certain to fail
-is worst on the screen where a person can least tell a broken product from their
-own mistake.
+**Kind:** defect, in a tree this workstream may not touch ·
+**Bites when:** a sparx deployment runs without `GOOGLE_CLIENT_ID` /
+`GOOGLE_CLIENT_SECRET`
 
-Two copies of one condition drift. The fix is a capability query on the shared
-auth package — something like `configuredSocialProviders()` — which is a change
-to shared code, and therefore one to make deliberately rather than in passing.
+The Piggles half of the old item 5 is fixed: `@wizeworks/auth` now answers
+"which social sign-ins does this deployment actually have" in ONE place
+(`social-providers.ts`), its own server config asks that function before
+registering the provider, and the account app asks the same function before
+drawing the button. They can no longer disagree.
 
-Worth doing together with the same latent bug on the sparx side: the shared
-workbench's `auth-shell.tsx` renders its Google button **unconditionally**, so on
-a deployment without those env vars it offers an entry that cannot work. That is
-the platform-level version of this and it is live today.
+**The sparx call site was already wrong and still is.**
+`sparx/apps/workbench/components/auth-shell.tsx` renders its "Continue with
+Google" button unconditionally, so on a deployment without those variables it
+offers an entry that can only error — on the screen where somebody is least able
+to tell a broken product from their own mistake.
 
-## 6. "Keep me signed in" stops at the domain boundary
+`sparx/**` is off limits to this workstream (piggles/CLAUDE.md RULE #0: never
+read, never edit), so this is recorded rather than fixed, and recorded as
+inherited from the previous note rather than re-verified.
 
-**Kind:** defect (mild) · **Bites when:** a customer closes their browser
+**The fix is now one line there**, because the primitive exists:
 
-Sign-in now carries a "Keep me signed in" checkbox, defaulted on, which is passed
-to Better Auth as `rememberMe`. It governs the cookie on **getpiggles.com**.
-
-`mypiggles.com` gets a separate cookie, minted by the handoff callback — and that
-route passes no `maxAge`, so the console's cookie is a browser-session cookie
-whatever the customer chose. It is not broken: when the console cookie is gone
-the console bounces to getpiggles, whose cookie is still good, and a fresh handoff
-lands them back. The cost is a redirect on the first visit after every browser
-restart, and a checkbox whose promise is only three-quarters true.
-
-The fix is to carry the choice through the handoff and set the console cookie's
-`maxAge` from it. The helper already accepts `maxAge`
-(`@piggles/auth-handoff/src/session-cookie.ts`); nothing passes one.
-
-## 7. Every passwordless path is dead in local dev
-
-**Kind:** gap · **Bites when:** anybody forgets a password on a dev account —
-which has now cost real time once
-
-The sign-in screen offers two ways past a forgotten password: "Email me a link
-instead" and "Forgot your password?". **Neither does anything on a local
-machine, and neither says so.**
-
-The chain: both call into `publishAuthEmail`, which publishes `email.send`. In
-dev the publisher is built by `localDispatchFromEnv`
-(`wizeworks/packages/events/src/publisher.ts`), which reads `SPARX_DEV_WORKER_ROUTES` and
-returns **null when it is unset** — and it is unset in this repo. So the publish
-is a no-op. The only trace is a log line reading
-`[pubsub:dev-dispatch] no local worker — skipping`, in a terminal nobody is
-watching at the moment they are locked out.
-
-From the person's side the button works: it says "Check your email — we have sent
-a link", because the client got no error. Nothing was sent. That success message
-is the actual defect — it reports a delivery that provably did not happen.
-
-Two things to fix, and the first is cheap:
-
-- **Do not claim delivery that did not occur.** The publish path knows it dropped
-  the event; that knowledge does not currently reach the caller. Either surface
-  it, or in dev say plainly that mail is not wired locally.
-- **Wire the dev route.** Set `SPARX_DEV_WORKER_ROUTES` in the repo's env so
-  `email.send` reaches a local worker and the console provider prints the link.
-  That makes both recovery paths testable, which they are not today.
-
-Until then, the only way back into a dev account with a lost password is to sign
-up a fresh one.
+```ts
+import { socialProviderConfigured } from '@wizeworks/auth';
+// …
+{socialProviderConfigured('google') ? <GoogleButton /> : null}
+```

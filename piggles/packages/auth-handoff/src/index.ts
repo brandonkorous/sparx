@@ -1,6 +1,6 @@
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { prisma } from '@wizeworks/db';
-import { PRODUCT } from '@piggles/config';
+import { audienceOrigin, internalPath, type HandoffAudience } from './origins';
 
 // The getpiggles.com → mypiggles.com session handoff.
 //
@@ -55,81 +55,6 @@ const TTL_MS = 60_000;
  *  own prefix; overlapping would let one flow consume another's row. */
 const PREFIX = 'piggles-handoff:';
 
-/** Who a token may be redeemed by. A bare string would let a typo silently
- *  widen the audience. */
-export type HandoffAudience = 'console';
-
-/**
- * Where a redeemed token is sent, as a full origin.
- *
- * ── THIS MUST BE OVERRIDABLE, AND IT IS A SECURITY CONTROL ──────────────────
- *
- * The first version built the URL straight from `PRODUCT.hosts.console`, which
- * is the PRODUCTION hostname. On a developer's machine that meant a real,
- * live handoff token was appended to a link to `https://mypiggles.com` and the
- * browser followed it — to a domain that is currently parked and returns 403,
- * i.e. to somebody else's server, complete with a `?t=` that grants a session.
- * Observed, not theorised, the first time onboarding completed locally.
- *
- * The token is single-use and lives 60 seconds, which bounds the damage but does
- * not excuse it: the whole point of an origin-bound token is that it only ever
- * travels to an origin we control.
- *
- * So the origin comes from the environment, with production as the default —
- * a deployment that forgets to set it still works, and a laptop that forgets to
- * set it points at localhost rather than at the internet.
- */
-function audienceOrigin(audience: HandoffAudience): string {
-  const configured = process.env.PIGGLES_CONSOLE_ORIGIN?.trim();
-  if (configured) return configured.replace(/\/$/, '');
-
-  // No override: production if this is a production build, otherwise the local
-  // console port. NEVER fall through to the production host in development —
-  // that is precisely the leak above.
-  if (process.env.NODE_ENV === 'production') {
-    return `https://${AUDIENCE_HOST[audience]}`;
-  }
-  return 'http://localhost:3022';
-}
-
-const AUDIENCE_HOST: Record<HandoffAudience, string> = {
-  console: PRODUCT.hosts.console,
-};
-
-/**
- * Where the account app lives, as a full origin — the mirror of
- * {@link audienceOrigin}, and environment-aware for the same reason.
- *
- * The console sends people HERE whenever it has no session: to sign in, to sign
- * out, to reach billing. Built from the production hostname on a developer's
- * machine, every one of those is a link off the laptop and onto the internet —
- * at best a dead end, at worst a real sign-in form on a domain that is not yet
- * ours. So: the override wins, production is the default only in a production
- * build, and a laptop that configures nothing points at the local account app.
- */
-export function accountOrigin(): string {
-  const configured = process.env.PIGGLES_ACCOUNT_ORIGIN?.trim();
-  if (configured) return configured.replace(/\/$/, '');
-  if (process.env.NODE_ENV === 'production') return `https://${PRODUCT.hosts.account}`;
-  return 'http://localhost:3021';
-}
-
-/**
- * The account app's door into the console, with a destination attached.
- *
- * The console never links to `getpiggles.com/sign-in` directly. It links HERE,
- * because `/handoff` is the one route that knows how a session crosses the
- * boundary: a signed-in visitor is bounced straight back with a fresh token, and
- * only a genuinely signed-out one ever sees a sign-in form. Sending someone to
- * `/sign-in` instead would show a sign-in page to somebody who is already signed
- * in — the classic "why is it asking me again" of a multi-domain product.
- */
-export function handoffEntryUrl(next?: string): string {
-  const path = safeNext(next);
-  const query = path ? `?next=${encodeURIComponent(path)}` : '';
-  return `${accountOrigin()}/handoff${query}`;
-}
-
 interface HandoffPayload {
   /** The Better Auth session token — the SAME value the getpiggles cookie
    *  holds, so the console's cookie points at the identical session row. */
@@ -142,6 +67,10 @@ interface HandoffPayload {
    *  through the handoff because a deep link that survives sign-in is the
    *  difference between "log in and find your way back" and arriving. */
   next?: string;
+  /** Whether "Keep me signed in" was ticked. Carried because the console mints
+   *  its OWN cookie and would otherwise have no way of knowing — which is
+   *  exactly what went wrong; see ./session-cookie.ts. */
+  remember?: boolean;
 }
 
 /**
@@ -159,13 +88,19 @@ export async function mintHandoffUrl(input: {
   /** A path inside the destination app. Rejected unless it is a bare internal
    *  path, so a handoff link can never be turned into an open redirect. */
   next?: string;
+  /** The person's own answer to "Keep me signed in". Read it with
+   *  `readsAsRemembered` rather than guessing — the caller is a route, not the
+   *  sign-in form, and may be running days after the choice was made. */
+  remember?: boolean;
 }): Promise<string> {
   const jti = randomBytes(32).toString('base64url');
+  const next = internalPath(input.next);
   const payload: HandoffPayload = {
     sessionToken: input.sessionToken,
     audience: input.audience,
     userId: input.userId,
-    ...(safeNext(input.next) ? { next: safeNext(input.next) } : {}),
+    ...(next ? { next } : {}),
+    ...(input.remember === undefined ? {} : { remember: input.remember }),
   };
 
   await prisma.verification.create({
@@ -180,7 +115,7 @@ export async function mintHandoffUrl(input: {
 }
 
 export type ConsumeResult =
-  | { ok: true; sessionToken: string; userId: string; next: string }
+  | { ok: true; sessionToken: string; userId: string; next: string; remember: boolean }
   | { ok: false; reason: 'missing' | 'expired' | 'wrong-audience' | 'malformed' };
 
 /**
@@ -238,18 +173,12 @@ export async function consumeHandoffToken(
     ok: true,
     sessionToken: payload.sessionToken,
     userId: payload.userId,
-    next: safeNext(payload.next) ?? '/',
+    next: internalPath(payload.next) ?? '/',
+    // Absent only on a token minted by a build that predates the field, which
+    // can outlive a deploy by at most 60 seconds. Default to the behaviour that
+    // build had, and to what the checkbox itself defaults to.
+    remember: payload.remember ?? true,
   };
-}
-
-/** Only a bare internal path survives — no scheme, no host, no protocol-relative
- *  `//evil.com`. This is the guard that stops `?next=` becoming an open redirect
- *  that launders a real session onto somebody else's domain. */
-function safeNext(next: string | null | undefined): string | undefined {
-  if (!next) return undefined;
-  if (!next.startsWith('/')) return undefined;
-  if (next.startsWith('//')) return undefined;
-  return next;
 }
 
 function constantTimeEquals(a: string, b: string): boolean {
@@ -259,8 +188,23 @@ function constantTimeEquals(a: string, b: string): boolean {
   return timingSafeEqual(ab, bb);
 }
 
-// The receiving side's other half: turning the redeemed token back into a
-// cookie Better Auth will accept. Kept in this package so BOTH halves of the
-// handoff stay in one place — a minting side and a consuming side that live in
+// Where the three apps actually are. Re-exported so a caller imports one
+// package rather than picking files out of it.
+export {
+  accountOrigin,
+  audienceOrigin,
+  handoffEntryUrl,
+  internalPath,
+  type HandoffAudience,
+} from './origins';
+
+// The receiving side's other half: turning the redeemed token back into cookies
+// Better Auth will accept. Kept in this package so BOTH halves of the handoff
+// stay in one place — a minting side and a consuming side that live in
 // different repositories' worth of code is how the two drift.
-export { sessionCookie, clearedSessionCookie, type SessionCookie } from './session-cookie';
+export {
+  handoffCookies,
+  signedOutCookies,
+  readsAsRemembered,
+  type SessionCookie,
+} from './session-cookie';

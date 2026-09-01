@@ -129,6 +129,10 @@ Two things follow that are worth writing down:
   `search.reindex.requested` to the indexer. `email.send` is genuinely not in the routed
   list, so the email half of that instruction still stands — but the blanket version of
   it is wrong.
+  **Both halves are closed as of 2026-09-01.** `EVENT_BROKER=nats` is the selector now,
+  not the dev-routes list, so `email.send` travels the same bus as everything else and is
+  rendered to the event-worker's stdout; `personas/CLAUDE.md` has been rewritten to say
+  so. See [368](368-the-sign-in-screen-said-it-had-emailed-her-a-link-and-had-not.md).
 
 ## Rating effect
 

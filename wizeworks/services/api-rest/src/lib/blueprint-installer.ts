@@ -872,9 +872,24 @@ export async function installContentSlice(env: SliceEnv): Promise<void> {
 
   // 5a. Byline personas + taxonomy the entries reference (docs/131 §4). Seeded ONCE,
   //     before the entries, so each entry can link its author + terms by the slug it
-  //     names. Scoped to the installed site (an Author / a term is per-publication) and
-  //     reconciled by natural key, so a reinstall reuses rather than duplicates. Only
-  //     runs when the CMS module is on AND something actually references a byline.
+  //     names. Reconciled by natural key so a reinstall reuses rather than duplicates.
+  //     Only runs when the CMS module is on AND something actually references a byline.
+  //
+  //     RECONCILE ON THE KEY THE DATABASE ACTUALLY ENFORCES. These three used to be
+  //     looked up per SITE — `(tenant, property, slug)` — while the unique indexes are
+  //     `authors (tenant_id, slug)`, `taxonomies (tenant_id, key)` and
+  //     `taxonomy_terms (taxonomy_id, slug)`. A lookup narrower than its constraint
+  //     finds nothing and then asks for a row the database refuses, so adding the same
+  //     design to a SECOND site of the same business died on
+  //     "Unique constraint failed" partway through — with the site already created and
+  //     the install row left `failed`. The pane above it says "You can add it to more
+  //     than one", which is what a person then tries.
+  //
+  //     An author is a PERSON and a taxonomy is a vocabulary; both belong to the
+  //     business rather than to one of its websites, which is what those indexes have
+  //     always said. `propertyId` is still stamped on a row this install creates, so
+  //     whichever site introduced one owns it; a row that already exists is reused as
+  //     it stands and never repointed, because another site's content may reference it.
   const slugify = (s: string): string =>
     s
       .toLowerCase()
@@ -893,7 +908,7 @@ export async function installContentSlice(env: SliceEnv): Promise<void> {
       // Authors — reconcile by (site, slug).
       for (const a of blueprint.authors) {
         const existing = await tx.author.findFirst({
-          where: { tenantId, propertyId, slug: a.slug },
+          where: { tenantId, slug: a.slug },
           select: { id: true },
         });
         const id =
@@ -925,7 +940,7 @@ export async function installContentSlice(env: SliceEnv): Promise<void> {
         const cached = taxonomyIdByKey.get(key);
         if (cached) return cached;
         const existing = await tx.taxonomy.findFirst({
-          where: { tenantId, propertyId, key },
+          where: { tenantId, key },
           select: { id: true },
         });
         const id =
@@ -951,7 +966,7 @@ export async function installContentSlice(env: SliceEnv): Promise<void> {
         if (termIdByKey.has(cacheKey)) return;
         const taxonomyId = await ensureTaxonomy(key, taxName, taxPlural);
         const existing = await tx.taxonomyTerm.findFirst({
-          where: { tenantId, propertyId, taxonomyId, slug },
+          where: { tenantId, taxonomyId, slug },
           select: { id: true },
         });
         const id =

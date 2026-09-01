@@ -22,6 +22,19 @@
 //   2. IN-SCREEN COPY — `productCopy('key', 'sparx's wording')`, overridden in
 //      copy.ts. The fallback IS sparx's sentence, so a new call with no override
 //      renders sparx's words with nothing marking it wrong.
+//   3. PLAIN CATALOGS — a data file whose object literals are rendered straight to
+//      the screen. Neither seam above can see one: no surface title to override, no
+//      productCopy call to intercept. The onboarding switchboard is the whole of the
+//      first screen a new business meets, and it sat outside this check while it
+//      reported green, carrying CMS, CRM, headless, API, MCP and thirteen other
+//      companies named outright (issue 362).
+//
+// ── AND IT BANS OTHER COMPANIES' NAMES ──────────────────────────────────────
+//
+// Root CLAUDE.md: shipped artifacts describe patterns in our own words rather than
+// naming competitors. The switchboard's `replaces` line existed to name them, one
+// per app, on a first-run screen. Checked only in the catalogs, where the strings
+// are known to be prose — a surface title will never say "Shopify".
 
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -46,6 +59,36 @@ const BANNED = [
   'webhook',
   'API key',
   'sparx',
+];
+
+/** Other companies, banned in the catalogs (root CLAUDE.md). Not the whole market:
+ *  the ones this fork actually arrived carrying, plus the obvious neighbours, so a
+ *  copy pass that reinstates one is caught rather than merely discouraged. */
+const COMPETITORS = [
+  'Shopify',
+  'Webflow',
+  'Squarespace',
+  'Wix',
+  'BigCommerce',
+  'WooCommerce',
+  'Storyblok',
+  'Contentful',
+  'Sanity',
+  'HubSpot',
+  'Salesforce',
+  'Klaviyo',
+  'Mailchimp',
+  'Zapier',
+  'Calendly',
+  'Acuity',
+  'Spocket',
+  'FreshBooks',
+  'QuickBooks',
+  'Xero',
+  'inFlow',
+  'Katana',
+  'Intercom',
+  'Zendesk',
 ];
 
 /**
@@ -143,15 +186,85 @@ function walk(rel) {
 }
 for (const root of ['surfaces', 'components']) walk(root);
 
+// ── Seam 3: plain catalogs rendered straight to the screen ─────────────────
+//
+// Scanned by NAMED FIELD rather than "every string in the file": these files also
+// hold keys, class names and comments, and a checker that flags `key: 'cms'` is a
+// checker somebody switches off. Each entry names the declaration it lives in, so
+// this fails loudly when one is renamed rather than silently scanning nothing —
+// the same rule `pairs()` follows above, and the reason it throws.
+const CATALOGS = [
+  {
+    file: 'lib/onboarding/modules.ts',
+    anchor: 'SWITCHBOARD_MODULES',
+    fields: ['name', 'desc', 'long', 'replaces'],
+    lists: ['feats'],
+  },
+  {
+    file: 'surfaces/onboarding/wizard/wizard-steps.ts',
+    anchor: 'STEP_LABEL',
+    fields: ['modules', 'template', 'workspace', 'domain', 'payments', 'launch'],
+    lists: [],
+  },
+  {
+    file: 'surfaces/onboarding/wizard/wizard-steps.ts',
+    anchor: 'HEAD',
+    fields: ['title', 'supporting'],
+    lists: [],
+  },
+];
+
+/** The whole declaration body, or a throw naming what moved. */
+function declaration(src, file, anchor) {
+  const from = src.search(new RegExp(`const\\s+${anchor}\\b`));
+  if (from < 0) {
+    throw new Error(
+      `check:nav-vocabulary — ${anchor} is not in ${file}. It has moved or been ` +
+        `renamed; point this at its new home. Carrying on would scan nothing and ` +
+        `report the screen clean.`
+    );
+  }
+  const end = src.indexOf('\n];', from);
+  return src.slice(from, end < 0 ? src.length : end);
+}
+
+const catalogStrings = [];
+for (const { file, anchor, fields, lists } of CATALOGS) {
+  const body = declaration(read(file), file, anchor);
+  for (const field of fields) {
+    for (const m of body.matchAll(
+      new RegExp(String.raw`^\s*${field}:\s*'((?:[^'\\]|\\.)*)'`, 'gm')
+    )) {
+      catalogStrings.push({ key: `${anchor}.${field}`, file, kind: 'catalog', text: m[1] });
+    }
+  }
+  for (const list of lists) {
+    for (const block of body.matchAll(new RegExp(String.raw`${list}:\s*\[([^\]]*)\]`, 'g'))) {
+      for (const m of block[1].matchAll(/'((?:[^'\\]|\\.)*)'/g)) {
+        catalogStrings.push({ key: `${anchor}.${list}`, file, kind: 'catalog', text: m[1] });
+      }
+    }
+  }
+}
+rendered.push(...catalogStrings.map((s) => ({ ...s, listed: true })));
+
 const hits = [];
 for (const item of rendered) {
   for (const word of BANNED) {
     if (new RegExp(String.raw`\b${word}(s|es|'s)?\b`, 'i').test(item.text))
       hits.push({ ...item, word });
   }
+  // Another company's name is only checked where the string is known to be prose.
+  if (item.kind !== 'catalog') continue;
+  for (const brand of COMPETITORS) {
+    if (new RegExp(String.raw`\b${brand}\b`, 'i').test(item.text))
+      hits.push({ ...item, word: brand });
+  }
 }
 
-const label = `${rendered.length} rendered strings · ${hidden.size} surfaces hidden from Piggles`;
+const label =
+  `${rendered.length} rendered strings (${catalogStrings.length} from catalogs) · ` +
+  `${hidden.size} surfaces hidden from Piggles`;
 if (hits.length === 0) {
   console.log(`✓ Piggles nav vocabulary clean (${label})`);
   process.exit(0);

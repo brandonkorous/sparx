@@ -339,6 +339,15 @@ is unset, so the transport is `{ kind: 'log' }` — an `email.send` publish is
 logged and never rendered. No email in this run has been confirmed as received by
 anybody. Recorded once, here, rather than as a mystery in eleven acts.
 
+> **Corrected 2026-09-01.** The run fact stands — no email here was confirmed
+> received — but the mechanism named above is not why. `SPARX_DEV_WORKER_ROUTES`
+> stopped being the selector; `EVENT_BROKER` is, the account app sets it to
+> `nats`, and the path runs end to end. Mail IS rendered in dev, to the
+> event-worker's stdout. Measured in issue
+> [368](issues/368-the-sign-in-screen-said-it-had-emailed-her-a-link-and-had-not.md).
+> A re-run of this persona should read the worker output rather than repeat this
+> paragraph.
+
 **Timezone.** Every timestamp the database returned carries `+00`, so date
 boundaries in this run are stated in UTC.
 

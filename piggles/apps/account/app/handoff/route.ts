@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { auth, getSession } from '@wizeworks/auth';
 import { getCookies } from 'better-auth/cookies';
-import { mintHandoffUrl } from '@piggles/auth-handoff';
+import { mintHandoffUrl, readsAsRemembered } from '@piggles/auth-handoff';
 import { safeInternalPath } from '@piggles/config';
 import { readConsent } from '@/lib/consent';
 import { sameOriginRedirectWithNext } from '@/lib/same-origin-redirect';
@@ -164,6 +164,11 @@ export async function GET(request: NextRequest) {
     userId: session.user.id,
     audience: 'console',
     next: safeInternalPath(request.nextUrl.searchParams.get('next')),
+    // "Keep me signed in", carried across the boundary. The console has no
+    // sign-in form and so never saw the box; it used to invent an answer, and
+    // the answer it invented was thirty days for everybody. THIS domain is the
+    // only one that holds the person's real one.
+    remember: readsAsRemembered((name) => request.cookies.get(name)?.value),
   });
 
   // 303, not 307: this is "go and look over there", and the browser must not

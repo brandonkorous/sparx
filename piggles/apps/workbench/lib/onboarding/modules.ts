@@ -23,6 +23,19 @@
 //
 // Switching one on changes the WORKSPACE, not the bill — so this list is about
 // what somebody wants on screen, never about what they are buying.
+//
+// AND IT SPEAKS PIGGLES, which it did not. This whole catalog arrived from sparx
+// and kept sparx's words on a screen a Piggles owner meets before anything else:
+// rows called CMS, CRM and AI · MCP; sentences about a typed API, headless SDKs,
+// TTFB, JSON-LD and WMS; and a `replaces` line naming thirteen other companies by
+// name, which shipped artifacts do not do (root CLAUDE.md). It read as a developer
+// pitch because it was one (persona issue 362).
+//
+// The names are the ones the rail already uses, from `@piggles/config`'s APPS,
+// EXCEPT where one app fronts several capabilities: "Sell" covers commerce, trade
+// and dropshipping, and this board has a row for each, so the two that are not the
+// app itself are named for what they do. `replaces` says what an owner stops paying
+// for, without naming who they stop paying.
 
 export interface SwitchboardModule {
   /** Module slug — also the brand color key (`--color-module-<key>`). */
@@ -41,164 +54,164 @@ export interface SwitchboardModule {
 export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
   {
     key: 'builder',
-    name: 'Builder',
-    desc: 'Themes, pages, live URLs',
-    long: 'The foundation every sparx site starts on. Pick a polished theme, edit blocks, point your domain — automatic SSL, edge-cached pages, instant TTFB worldwide. Power users go fully headless against the same API.',
+    name: 'My Site',
+    desc: 'Your pages, your look, your address',
+    long: 'The website itself. Start from a design that already looks finished, change the words and pictures by clicking on them, and point your own web address at it when you are ready. It loads quickly wherever somebody is, and the security certificate is arranged for you.',
     feats: [
-      'Theme-first, customize what matters',
-      'Custom domain + automatic SSL',
-      'CDN-cached, stale-while-revalidate',
-      'Headless SDK for Next, Remix, Astro',
+      'Pages you edit by clicking on them',
+      'Designs that already look finished',
+      'Your own web address, set up for you',
+      'Fast wherever your visitor happens to be',
     ],
-    replaces: 'Webflow + hosting + a CDN',
+    replaces: 'a website builder and a separate hosting bill',
   },
   {
     key: 'commerce',
-    name: 'Commerce',
-    desc: 'Cart, checkout, orders',
-    long: 'Products, inventory, payments, tax, and shipping. A conversion-optimized single-page checkout out of the box, D2C and B2B from the same codebase.',
+    name: 'Sell',
+    desc: 'Basket, checkout, orders',
+    long: 'Everything it takes to take money: what you sell, how many you have left, the basket, the checkout, tax and postage. One checkout page rather than four, because every extra step is somebody deciding not to bother.',
     feats: [
-      'Variants, bundles, real-time inventory',
-      'Apple Pay + one-tap checkout',
-      'Stripe, PayPal, Klarna, Affirm',
-      'Avalara/TaxJar tax · Shippo/EasyPost',
+      'Sizes and colors, with what is left of each',
+      'Card, wallet and pay-later at the checkout',
+      'Tax worked out for you',
+      'Postage prices and labels',
     ],
-    replaces: 'Shopify Advanced + tax & shipping apps',
+    replaces: 'a shop platform plus the add-ons it needs for tax and postage',
   },
   {
     key: 'cms',
-    name: 'CMS',
-    desc: 'Words, media, SEO',
-    long: 'A real editor with revisions, structured content types with a typed API, a media library, and SEO scored on every publish. Standalone or paired with your site.',
+    name: 'Content',
+    desc: 'Writing, pictures, being found',
+    long: 'A proper place to write. Journal entries, guides, anything with words in it, with every version kept so you can always go back to one. Pictures are tidied and resized for you, and each piece is checked for how easily people will find it.',
     feats: [
-      'Block editor with revisions',
-      'Structured content types + typed API',
-      'Auto WebP/AVIF media library',
-      'Per-page SEO + JSON-LD',
+      'Write it, save it, go back to any version',
+      'One library for every picture and file',
+      'Pictures resized and tidied for you',
+      'Each page checked for how findable it is',
     ],
-    replaces: 'a headless CMS like Storyblok + a media CDN',
+    replaces: 'a separate writing tool and somewhere to keep your pictures',
   },
   {
     key: 'crm',
-    name: 'CRM',
-    desc: 'Customers, pipeline, signal',
-    long: 'One customer record across orders, email, support, RFQs, and AI conversations — sitting on the same database as everything else. No sync, no glue, no duplicate records.',
+    name: 'Customers',
+    desc: 'Who they are, and what they did',
+    long: 'One record for each person, holding all of it: what they bought, what you sent them, what they asked you. Nothing to keep in step and no duplicates, because it is the same place everything else here works from.',
     feats: [
-      'One record, no deduping',
-      'Dynamic segments from any signal',
-      'Pipeline tied to order status',
-      'Automations + activity timeline',
+      'One record per person, never two',
+      'Groups that keep themselves up to date',
+      'Where each sale has got to',
+      'Everything they have ever done, in order',
     ],
-    replaces: 'HubSpot Sales Pro + an automation seat',
+    replaces: 'a customer database and the work of keeping it in step',
   },
   {
     key: 'email',
-    name: 'Email',
-    desc: 'Transactional + marketing',
-    long: 'Transactional and marketing email from your own sending address, with the technical bits set up for you so it lands in inboxes rather than spam.',
+    name: 'Messages',
+    desc: 'Receipts, reminders, and what you write',
+    long: 'Both kinds of email. The ones that go out on their own, like a receipt or a booking reminder, and the ones you write to everybody. Sent from your own address, with the fiddly technical setup done for you so they arrive rather than land in spam.',
     feats: [
-      'Transactional wired into every module',
-      'Campaigns + A/B testing',
-      'Your domain, your reputation',
-      'No per-email pricing, ever',
+      'Receipts and reminders that send themselves',
+      'Write to everybody, or to one group',
+      'Sent from your own address',
+      'Never charged by the email',
     ],
-    replaces: 'Klaviyo + a transactional email service',
+    replaces: 'a mailing-list service and a separate receipts service',
   },
   {
     key: 'b2b',
-    name: 'B2B · Fleet',
-    desc: 'Wholesale, net terms, fleet',
-    long: 'Wholesale pricing, net terms, purchase orders, RFQ, fleet accounts, and service scheduling — natively, not a bolt-on. Built for how industrial actually works.',
+    name: 'Trade customers',
+    desc: 'Wholesale, accounts, paying later',
+    long: 'For selling to other businesses rather than to people. Their own prices, buying on account and paying later, purchase orders at the checkout, and quotes you send back. Part of the same shop, not a second one.',
     feats: [
-      'Account-tier + contract pricing',
-      'Net 15 / 30 / 60 / 90 + PO checkout',
-      'Fleet: vehicles, VIN, cost centers',
-      'RFQ + bookable service bays',
+      'Different prices for different accounts',
+      'Pay in 15, 30, 60 or 90 days',
+      'Purchase orders at the checkout',
+      'Quotes you send, and they accept',
     ],
-    replaces: 'Shopify Plus for native B2B',
+    replaces: 'a wholesale add-on, or a second shop for trade',
   },
   {
     key: 'ai',
-    name: 'AI · MCP',
-    desc: 'Native MCP server',
-    long: 'The first content + commerce platform built around the Model Context Protocol. Connect any AI client once and read or write live data in plain English. Scoped, audited, revocable.',
+    name: 'Connections',
+    desc: 'Let an AI assistant help',
+    long: 'Connect the AI assistant you already use and let it read and change your own business, in plain English. You say what it is allowed near, everything it does is written down, and you can cut it off in one press.',
     feats: [
-      'First-class MCP server, per-tenant',
-      'Read & write everything the API can',
-      'Per-agent keys, per-tool scopes',
-      'Claude, ChatGPT, Copilot, Cursor',
+      'Works with the assistants people already use',
+      'Ask in plain English, get real answers',
+      'You choose what it is allowed near',
+      'Everything written down, and cut off in one press',
     ],
-    replaces: 'Zapier Team + custom integration work',
+    replaces: 'wiring your tools together by hand',
   },
   {
     key: 'scheduling',
-    name: 'Scheduling',
-    desc: 'Appointments, classes, reservations',
-    long: 'Online booking for anything time-based — appointments, group classes, table reservations, equipment rentals — on one engine. Availability that prevents double-booking at the database level, deposits and no-show fees, automated reminders, and two-way calendar sync.',
+    name: 'Bookings',
+    desc: 'Appointments, classes, tables',
+    long: 'Taking bookings for anything that happens at a time: appointments, group classes, tables, hire. Two people can never end up in the same slot, you can ask for a deposit, and the reminders go out on their own.',
     feats: [
-      'Appointments, classes, reservations & rentals',
-      'No-overlap booking with buffers & lead time',
-      'Deposits, no-show fees & cancellation policies',
-      'Email + SMS reminders, two-way calendar sync',
+      'Appointments, classes, tables and hire',
+      'Two bookings can never take one slot',
+      'Deposits, and a charge for not turning up',
+      'Reminders by email and text',
     ],
-    replaces: 'a booking tool like Calendly or Acuity',
+    replaces: 'a booking service and the diary juggling around it',
   },
   {
     key: 'dropship',
-    name: 'Dropship',
-    desc: 'Suppliers, sync, fulfillment',
-    long: 'Supplier sync, margin math, and automated order routing — on a real platform underneath, not an app stacked on an app. Sell without holding inventory.',
+    name: 'Dropshipping',
+    desc: 'Sell without holding the stock',
+    long: 'Sell things you never touch. Your suppliers keep you up to date on what they have, each order goes to whoever should send it, and your markup is worked out on every line.',
     feats: [
-      'Supplier connectors + CSV/FTP/API',
-      'Per-supplier margin rules',
-      'Automated multi-supplier routing',
-      'Real-time stock sync',
+      'Suppliers connected however they work',
+      'Your own markup, set per supplier',
+      'Each order sent to the right supplier',
+      'Stock numbers that keep themselves current',
     ],
-    replaces: 'a dropshipping app like Spocket',
+    replaces: 'a dropshipping add-on and the spreadsheet behind it',
   },
   {
     key: 'invoicing',
-    name: 'Invoicing',
-    desc: 'Estimates, invoices, AR',
-    long: 'Author estimates, work orders, and invoices line by line — parts marked up, labor by the hour, deposits and partial payments — through stages you name. Tracks balances and AR aging, and prints on your brand. Included free with Commerce or B2B.',
+    name: 'Invoices',
+    desc: 'Quotes, invoices, what you are owed',
+    long: 'Write a quote line by line, turn it into an invoice, and follow it through the stages you name yourself. Parts with your markup on, hours at your rate, deposits and part payments, and a running total of what is still outstanding. Comes with Sell or Trade customers.',
     feats: [
-      'Estimate → invoice workflows you name',
-      'Parts, labor, sublet & flat-fee lines',
-      'Deposits, partial payments, AR aging',
-      'Branded, printable documents',
+      'Quotes that turn into invoices',
+      'Parts, hours, and one-off charges',
+      'Deposits, and paying in parts',
+      'What you are owed, and how late it is',
     ],
-    replaces: 'a billing tool like FreshBooks',
+    replaces: 'a separate invoicing service',
     addon: true,
   },
   {
     key: 'inventory',
-    name: 'Inventory',
-    desc: 'Stock, warehouses, ledger',
-    long: 'A real inventory system under your catalog — multi-warehouse stock with an append-only movement ledger that makes every count auditable, reservations, lots and serials, and reorder alerts. Included free with Commerce or B2B; runs standalone as WMS-lite.',
+    name: 'Stock',
+    desc: 'What you have, and where it is',
+    long: 'A real stock system underneath what you sell. Counts for each place you keep things, with every movement written down so any number can be explained, batches and serial numbers, and a nudge before you run out. Comes with Sell or Trade customers.',
     feats: [
-      'Multi-warehouse on-hand / allocated / available',
-      'Audited movement ledger — every change attributable',
-      'Lots, serials, expiry & recalls',
-      'Reorder points + low-stock alerts',
+      'Counts for each place you keep stock',
+      'Every change written down, and who made it',
+      'Batches, serial numbers and use-by dates',
+      'A nudge before you run out',
     ],
-    replaces: 'a WMS/IMS add-on like inFlow or Katana',
+    replaces: 'a stock system bolted onto your shop',
     addon: true,
   },
   {
     key: 'chat',
-    name: 'Live Chat',
-    desc: 'Widget, AI replies, inbox',
+    name: 'Live chat',
+    desc: 'A chat box, and who answers it',
     // No marketplace sentence. sparx.market is a sparx PRODUCT, not a Piggles
     // capability, and the fork inherited the copy naming it — piggles/CLAUDE.md
     // RULE #0. Renaming it would offer a listing nobody can sign up for.
-    long: 'A themed chat widget on every page, an AI first responder that answers product and policy questions from your own catalog, and a staff inbox for everything it escalates.',
+    long: 'A chat box on every page, in your own colors. It answers questions about your things and your policies out of what you have already written, and hands you anything it cannot answer itself.',
     feats: [
-      'Site widget in your theme',
-      'AI answers from your own catalog',
-      'Staff inbox — assign, reply, resolve',
-      'Web-push + email notifications',
+      'A chat box in your own colors',
+      'Answers taken from your own pages',
+      'One inbox for whatever it hands over',
+      'You are told wherever you happen to be',
     ],
-    replaces: 'a live-chat + AI inbox like Intercom',
+    replaces: 'a live chat service',
     addon: true,
   },
 ];
@@ -206,99 +219,3 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
 export const MODULE_BY_KEY: Record<string, SwitchboardModule> = Object.fromEntries(
   SWITCHBOARD_MODULES.map((m) => [m.key, m])
 );
-
-// ── Module dependency rules (mirror the server @wizeworks/modules graph) ──────────
-//   REQUIRES — a key needs these providers; each is SEPARATELY BILLED and locks
-//     ON while the key is on. Only B2B requires Commerce.
-//   BUNDLED_FREE — a key is on free ($0, "Included") whenever a provider is on;
-//     Invoicing/Inventory ride along with Commerce/B2B, else they're add-ons.
-const REQUIRES: Record<string, string[]> = {
-  b2b: ['commerce'],
-};
-const BUNDLED_FREE: Record<string, string[]> = {
-  invoicing: ['b2b', 'commerce'],
-  inventory: ['commerce', 'b2b'],
-};
-
-/** Providers that bundle `key` free and are currently on. */
-function activeBundlers(modules: Record<string, boolean>, key: string): string[] {
-  return (BUNDLED_FREE[key] ?? []).filter((p) => modules[p]);
-}
-
-/** Enabled modules that REQUIRE `key` (so it's locked on). */
-function activeRequirers(modules: Record<string, boolean>, key: string): string[] {
-  return Object.keys(REQUIRES).filter((k) => (REQUIRES[k] ?? []).includes(key) && modules[k]);
-}
-
-/** Transitive paid requirements pulled on when `key` is enabled. */
-function requiredKeys(key: string): string[] {
-  const out = new Set<string>();
-  const visit = (k: string): void => {
-    for (const dep of REQUIRES[k] ?? []) {
-      if (!out.has(dep)) {
-        out.add(dep);
-        visit(dep);
-      }
-    }
-  };
-  visit(key);
-  return [...out];
-}
-
-function joinNames(slugs: string[]): string {
-  const names = slugs.map((s) => MODULE_BY_KEY[s]?.name ?? s);
-  return names.length <= 1
-    ? (names[0] ?? '')
-    : `${names.slice(0, -1).join(', ')} & ${names.at(-1)}`;
-}
-
-/** A module's effective on-state once the dependency graph is applied. */
-export function effectiveModuleOn(modules: Record<string, boolean>, key: string): boolean {
-  return (
-    Boolean(modules[key]) ||
-    activeBundlers(modules, key).length > 0 ||
-    activeRequirers(modules, key).length > 0
-  );
-}
-
-/** Why a module's toggle is locked on, if it is — bundled ("Included") wins. */
-export function moduleLock(
-  modules: Record<string, boolean>,
-  key: string
-): 'included' | 'required' | null {
-  if (activeBundlers(modules, key).length > 0) return 'included';
-  if (activeRequirers(modules, key).length > 0) return 'required';
-  return null;
-}
-
-/** The "Included with …" / "Required by …" caption for a locked row, or null. */
-export function lockReasonText(modules: Record<string, boolean>, key: string): string | null {
-  const lock = moduleLock(modules, key);
-  if (lock === 'included') return `Included with ${joinNames(activeBundlers(modules, key))}`;
-  if (lock === 'required') return `Required by ${joinNames(activeRequirers(modules, key))}`;
-  return null;
-}
-
-/** Apply a toggle through the dependency graph: locked rows ignore the click;
- *  enabling a module co-enables its transitive paid requirements (enabling B2B
- *  pulls Commerce on). */
-export function toggleModule(
-  modules: Record<string, boolean>,
-  key: string
-): Record<string, boolean> {
-  if (moduleLock(modules, key) !== null) return modules;
-  const next = { ...modules, [key]: !modules[key] };
-  if (next[key]) for (const dep of requiredKeys(key)) next[dep] = true;
-  return next;
-}
-
-/** The default modules a fresh tenant starts onboarding with switched on. */
-export const DEFAULT_ON = ['builder', 'commerce', 'cms'];
-
-/** Selling modules — any one being on is what gates the Payments step. */
-export const SELLING_MODULE_KEYS = ['commerce', 'b2b', 'dropship'];
-
-/** Whether any selling module is effectively on (so Payments should appear). */
-export function isSellingSelected(modules: Record<string, boolean>): boolean {
-  return SELLING_MODULE_KEYS.some((k) => effectiveModuleOn(modules, k));
-}

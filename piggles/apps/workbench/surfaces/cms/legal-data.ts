@@ -69,6 +69,11 @@ export interface ChecklistItem {
   state: ChecklistState;
   /** null when the page has not been created yet. */
   entry: ChecklistEntry | null;
+  /** Sentences on this published page that are still the starter's guess about how
+   *  this business works, in the owner's words. Empty once the page has been
+   *  edited, and on documents that assert nothing specific. Absent on an older
+   *  server, which reads as "nothing to say". */
+  stillGuessing?: readonly string[];
 }
 
 /** Why we think this business posts things to people. Evidence, never a default

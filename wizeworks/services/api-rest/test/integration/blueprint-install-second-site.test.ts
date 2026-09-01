@@ -69,13 +69,23 @@ const BLUEPRINT = {
   },
   assets: [],
   contentTypes: [],
-  authors: [],
+  // An author and a byline, because the third failure of this exact shape lived in
+  // the byline slice and this fixture had none — so the test that exists to pin
+  // "you can add it to more than one" ran a design with nothing to collide on
+  // (issue 365). `authors` is UNIQUE (tenant_id, slug), `taxonomies` is
+  // (tenant_id, key) and `taxonomy_terms` is (taxonomy_id, slug): all three
+  // tenant-wide, all three looked up per SITE, so the second install died on the
+  // first author.
+  authors: [{ slug: 'shared-writer', displayName: 'Shared Writer', bio: 'Writes here.' }],
   content: [
     {
       typeKey: 'blog_post',
       slug: 'shared-across-sites',
       status: 'draft',
       body: { title: 'Shared across sites' },
+      authorSlug: 'shared-writer',
+      categories: ['Shared Topic'],
+      tags: ['Shared Tag'],
     },
   ],
   // The commerce slice ALREADY reconciled by natural key on install — the defect was on
@@ -189,6 +199,11 @@ describe('installing one design onto two sites', () => {
     const entries = await countEntries();
     expect(entries).toBe(1);
 
+    // The byline slice: ONE author, ONE of each vocabulary, ONE term each — reused
+    // by the second install rather than re-created. Before the fix the second
+    // install never got this far; it threw out of `tx.author.create()`.
+    expect(await countBylines()).toEqual({ authors: 1, taxonomies: 2, terms: 2 });
+
     // …and site B genuinely SHOWS the entry: reuse must still scope it to the new site,
     // or the second install silently yields a site with no content on it.
     const links = await entryLinks();
@@ -222,6 +237,8 @@ describe('installing one design onto two sites', () => {
     // The rows survive — they were never site B's to delete.
     expect(await countThemes()).toBe(1);
     expect(await countEntries()).toBe(1);
+    // Including the byline: site A's writer and its topics are not site B's to take.
+    expect(await countBylines()).toEqual({ authors: 1, taxonomies: 2, terms: 2 });
     // But site B no longer shows the entry: unlink, not delete.
     expect(await entryLinks()).toEqual([siteA]);
 
@@ -236,6 +253,24 @@ describe('installing one design onto two sites', () => {
     expect(await collectionLinks()).toEqual([siteA]);
   });
 });
+
+/** The byline rows this tenant has, whichever site introduced them. All three are
+ *  tenant-scoped natural keys, so "one each" is the correct answer after two
+ *  installs and after one uninstall alike. */
+async function countBylines(): Promise<{
+  authors: number;
+  taxonomies: number;
+  terms: number;
+}> {
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+    return {
+      authors: await tx.author.count({ where: { tenantId } }),
+      taxonomies: await tx.taxonomy.count({ where: { tenantId } }),
+      terms: await tx.taxonomyTerm.count({ where: { tenantId } }),
+    };
+  });
+}
 
 async function countCommerce(): Promise<{
   categories: number;

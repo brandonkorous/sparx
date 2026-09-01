@@ -76,6 +76,11 @@ been indexed here, because the indexer is an event-worker handler and dev routes
 events to a log — the same reason dev email is a no-op. So the endpoint returns a
 perfectly successful `total: 0`:
 
+> **Corrected 2026-09-01.** Dev no longer routes events to a log:
+> `EVENT_BROKER=nats` and the worker fleet consumes for real. The empty index
+> observed here was real at the time; the mechanism named for it is not the
+> current one. See [368](368-the-sign-in-screen-said-it-had-emailed-her-a-link-and-had-not.md).
+
 ```
 /v1/public/commerce/search?tenant=juniper-row    → {"data":[],"total":0}
 /v1/public/commerce/products?tenant=juniper-row  → her seven garments

@@ -22,7 +22,8 @@ import {
   type TenseKey,
   type AudienceKey,
 } from '@wizeworks/story-schemas';
-import { SWITCHBOARD_MODULES, MODULE_BY_KEY, moduleLock } from './modules';
+import { SWITCHBOARD_MODULES, MODULE_BY_KEY } from './modules';
+import { moduleLock } from './module-graph';
 import type { PersistedStory, WizardBlueprint } from './types';
 import { PRODUCT } from '@piggles/config';
 

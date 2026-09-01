@@ -43,7 +43,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { faImageSlash } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { useActivePropertyId } from '../../lib/api/shell-data';
+import { useActivePropertyId, useSites } from '../../lib/api/shell-data';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useDomains } from '../domains/data';
@@ -111,6 +111,8 @@ export function ProductSeoTab({ product }: { ctx: SurfaceContext; product: Produ
   const update = useUpdateProduct(product.id);
 
   const { data: domains } = useDomains();
+  const { data: sitesData } = useSites();
+  const sites = sitesData ?? [];
   const propertyId = useActivePropertyId();
 
   const media = useProductMedia(product.id);
@@ -161,6 +163,16 @@ export function ProductSeoTab({ product }: { ctx: SurfaceContext; product: Produ
 
   const usedTitle = draft.seoTitle.trim() || product.title;
   const titleIsFallback = draft.seoTitle.trim() === '';
+  // THE SITE APPENDS ITS OWN NAME to every page title (`%s · <site>`), and this
+  // preview did not, so it showed a title the site never publishes — on the one
+  // tab built specifically so nobody has to imagine the result. An owner reading
+  // it wrote her business name into her own titles to put it there, and shipped
+  // "Contact Juniper Row · Juniper Row" on five pages (issue 373).
+  //
+  // The SHARE card below is a different string and is right as it was: `og:title`
+  // is set directly by the route and takes no template.
+  const siteName = sites.find((site) => site.id === propertyId)?.name ?? '';
+  const searchTitle = siteName ? `${usedTitle} · ${siteName}` : usedTitle;
   const descriptionFallback = fromDescription(product.description);
   const usedDescription = draft.seoDescription.trim() || descriptionFallback;
 
@@ -185,7 +197,7 @@ export function ProductSeoTab({ product }: { ctx: SurfaceContext; product: Produ
             {host} › products › {product.handle}
           </Text>
           <Text as="span" className="text-primary text-xl leading-snug font-medium">
-            {usedTitle}
+            {searchTitle}
           </Text>
           <Text as="span" className="text-sm">
             {usedDescription ||
@@ -209,10 +221,12 @@ export function ProductSeoTab({ product }: { ctx: SurfaceContext; product: Produ
           />
           <FieldDescription>
             {titleIsFallback
-              ? 'Empty, so the product’s name is used — which is usually right. Write something different only when the name alone would not tell a stranger what this is.'
-              : `Usually shown in full up to about ${String(TITLE_COMFORT)} characters.`}
+              ? `Empty, so the product’s name is used — which is usually right. Write something different only when the name alone would not tell a stranger what this is.${siteName ? ` ${siteName} is added on the end either way, so you do not need to type it.` : ''}`
+              : `Usually shown in full up to about ${String(TITLE_COMFORT)} characters${siteName ? `, counting the “ · ${siteName}” added on the end` : ''}.`}
           </FieldDescription>
-          {!titleIsFallback && draft.seoTitle.trim().length > TITLE_COMFORT ? (
+          {/* Measured on the PUBLISHED title, suffix included. Measuring the field
+              alone let a title pass at 58 characters and ship at 71. */}
+          {searchTitle.length > TITLE_COMFORT ? (
             <Badge color="warning" variant="soft" size="sm">
               Longer than most results show — the end will be cut off
             </Badge>

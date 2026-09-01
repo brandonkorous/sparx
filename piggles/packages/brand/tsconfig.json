@@ -14,7 +14,13 @@
     // components typecheck on their own merits without a redundant import added
     // purely to satisfy the compiler. It is also the correct setting for React
     // 19 generally — the automatic runtime is what Next compiles these with.
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+
+    // `og.tsx` runs on the edge and reads fonts off disk (`node:fs`, `Buffer`,
+    // `process`). Type roots are per-compilation, so a dependency having
+    // @types/node does not help here — without this the package cannot be
+    // typechecked on its own at all, which is how it went unchecked.
+    "types": ["node"]
   },
   "include": ["src/**/*"]
 }

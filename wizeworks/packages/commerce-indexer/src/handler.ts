@@ -7,9 +7,11 @@ import {
   marketService,
   projectAllCollectionRulesForTenant,
   projectCollectionRules,
+  projectInventoryCollectionRulesForTenant,
   projectCustomer,
   projectOrder,
   projectProduct,
+  productIdForVariant,
 } from '@wizeworks/commerce';
 import {
   deleteCustomer,
@@ -69,23 +71,33 @@ export async function handleEvent(
     case 'inventory.adjusted':
     case 'inventory.low':
     case 'inventory.depleted': {
-      const productId = stringProp(event.data, 'productId');
-      if (!productId) {
-        // collectionService publishes 'product.updated' on collection
-        // create/edit with { collectionId, change } and no productId —
-        // treat that as a rules-projection trigger.
-        const collectionId = stringProp(event.data, 'collectionId');
-        if (collectionId) {
-          const diff = await projectCollectionRules(ctx, collectionId, logger);
-          for (const id of [...diff.added, ...diff.removed]) {
-            const { document } = await projectProduct(ctx, id);
-            if (document) await upsertProduct(document);
-          }
-          return { outcome: 'reprojected', details: { ...diff } };
+      // collectionService publishes 'product.updated' on collection
+      // create/edit with { collectionId, change } and no productId —
+      // treat that as a rules-projection trigger.
+      const collectionId = stringProp(event.data, 'collectionId');
+      if (collectionId && !stringProp(event.data, 'productId')) {
+        const diff = await projectCollectionRules(ctx, collectionId, logger);
+        for (const id of [...diff.added, ...diff.removed]) {
+          const { document } = await projectProduct(ctx, id);
+          if (document) await upsertProduct(document);
         }
-        logger.warn({ type: event.type }, 'event missing productId/collectionId; skipping');
-        return { outcome: 'skipped' };
+        return { outcome: 'reprojected', details: { ...diff } };
       }
+      // MOST OF THESE EVENTS DO NOT CARRY A productId, and this branch used to
+      // give up when one was missing. Every `inventory.*` event is variant-keyed
+      // (stock is counted per variant per warehouse), and six `variant.*` writes
+      // publish only `{ variantId, change }` — sku, isDefault, optionValues,
+      // archive, restore. So the whole variant-and-stock half of this handler
+      // logged "missing productId; skipping" and did nothing: selling the last
+      // unit left the product in the index as in-stock, renaming a SKU left the
+      // old one searchable, and rule-driven collections never reprojected at
+      // all, which is how a live shop's "Last chance" shelf stayed empty while
+      // its own console said a size had run out (issue 370).
+      //
+      // The variant is the thing that changed; the product is what gets indexed.
+      // Bridging the two is one read, here, once per event.
+      const productId = await resolveProductId(ctx, event, logger);
+      if (!productId) return { outcome: 'skipped' };
       const { document } = await projectProduct(ctx, productId);
       if (!document) {
         await deleteProduct(tenantId, productId);
@@ -100,14 +112,21 @@ export async function handleEvent(
       // card. Best-effort: a market refresh failure must NOT nack the search index
       // (opt-in itself projects synchronously in api-rest; this is the refresher).
       await refreshMarketListing(ctx, productId, logger);
-      // A product write can also affect rule-driven collection memberships.
-      // Cheaper than recompiling every tenant collection: only re-run when
-      // the event is `product.created/updated` (variant pings tend to be
-      // identity-preserving on the product face). The reprojection itself
-      // is fast for the typical tenant (<50 rules-driven collections).
+      // Rule-driven collection membership, which this write can also change.
+      //
+      // A product write can change any rule field, so it re-runs every rule. An
+      // inventory write can change exactly two — `inStock` and `lowStock`, which
+      // are product-face columns AND rule predicates (`in_stock`,
+      // `out_of_stock`, `low_stock`) — so it re-runs only the collections that
+      // ask about stock. For most tenants that is none, and it is never all of
+      // them, which was the cost objection behind re-running on product writes
+      // alone.
       let reprojection: unknown = undefined;
-      if (event.type === 'product.created' || event.type === 'product.updated') {
-        const diffs = await projectAllCollectionRulesForTenant(ctx, logger);
+      {
+        const diffs =
+          event.type === 'product.created' || event.type === 'product.updated'
+            ? await projectAllCollectionRulesForTenant(ctx, logger)
+            : await projectInventoryCollectionRulesForTenant(ctx, logger);
         const meaningful = diffs.filter((d) => d.added.length > 0 || d.removed.length > 0);
         if (meaningful.length > 0) {
           reprojection = meaningful;
@@ -271,6 +290,32 @@ async function refreshMarketListing(
   } catch (err) {
     logger.warn({ err, productId }, 'market listing projection failed (best-effort); continuing');
   }
+}
+
+/** The product this catalog event is about. Reads `productId` when the payload
+ *  carries one, otherwise resolves it from the `variantId` that every variant
+ *  and inventory event does carry. Null (with a warning) when the payload names
+ *  neither, or when the variant has since been hard-deleted. */
+async function resolveProductId(
+  ctx: { tenantId: string },
+  event: CommerceEventEnvelope,
+  logger: PinoLogger
+): Promise<string | undefined> {
+  const productId = stringProp(event.data, 'productId');
+  if (productId) return productId;
+
+  const variantId = stringProp(event.data, 'variantId');
+  if (!variantId) {
+    logger.warn({ type: event.type }, 'event names neither a product nor a variant; skipping');
+    return undefined;
+  }
+
+  const resolved = await productIdForVariant(ctx, variantId);
+  if (!resolved) {
+    logger.warn({ type: event.type, variantId }, 'variant not found; skipping');
+    return undefined;
+  }
+  return resolved;
 }
 
 function stringProp(data: Record<string, unknown> | undefined, key: string): string | undefined {

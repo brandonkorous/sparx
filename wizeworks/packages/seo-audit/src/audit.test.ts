@@ -79,7 +79,7 @@ describe('auditEntity', () => {
   it('fails alt-text when a third or more images lack alt', () => {
     const card = auditEntity(healthy({ imageCount: 8, imagesMissingAlt: 3 }));
     expect(byId(card, 'image-alt')?.status).toBe('fail');
-    expect(byId(card, 'image-alt')?.value).toBe('5 / 8 ok');
+    expect(byId(card, 'image-alt')?.value).toBe('5 of 8 described');
   });
 
   it('warns a few missing alts but does not fail', () => {
@@ -123,7 +123,9 @@ describe('auditEntity', () => {
       healthy({ imageCount: 8, imagesMissingAlt: 3, title: 'x'.repeat(65) })
     );
     // image-alt fail = −10; title-length warn = −4 → fixFirst is the alt-text tip.
-    expect(card.fixFirst).toContain('Alt text');
+    // Asserted against the check's own tip rather than a literal fragment, so a
+    // reworded message cannot make this test claim the wrong check won.
+    expect(card.fixFirst).toBe(byId(card, 'image-alt')?.tip);
   });
 
   it('drops to needs-work / poor as failures stack', () => {

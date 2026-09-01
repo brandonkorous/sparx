@@ -57,6 +57,8 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   'builder.blueprints': 'Ready-made sites',
   'builder.pages': 'How your pages do',
   'builder.forms': 'Form replies',
+  'builder.form-settings': 'Form settings',
+  'builder.form-setting': 'Form settings',
   'builder.email': 'Email designs',
 
   // ── Content ───────────────────────────────────────────────────────────────

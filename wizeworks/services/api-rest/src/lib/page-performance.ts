@@ -79,10 +79,34 @@ export interface UnownedPathRow {
   revenueCents: number;
 }
 
+/**
+ * How many sales this window has, and how many of them could be traced back to a page.
+ *
+ * WITHOUT THIS, ZERO MEANS TWO THINGS. A page's `orders` is the count of orders whose
+ * buyer's first pageview THAT DAY was on it, so a shop where nothing could be traced
+ * reads `0` on every row — the same figure a page that genuinely converted nobody
+ * shows. The report would be telling an owner with fourteen sales that not one page
+ * they built sold anything.
+ *
+ * A sale goes untraced whenever the visit and the purchase are not the same day
+ * (`lib/attribution.ts` looks at first touch within the day), which is the ordinary
+ * shape of a considered purchase, and always for a sale taken over the phone, in
+ * person, or through a channel that is not the website at all.
+ */
+export interface AttributionCoverage {
+  /** Orders placed in this window, cancellations excluded — the same definition the
+   *  revenue query uses, so the two can never disagree about what a sale is. */
+  placed: number;
+  /** How many of those could be credited to a landing page. */
+  traced: number;
+}
+
 export interface PagePerformanceReport {
   range: { from: string; to: string };
   pages: PagePerformanceRow[];
   otherPaths: UnownedPathRow[];
+  /** Whether the money columns are measurements at all. See AttributionCoverage. */
+  attribution: AttributionCoverage;
   /** False when Commerce is off — there is no revenue to report, and a permanently
    *  empty money column on a publisher's report is noise, not information. */
   commerce: boolean;
@@ -102,6 +126,21 @@ const EMPTY_METRICS = {
   loadMs: null as number | null,
   loadSamples: 0,
 };
+
+/** The home page's address, as the analytics rows and the storefront both spell it. */
+const HOME_PATH = '/';
+
+/** True for every way the home page's own address has been stored across the three
+ *  seeding vintages. `normalizePath` collapses all three to `/`. */
+function isHomeSlug(slug: string | null): boolean {
+  return slug === null || slug === '' || slug === '/';
+}
+
+/** Where a NON-home page is served, or null when it is served nowhere. A slugless
+ *  page that is not the home page has no address of its own. */
+function addressOf(slug: string | null): string | null {
+  return slug == null || isHomeSlug(slug) ? null : normalizePath(slug);
+}
 
 /** Orders per visitor as a percentage, to one decimal. Null when nobody came. */
 function conversionOf(orders: number, visitors: number): number | null {
@@ -166,7 +205,7 @@ export function assemble(
   metrics: readonly reports.PagePathMetrics[],
   audits: ReadonlyMap<string, { score: number; grade: string; fixFirst: string | null }>,
   commerce: boolean
-): Omit<PagePerformanceReport, 'range'> {
+): Omit<PagePerformanceReport, 'range' | 'attribution'> {
   const byPath = new Map<string, reports.PagePathMetrics>();
   for (const row of metrics) byPath.set(normalizePath(row.path), row);
 
@@ -174,22 +213,36 @@ export function assemble(
    *  are exactly what no page owns. */
   const claimed = new Set<string>();
 
+  // WHICH PAGE IS THE HOME PAGE. The first slugless one, and only that one.
+  //
+  // A collection template is never a candidate: it is a template address, not a
+  // location, and it is credited through its record-type prefix instead.
+  const homePageId =
+    pages.find((page) => page.kind !== 'collection' && isHomeSlug(page.slug))?.id ?? null;
+
   const rows: PagePerformanceRow[] = pages.map((page) => {
-    // A NULL SLUG IS "NO ADDRESS", NOT "THE HOME PAGE".
+    // WHERE THIS PAGE IS SERVED, or null when it is served nowhere.
     //
-    // This read `page.slug ?? '/'`, which is the difference between an empty string and
-    // null quietly collapsing: the home page is slug `''`, so an unaddressed page fell onto
-    // the SAME `/` and looked up the same metrics row. Both then rendered as `/` with
-    // identical figures, and reading down the People column double-counted every visit the
-    // site's busiest page had. Seen live 2026-08-02: "Home" and "Home — Landing" each
-    // claiming 10 people / 103 opens / 5.0s, for one page's traffic.
+    // This read `page.slug ?? '/'`, so EVERY slugless page looked up the home page's
+    // metrics row: "Home" and "Home — Landing" each claimed 10 people / 103 opens, for
+    // one page's traffic, and reading down the People column double-counted the busiest
+    // page on the site (seen live 2026-08-02).
     //
-    // An unaddressed page is still LISTED — a page nobody can reach is exactly the kind of
-    // thing this table exists to surface — but it owns no path, claims no metrics, and
-    // leaves the home page's traffic to the home page.
-    const slug = page.slug;
-    const addressed = slug != null;
-    const path = slug != null ? normalizePath(slug) : '';
+    // The fix for that was `slug != null`, and it swung too far: it declared a null slug
+    // to be no address at all, when a null slug is one of the THREE ways the home page
+    // has been stored. The storefront's own resolver says so — "Home is the slugless page
+    // — stored as NULL, '' or '/' depending on how it was seeded" (site-service.ts) — and
+    // picks between several by position then creation date, which is exactly the order
+    // `pages` arrives in. So on a site seeded the legacy way, the home page claimed
+    // nothing: its visits fell into `otherPaths` and its row read 0, next to the pages
+    // nobody has ever opened (persona issue 358).
+    //
+    // A page that is slugless and is NOT the home page is genuinely unaddressed. It is
+    // still LISTED — a page nobody can reach is exactly what this table exists to surface
+    // — but it owns no path and claims no metrics.
+    const address = page.id === homePageId ? HOME_PATH : addressOf(page.slug);
+    const addressed = address !== null;
+    const path = address ?? '';
     const prefix =
       page.kind === 'collection' && page.recordType
         ? routePrefixForRecordType(page.recordType)
@@ -203,10 +256,10 @@ export function assemble(
           claimed.add(p);
           return row;
         });
-    } else if (addressed) {
-      const own = byPath.get(path);
+    } else if (address !== null) {
+      const own = byPath.get(address);
       matched = own ? [own] : [];
-      claimed.add(path);
+      claimed.add(address);
     } else {
       matched = [];
     }
@@ -286,6 +339,20 @@ export async function pagePerformance(
       reports.pageMetrics(tx, ctx.propertyId, range.from, range.toExclusive),
     ]);
 
+    // Sales placed in the window, however the buyer arrived. Only the count is
+    // needed: it is what separates "no page sold anything" from "we could not tell
+    // which page sold anything". Filters match the revenue query in
+    // `site-analytics-reports.ts` exactly, so the two agree on what a sale is.
+    const ordersPlaced = commerce
+      ? await tx.order.count({
+          where: {
+            propertyId: ctx.propertyId,
+            status: { not: 'cancelled' },
+            placedAt: { gte: range.from, lt: range.toExclusive },
+          },
+        })
+      : 0;
+
     // Scores are looked up by the pages we found rather than by property: an audit
     // row carries `property_id` only for single-site entities, and keying on the ids
     // in hand is right either way.
@@ -297,12 +364,14 @@ export async function pagePerformance(
       auditRows.map((a) => [a.entityId, { score: a.score, grade: a.grade, fixFirst: a.fixFirst }])
     );
 
+    const assembled = assemble(pages, metrics, audits, commerce);
     return {
       range: {
         from: range.from.toISOString(),
         to: range.toExclusive.toISOString(),
       },
-      ...assemble(pages, metrics, audits, commerce),
+      ...assembled,
+      attribution: { placed: ordersPlaced, traced: assembled.totals.orders },
     };
   });
 }

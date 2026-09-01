@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { accountOrigin, consumeHandoffToken, sessionCookie } from '@piggles/auth-handoff';
+import { accountOrigin, consumeHandoffToken, handoffCookies } from '@piggles/auth-handoff';
 import { safeInternalPath } from '@piggles/config';
 
 // The console's only door.
@@ -40,7 +40,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return noStore(NextResponse.redirect(back, 303));
   }
 
-  const cookie = sessionCookie(result.sessionToken);
+  // `remember` came across with the token. It has to: this domain has no
+  // sign-in form and therefore never saw the checkbox, so anything it decided
+  // for itself would be a guess — and the guess it used to make was thirty days
+  // for everybody, including the people who unticked the box.
+  const cookies = handoffCookies(result.sessionToken, result.remember);
 
   // A RELATIVE Location, not `new URL(path, request.nextUrl.origin)`.
   //
@@ -66,7 +70,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     status: 303,
     headers: { location: safeInternalPath(result.next) },
   });
-  response.cookies.set({ name: cookie.name, value: cookie.value, ...cookie.options });
+  for (const cookie of cookies) {
+    response.cookies.set({ name: cookie.name, value: cookie.value, ...cookie.options });
+  }
   return noStore(response);
 }
 

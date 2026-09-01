@@ -17,6 +17,11 @@ export { auth, type Auth } from './server';
 // filter) pinned to the caller's tenant. Business data still belongs on the
 // @wizeworks/db client inside withTenant()/withRequestTenant().
 export { authPrisma } from './prisma';
+export {
+  configuredSocialProviders,
+  socialProviderConfigured,
+  type SocialProvider,
+} from './social-providers';
 // Publishes an `email.send` event from auth-side contexts (better-auth callbacks +
 // the workbench accept-invite server action). See email-events.ts.
 export { publishAuthEmail, type PublishAuthEmailInput } from './email-events';

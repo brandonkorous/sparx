@@ -269,4 +269,58 @@ describe('assemble', () => {
     // And `/` is still credited, so it is not double-counted as unowned either.
     expect(report.totals.views).toBe(103);
   });
+
+  // The other half of that story, and the one that shipped broken. `slug != null` also
+  // declared the LEGACY home page unaddressed — the storefront treats NULL, '' and '/'
+  // as the same address, so a site seeded that way had its busiest page read 0 while its
+  // visits fell into `otherPaths` (persona issue 358).
+  it('credits a home page stored with a null slug', () => {
+    const report = assemble(
+      [
+        page({ id: 'p1', name: 'Home — Landing', slug: null }),
+        page({ id: 'p2', name: 'About', slug: 'about' }),
+      ],
+      [
+        metric({ path: '/', views: 20, visitors: 9 }),
+        metric({ path: '/about', views: 8, visitors: 2 }),
+      ],
+      NO_AUDITS,
+      true
+    );
+
+    const home = report.pages.find((p) => p.name === 'Home — Landing');
+    expect(home?.path).toBe('/');
+    expect(home?.views).toBe(20);
+    expect(home?.visitors).toBe(9);
+    expect(home?.pathsCovered).toBe(1);
+    // And it is no longer reported as traffic nobody owns.
+    expect(report.otherPaths).toEqual([]);
+  });
+
+  // A collection template is a template address, not a location, so it is never the
+  // home page even when it has no slug of its own — its traffic comes from its prefix.
+  it('never treats a slugless collection template as the home page', () => {
+    const report = assemble(
+      [
+        page({
+          id: 'p1',
+          name: 'Each blog post',
+          slug: null,
+          kind: 'collection',
+          recordType: 'cms.blog_post',
+        }),
+        page({ id: 'p2', name: 'Home — Landing', slug: null }),
+      ],
+      [
+        metric({ path: '/', views: 20, visitors: 9 }),
+        metric({ path: '/blog/knitwear', views: 3, visitors: 1 }),
+      ],
+      NO_AUDITS,
+      true
+    );
+
+    expect(report.pages.find((p) => p.name === 'Home — Landing')?.views).toBe(20);
+    expect(report.pages.find((p) => p.name === 'Each blog post')?.views).toBe(3);
+    expect(report.otherPaths).toEqual([]);
+  });
 });

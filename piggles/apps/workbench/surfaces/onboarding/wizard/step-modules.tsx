@@ -15,13 +15,12 @@ import { Badge, Switch } from '@wizeworks/silicaui-react';
 import { faChevronDown } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ModuleScope, type WorkbenchModule } from '../../../components/module-scope';
+import { SWITCHBOARD_MODULES, type SwitchboardModule } from '../../../lib/onboarding/modules';
 import {
-  SWITCHBOARD_MODULES,
   effectiveModuleOn,
   moduleLock,
   lockReasonText,
-  type SwitchboardModule,
-} from '../../../lib/onboarding/modules';
+} from '../../../lib/onboarding/module-graph';
 
 type Lock = 'included' | 'required' | null;
 
@@ -48,10 +47,8 @@ export function StepModules({
           <div key={m.key}>
             {firstAddon ? (
               <div className="border-base-300 mt-1 border-t pt-4 pb-1">
-                <p className="text-sm font-medium">Specialised</p>
-                <p className="text-sm">
-                  Less common, and in your plan exactly like everything above.
-                </p>
+                <p className="text-sm font-medium">Specialized</p>
+                <p className="text-sm">Less common, and included exactly like everything above.</p>
               </div>
             ) : null}
             <ModuleRow

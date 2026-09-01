@@ -18,6 +18,7 @@ import {
   requiredLegalKinds,
   legalEntryBody,
   type LegalKind,
+  type LegalTemplate,
 } from '@wizeworks/legal-templates';
 
 import { recordRevision } from './entries.js';
@@ -50,6 +51,22 @@ export interface LegalChecklistItem {
     /** Wired into the footer via a placement — the reason a footer legal link resolves. */
     placed: boolean;
   } | null;
+  /**
+   * Sentences on this page that are still the starter's guess about how this
+   * business works, because the page is published and has never been edited.
+   *
+   * Empty when the page has been touched, when the starter asserts nothing
+   * specific (privacy, terms, cookies describe the platform), or when there is no
+   * page at all.
+   *
+   * `complete` deliberately still means complete. A published, placed,
+   * current-version page IS the thing the checklist counts, and dropping it out of
+   * "5 of 5 ready" over unread wording would make the count mean something else.
+   * What was wrong was saying nothing at all: three of these starters state a
+   * return window, a packing time and a refund time, and a number on a published
+   * policy page is indistinguishable from a decision (issue 375).
+   */
+  stillGuessing: readonly string[];
 }
 
 export interface LegalChecklist {
@@ -151,6 +168,7 @@ export async function getLegalChecklistTx(
       legalTemplateVersion: true,
       legalDisclaimerAckAt: true,
       updatedAt: true,
+      body: true,
     },
   });
   const placements = await tx.siteDocPlacement.findMany({
@@ -169,12 +187,16 @@ export async function getLegalChecklistTx(
     else if ((entry.legalTemplateVersion ?? 0) < t.templateVersion) state = 'stale';
     else if (!placed) state = 'unplaced';
     else state = 'complete';
+    // Only worth saying about a page somebody can actually read: a draft or a
+    // missing page has its own, louder row.
+    const unread = entry?.status === 'published' && bodyIsStillTheStarter(entry.body, t);
     return {
       legalKind: t.legalKind,
       title: t.title,
       defaultSlug: t.defaultSlug,
       required: required.has(t.legalKind),
       state,
+      stillGuessing: unread ? (t.assumes ?? []) : [],
       entry: entry
         ? {
             id: entry.id,
@@ -344,6 +366,42 @@ export interface LegalStarterUpdate {
    * screen has to say so before it offers to replace it.
    */
   unedited: boolean;
+}
+
+/**
+ * Is this page still, word for word, the starter it was created from?
+ *
+ * COMPARED, not inferred. The obvious signals both say the wrong thing here:
+ *
+ *   · Revision count is noise. A page can reach five revisions through publishing
+ *     and placement alone, and a real shop's Shipping Policy did — five revisions,
+ *     acknowledged, and byte-identical to the template.
+ *   · `legalDisclaimerAckAt` answers a different question. It records that somebody
+ *     accepted a general "this is starter wording" disclaimer, not that they read
+ *     the sentence promising orders go out in one to two working days.
+ *
+ * So this reads the body. No extra query — the checklist already loads these rows,
+ * and it is a string compare of a document that is a few kilobytes at most.
+ */
+function bodyIsStillTheStarter(body: unknown, template: LegalTemplate): boolean {
+  if (!template.assumes || template.assumes.length === 0) return false;
+  // The WORDS, not the JSON. Postgres reorders jsonb keys on the way in, so the
+  // stored document never stringifies to the same bytes as the literal it came
+  // from — a comparison that looked exact would have quietly answered "edited"
+  // for every page on the platform. Text is also the right question: reformatting
+  // a heading has not changed what the page promises, and rewriting the return
+  // window has.
+  const stored = (body as { body?: unknown } | null)?.body;
+  return docText(stored).join('\n') === docText(template.doc).join('\n');
+}
+
+/** Every string a document would put on the page, in order. */
+function docText(node: unknown, out: string[] = []): string[] {
+  if (!node || typeof node !== 'object') return out;
+  const n = node as { text?: string; content?: unknown[] };
+  if (typeof n.text === 'string') out.push(n.text);
+  for (const child of n.content ?? []) docText(child, out);
+  return out;
 }
 
 async function untouchedSinceCreationTx(tx: TxClient, entryId: string): Promise<boolean> {

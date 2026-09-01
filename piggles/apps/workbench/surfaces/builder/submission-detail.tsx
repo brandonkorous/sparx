@@ -46,22 +46,23 @@ import { RefreshButton } from '../../components/refresh-button';
 import { useSites } from '../../lib/api/shell-data';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
-  formLabel,
-  formatBytes,
-  formatDateTime,
-  humanizeKey,
-  pageLabel,
-  submissionCsvName,
-  submissionErrorMessage,
-  submissionState,
-  submissionToCsv,
-  submitterLabel,
   useDeleteSubmission,
   useSetSubmissionStatus,
   useSubmission,
   type FormSubmission,
   type SubmissionAttachment,
 } from './form-submissions-data';
+import {
+  formName,
+  formatBytes,
+  formatDateTime,
+  humanizeKey,
+  pageLabel,
+  submissionErrorMessage,
+  submissionState,
+  submitterLabel,
+} from './form-submissions-words';
+import { submissionCsvName, submissionToCsv } from './form-submissions-csv';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -344,7 +345,10 @@ function SubmissionBody({
 /* ── Identity ───────────────────────────────────────────────────────────── */
 
 function IdentityCard({ submission, site }: { submission: FormSubmission; site: string | null }) {
-  const where = [formLabel(submission), pageLabel(submission.pageSlug), site]
+  // `formName`, not `formLabel` — the label FALLS BACK to the page, and the page is
+  // already the next part of this line. An unnamed form drops out instead of reading
+  // "/contact · /contact · Juniper Row".
+  const where = [formName(submission), pageLabel(submission.pageSlug), site]
     .filter((part): part is string => Boolean(part))
     .join(' · ');
 
@@ -541,8 +545,11 @@ const CONTEXT_LABELS: Record<string, string> = {
 };
 
 function SourceCard({ submission, site }: { submission: FormSubmission; site: string | null }) {
+  const named = formName(submission);
   const rows: [string, string][] = [
-    ['Form', formLabel(submission)],
+    // Only when it HAS a name. Unnamed, this row would just repeat the Page row
+    // directly beneath it.
+    ...(named ? ([['Form', named]] as [string, string][]) : []),
     ['Page', pageLabel(submission.pageSlug)],
     ...(site ? ([['Site', site]] as [string, string][]) : []),
     ['Received', formatDateTime(submission.createdAt)],

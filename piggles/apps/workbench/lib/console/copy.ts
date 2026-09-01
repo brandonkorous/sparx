@@ -520,7 +520,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
 
   // ── My Site ──────────────────────────────────────────────────────────────
   'builder.pages.otherViews':
-    'Another {count} visits landed on pages we build for you — the basket, the checkout, signing in, your legal pages. They count towards your visitor numbers but have no row above.',
+    'Another {count} visits landed on addresses that are not pages you made: your checkout, the account area where customers look at their own orders, and any address that no longer has a page on it. They count towards your visitor numbers but have no row above.',
 
   // ── Content and products that came ready-made ────────────────────────────
   'cms.contentType.builtIn':

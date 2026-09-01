@@ -6,7 +6,13 @@
     // app; this keeps `tsc -p` on this package self-contained.
     "paths": {
       "@piggles/brand": ["../brand/src/index.ts"]
-    }
+    },
+
+    // `notice.ts` and `product.ts` read `process.env`. Type roots are
+    // per-compilation, so a consumer having @types/node does not help here —
+    // without this the package cannot be typechecked on its own at all, which
+    // is how it went unchecked while every consumer stayed green.
+    "types": ["node"]
   },
   "include": ["src/**/*"]
 }

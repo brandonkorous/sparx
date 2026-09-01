@@ -26,6 +26,7 @@ const MODULE_SEGMENTS = new Set<string>([
   'seo',
   'finance',
   'staff',
+  'funnels',
 ]);
 
 /** Legacy / not-1:1 route segments that still belong to a module's color. */

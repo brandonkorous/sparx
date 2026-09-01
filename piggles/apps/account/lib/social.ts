@@ -4,30 +4,26 @@ import 'server-only';
 //
 // ── WHY THIS IS ASKED AT ALL ────────────────────────────────────────────────
 //
-// The platform registers the Google provider CONDITIONALLY: `wizeworks/packages/auth`'s
-// server config spreads in `socialProviders` only when both `GOOGLE_CLIENT_ID`
-// and `GOOGLE_CLIENT_SECRET` are present, and adds the One Tap plugin under the
-// same condition. On a deployment without them, `/api/auth/sign-in/social`
-// answers with an error — so a button rendered anyway is a button that cannot
-// work, offered on the screen where a person is least able to tell a broken
-// product from their own mistake.
+// The platform registers the Google provider CONDITIONALLY. On a deployment
+// without the credentials, `/api/auth/sign-in/social` answers with an error — so
+// a button rendered anyway is a button that cannot work, offered on the screen
+// where a person is least able to tell a broken product from their own mistake.
 //
-// Rendering it only when it is real is the whole of the fix. There is no
-// fallback and no "temporarily unavailable" state, because a sign-in page with
-// one working way in reads as normal and a sign-in page with a dead button
-// reads as broken.
+// Rendering it only when it is real is the whole of the fix. There is no fallback
+// and no "temporarily unavailable" state, because a sign-in page with one working
+// way in reads as normal and a sign-in page with a dead button reads as broken.
 //
-// ── THE COUPLING, STATED OUT LOUD ───────────────────────────────────────────
+// ── AND THE CONDITION IS ASKED ONCE ─────────────────────────────────────────
 //
-// This repeats a condition that lives in `wizeworks/packages/auth/src/server.ts`, and a
-// repeated condition drifts. The alternative was a capability query on the
-// shared auth package, which is a change to shared code for one app's benefit —
-// and the shared workbench has the same latent bug today (it renders its Google
-// button unconditionally), so the right fix is a platform one made deliberately
-// rather than a Piggles one made in passing. Tracked in piggles/docs/FOLLOW_UPS.
-//
-// If the platform ever grows a second provider, this becomes a map rather than a
-// boolean, and it should still live in ONE place.
+// This file used to RE-STATE the env test that `@wizeworks/auth`'s server config
+// makes, which is two copies of one condition and therefore a drift waiting to
+// happen. It now asks that package, which asks the same function when it decides
+// whether to register the provider at all — so the button and the provider can
+// never disagree. Adding a second provider is one entry in
+// `@wizeworks/auth`'s `social-providers`, and this becomes a list.
+
+import { socialProviderConfigured } from '@wizeworks/auth';
+
 export function googleSignInAvailable(): boolean {
-  return Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+  return socialProviderConfigured('google');
 }

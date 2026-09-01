@@ -149,3 +149,65 @@ export function formatDate(value: string | null | undefined): string {
   if (Number.isNaN(date.getTime())) return '—';
   return date.toLocaleDateString(undefined, { dateStyle: 'medium' });
 }
+
+/* ── What adding a design DOES to the site it is pointed at ────────────────── */
+
+/**
+ * A design is a whole site, and adding one to a site that has pages REPLACES
+ * them. This is the sentence that says so, sized to the chosen site.
+ *
+ * It exists because three places on this pane promised the opposite — "nothing
+ * here replaces what you already have", and a confirm dialog reading "Your
+ * existing pages and products are left exactly as they are". The install path is
+ * `siteService.installSite`, which syncs with `allowReplace: true`, and
+ * `pagesToDelete` then returns every stored page absent from the incoming roster
+ * — which is all of them, since an install mints fresh ids. Adding a second
+ * design to a nine-page site left nine pages, all of them the second design's.
+ *
+ * And it cannot be undone from here. A draft version restore is deliberately
+ * non-destructive (`draft-version-service`): it brings back the content of pages
+ * that still exist and never resurrects a deleted one. So the sentence says that
+ * too, rather than offering a recovery that is not there.
+ *
+ * What genuinely survives is everything that is not the site itself. The
+ * installer only ever DELETES `builder_page` rows; products, articles, customers
+ * and orders are added to, never removed. Saying so is the difference between a
+ * warning somebody can act on and one that reads as "you may lose everything".
+ */
+export interface InstallImpact {
+  /** True when pages will be destroyed, which is what makes this a danger. */
+  readonly replaces: boolean;
+  /** How many go. Null when nobody counted — never 0, which would mean "empty". */
+  readonly pages: number | null;
+  readonly sentence: string;
+}
+
+export function installImpact(siteName: string, pageCount: number | undefined): InstallImpact {
+  const kept =
+    'Everything else stays as it is: your products, articles, customers and orders are not touched.';
+
+  if (pageCount === 0) {
+    return {
+      replaces: false,
+      pages: 0,
+      sentence: `${siteName} has no pages yet, so this design gives it its first ones. They arrive as drafts only you can see, and nothing is live until you publish it.`,
+    };
+  }
+
+  // Nobody counted. Say the thing that is true either way rather than guessing at
+  // a number, and never the reassuring half.
+  if (pageCount === undefined) {
+    return {
+      replaces: true,
+      pages: null,
+      sentence: `A design is a whole site, not a set of pages added to one. Whatever ${siteName} has now is replaced by this design, along with its header, footer and look, and that cannot be undone. ${kept}`,
+    };
+  }
+
+  const many = pageCount === 1 ? 'its 1 page' : `all ${String(pageCount)} of its pages`;
+  return {
+    replaces: true,
+    pages: pageCount,
+    sentence: `A design is a whole site, not a set of pages added to one. ${siteName} has ${pageCount === 1 ? '1 page' : `${String(pageCount)} pages`} now, and adding this design replaces ${many}, along with its header, footer and look. That cannot be undone. ${kept}`,
+  };
+}

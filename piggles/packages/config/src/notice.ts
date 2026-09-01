@@ -37,6 +37,18 @@ export type NoticeSurface = 'marketing' | 'account' | 'console';
  * the correct failure: a marketing site must not go down because an
  * announcement service did.
  */
+/**
+ * `next.revalidate` is Next's own extension to `RequestInit`, and every consumer
+ * of this package is a Next app — but the package itself does not depend on
+ * `next`, and should not gain a dependency on a framework to describe one fetch.
+ *
+ * So the shape is asserted here, once, rather than declared globally: augmenting
+ * `RequestInit` in this package would collide with Next's identical declaration
+ * in the three apps that DO have it. Outside Next the extra key is ignored, which
+ * is the right behavior — the caching is a hint, not the contract.
+ */
+const REVALIDATE_ONE_MINUTE = { next: { revalidate: 60 } } as RequestInit;
+
 function apiOrigin(): string {
   const configured = process.env.PIGGLES_API_REST_URL?.trim();
   if (configured) return configured.replace(/\/$/, '');
@@ -59,7 +71,7 @@ function apiOrigin(): string {
 export async function fetchHeaderNotice(surface: NoticeSurface): Promise<HeaderNotice | null> {
   try {
     const url = `${apiOrigin()}/v1/public/announcements?brand=piggles&surface=${surface}`;
-    const res = await fetch(url, { next: { revalidate: 60 } });
+    const res = await fetch(url, REVALIDATE_ONE_MINUTE);
     if (!res.ok) return null;
     const body: unknown = await res.json();
     const announcement = (body as { data?: { announcement?: HeaderNotice | null } })?.data

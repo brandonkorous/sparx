@@ -18,6 +18,7 @@ import {
   collectNodesByType,
   formRoutingConfig,
   readContactFormConfig,
+  collectSilicaFormIds,
   readSilicaFormConfig,
   CONTACT_FORM_TYPE,
   CONTACT_FORM_SECRET_PROPS,
@@ -28,6 +29,7 @@ import { withTenant } from '@wizeworks/db';
 import type { Prisma, TxClient } from '@wizeworks/db';
 
 import type { PropertyContext } from '../errors';
+import * as siteService from './site-service';
 
 /** Extract recipients → FormDefinition and strip them from the tree. Returns the
  *  sanitized tree to publish (the same object when there is nothing to strip). */
@@ -98,12 +100,44 @@ export async function getSilicaForm(
       select: { pageSlug: true, recipients: true, config: true },
     })
   );
+  // A form nobody has configured yet has no row, and therefore no page either —
+  // and the panel would then SAVE that null, permanently losing which page the
+  // form is on. The site knows; ask it.
+  const pageSlug = row?.pageSlug ?? (await formsOnSite(ctx)).get(formNodeId) ?? null;
+
   return {
     formNodeId,
-    pageSlug: row?.pageSlug ?? null,
+    pageSlug,
     recipients: row?.recipients ?? [],
     config: readSilicaFormConfig(row?.config),
   };
+}
+
+/**
+ * Where every live form on this site lives: formNodeId → its page slug.
+ *
+ * Null means the home page, matching the submit route's convention; a form in the
+ * FRAME is on no page in particular and keeps that null too. The frame is walked
+ * because a newsletter block in the footer or a header enquiry form submits from
+ * every route, exactly as `resolveContactForm` already allows.
+ */
+async function formsOnSite(ctx: PropertyContext): Promise<Map<string, string | null>> {
+  const [site, framed] = await Promise.all([
+    siteService.getPublishedSite(ctx),
+    siteService.getPublishedFrame(ctx),
+  ]);
+  const found = new Map<string, string | null>();
+  for (const page of site?.pages ?? []) {
+    for (const id of collectSilicaFormIds(page.root)) {
+      if (!found.has(id)) found.set(id, page.slug ?? null);
+    }
+  }
+  if (framed.frame) {
+    for (const id of collectSilicaFormIds(framed.frame.root)) {
+      if (!found.has(id)) found.set(id, null);
+    }
+  }
+  return found;
 }
 
 /** One form a campaign can be pointed at. */
@@ -118,34 +152,75 @@ export interface FormChoice {
 /**
  * Every form on this site, for a picker.
  *
- * Distinct from `submissionForms`, which derives its list from SUBMISSIONS and
- * therefore only knows a form once somebody has filled it in. That is exactly
- * backwards for choosing what a campaign counts: the moment you want to point a
- * campaign at a form is before anyone has used it.
+ * Read from the PUBLISHED SITE, not from `FormDefinition`. This used to list the
+ * rows, and its own comment claimed that was "every form on this site" — it was
+ * not. A row is written the first time somebody saves settings for a form, so the
+ * list contained exactly the forms that had already been configured. On a site
+ * where nothing had been configured (every site, since no screen could configure
+ * anything) the picker was empty, which made the settings unreachable and made
+ * the campaign picker it was built for permanently offer nothing (issue 355).
+ *
+ * Distinct from `submissionForms`, which derives its list from SUBMISSIONS and so
+ * only knows a form once somebody has filled it in. That is backwards for both
+ * callers: you point a campaign at a form, and you decide who gets emailed about
+ * a form, BEFORE anyone has used it.
+ *
+ * The frame is walked as well as the pages — a newsletter block in the footer or
+ * a header enquiry form lives in the chrome and submits from every route, exactly
+ * as `resolveContactForm` already allows.
  *
  * Ordered by page then node id so the list is stable between loads — a picker
  * whose options reshuffle is one people stop trusting.
  */
 export async function listForms(ctx: PropertyContext): Promise<FormChoice[]> {
-  const rows = await withTenant(ctx, (tx) =>
-    tx.formDefinition.findMany({
-      where: { propertyId: ctx.propertyId },
-      select: { formNodeId: true, pageSlug: true, config: true },
-      orderBy: [{ pageSlug: 'asc' }, { formNodeId: 'asc' }],
-    })
-  );
-  return rows.map((row) => {
-    // The name is the author's, read through the same normalizer the panel and
-    // the submit path use, so "unnamed" means the same thing in all three. An
-    // empty string is not a name — it is the default the panel never filled in,
-    // and letting it through would put a blank option in the picker.
+  const [found, rows] = await Promise.all([
+    formsOnSite(ctx),
+    withTenant(ctx, (tx) =>
+      tx.formDefinition.findMany({
+        where: { propertyId: ctx.propertyId },
+        select: { formNodeId: true, pageSlug: true, config: true },
+      })
+    ),
+  ]);
+
+  // THE UNION, and both halves are load-bearing.
+  //
+  // The published site is what makes a form offerable before anyone has touched
+  // its settings — reading rows alone meant the picker held exactly the forms
+  // that were already configured, and nothing could configure one.
+  //
+  // The rows are what keeps a form offerable before the site is published. An
+  // owner who adds a contact form, names it, and has not pressed Publish yet has
+  // a row and no published tree; without this half the picker would be empty for
+  // her, which is the same chicken-and-egg wearing different clothes.
+  //
+  // The site wins on page: it is where the form IS now, while the row records
+  // where it was when the settings were last saved.
+  for (const row of rows) {
+    if (!found.has(row.formNodeId)) found.set(row.formNodeId, row.pageSlug);
+  }
+
+  // The name is the author's, read through the same normalizer the panel and the
+  // submit path use, so "unnamed" means the same thing in all three. An empty
+  // string is not a name — it is the default nobody filled in, and letting it
+  // through would put a blank option in the picker.
+  const names = new Map<string, string>();
+  for (const row of rows) {
     const name = readSilicaFormConfig(row.config).name.trim();
-    return {
-      formNodeId: row.formNodeId,
-      name: name === '' ? null : name,
-      pageSlug: row.pageSlug,
-    };
-  });
+    if (name !== '') names.set(row.formNodeId, name);
+  }
+
+  return [...found.entries()]
+    .map(([formNodeId, pageSlug]) => ({
+      formNodeId,
+      name: names.get(formNodeId) ?? null,
+      pageSlug,
+    }))
+    .sort(
+      (a, b) =>
+        (a.pageSlug ?? '').localeCompare(b.pageSlug ?? '') ||
+        a.formNodeId.localeCompare(b.formNodeId)
+    );
 }
 
 /** Save this form's routing. `recipients` is validated by the caller (the route parses

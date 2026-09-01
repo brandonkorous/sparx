@@ -21,73 +21,33 @@ import {
   AlertContent,
   AlertDescription,
   AlertTitle,
-  Badge,
   Button,
   Card,
   EmptyState,
-  Filter,
-  FilterItem,
-  NativeSelect,
 } from '@wizeworks/silicaui-react';
-import { Table } from '../../components/table';
+import { FormSubmissionsTable } from './form-submissions-table';
+import { FormSubmissionsToolbar } from './form-submissions-toolbar';
 import { faInbox } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, type PageSize } from '../../components/list-pagination';
-import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { RefreshButton } from '../../components/refresh-button';
+import { PANE_SHELL } from '../../components/pane-toolbar';
 import { useSites } from '../../lib/api/shell-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { useSubmissions, type FormSubmission } from './form-submissions-data';
+import { formLabel, formNamer } from './form-submissions-words';
 import {
-  formLabel,
-  formatDate,
-  submissionState,
-  submitterLabel,
-  useSubmissions,
-  type FormSubmission,
-  type SubmissionStatus,
-} from './form-submissions-data';
+  emptyAdvice,
+  previewOf,
+  STATUS_FILTERS,
+  type StatusFilterValue,
+} from './form-submissions-filters';
 import { RowOpenHint } from '../../components/row-open-hint';
-
-/** The chips ARE the questions people open this inbox to answer. */
-const STATUS_FILTERS = [
-  { value: 'all', label: 'All', status: undefined },
-  { value: 'new', label: 'New', status: 'new' },
-  { value: 'read', label: 'Read', status: 'read' },
-  { value: 'archived', label: 'Handled', status: 'archived' },
-  { value: 'spam', label: 'Spam', status: 'spam' },
-] as const satisfies readonly {
-  value: string;
-  label: string;
-  status: SubmissionStatus | undefined;
-}[];
-
-type StatusFilterValue = (typeof STATUS_FILTERS)[number]['value'];
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
-}
-
-/** A one-line preview of what they actually wrote, for the table. */
-function previewOf(submission: FormSubmission): string {
-  if (submission.message && submission.message.trim() !== '') return submission.message.trim();
-  for (const value of Object.values(submission.fields)) {
-    if (typeof value === 'string' && value.trim() !== '') return value.trim();
-  }
-  return '';
-}
-
-function emptyAdvice(statusLabel: string | null, formName: string | null): string {
-  const parts: string[] = [];
-  if (statusLabel) {
-    parts.push(`You are only seeing “${statusLabel}” — switch to All to see the rest.`);
-  }
-  if (formName) {
-    parts.push(`Only submissions from “${formName}” are showing — choose All forms to widen it.`);
-  }
-  return parts.join(' ');
 }
 
 export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -116,6 +76,12 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
     for (const site of sites ?? []) map.set(site.id, site.name);
     return map;
   }, [sites]);
+  // Which site a message came from only tells her something when she has more
+  // than one. On the single site most owners have, the column is her own business
+  // name written down the page — the repeat RULE #4 says to demote, costing a
+  // column that "What they sent" would rather have. The same test the staff panes
+  // already use for their site picker.
+  const manySites = (sites?.length ?? 0) > 1;
 
   const rows = data?.submissions ?? [];
   const forms = data?.forms ?? [];
@@ -134,76 +100,39 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.open('builder.submission', { id: submission.id }, { target: targetFor(event) });
   };
 
+  // Rows are named from `forms`, which carries each form's CURRENT name, so the
+  // column and the picker cannot disagree (issue 372).
+  const nameForm = formNamer(forms);
+
   const activeFormName = formNodeId
-    ? (forms.find((form) => form.formNodeId === formNodeId)?.formName ?? 'this form')
+    ? (() => {
+        const picked = forms.find((form) => form.formNodeId === formNodeId);
+        return picked ? formLabel(picked) : 'this form';
+      })()
     : null;
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar
-        label="Submissions inbox controls"
-        controls={
-          <>
-            <Filter
-              color="module"
-              value={statusFilter}
-              onValueChange={(next) => {
-                setStatusFilter((next as StatusFilterValue | null) ?? 'all');
-                resetWindow();
-              }}
-              showReset={false}
-              aria-label="Filter by status"
-            >
-              {STATUS_FILTERS.map((entry) => (
-                <FilterItem key={entry.value} value={entry.value}>
-                  {entry.label}
-                </FilterItem>
-              ))}
-            </Filter>
-            {/* Only worth showing once more than one form has ever been submitted —
-            with a single form the picker chooses nothing. */}
-            {forms.length > 1 ? (
-              <label className="items-center">
-                <span className="sr-only">Which form</span>
-                <NativeSelect
-                  size="sm"
-                  color="module"
-                  value={formNodeId}
-                  aria-label="Which form"
-                  onChange={(event) => {
-                    setFormNodeId(event.target.value);
-                    resetWindow();
-                  }}
-                >
-                  <option value="">All forms</option>
-                  {forms.map((form) => (
-                    <option key={form.formNodeId} value={form.formNodeId}>
-                      {(form.formName ?? 'Untitled form') + ` (${String(form.count)})`}
-                    </option>
-                  ))}
-                </NativeSelect>
-              </label>
-            ) : null}
-          </>
-        }
-        views={{
-          target: '/builder/forms',
-          params: { status: statusFilter, form: formNodeId },
-          onApply: (next) => {
-            setStatusFilter((next.status ?? 'all') as StatusFilterValue);
-            setFormNodeId(next.form ?? '');
-            resetWindow();
-          },
+      <FormSubmissionsToolbar
+        statusFilter={statusFilter}
+        onStatusFilter={(next) => {
+          setStatusFilter(next);
+          resetWindow();
         }}
-        refresh={
-          <RefreshButton
-            isFetching={isFetching}
-            updatedAt={data ? dataUpdatedAt : undefined}
-            onRefresh={() => {
-              void refetch();
-            }}
-          />
-        }
+        formNodeId={formNodeId}
+        onFormNodeId={(next) => {
+          setFormNodeId(next);
+          resetWindow();
+        }}
+        forms={forms}
+        isFetching={isFetching}
+        updatedAt={data ? dataUpdatedAt : undefined}
+        onRefresh={() => {
+          void refetch();
+        }}
+        onOpenSettings={(target) => {
+          ctx.open('builder.form-settings', undefined, { target });
+        }}
       />
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
@@ -253,72 +182,14 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             }
           />
         ) : (
-          <Table size="sm" hover>
-            <thead>
-              <tr>
-                <th>From</th>
-                <th className="hidden @lg:table-cell">Form</th>
-                <th className="hidden @3xl:table-cell">Site</th>
-                <th className="hidden @2xl:table-cell">What they sent</th>
-                <th className="hidden @xl:table-cell">Received</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((submission) => {
-                const state = submissionState(submission.status);
-                const site = submission.propertyId
-                  ? (siteName.get(submission.propertyId) ?? '—')
-                  : '—';
-                const preview = previewOf(submission);
-                const isNew = submission.status === 'new';
-                return (
-                  <tr
-                    key={submission.id}
-                    className="cursor-pointer"
-                    tabIndex={0}
-                    role="button"
-                    onClick={(event) => {
-                      open(submission, event);
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key !== 'Enter' && event.key !== ' ') return;
-                      event.preventDefault();
-                      open(submission, event);
-                    }}
-                  >
-                    <td>
-                      <span
-                        className={`block max-w-56 truncate ${isNew ? 'font-semibold' : 'font-medium'}`}
-                      >
-                        {submitterLabel(submission)}
-                      </span>
-                      {/* Only when the primary line is a NAME — otherwise the label
-                          already IS the email, and repeating it is noise. */}
-                      {submission.name && submission.email ? (
-                        <span className="block max-w-56 truncate text-sm">{submission.email}</span>
-                      ) : null}
-                    </td>
-                    <td className="hidden max-w-40 truncate @lg:table-cell">
-                      {formLabel(submission)}
-                    </td>
-                    <td className="hidden max-w-32 truncate @3xl:table-cell">{site}</td>
-                    <td className="hidden max-w-72 @2xl:table-cell">
-                      <span className="block truncate">{preview || '—'}</span>
-                    </td>
-                    <td className="hidden text-sm whitespace-nowrap @xl:table-cell">
-                      {formatDate(submission.createdAt)}
-                    </td>
-                    <td>
-                      <Badge color={state.tone} variant="soft" size="sm">
-                        {state.label}
-                      </Badge>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </Table>
+          <FormSubmissionsTable
+            rows={rows}
+            nameForm={nameForm}
+            siteName={siteName}
+            manySites={manySites}
+            previewOf={previewOf}
+            onOpen={open}
+          />
         )}
       </Card>
 

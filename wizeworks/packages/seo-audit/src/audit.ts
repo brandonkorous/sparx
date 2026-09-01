@@ -19,11 +19,14 @@ import type {
   SeoAuditAction,
 } from './types';
 
+// Named for what an owner is trying to do, not for the part of the spec each
+// check comes from. "Indexability" and "AIO" are the vocabulary of somebody who
+// already knows the answer.
 const CATEGORY_LABELS: Record<CategoryKey, string> = {
-  meta: 'Title & Meta',
-  index: 'Indexability',
-  content: 'Content',
-  social: 'Social & AIO',
+  meta: 'Title and summary',
+  index: 'Being found at all',
+  content: 'What is on the page',
+  social: 'Sharing, and AI',
 };
 
 // Entity-aware minimum word count for the content-depth check. Prose pages are
@@ -90,13 +93,13 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     finalize({
       id: 'title-present',
       category: 'meta',
-      label: 'Meta title is set',
+      label: 'The page has a title',
       weight: 12,
       status: title.length > 0 ? 'pass' : 'fail',
-      value: title.length > 0 ? 'present' : 'missing',
+      value: title.length > 0 ? 'set' : 'not set yet',
       ...(title.length === 0
         ? {
-            tip: 'Every page needs a title — it is the headline in search results and browser tabs.',
+            tip: 'Every page needs a title. It is the headline people read in search results, and the words on the browser tab.',
             action: { label: 'Add a title', target: 'title' },
           }
         : {}),
@@ -113,17 +116,17 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     finalize({
       id: 'title-length',
       category: 'meta',
-      label: 'Title length',
+      label: 'How long the title is',
       weight: 8,
       status: titleLen,
-      value: `${tl} chars`,
+      value: `${tl} characters`,
       // When the title is empty, check #1 already owns the message — stay quiet here.
       ...(titleLen !== 'pass' && tl > 0
         ? {
             tip:
               tl > 60
-                ? 'Long titles get truncated in search results. Trim to about 60 characters.'
-                : 'Short titles waste a ranking signal. Aim for 30–60 characters.',
+                ? 'A long title gets cut off in search results. Trim it to about 60 characters.'
+                : 'A very short title wastes the best chance you have of being found. Aim for 30 to 60 characters.',
             action: { label: 'Edit title', target: 'title' },
           }
         : {}),
@@ -135,13 +138,13 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     finalize({
       id: 'desc-present',
       category: 'meta',
-      label: 'Meta description is set',
+      label: 'The page has a short summary',
       weight: 6,
       status: desc.length > 0 ? 'pass' : 'warn',
-      value: desc.length > 0 ? 'present' : 'missing',
+      value: desc.length > 0 ? 'written' : 'not written yet',
       ...(desc.length === 0
         ? {
-            tip: 'The meta description is your pitch in search results. Add one to lift click-through.',
+            tip: 'This is the couple of lines shown under your title in search results. It is your pitch, and writing one gets more people to click.',
             action: { label: 'Add a description', target: 'description' },
           }
         : {}),
@@ -155,16 +158,16 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     finalize({
       id: 'desc-length',
       category: 'meta',
-      label: 'Description length',
+      label: 'How long the summary is',
       weight: 4,
       status: descLen,
-      value: dl > 0 ? `${dl} chars` : '—',
+      value: dl > 0 ? `${dl} characters` : 'nothing written',
       ...(descLen === 'warn' && dl > 0
         ? {
             tip:
               dl > 160
-                ? 'Descriptions over ~160 characters get cut off. Tighten it up.'
-                : 'Give the description room to sell — aim for 70–160 characters.',
+                ? 'Anything past about 160 characters gets cut off. Tighten it up.'
+                : 'Give yourself room to sell the page. Aim for 70 to 160 characters.',
             action: { label: 'Edit description', target: 'description' },
           }
         : {}),
@@ -176,14 +179,14 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     finalize({
       id: 'indexable',
       category: 'index',
-      label: 'Page is indexable',
+      label: 'Search engines are allowed to list it',
       weight: 9,
       status: e.noindex ? 'info' : 'pass',
-      value: e.noindex ? 'noindex — by design?' : 'noindex off',
+      value: e.noindex ? 'hidden from search' : 'allowed',
       ...(e.noindex
         ? {
-            tip: 'This page is set to noindex, so search engines skip it. Intentional? If not, turn indexing on.',
-            action: { label: 'Review indexing', target: 'noindex' },
+            tip: 'This page is set to stay out of search results, so nobody will find it that way. If that was not deliberate, turn it back on.',
+            action: { label: 'Check this setting', target: 'noindex' },
           }
         : {}),
     })
@@ -197,12 +200,14 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     finalize({
       id: 'in-sitemap',
       category: 'index',
-      label: 'Listed in sitemap.xml',
+      label: 'It is on the list we give search engines',
       weight: 8,
       status: sitemap,
-      value: e.noindex ? 'excluded (noindex)' : e.inSitemap ? 'included' : 'not listed',
+      value: e.noindex ? 'left off on purpose' : e.inSitemap ? 'on the list' : 'not on the list',
       ...(sitemap === 'warn'
-        ? { tip: 'Publish the page so it enters your sitemap and search engines can discover it.' }
+        ? {
+            tip: 'Publish the page and it joins the list of addresses we hand to search engines, which is how they find it.',
+          }
         : {}),
     })
   );
@@ -214,14 +219,14 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     finalize({
       id: 'canonical-slug',
       category: 'index',
-      label: 'Canonical & readable slug',
+      label: 'The web address is tidy',
       weight: 8,
       status: slugClean ? 'pass' : 'warn',
-      value: e.canonical ? 'custom canonical' : slugClean ? 'self · clean' : 'check slug',
+      value: e.canonical ? 'points at another page' : slugClean ? 'tidy' : 'worth tidying',
       ...(!slugClean
         ? {
-            tip: 'Use a short, lowercase, hyphenated slug (no spaces, underscores, or capitals).',
-            action: { label: 'Edit slug', target: 'slug' },
+            tip: 'Keep the last part of the address short and in small letters, with hyphens between the words rather than spaces, underscores or capitals.',
+            action: { label: 'Edit the address', target: 'slug' },
           }
         : {}),
     })
@@ -235,7 +240,7 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     altValue = 'no images';
   } else {
     const missing = Math.min(Math.max(0, e.imagesMissingAlt), e.imageCount);
-    altValue = `${e.imageCount - missing} / ${e.imageCount} ok`;
+    altValue = `${e.imageCount - missing} of ${e.imageCount} described`;
     if (missing === 0) alt = 'pass';
     else if (missing / e.imageCount < 1 / 3) alt = 'warn';
     else alt = 'fail';
@@ -244,14 +249,14 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     finalize({
       id: 'image-alt',
       category: 'content',
-      label: 'Image alt text',
+      label: 'Every picture is described',
       weight: 10,
       status: alt,
       value: altValue,
       ...(alt !== 'pass'
         ? {
-            tip: 'Alt text is how search engines and screen readers read your images. Describe each one.',
-            action: { label: 'Fix images', target: 'images' },
+            tip: 'A short description of each picture is how a search engine, and anyone using a screen reader, knows what it shows. Write one for each.',
+            action: { label: 'Describe the pictures', target: 'images' },
           }
         : {}),
     })
@@ -266,17 +271,22 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     finalize({
       id: 'heading-h1',
       category: 'content',
-      label: 'Heading structure',
+      label: 'One main heading',
       weight: 7,
       status: h1,
-      value: `${e.h1Count}× H1`,
+      value:
+        e.h1Count === 0
+          ? 'no main heading'
+          : e.h1Count === 1
+            ? 'one main heading'
+            : `${e.h1Count} main headings`,
       ...(h1 !== 'pass'
         ? {
             tip:
               e.h1Count === 0
-                ? 'Add a single H1 — it tells search engines the page’s main topic.'
-                : 'Use exactly one H1. Demote the extra heading(s) to H2.',
-            action: { label: 'Review headings', target: 'headings' },
+                ? 'Give the page one big heading at the top. It is how a search engine works out what the page is about.'
+                : 'Keep one big heading and make the others a size smaller, so it is clear which one the page is about.',
+            action: { label: 'Check the headings', target: 'headings' },
           }
         : {}),
     })
@@ -291,15 +301,15 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     finalize({
       id: 'content-depth',
       category: 'content',
-      label: 'Content depth & internal links',
+      label: 'Enough to read, and somewhere to go next',
       weight: 8,
       status: depth,
       value: `${formatInt(e.wordCount)} words · ${e.internalLinkCount} links`,
       ...(depth === 'warn'
         ? {
             tip: thin
-              ? `Thin pages rank poorly. Aim for at least ${threshold} words of real content.`
-              : 'Add a few links to related pages so visitors and crawlers can go deeper.',
+              ? `A page with very little on it rarely gets found. Aim for at least ${formatInt(threshold)} words of real writing.`
+              : 'Add a few links to your other pages, so a reader who is interested has somewhere to go and search engines can follow you around the site.',
           }
         : {}),
     })
@@ -314,17 +324,17 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     finalize({
       id: 'og-image',
       category: 'social',
-      label: 'Social share image',
+      label: 'The picture shown when it is shared',
       weight: 10,
       status: og,
       value:
-        e.ogImage === 'custom' ? 'custom' : e.ogImage === 'generated' ? 'auto-generated' : 'none',
+        e.ogImage === 'custom' ? 'your own' : e.ogImage === 'generated' ? 'made for you' : 'none',
       ...(og !== 'pass'
         ? {
             tip:
               og === 'warn'
-                ? 'A branded card is generated automatically. Upload a custom image for a stronger share.'
-                : 'Add a social image so links to this page show a rich preview.',
+                ? 'We make one for you in your colors. Your own photograph will always do better.'
+                : 'Add a picture, so a link to this page shows something rather than a bare address.',
             action: { label: 'Add an image', target: 'og-image' },
           }
         : {}),
@@ -339,16 +349,16 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     finalize({
       id: 'structured-data',
       category: 'social',
-      label: 'Structured data (JSON-LD)',
+      label: 'Extra detail search engines can read',
       weight: 10,
       status: sdOk ? 'pass' : 'warn',
       value: e.structuredDataTypes.length > 0 ? e.structuredDataTypes.join(', ') : 'none',
       ...(!sdOk
         ? {
             tip: expected
-              ? `Add ${expected} structured data so this page can earn rich results.`
-              : 'Add structured data (JSON-LD) so engines understand this page.',
-            action: { label: 'Enable schema', target: 'structured-data' },
+              ? 'Tell search engines this page is a product, so a price and a rating can show up beside it in the results.'
+              : 'Spell out what this page is about in a form search engines read directly, so they describe it correctly.',
+            action: { label: 'Turn it on', target: 'structured-data' },
           }
         : {}),
     })
@@ -359,10 +369,10 @@ function runChecks(e: AuditableEntity): CheckResult[] {
     finalize({
       id: 'ai-discoverable',
       category: 'social',
-      label: 'Discoverable by AI engines',
+      label: 'AI assistants can find it',
       weight: 0,
       status: 'info',
-      value: e.inLlmsTxt ? 'in llms.txt' : 'sitemap only',
+      value: e.inLlmsTxt ? 'listed for AI assistants' : 'findable by search only',
     })
   );
 

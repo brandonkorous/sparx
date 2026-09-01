@@ -8,7 +8,7 @@
 
 import { Button } from '@wizeworks/silicaui-react';
 import { Mark } from '@piggles/brand/react';
-import { useBill } from '@/surfaces/finance/bill-data';
+import { useLifecycle } from '@/lib/billing/lifecycle';
 
 /**
  * A WARNING, when the business is about to stop working. Never a plan card.
@@ -31,64 +31,37 @@ import { useBill } from '@/surfaces/finance/bill-data';
  * A door is not management. A number with a currency symbol in here would be.
  */
 export function PlanCard({ accountOrigin }: { accountOrigin: string }) {
-  const { data: bill } = useBill();
+  // The words live in lib/billing/lifecycle.ts, shared with the band above the
+  // header. They were inline here, which is how the console ended up warning
+  // nobody on a phone: this card is the only thing that said it, and it is
+  // mounted inside a rail that phones do not have. Null while the answer has not
+  // arrived, and null on a healthy account — standing billing furniture in the
+  // rail is account management, and that lives at getpiggles.
+  const life = useLifecycle();
+  if (!life) return null;
 
-  // Nothing until the answer arrives. A card that says "Business plan" before it
-  // knows the plan is a value nobody measured being rendered as one — and the
-  // entire job of this card is telling somebody the truth about their account
-  // before it stops working.
-  if (!bill) return null;
-
-  // ── ONLY THE PHASE VIEW IS READ ─────────────────────────────────────────────
-  //
-  // `Bill` also carries `planTotalCents`, `planModules` and a card's last four
-  // digits. NONE of it is touched here and none of it may be: the console never
-  // knows a price (piggles/CLAUDE.md RULE #2), and `bill.billing` is exactly the
-  // lifecycle slice — phase, days left, dates — with no money in it.
-  //
-  // The cleaner long-term shape is a narrow account-service endpoint that
-  // returns only this, so the console cannot fetch an amount even by accident.
-  // Until that exists, the discipline is the destructure below: read `billing`,
-  // never `bill` itself.
-  const { phase, daysLeft } = bill.billing;
-  const days = daysLeft ?? 0;
-
-  // A healthy account has nothing to say here. Standing billing furniture in the
-  // rail is account management, and account management lives at getpiggles.
-  if (phase !== 'trialing' && phase !== 'grace' && phase !== 'suspended') return null;
-
-  const tone: 'neutral' | 'warning' | 'danger' =
-    phase === 'suspended' ? 'danger' : phase === 'grace' || days <= 3 ? 'warning' : 'neutral';
-
-  const heading = phase === 'trialing' ? 'Free trial' : 'Action needed';
-
-  const detail =
-    phase === 'suspended'
-      ? 'Your site is offline'
-      : phase === 'grace'
-        ? `Site stays live ${days} more day${days === 1 ? '' : 's'}`
-        : `${days} day${days === 1 ? '' : 's'} left`;
+  const calm = life.tone === 'calm';
 
   return (
     <div
-      data-plan-tone={tone}
+      data-plan-tone={life.tone}
       className="rounded-box border-base-300 bg-chrome-deep mx-1 mb-2 border p-3"
     >
       <div className="flex items-center gap-2">
         <Mark className="text-primary size-5 shrink-0" />
-        <span className="text-base font-bold">{heading}</span>
+        <span className="text-base font-bold">{life.heading}</span>
       </div>
       {/* A real ink, never faded — this is the line that tells somebody their
           business is about to stop working. */}
-      <p className="mt-0.5 text-sm">{detail}</p>
+      <p className="mt-0.5 text-sm">{life.detail}</p>
       <Button
         // NO color on the calm one. Uncolored, a `.btn` resolves to
         // `base-content` and is right on this card in either theme; `neutral` is
         // theme-stable now because it paints the rail, so pinning it here would
         // put #52454f ink on a #1c212c card in dark. Same call close-band.tsx
         // makes, for the same reason.
-        color={tone === 'neutral' ? undefined : tone}
-        variant={tone === 'neutral' ? 'outline' : 'solid'}
+        color={calm ? undefined : life.tone}
+        variant={calm ? 'outline' : 'solid'}
         size="sm"
         block
         className="mt-2.5"
@@ -98,7 +71,7 @@ export function PlanCard({ accountOrigin }: { accountOrigin: string }) {
           window.location.href = `${accountOrigin}/account`;
         }}
       >
-        {tone === 'neutral' ? 'Set up payment' : 'Keep my business running'}
+        {life.action}
       </Button>
     </div>
   );

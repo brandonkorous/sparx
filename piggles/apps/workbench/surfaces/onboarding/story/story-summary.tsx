@@ -69,6 +69,8 @@ export function StoryExtras({
 
   return (
     <>
+      {/* "An empty site", not "a blank Builder site": Builder is the platform's own
+          name for this and the rail calls it My Site (issue 362). */}
       <Section label="Your starting point">
         {blueprint ? (
           <div className="flex flex-col gap-0.5">
@@ -76,7 +78,7 @@ export function StoryExtras({
             <Text className="text-sm">{blueprint.summary}</Text>
           </div>
         ) : (
-          <Text className="text-sm">A blank Builder site — yours to design from scratch.</Text>
+          <Text className="text-sm">An empty site, yours to design from scratch.</Text>
         )}
       </Section>
 

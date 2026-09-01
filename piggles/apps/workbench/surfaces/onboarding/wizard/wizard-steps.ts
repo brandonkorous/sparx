@@ -14,25 +14,32 @@ export const FULL_ORDER: OnboardingStepKey[] = [
   'launch',
 ];
 
+// The rail's words, in the reader's. "Modules" is the platform's own vocabulary and
+// is banned in this product's copy; the rest follow it rather than being left as the
+// only technical words on the screen.
 export const STEP_LABEL: Record<OnboardingStepKey, string> = {
-  modules: 'Modules',
+  modules: 'What you use',
   template: 'Starting point',
-  workspace: 'Workspace',
-  domain: 'Domain',
-  payments: 'Payments',
-  launch: 'Launch',
+  workspace: 'Your name',
+  domain: 'Web address',
+  payments: 'Getting paid',
+  launch: 'Go live',
 };
 
 export const HEAD: Partial<Record<OnboardingStepKey, { title: string; supporting: string }>> = {
   modules: {
     title: 'Switch on what you use',
+    // NO PRICING SENTENCE. This read "your plan updates the instant you do" and "this
+    // is just what you would pay after", which is another product's model: there is
+    // one flat plan here and turning something on never changes it. Saying otherwise
+    // on the first screen contradicts the marketing site on the same account.
     supporting:
-      'Every module is one toggle — flip it and your plan updates the instant you do. You are free for 14 days with no card; this is just what you would pay after. Your picks narrow the starting points next.',
+      'Each one is a switch. Turn on what you want, leave the rest, and change your mind whenever you like. It never changes what you pay. What you pick decides which starting points you are shown next.',
   },
   template: {
     title: 'Pick a starting point',
     supporting:
-      'Complete, themed sites — pages, design, products, and copy in place from the first second. Filtered to the modules you chose; pick one to load it into your setup.',
+      'Whole sites, finished: pages, design, things to sell and words already written. Narrowed to what you just switched on. Pick one and it is loaded in for you to change.',
   },
   workspace: {
     title: 'Name your workspace',

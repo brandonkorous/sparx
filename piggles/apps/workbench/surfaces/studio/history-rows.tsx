@@ -14,6 +14,7 @@
 import { Fragment } from 'react';
 import { Badge, Button } from '@wizeworks/silicaui-react';
 import type { HistoryEntry } from '../../lib/studio/history-data';
+import { CLOCK, DAY, TIME_CELL } from './when';
 
 /** What produced an entry, in words and in a color that distinguishes it. */
 function describe(source: string): {
@@ -25,9 +26,6 @@ function describe(source: string): {
   if (source === 'publish') return { label: 'Published', tone: 'success' };
   return { label: 'You saved', tone: 'info' };
 }
-
-const DAY = new Intl.DateTimeFormat(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
-const CLOCK = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
 
 export function HistoryRows({
   entries,
@@ -86,9 +84,7 @@ function Row({
   const { label, tone } = describe(entry.source);
   return (
     <li className="flex items-center gap-2 px-1 py-1">
-      <span className="text-base-content w-14 shrink-0 text-sm">
-        {CLOCK.format(new Date(entry.createdAt))}
-      </span>
+      <span className={TIME_CELL}>{CLOCK.format(new Date(entry.createdAt))}</span>
       <Badge color={tone} variant="soft">
         {label}
       </Badge>

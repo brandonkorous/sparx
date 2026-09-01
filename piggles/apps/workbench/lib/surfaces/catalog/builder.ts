@@ -20,6 +20,7 @@ import {
   faFileLines,
   faGlobe,
   faInbox,
+  faSliders,
   faPalette,
   faTableLayout,
 } from '@fortawesome/pro-solid-svg-icons';
@@ -39,6 +40,8 @@ import { PreviewPaneSurface } from '../../../surfaces/studio/preview-pane';
 import { PublishPaneSurface } from '../../../surfaces/studio/publish-pane';
 import { FormSubmissionsListSurface } from '../../../surfaces/builder/form-submissions-list';
 import { SubmissionDetailSurface } from '../../../surfaces/builder/submission-detail';
+import { FormSettingsSurface } from '../../../surfaces/builder/form-settings';
+import { FormSettingsListSurface } from '../../../surfaces/builder/form-settings-pick';
 import { PageResultsSurface } from '../../../surfaces/builder/page-results';
 
 export const BUILDER_SURFACES: SurfaceDefinition[] = [
@@ -253,6 +256,27 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     module: 'builder',
     icon: faInbox,
     component: SubmissionDetailSurface,
+    listed: false,
+  },
+  {
+    // LISTED, because being unreachable is the whole bug: every one of these
+    // settings has been stored and honoured since silica forms shipped, and no
+    // screen opened them (issue 355).
+    key: 'builder.form-settings',
+    title: 'Form settings',
+    module: 'builder',
+    icon: faSliders,
+    section: 'Forms',
+    order: 21,
+    keywords: ['form', 'notify', 'recipients', 'reply', 'autoresponder', 'contact', 'enquiries'],
+    component: FormSettingsListSurface,
+  },
+  {
+    key: 'builder.form-setting',
+    title: 'Form settings',
+    module: 'builder',
+    icon: faSliders,
+    component: FormSettingsSurface,
     listed: false,
   },
 ];

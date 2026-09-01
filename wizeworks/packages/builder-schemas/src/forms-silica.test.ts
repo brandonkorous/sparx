@@ -6,6 +6,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  collectSilicaFormIds,
   DEFAULT_SILICA_FORM_CONFIG,
   findSilicaFormNode,
   isSilicaFormNode,
@@ -129,5 +130,79 @@ describe('readSilicaFormConfig', () => {
     expect(cfg.autoresponderSubject).toBe('Got it');
     // …and defaults the ones it didn't set.
     expect(cfg.autoresponderMessage).toBe(DEFAULT_SILICA_FORM_CONFIG.autoresponderMessage);
+  });
+});
+
+// Finding every form on a page (issue 355).
+//
+// The picker that lists a site's forms used to read `FormDefinition` ROWS, and a
+// row is written the first time somebody SAVES settings — so it listed exactly
+// the forms that had already been configured, which on every real site was none
+// of them. Walking the tree is what makes "every form on this site" true.
+describe('collectSilicaFormIds', () => {
+  const formNode = (id: string) => ({
+    id,
+    kind: 'element',
+    tag: 'form',
+    behavior: { type: 'form' },
+    data: { kind: 'action', ref: 'contact' },
+    children: [],
+  });
+
+  it('finds a form however deeply it is buried', () => {
+    const page = {
+      kind: 'element',
+      tag: 'section',
+      children: [
+        { kind: 'element', tag: 'h2', children: ['Talk to me'] },
+        { kind: 'element', tag: 'div', children: [formNode('deep-one')] },
+      ],
+    };
+    expect(collectSilicaFormIds(page as never)).toEqual(['deep-one']);
+  });
+
+  it('finds every form on a page, in document order', () => {
+    const page = {
+      kind: 'element',
+      tag: 'div',
+      children: [
+        formNode('first'),
+        { kind: 'element', tag: 'div', children: [formNode('second')] },
+      ],
+    };
+    expect(collectSilicaFormIds(page as never)).toEqual(['first', 'second']);
+  });
+
+  it('ignores a form that posts somewhere else', () => {
+    // The email sign-up carries `email-signup`, which the storefront routes to the
+    // mailing list rather than the submissions inbox. It is a real form and it is
+    // not one of these — offering it here would put a contact form's recipients and
+    // autoresponder on a subscription.
+    const signup = { ...formNode('signup'), data: { kind: 'action', ref: 'email-signup' } };
+    expect(collectSilicaFormIds(signup as never)).toEqual([]);
+  });
+
+  it('ignores markup that only LOOKS like a form', () => {
+    // Both marks are required. A bare <form> an author pasted in has no behavior
+    // and reaches no host, so it has nothing to configure.
+    const bare = { id: 'bare', kind: 'element', tag: 'form', children: [] };
+    expect(collectSilicaFormIds(bare as never)).toEqual([]);
+  });
+
+  it('skips a form with no id, because there is nothing to address it by', () => {
+    const anonymous = {
+      kind: 'element',
+      tag: 'form',
+      behavior: { type: 'form' },
+      data: { kind: 'action', ref: 'contact' },
+      children: [],
+    };
+    expect(collectSilicaFormIds(anonymous as never)).toEqual([]);
+  });
+
+  it('returns nothing for a page with no forms at all', () => {
+    expect(collectSilicaFormIds({ kind: 'element', tag: 'div', children: [] } as never)).toEqual(
+      []
+    );
   });
 });

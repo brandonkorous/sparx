@@ -27,6 +27,18 @@ export interface PublisherLogger {
 export interface Publisher {
   publish<T>(event: SparxEvent<T>): Promise<void>;
   /**
+   * True when this transport THROWS THE EVENT AWAY — the logging stub, and
+   * nothing else. Every publisher resolves successfully, so without this a
+   * caller cannot tell "queued" from "discarded", and the ones that promise a
+   * person something ("check your email") say it either way.
+   *
+   * It is not a stand-in for `isDurable`: the HTTP dev dispatch is not durable
+   * but it does deliver, so a caller that refused to run on anything
+   * non-durable would break local development for no reason. This asks the
+   * narrower question — did the event go anywhere at all.
+   */
+  readonly discards?: boolean;
+  /**
    * Flush and release the transport's connection.
    *
    * OPTIONAL, and absent on most transports on purpose: a long-lived service
@@ -78,6 +90,10 @@ class CloudPubSubPublisher implements Publisher {
 }
 
 class LoggingPublisher implements Publisher {
+  /** The one transport that delivers nothing. Callers with a person waiting on
+   *  the far end check this before telling them it was sent. */
+  readonly discards = true;
+
   constructor(private readonly logger: PublisherLogger) {}
 
   publish<T>(event: SparxEvent<T>): Promise<void> {

@@ -8,6 +8,7 @@
 
 import type { Dispatch, SetStateAction } from 'react';
 import { HeaderNotice, type HeaderNoticeData } from '@piggles/ui';
+import { LifecycleBand } from '@/components/lifecycle-band';
 import { WorkbenchProvider } from '@/lib/workbench/context';
 import { StudioSessionProvider } from '@/lib/studio/provider';
 import { BackNavigation } from '@/lib/workbench/nav-history';
@@ -106,6 +107,13 @@ export function DesktopShell({
                 fold. It renders nothing when there is nothing to say, which is
                 most of the time, and the layout is identical in that case. */}
             <HeaderNotice notice={notice} />
+
+            {/* The same slot, for the account's own state. Here rather than in
+                the rail because the rail collapses and this must not: a site
+                about to go offline cannot be behind a control the person may
+                have used for screen space. Silent while the rail's card is
+                showing the calm version of it. */}
+            <LifecycleBand accountOrigin={accountOrigin} railCardVisible={railExpanded} />
 
             {/* Every chrome region is crash-isolated from the panels and from
               each other — the panels hold the unsaved work. */}

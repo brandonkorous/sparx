@@ -46,12 +46,14 @@ export const MODULE_COLOR_KEYS = [
   'scheduling',
   'automations',
   'seo',
-  // These three were missing while their tokens existed in @sparx/brand, so a
-  // showcase iterating this list silently omitted them — the same staleness the
-  // module-slug lists keep hitting. Added together rather than one at a time.
+  // These were missing while their tokens existed in @sparx/brand, so a showcase
+  // iterating this list silently omitted them — the same staleness the module-slug
+  // lists keep hitting. `funnels` was the next one to go the same way: its tokens
+  // shipped in both brands and it was absent from all three hue lists here.
   'social',
   'finance',
   'staff',
+  'funnels',
 ] as const;
 
 export type SemanticColorKey = (typeof COLOR_KEYS)[number];

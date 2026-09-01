@@ -29,7 +29,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "verify": "tsx scripts/verify-signup.ts",
-    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+    "clean": "rm -rf .turbo dist *.tsbuildinfo",
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@better-auth/passkey": "1.6.11",
@@ -56,6 +57,7 @@
     "next": "^16.2.6",
     "react": "^19.0.0",
     "tsx": "^4.19.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
   }
 }

@@ -202,6 +202,58 @@ export async function projectAllCollectionRulesForTenant(
   return out;
 }
 
+/**
+ * Project only the rules-driven collections that ASK ABOUT STOCK.
+ *
+ * An inventory write can change exactly two things on the product face —
+ * `inStock` and `lowStock` — so re-running every rule in the tenant on every
+ * stock movement would be wasted work on a busy shop. This runs the ones that
+ * could actually have changed, which for most tenants is none.
+ *
+ * It exists because the alternative in place was running NOTHING: the indexer
+ * reprojected memberships on `product.created/updated` only, on the reasoning
+ * that inventory pings are "identity-preserving on the product face". They are
+ * not — `inStock` and `lowStock` are product-face fields and they are rule
+ * predicates, so a shop could sell its last unit and leave an `out_of_stock`
+ * shelf empty, or drop below a reorder point and leave a "Last chance" shelf
+ * empty, for as long as nobody edited the product. Observed on a real
+ * storefront (issue 370).
+ */
+export async function projectInventoryCollectionRulesForTenant(
+  ctx: ServiceContext,
+  logger: RuleLogger = defaultLogger
+): Promise<ProjectionDiff[]> {
+  const collectionIds = await withTenant(ctx, async (tx) => {
+    const rows = await tx.productCollection.findMany({
+      where: { type: 'rules', deletedAt: null },
+      select: { id: true, ruleSet: true },
+    });
+    return rows.filter((r) => asksAboutStock(r.ruleSet)).map((r) => r.id);
+  });
+  const out: ProjectionDiff[] = [];
+  for (const id of collectionIds) {
+    out.push(await projectCollectionRules(ctx, id, logger));
+  }
+  return out;
+}
+
+/**
+ * Does this rule set contain an `inventory` predicate?
+ *
+ * Reads the stored jsonb defensively rather than through the Zod schema: a rule
+ * set that fails validation still needs an answer here, and the honest answer
+ * for one we cannot read is "maybe" — a needless reprojection is cheap, and a
+ * skipped one is a shelf that silently stops updating.
+ */
+function asksAboutStock(ruleSet: unknown): boolean {
+  if (ruleSet === null || typeof ruleSet !== 'object') return true;
+  const predicates = (ruleSet as { predicates?: unknown }).predicates;
+  if (!Array.isArray(predicates)) return true;
+  return predicates.some(
+    (p) => typeof p === 'object' && p !== null && (p as { field?: unknown }).field === 'inventory'
+  );
+}
+
 // ─── Rule compilation ────────────────────────────────────────────────
 
 /**

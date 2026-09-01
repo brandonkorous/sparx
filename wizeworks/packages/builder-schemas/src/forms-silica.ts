@@ -199,6 +199,30 @@ export function isSilicaFormNode(node: SilicaNode): boolean {
   return hasBehavior && hasAction;
 }
 
+/** Every live form node in a tree, in document order.
+ *
+ *  `findSilicaFormNode` answers "is THIS id a form here"; this answers "what forms
+ *  are here at all", which is the question a picker asks. Without it the only list
+ *  of a site's forms was its `FormDefinition` ROWS — and a row is written the
+ *  first time somebody saves settings, so the picker offered exactly the forms
+ *  that had already been configured and nothing else (issue 355). A site with a
+ *  contact form and no row read as a site with no forms.
+ *
+ *  Ids only: a caller that needs the node has it by id, and returning whole
+ *  subtrees from a page walk is a lot of tree to carry for a list of options. */
+export function collectSilicaFormIds(root: SilicaNode): string[] {
+  const out: string[] = [];
+  const visit = (node: SilicaNode): void => {
+    const n = node as SilicaNode & { id?: string; children?: unknown[] };
+    if (typeof n.id === 'string' && n.id !== '' && isSilicaFormNode(node)) out.push(n.id);
+    for (const child of n.children ?? []) {
+      if (child && typeof child === 'object') visit(child as SilicaNode);
+    }
+  };
+  visit(root);
+  return out;
+}
+
 /** Find a live form node by id anywhere in a silica tree, or null. Depth-first; the
  *  id is silica's node id, which is what the rendered `<form>` carries as
  *  `data-sui-id` and what the visitor's submit sends back. */

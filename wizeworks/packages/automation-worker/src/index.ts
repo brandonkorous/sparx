@@ -17,6 +17,11 @@ import { ingestFromBroker } from './server.js';
 
 export { handleTickRequest, handleReconcileRequest } from './server.js';
 
+// The tick itself, for a host that drives its own heartbeat rather than waiting
+// on a CronJob to POST at it. `handleTickRequest` above is the HTTP door onto the
+// same function; outside Kubernetes there is nothing knocking on it (issue 354).
+export { runTick, type TickSummary } from './runtime.js';
+
 export const DURABLE = 'automation-worker';
 export const EVENTS = [AUTOMATION_FANIN_TOPIC];
 

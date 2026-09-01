@@ -572,6 +572,10 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/builder/saved-pieces/:key', surface: 'builder.component' },
   { path: '/builder/forms', surface: 'builder.forms' },
   { path: '/builder/forms/:id', surface: 'builder.submission' },
+  // Its own path rather than under /builder/forms — `:id` there is a submission,
+  // and a settings page living inside the inbox's address space would be one.
+  { path: '/builder/form-settings', surface: 'builder.form-settings' },
+  { path: '/builder/form-settings/:formNodeId', surface: 'builder.form-setting' },
 
   /* ── Content ──────────────────────────────────────────────────────────── */
   { path: '/content', surface: 'cms.content.list', entity: 'cms_page', entityLabel: 'Pages' },

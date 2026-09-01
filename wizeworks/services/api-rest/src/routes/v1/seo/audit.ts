@@ -17,7 +17,7 @@ import { requireRole } from '@wizeworks/api-core/auth';
 import { notFound } from '@wizeworks/api-core/errors';
 import type { EntityType } from '@wizeworks/seo-audit';
 
-import { auditAndStore } from '../../../lib/seo-audit.js';
+import { auditAndStore, storedPath } from '../../../lib/seo-audit.js';
 
 const ENTITY_TYPES = ['builder_page', 'cms_page', 'product', 'collection'] as const;
 
@@ -68,7 +68,7 @@ const seoAuditRoutes: FastifyPluginAsync = (app) => {
         orderBy: [{ score: 'asc' }, { computedAt: 'desc' }],
       })
     );
-    return ok(rows);
+    return ok(rows.map((row) => ({ ...row, path: storedPath(row.path) })));
   });
 
   // ── Reindex the whole site ────────────────────────────────────────────────

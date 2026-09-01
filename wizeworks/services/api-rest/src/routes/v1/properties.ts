@@ -35,6 +35,7 @@ import { ok } from '@wizeworks/api-core/envelope';
 import { notFound, conflict, validationError, paymentRequired } from '@wizeworks/api-core/errors';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { isModuleEnabled } from '@wizeworks/auth';
+import { ALL_MODULES, type ModuleSlug } from '@wizeworks/modules';
 // Universal search (docs/39): a property IS a `site` entity. Re-index it after
 // each write so ⌘K stays live; indexEntity never throws into the handler.
 import { indexEntity } from '@wizeworks/events';
@@ -63,6 +64,21 @@ interface PropertyView {
   brandOverride: Record<string, unknown> | null;
   // Per-site disabled modules (docs/49 Slice F). Empty = all tenant-active modules on.
   moduleScope: string[];
+  /**
+   * How many pages this site has, on the LIST only.
+   *
+   * Present so a caller can tell an EMPTY site from a built one before it offers
+   * to do something whole-site to it. A blueprint install swaps the whole site
+   * (site-service `installSite`, `allowReplace: true`), which is right for a site
+   * with nothing on it and is the loss of a year's work on one that is trading —
+   * and the console offering that choice could not see the difference, so it
+   * promised "your existing pages are left exactly as they are" either way.
+   *
+   * Undefined on the single-property GET rather than 0: absent means "not
+   * counted here", and a defaulted 0 would read as "this site is empty", which
+   * is the failure this field exists to end.
+   */
+  pageCount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -72,19 +88,22 @@ function parseModuleScope(raw: unknown): string[] {
   return raw.filter((v): v is string => typeof v === 'string');
 }
 
-function toView(row: {
-  id: string;
-  tenantId: string;
-  slug: string;
-  name: string;
-  isPrimary: boolean;
-  status: string;
-  settings: unknown;
-  brandOverride: unknown;
-  moduleScope: unknown;
-  createdAt: Date;
-  updatedAt: Date;
-}): PropertyView {
+function toView(
+  row: {
+    id: string;
+    tenantId: string;
+    slug: string;
+    name: string;
+    isPrimary: boolean;
+    status: string;
+    settings: unknown;
+    brandOverride: unknown;
+    moduleScope: unknown;
+    createdAt: Date;
+    updatedAt: Date;
+  },
+  pageCount?: number
+): PropertyView {
   return {
     id: row.id,
     tenantId: row.tenantId,
@@ -98,6 +117,7 @@ function toView(row: {
         : {},
     brandOverride: parseBrandOverride(row.brandOverride),
     moduleScope: parseModuleScope(row.moduleScope),
+    ...(pageCount === undefined ? {} : { pageCount }),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
@@ -105,26 +125,21 @@ function toView(row: {
 
 const IdParam = z.object({ id: z.string().uuid() });
 
-// Per-site module scope. Kept in step with @wizeworks/modules' ALL_MODULES — a slug
-// missing here cannot be scoped off for one site, which reads as the toggle
-// silently doing nothing.
-const MODULE_SLUGS = [
-  'builder',
-  'commerce',
-  'cms',
-  'crm',
-  'email',
-  'b2b',
-  'invoicing',
-  'dropship',
-  'inventory',
-  'chat',
-  'ai',
-  'scheduling',
-  'social',
-  'finance',
-  'staff',
-] as const;
+// Per-site module scope, DERIVED from @wizeworks/modules rather than re-typed.
+//
+// It used to be a hand-written copy under a comment saying it was "kept in step
+// with ALL_MODULES", and it was not: `funnels` was added to the package and
+// forgotten here, so it could not be scoped off for one site and the per-site
+// toggle silently did nothing for it. That is the same failure the tenant-level
+// list already suffered twice (`inventory`, `finance` — see lib/module-toggle),
+// and it typechecks perfectly both times, because a `ModuleSlug[]` literal is
+// never exhaustive over the union.
+//
+// `z.enum` wants a non-empty literal tuple and `ALL_MODULES` is a readonly array,
+// so the shape is asserted here once. The assertion is safe by construction —
+// the package's own type is `readonly ModuleSlug[]` — and it is the only place
+// this list is written down.
+const MODULE_SLUGS = ALL_MODULES as unknown as readonly [ModuleSlug, ...ModuleSlug[]];
 
 // All fields optional → PATCH semantics. `slug` is intentionally immutable here
 // (it's the stable per-tenant handle that anchors the subdomain host).
@@ -179,10 +194,17 @@ const CreateProperty = z.object({
 const propertiesRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/properties', async (request) => {
     const auth = requireRole(request, 'viewer');
-    const rows = await withTenant({ tenantId: auth.tenantId }, (tx) =>
-      tx.property.findMany({ orderBy: [{ isPrimary: 'desc' }, { name: 'asc' }] })
-    );
-    return ok(rows.map(toView));
+    const [rows, pages] = await withTenant({ tenantId: auth.tenantId }, async (tx) => [
+      await tx.property.findMany({ orderBy: [{ isPrimary: 'desc' }, { name: 'asc' }] }),
+      // ONE grouped count for every site, rather than a count per row: this list
+      // is read on nearly every boot, and N+1 counts on a tenant with a dozen
+      // sites would be a dozen round trips to answer "is this site empty".
+      await tx.builderPage.groupBy({ by: ['propertyId'], _count: { _all: true } }),
+    ]);
+    // A site with no pages is absent from a groupBy, so it has to default to 0
+    // HERE, where zero genuinely means "counted, and there are none".
+    const countOf = new Map(pages.map((g) => [g.propertyId, g._count._all] as const));
+    return ok(rows.map((row) => toView(row, countOf.get(row.id) ?? 0)));
   });
 
   // Create an additional web property (site). Mints its always-on

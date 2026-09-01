@@ -9,7 +9,7 @@ import {
   resolveModules,
   toPersistPayload,
 } from '../../../lib/onboarding/story-state';
-import { isSellingSelected } from '../../../lib/onboarding/modules';
+import { isSellingSelected } from '../../../lib/onboarding/module-graph';
 import { useOnboarding, useOnboardingActions } from '../../../lib/onboarding/api';
 import { useConfirm } from '../../../lib/confirm';
 import { useStoryModel } from '../../../lib/onboarding/use-story-model';

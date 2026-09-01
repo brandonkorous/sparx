@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { auth } from '@wizeworks/auth';
-import { accountOrigin, clearedSessionCookie } from '@piggles/auth-handoff';
+import { accountOrigin, signedOutCookies } from '@piggles/auth-handoff';
 
 // Signing out, from the console side.
 //
@@ -33,9 +33,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   // hiccuped is the worst possible outcome here.
   await auth.api.signOut({ headers: request.headers }).catch(() => undefined);
 
-  const cookie = clearedSessionCookie();
   const response = NextResponse.redirect(`${accountOrigin()}/sign-in?signedOut=1`, 303);
-  response.cookies.set({ name: cookie.name, value: cookie.value, ...cookie.options });
+  for (const cookie of signedOutCookies()) {
+    response.cookies.set({ name: cookie.name, value: cookie.value, ...cookie.options });
+  }
   response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
   return response;
 }

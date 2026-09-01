@@ -41,6 +41,11 @@ export type SparxModule =
   // whole portal + any partner signal (a referral badge, a commission tile) reads
   // as "partner" wherever it surfaces.
   | 'partner'
+  // Funnels (docs/151) — landing pages and the steps between them. A real module
+  // with a hue of its own; it shipped tokens in both brands and was missing from
+  // every list in this package, which is the recurring failure the color-key list
+  // above already records.
+  | 'funnels'
   | 'platform';
 
 /**

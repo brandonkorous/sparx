@@ -3,28 +3,29 @@
 // One ready-made design — preview it, then add it to a site.
 //
 // Every action pivots on WHICH SITE, so the picker and the actions live together
-// in blueprint-detail-target. Adding is additive: it stamps a design as DRAFTS
-// and leaves your pages and products alone. What it does NOT leave alone is your
-// console, which is why the examples are a choice rather than a given (issue 098).
+// in blueprint-detail-target, and what is known about that site in
+// blueprint-detail-state.
+//
+// A design is a WHOLE SITE. It stamps as drafts, so nothing is live until it is
+// published — but adding one to a site that has pages REPLACES them, along with
+// its header, footer and look, and that cannot be undone. This file used to say
+// the opposite ("adding is additive… leaves your pages alone"), and so did the
+// pane; `installImpact` in blueprints-words is where the true sentence lives now.
+// Products, articles, customers and orders really are untouched — only the site
+// itself is swapped. The examples are still a choice rather than a given
+// (issue 098).
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, Text } from '@wizeworks/silicaui-react';
 
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PANE_SHELL } from '../../components/pane-toolbar';
-import { useActivePropertyId, useModuleStates } from '../../lib/api/shell-data';
-import { useSites } from '../sites/data';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import {
-  useBlueprint,
-  useBlueprintInstalls,
-  type Blueprint,
-  type BlueprintInstall,
-} from './blueprints-data';
-import { useUpdatePlan } from './blueprints-update';
-import { contentsGroups, installState } from './blueprints-words';
+import { useBlueprint, type Blueprint } from './blueprints-data';
+import { contentsGroups } from './blueprints-words';
 import { useBlueprintActions } from './blueprint-detail-actions';
+import { useBlueprintTarget } from './blueprint-detail-state';
 import {
   BlueprintContentsSection,
   BlueprintPreview,
@@ -95,82 +96,44 @@ function BlueprintBody({
   dataUpdatedAt: number;
   refetch: () => void;
 }) {
-  const { data: sites } = useSites();
-  const activeSiteId = useActivePropertyId();
-  const { data: modules } = useModuleStates();
+  const target = useBlueprintTarget(blueprint);
   const {
-    data: installs,
-    isFetching: installsFetching,
-    refetch: refetchInstalls,
-  } = useBlueprintInstalls();
-
-  // Default the target to the site being worked in — nearly always the one meant
-  // — but keep it a visible, changeable choice, because adding a whole design to
-  // the wrong site is a real mistake to make.
-  const [chosen, setChosen] = useState('');
-  const targetSite = chosen || (activeSiteId ?? '');
+    targetSite,
+    targetName,
+    targetPageCount,
+    newSite,
+    current,
+    updateAvailable,
+    plan,
+    installsFetching,
+    refetchInstalls,
+  } = target;
 
   // Seeding is on purpose, so the examples come by default. Turning them off is
   // the deliberate act, not the other way round.
   const [sampleData, setSampleData] = useState(true);
 
-  const siteItems = useMemo(() => {
-    const items: Record<string, string> = {};
-    for (const site of sites ?? []) items[site.id] = site.name;
-    return items;
-  }, [sites]);
-  const targetName = siteItems[targetSite] ?? 'this site';
-
-  // The install row (if any) for THIS blueprint in the chosen site. The catalog
-  // list only knows the active site's state; this is what lets the pane speak
-  // truthfully about whichever site the operator points at.
-  const current: BlueprintInstall | undefined = useMemo(
-    () =>
-      (installs ?? []).find(
-        (row) => row.blueprint_key === blueprint.key && row.property_id === targetSite
-      ),
-    [installs, blueprint.key, targetSite]
-  );
-  const state = current ? installState(current.status) : null;
-
-  // An update is available when the chosen site's install trails the catalog
-  // version and is in a state that can take one (a draft or a live install — not
-  // one that is mid-install or stopped, which resolve their own way first).
-  const updateAvailable =
-    !!current &&
-    (current.status === 'installed' || current.status === 'live') &&
-    current.blueprint_version !== blueprint.version;
-  const { data: plan } = useUpdatePlan(current?.id ?? '', updateAvailable);
-
   const actions = useBlueprintActions({
     blueprint,
     targetSite,
     targetName,
+    targetPageCount,
+    newSite,
     current,
     plan,
-    refetchInstalls: () => {
-      void refetchInstalls();
-    },
+    refetchInstalls,
   });
-
-  // Which required modules are off, so the note can say what will be skipped —
-  // mirroring the installer, which only fills in modules the tenant has enabled.
-  const offModules = useMemo(() => {
-    const on = new Map<string, boolean>();
-    for (const module of modules ?? []) on.set(module.slug, module.enabled);
-    return blueprint.requiredModules.filter((slug) => on.get(slug) === false);
-  }, [modules, blueprint.requiredModules]);
 
   return (
     <div className={PANE_SHELL}>
       <BlueprintToolbar
-        status={state}
+        status={target.status}
         updateAvailable={updateAvailable}
         isFetching={isFetching || installsFetching}
         updatedAt={dataUpdatedAt}
         onRefresh={() => {
           refetch();
-          void refetchInstalls();
+          refetchInstalls();
         }}
       />
 
@@ -206,15 +169,17 @@ function BlueprintBody({
             />
           ) : null}
 
-          <BlueprintContentsSection blueprint={blueprint} offModules={offModules} />
+          <BlueprintContentsSection blueprint={blueprint} offModules={target.offModules} />
 
           <BlueprintTargetSection
             blueprint={blueprint}
-            sites={siteItems}
-            sitesLoaded={(sites ?? []).length > 0}
+            sites={target.siteItems}
+            sitesLoaded={target.sitesLoaded}
             targetSite={targetSite}
             targetName={targetName}
-            onSite={setChosen}
+            targetPageCount={targetPageCount}
+            newSite={newSite}
+            onSite={target.chooseSite}
             hasExamples={contentsGroups(blueprint.contents).examples.length > 0}
             sampleData={sampleData}
             onSampleData={setSampleData}

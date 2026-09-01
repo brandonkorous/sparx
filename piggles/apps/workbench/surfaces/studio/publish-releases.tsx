@@ -15,9 +15,7 @@ import { Badge, Button, useToast } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import { useReleases, useRestoreRelease, type Release } from '../../lib/studio/publish-data';
 import { PaneWaiting } from '../../components/pane-waiting';
-
-const DAY = new Intl.DateTimeFormat(undefined, { weekday: 'long', day: 'numeric', month: 'long' });
-const CLOCK = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
+import { CLOCK, DAY, TIME_CELL } from './when';
 
 export function PublishReleases() {
   const releases = useReleases();
@@ -105,9 +103,7 @@ function ReleaseRow({
 }) {
   return (
     <li className="flex items-center gap-2 px-1 py-1">
-      <span className="text-base-content w-14 shrink-0 text-sm">
-        {CLOCK.format(new Date(release.createdAt))}
-      </span>
+      <span className={TIME_CELL}>{CLOCK.format(new Date(release.createdAt))}</span>
       <Badge color={release.source === 'restore' ? 'warning' : 'info'} variant="soft">
         {release.source === 'restore' ? 'Put back' : 'Published'}
       </Badge>

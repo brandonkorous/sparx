@@ -53,6 +53,7 @@ import pino from 'pino';
 import { startConsumer, type RunningConsumer, type WorkerSubscription } from '@wizeworks/events';
 
 import * as automation from '@wizeworks/automation-worker';
+import { runTick } from '@wizeworks/automation-worker';
 import * as channelSync from '@wizeworks/channel-sync-worker';
 import * as commerceIndexer from '@wizeworks/commerce-indexer';
 import * as domain from '@wizeworks/domain-worker';
@@ -148,8 +149,54 @@ async function main(): Promise<void> {
   // `log` transport, where there is nothing to drain.
   consumers.push(...started.filter((c): c is RunningConsumer => c !== null));
 
+  // ── The automation engine's heartbeat ──────────────────────────────────────
+  //
+  // Consuming an event ENQUEUES a run; a tick is what ADVANCES it. Those are two
+  // different mechanisms, and only the first one lived in this process — the
+  // second was `k8s/cronjobs/automation-tick.yaml` and nothing else. So anywhere
+  // that is not the cluster, a run was created and then never moved: local dev
+  // had 100 due runs and 20 due schedules banked up behind a heartbeat that never
+  // came (issue 354). Every symptom of it is silent by construction, which is why
+  // it survived this long.
+  //
+  // Overlap with the CronJob is harmless and deliberate: `runAutomationTick` takes
+  // a Postgres advisory lock, so whichever fires second gets `acquired: false` and
+  // returns. The in-process guard below is the same idea one level up — a tick
+  // that overruns its interval must not have another stacked behind it, matching
+  // the CronJob's `concurrencyPolicy: Forbid`.
+  let ticking = false;
+  const tickLogger = forWorker('automation-tick');
+  const heartbeat =
+    env.AUTOMATION_TICK_INTERVAL_MS > 0
+      ? setInterval(() => {
+          if (ticking) return;
+          ticking = true;
+          void runTick(tickLogger)
+            .then((summary) => {
+              // Quiet by default: a tick that found nothing is the normal case and
+              // would otherwise write a line every minute forever.
+              const moved =
+                summary.runs.runs > 0 || summary.schedule.enqueued > 0 || summary.sequences.due > 0;
+              if (moved) tickLogger.info(summary, 'automation tick');
+              else tickLogger.debug(summary, 'automation tick');
+            })
+            .catch((err: unknown) => {
+              // Never fatal. A failed tick is retried on the next beat, and taking
+              // the process down would stop twelve healthy consumers as well.
+              tickLogger.error({ err }, 'automation tick failed');
+            })
+            .finally(() => {
+              ticking = false;
+            });
+        }, env.AUTOMATION_TICK_INTERVAL_MS)
+      : null;
+  if (heartbeat) {
+    logger.info({ everyMs: env.AUTOMATION_TICK_INTERVAL_MS }, 'automation heartbeat started');
+  }
+
   function shutdown(signal: NodeJS.Signals): void {
     logger.info({ signal, consumers: consumers.length }, 'shutdown received; draining');
+    if (heartbeat) clearInterval(heartbeat);
     // Drain every consumer so in-flight handlers finish and their acks land. An
     // unacknowledged message is redelivered rather than lost, but a redelivered
     // side effect is a duplicate one.

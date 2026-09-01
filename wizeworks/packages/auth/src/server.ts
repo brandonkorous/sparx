@@ -2,6 +2,7 @@ import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
 import { emailOTP, magicLink, mcp, oneTap, organization, twoFactor } from 'better-auth/plugins';
+import { socialProviderConfigured } from './social-providers';
 import { passkey } from '@better-auth/passkey';
 import { createAuthMiddleware, getSessionFromCtx } from 'better-auth/api';
 import { accountOrigin, mcpResourceUrl as brandMcpResourceUrl } from '@wizeworks/links/server';
@@ -104,6 +105,11 @@ function createAuth() {
   // creds are present, so the social button stays inert until the OAuth app +
   // Secret Manager values exist. Redirect URI in Google Console:
   // `${BETTER_AUTH_URL}/api/auth/callback/google`.
+  // Asked through the shared capability query, not re-tested here — the screens
+  // that draw a "Continue with Google" button ask the SAME function, so a
+  // deployment can never register the provider and hide the button, or hide the
+  // provider and offer one that cannot work (./social-providers).
+  const googleReady = socialProviderConfigured('google');
   const googleId = process.env.GOOGLE_CLIENT_ID;
   const googleSecret = process.env.GOOGLE_CLIENT_SECRET;
 
@@ -232,7 +238,7 @@ function createAuth() {
       },
     },
 
-    ...(googleId && googleSecret
+    ...(googleReady && googleId && googleSecret
       ? {
           socialProviders: {
             google: { clientId: googleId, clientSecret: googleSecret },
@@ -557,7 +563,7 @@ function createAuth() {
       // Google One Tap — the streamlined prompt, not just the button. Only when
       // Google is configured (same env gate as the social provider); the server
       // verifies the Google credential against that same OAuth client.
-      ...(googleId && googleSecret ? [oneTap()] : []),
+      ...(googleReady ? [oneTap()] : []),
       // WebAuthn passkeys (docs/16 §3.5) — phishing-resistant, the strongest
       // factor we offer. rpName is our display name; rpID + expected origin
       // auto-derive from BETTER_AUTH_URL's hostname and the request Origin, so

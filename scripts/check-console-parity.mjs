@@ -211,6 +211,12 @@ const COLLAPSE = [
     },
     {
         side: 'piggles',
+        path: 'lib/onboarding/module-graph',
+        into: 'lib/onboarding/modules',
+        why: 'the dependency graph, lifted out of modules.ts under the 250-line rule — the same capability, in two files here and one there',
+    },
+    {
+        side: 'piggles',
         path: 'components/status',
         into: 'components/status-bar',
         why: 'the strip’s two chips and its activity rules, lifted out under the 250-line rule',
@@ -634,6 +640,18 @@ const EXCEPTIONS = [
     {
         axis: 'components',
         only: 'piggles',
+        path: 'components/lifecycle-band',
+        why: 'the bar that says a business is about to stop working, in the HeaderNotice slot BOTH Piggles shells mount. It has to be a band here because the Piggles rail collapses and the phone shell has no rail at all, so components/rail/plan-card warned neither population — a phone showed nothing whatsoever about a trial ending and then the site went dark (issue 369). sparx says the same thing with components/billing/billing-banner.tsx plus its topbar trial chip: same capability, different chrome, and sparx has no compact shell to lose it in.',
+    },
+    {
+        axis: 'lib',
+        only: 'piggles',
+        path: 'lib/billing/lifecycle',
+        why: 'the WORDS for each lifecycle phase, shared by the rail card and the band so the two cannot drift — they did, and the drift was a whole population being warned by neither. Not the same thing as sparx’s lib/billing, which is prices and plan comparison: this holds a phase, a countdown and a sentence, and no money at all (RULE #2).',
+    },
+    {
+        axis: 'components',
+        only: 'piggles',
         path: 'components/table',
         why: 'a local default on silica’s Table scroll wrapper. A call-site patch that belongs upstream — raise it against silicaui rather than copying it into sparx (root RULE #1).',
     },
@@ -775,7 +793,14 @@ function walk(abs, base, out = []) {
             continue;
         }
         const ext = path.extname(entry.name);
+        // Tests are not system furniture. This axis asks whether the two consoles
+        // have the same SCREENS and plumbing; a test file is neither, and the two
+        // products test differently by construction — Piggles' console has a vitest
+        // seat and sparx's workbench has none. Comparing them would mean an
+        // EXCEPTIONS entry per test file forever, each one reading as a capability
+        // sparx is missing.
         if (!CODE.has(ext) || entry.name.endsWith('.d.ts')) continue;
+        if (/\.test\.[jt]sx?$/.test(entry.name)) continue;
         out.push(path.relative(base, full).split(path.sep).join('/').slice(0, -ext.length));
     }
     return out;

@@ -25,6 +25,11 @@ export interface Site {
   brandOverride: Record<string, unknown> | null;
   /** Module slugs switched OFF for this site — see `useSiteModules`. */
   moduleScope: string[];
+  /** How many pages this site has. On the LIST only, so a caller can tell an
+   *  empty site from a built one before offering to do something whole-site to
+   *  it. Undefined on the single-site read — absent means "not counted", never
+   *  "empty". */
+  pageCount?: number;
   createdAt: string;
   updatedAt: string;
 }

@@ -9,7 +9,7 @@ import { StepWorkspace, type SlugCheck } from './step-workspace';
 import { StepDomain } from './step-domain';
 import { StepPayments } from './step-payments';
 import { StepLaunch } from './step-launch';
-import { effectiveModuleOn } from '../../../lib/onboarding/modules';
+import { effectiveModuleOn } from '../../../lib/onboarding/module-graph';
 import type { OnboardingActions } from '../../../lib/onboarding/api';
 import type {
   OnboardingStepKey,

@@ -211,6 +211,34 @@ export async function projectProduct(
 }
 
 /**
+ * Which product a variant belongs to, or null when the variant is gone.
+ *
+ * The `inventory.*` events are VARIANT-keyed — every one of them carries
+ * `variantId` and none carries `productId`, because stock is counted per
+ * variant per warehouse and the product face is a derived view of it. The
+ * search index, the market listing and rule-driven collections are all keyed
+ * on the PRODUCT, so something has to bridge the two, and this is it.
+ *
+ * The indexer used to read `productId` straight off the payload and skip the
+ * event when it was missing, which for inventory events was always (issue 370).
+ * Resolving here rather than adding `productId` to the payload keeps the extra
+ * read on the consumer, which runs once per event in a worker, instead of on
+ * `emitStockEvents`, which runs on every movement of every checkout line.
+ */
+export async function productIdForVariant(
+  ctx: ServiceContext,
+  variantId: string
+): Promise<string | null> {
+  return withTenant(ctx, async (tx) => {
+    const variant = await tx.productVariant.findFirst({
+      where: { id: variantId },
+      select: { productId: true },
+    });
+    return variant?.productId ?? null;
+  });
+}
+
+/**
  * Project many products in one call. The indexer batches by tenant so
  * the RLS context flips once per batch, not per row. When `ranks` is supplied
  * (reindex path), each product's best-seller rank is stamped into its doc.

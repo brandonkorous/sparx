@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from 'react';
 import type { StoryState } from '@wizeworks/story-schemas';
 import { useOnboardingActions } from '../../../lib/onboarding/api';
-import { isSellingSelected } from '../../../lib/onboarding/modules';
+import { isSellingSelected } from '../../../lib/onboarding/module-graph';
 import type { WizardBlueprint } from '../../../lib/onboarding/types';
 import { SummaryCard } from '../../../lib/onboarding/summary-card';
 import { enabledModuleKeys, resolveModules } from '../../../lib/onboarding/story-state';

@@ -303,31 +303,42 @@ they are the only comparable data across ten businesses:
 | **Growth board**         | Did this signup produce one contact, one deal, the `brand:piggles` tag and the story fields? Built, never seen with a real signup                                  |
 | **Usage rollup**         | Do the meters read sensibly for this tenant? Ten real businesses is the first data they will ever have — and point-in-time vs daily-total is easy to get backwards |
 
-## Before the first run — one thing to settle
+## Dev email WORKS — read it, do not write "not checked"
 
-**Dev email is a no-op, and email is central to eight of the ten personas.**
-Order confirmations, booking reminders, invoices, reset links, newsletters,
-review requests — all of it currently resolves to "not checked", ten times over.
+**This section used to say the opposite, and it was wrong.** It described a
+transport selector that no longer exists: `SPARX_DEV_WORKER_ROUTES`, unset,
+falling through to `{ kind: 'log' }`, so every `email.send` was logged and
+never rendered. The selector is `EVENT_BROKER` now, `piggles/apps/account/.env`
+sets it to `nats`, and the whole path runs. Measured end to end on 2026-09-01
+(issue [368](issues/368-the-sign-in-screen-said-it-had-emailed-her-a-link-and-had-not.md)):
+a magic link published as `sparx.email.send`, and the email-worker delivered and
+acked that exact sequence number.
 
-The mechanism: with `SPARX_DEV_WORKER_ROUTES` unset the event transport is
-`{ kind: 'log' }`, so an `email.send` publish is **logged and never rendered**.
-You can see that an event fired and what payload it carried; you cannot see the
-subject line, the rendered body, or whether the merge tags resolved — which is
-the half a customer actually receives.
+So a run CAN read what the customer receives. The console provider prints, to
+the **event-worker's** stdout:
 
-Two honest options, and this is Brandon's call before P01 starts:
+```
+[email/console] magic-link → p03.devi@piggles.test :: Your sign-in link
+<the full plain-text body follows on the next line>
+```
 
-1. **Wire it** — set `SPARX_DEV_WORKER_ROUTES` to JSON routing `email.send` (and
-   anything else a run needs) at the local email worker, whose dev provider
-   renders to the console. Then a run can read what the customer would get.
-   Needs a dev-server restart, so it is asked for, never done mid-run.
-2. **Accept it** — and then every persona records "email not delivered in dev;
-   event published, payload as follows" **once**, rather than as a mystery in
-   eleven acts. Recovery flows still work: reset tokens are stored plaintext in
-   `verifications`.
+Set `SPARX_EMAIL_LOG_HTML=1` to get the HTML instead of the text. That is the
+subject line, the rendered body and whether the merge tags resolved — the half
+this file previously said was unobtainable. **Order confirmations, booking
+reminders, invoices, reset links, newsletters and review requests are all
+checkable**, and eight of the ten personas depend on them.
 
-Until it is settled, treat option 2 as in force and write the words. What must
-never happen is a run reporting that an email was sent.
+Two things to hold on to:
+
+- **It is the worker's terminal, not the app's.** The event is published by the
+  app and rendered by `wizeworks/services/event-worker`, so the output appears
+  there. Nothing is written to a table you can query — `email_events` records an
+  `accepted` row for tenant-scoped mail, which tells you it was relayed, not what
+  it said.
+- **Absence still is not measurement (RULE #4).** If you did not go and look at
+  the worker output, write "not checked". What must never happen is a run
+  reporting that an email was sent because a screen said so — that exact false
+  report is issue 368.
 
 1. Read the persona file top to bottom before touching anything.
 2. Set `Status: in progress` and stamp the date in **Run log**.
@@ -357,9 +368,9 @@ the whole point is a business starting from nothing.
 | Password | `Piggles-Test-2026!` for every persona (local docker only) |
 | Business | exactly the name in the persona file, apostrophes included |
 
-Dev email is a silent no-op (`SPARX_DEV_WORKER_ROUTES` is unset — FOLLOW_UPS #8),
-so anything gated on receiving mail is **not checked** unless you read the token
-out of `verifications` yourself and record that you did.
+Dev email is delivered and rendered — read it in the event-worker's terminal
+(see above). The token is also in `verifications` if you would rather take it
+from there; either way, record which you did.
 
 ### Where things run
 

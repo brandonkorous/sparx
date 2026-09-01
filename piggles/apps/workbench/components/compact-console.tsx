@@ -23,6 +23,7 @@
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { faShareNodes } from '@fortawesome/pro-solid-svg-icons';
 import { HeaderNotice, type HeaderNoticeData, Icon } from '@piggles/ui';
+import { LifecycleBand } from '@/components/lifecycle-band';
 import { Button } from '@wizeworks/silicaui-react';
 import { Logo } from '@piggles/brand/react';
 import { MODULE_TO_APP, PRODUCT } from '@piggles/config';
@@ -117,6 +118,12 @@ export function CompactConsole({
           off the stack instead of pushing the thumb bar off screen. Renders
           nothing when there is nothing to say. */}
       <HeaderNotice notice={notice} />
+
+      {/* `railCardVisible={false}` is the literal truth on a phone: there is no
+          rail, so nothing else in this shell says the account is counting down.
+          Before this, a phone showed NOTHING about a trial ending and then the
+          site went dark. */}
+      <LifecycleBand accountOrigin={accountOrigin} railCardVisible={false} />
 
       {/* Crash-isolated from the stack below, for the same reason as desktop:
           the panels hold the unsaved work and the header must never cost them. */}

@@ -8,6 +8,7 @@
 
 import type { Prisma, TxClient } from '@wizeworks/db';
 import { isRecordAddress } from '@wizeworks/silica-catalog';
+import { normalizePath } from '@wizeworks/site-lint';
 import {
   auditEntity,
   extractBuilderTreeSignals,
@@ -51,12 +52,40 @@ function silicaSignalsFor(page: {
  *
  *  Null for a RECORD PAGE: its slug is an address (`/products/:handle`), and turning
  *  that into a link would give the owner an "open the page" affordance that 404s. This
- *  string is persisted on the audit row, so a wrong answer here outlives the request. */
+ *  string is persisted on the audit row, so a wrong answer here outlives the request.
+ *
+ *  NORMALIZED, because a slug is stored two ways. `/${slug}` assumed the bare form,
+ *  so every page whose slug already carried its slash was listed as `//cart`,
+ *  `//account/login`, `//book` — ten of Devi's fifty-one, and all ten of them pages
+ *  the platform created for her (persona issue 360). `normalizePath` is the same
+ *  helper the page report uses to match a slug to its traffic; both vintages collapse
+ *  onto one path. */
 export function pathFor(type: EntityType, slug: string | null): string | null {
   if (!slug || isRecordAddress(slug)) return null;
-  if (type === 'product') return `/products/${slug}`;
-  if (type === 'collection') return `/collections/${slug}`;
-  return `/${slug}`; // builder_page, cms_page
+  // The handle bare, so composing a record route cannot produce an interior `//`
+  // either; `normalizePath` fixes a leading slash and a trailing one, not a middle.
+  const handle = slug.replace(/^\/+/, '');
+  if (type === 'product') return normalizePath(`/products/${handle}`);
+  if (type === 'collection') return normalizePath(`/collections/${handle}`);
+  return normalizePath(handle); // builder_page, cms_page
+}
+
+/** A stored audit path, as it should read today.
+ *
+ *  `seo_audits.path` is a CACHE of the entity's slug, written when the audit last
+ *  ran, so every row written before `pathFor` normalized still carries the doubled
+ *  slash. Nobody should have to know to press Rescan to stop seeing `//cart`, and a
+ *  derived column is not worth a migration, so it is normalized on the way out. The
+ *  next audit rewrites it correctly of its own accord.
+ *
+ *  Every reader of that column goes through here — two endpoints today, and the
+ *  point of the helper is that a third cannot quietly skip it. */
+export function storedPath(path: string | null): string | null {
+  // The leading slashes come off FIRST. `normalizePath` adds one when it is missing
+  // and never removes one, deliberately: `//example.com/x` is a protocol-relative
+  // URL, and site-lint checks real links with it. Only here, where the string is
+  // known to be a site-relative path, is collapsing them right.
+  return path == null || path === '' ? null : normalizePath(path.replace(/^\/+/, ''));
 }
 
 /**
