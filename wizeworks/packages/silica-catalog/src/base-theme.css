@@ -1,8 +1,8 @@
 /* The platform base theme as a Tailwind v4 `@theme` block.
  *
- * A CSS projection of `BASE_SILICA_THEME` (base-theme.ts) — the same sparx Ember
- * look, in the form Tailwind needs at BUILD time. It exists because registration and
- * value are two different jobs:
+ * A CSS projection of `BASE_SILICA_THEME` (base-theme.ts) — silicaui's own house
+ * baseline, in the form Tailwind needs at BUILD time. It exists because
+ * registration and value are two different jobs:
  *
  *   · silicaui's `@plugin` emits its OWN component + color classes (`btn-primary`,
  *     `bg-primary`, `rounded-box`, …) and supplies default token values through the
@@ -12,9 +12,10 @@
  *     `@theme`. The storefront really uses these (product swatches, booking
  *     selection), so the keys must be declared somewhere at build time.
  *
- * The VALUES here are only a fallback. Every served site injects its own theme in an
- * unlayered `:root` (`buildSilicaThemeCssFromTheme`), which outranks this layered
- * block — so these apply to a page that somehow injects no theme at all.
+ * The VALUES here are mostly a fallback: every served site injects its own theme in
+ * an unlayered `:root` (`buildSilicaThemeCssFromTheme`), which outranks this layered
+ * block. The exception is the three roles no shipped theme declares — `danger`,
+ * `highlight`, `border` — which resolve HERE on every site, themed or not.
  *
  * KEEP IN SYNC with base-theme.ts: `base-theme.css.test.ts` fails if any key here
  * disagrees with `BASE_SILICA_THEME.tokens`, or if the TS constant grows a
@@ -30,32 +31,33 @@
  * See docs/implementation/st-token-retirement.md. */
 
 @theme {
-  --color-base-100: #ffffff;
-  --color-base-200: #f8fafc;
-  --color-base-300: #eef2f7;
-  --color-base-content: #0f172a;
-  --color-primary: #e04631;
-  --color-primary-content: #ffffff;
-  --color-secondary: #4c9a8e;
-  --color-secondary-content: #ffffff;
-  --color-accent: #c1652e;
-  --color-accent-content: #fff7ef;
-  --color-neutral: #0f172a;
-  --color-neutral-content: #ffffff;
-  --color-info: #0284c7;
-  --color-info-content: #f0f9ff;
-  --color-success: #16a34a;
-  --color-success-content: #f0fdf4;
-  --color-warning: #d97706;
-  --color-warning-content: #0a0a0a;
-  --color-error: #dc2626;
-  --color-error-content: #ffffff;
-  /* `danger` is sparx's `statusTone()` name for silica's built-in `error`. */
-  --color-danger: #dc2626;
-  --color-danger-content: #ffffff;
-  /* `highlight` — sparx's Nth promo/attention hue; silica has no counterpart. */
-  --color-highlight: #ec4899;
-  --color-highlight-content: #ffffff;
+  --color-base-100: oklch(98% 0.003 250);
+  --color-base-200: oklch(95% 0.004 250);
+  --color-base-300: oklch(90% 0.006 250);
+  --color-base-content: oklch(21% 0.012 255);
+  --color-primary: oklch(42% 0.055 252);
+  --color-primary-content: oklch(98% 0.01 252);
+  --color-secondary: oklch(55% 0.035 255);
+  --color-secondary-content: oklch(98% 0.01 255);
+  --color-accent: oklch(64% 0.13 211);
+  --color-accent-content: oklch(15% 0.02 211);
+  --color-neutral: oklch(26% 0.014 255);
+  --color-neutral-content: oklch(98% 0.01 255);
+  --color-info: oklch(68% 0.1 232);
+  --color-info-content: oklch(15% 0.02 232);
+  --color-success: oklch(70% 0.12 150);
+  --color-success-content: oklch(15% 0.02 150);
+  --color-warning: oklch(80% 0.11 85);
+  --color-warning-content: oklch(15% 0.02 85);
+  --color-error: oklch(58% 0.17 25);
+  --color-error-content: oklch(100% 0 0);
+  /* `danger` is the platform's `statusTone()` name for silica's built-in `error`. */
+  --color-danger: oklch(58% 0.17 25);
+  --color-danger-content: oklch(100% 0 0);
+  /* `highlight` — the platform's promo/attention role; silica has no counterpart,
+   * so it takes the one accent this baseline reserves for interaction. */
+  --color-highlight: oklch(64% 0.13 211);
+  --color-highlight-content: oklch(15% 0.02 211);
   /* Border COLOR — silica models line WIDTH (`--border`), not a line hue. */
-  --color-border: #e2e8f0;
+  --color-border: oklch(90% 0.006 250);
 }

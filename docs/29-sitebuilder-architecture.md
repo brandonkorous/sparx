@@ -1,8 +1,8 @@
 # Site Builder Architecture
 
-**Version:** 1.2.0
+**Version:** 1.3.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-02
+**Last Updated:** 2026-08-30
 
 ---
 
@@ -106,8 +106,20 @@ forty the marketplace listed were disjoint sets. All six shipped the identical
 
 What survives is the compile path and one **platform base** (`PLATFORM_TOKEN_DEFAULTS` /
 `PLATFORM_PRESET_V2`), which mirrors `BASE_SILICA_THEME` so an unthemed site compiles the
-same Ember look the storefront falls back to. The v2 fallback used to be apex's indigo,
-so the two disagreed.
+same look the storefront falls back to. The v2 fallback used to be apex's indigo, so the
+two disagreed.
+
+That base is **silicaui's own house baseline (`quartz`) and belongs to no product.** It
+was one brand's flagship palette until 2026-08-30, which was fine while the platform
+served one brand and wrong afterwards: `wizeworks/apps/site` renders every brand's tenants
+off one deployment, so the fallback painted one company's brand primary onto the other's
+customers' public shops. Stated in four places for four reasons — the silica constant,
+its CSS projection (Tailwind needs the keys at build time), v2, and v1 (transactional
+email's fallback palette) — and held in step by tests that name the key that drifted,
+including one that re-reads the baseline out of `@wizeworks/silicaui-html` so an upstream
+change is loud. A brand's own starter look is its golden blueprint
+(`platformBrandIdentity(brand).goldenBlueprintKey`), never this. Full account:
+`piggles/docs/personas/issues/343`.
 
 A theme reaches the compiler as data, never by name:
 `themePresetV2FromTokens(light, dark)` turns a resolved silica token bag into a

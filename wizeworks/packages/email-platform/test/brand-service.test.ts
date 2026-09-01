@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { BASE_SILICA_THEME } from '@wizeworks/silica-catalog';
+import { PLATFORM_TOKEN_DEFAULTS } from '@wizeworks/site-themes';
 
 import { siteThemeToBrand } from '../src/services/brand-service';
 
@@ -82,13 +83,33 @@ describe('siteThemeToBrand', () => {
 // for a site with no published silica theme, mirroring the site's own fallback so
 // email and site stay in lockstep before a theme is stored.
 describe('siteThemeToBrand(BASE_SILICA_THEME) — the un-themed fallback', () => {
-  it('flattens the sparx Ember base to email-safe hex, light + dark', () => {
+  // This is the only place the two halves of the platform base can be checked
+  // against each other: @wizeworks/site-themes is dependency-free and cannot see the
+  // silica constant, and silica-catalog does not depend on it either. Both land here.
+  //
+  // It matters more than it looks. The base is what an un-themed tenant's SITE wears
+  // and what their MAIL is painted in, and the two are stated in different packages
+  // in different formats — so a base change applied to one and not the other is a
+  // shop whose receipts stop matching its own storefront, with nothing failing.
+  it('agrees with the v1 defaults, so an un-themed site and its mail match', () => {
     const brand = siteThemeToBrand(BASE_SILICA_THEME, {});
-    // The BASE bag is already hex; colorToHex passes it through unchanged.
-    expect(brand.primary).toBe('#e04631'); // sparx Ember
-    expect(brand.background).toBe('#ffffff');
-    expect(brand.foreground).toBe('#0f172a');
-    expect(brand.dark?.background).toBe('#0b1120');
+    expect(brand.primary).toBe(PLATFORM_TOKEN_DEFAULTS.light.colorPrimary);
+    expect(brand.accent).toBe(PLATFORM_TOKEN_DEFAULTS.light.colorAccent);
+    expect(brand.background).toBe(PLATFORM_TOKEN_DEFAULTS.light.colorBackground);
+    expect(brand.foreground).toBe(PLATFORM_TOKEN_DEFAULTS.light.colorForeground);
+    expect(brand.muted).toBe(PLATFORM_TOKEN_DEFAULTS.light.colorMuted);
+    expect(brand.border).toBe(PLATFORM_TOKEN_DEFAULTS.light.colorBorder);
+    expect(brand.dark?.background).toBe(PLATFORM_TOKEN_DEFAULTS.dark.colorBackground);
+    expect(brand.dark?.foreground).toBe(PLATFORM_TOKEN_DEFAULTS.dark.colorForeground);
+  });
+
+  it('flattens the base to email-safe hex, light + dark', () => {
+    const brand = siteThemeToBrand(BASE_SILICA_THEME, {});
+    // The base bag is OKLCH, so this exercises the real conversion rather than a
+    // pass-through — and a mail client that met an `oklch()` would paint nothing.
+    // It used to be hex, which meant this assertion proved nothing about the
+    // converter every AUTHORED theme's mail already depends on.
+    expect(BASE_SILICA_THEME.tokens['--color-primary']).toMatch(/^oklch\(/);
     for (const v of [
       brand.primary,
       brand.primaryForeground,
@@ -112,7 +133,7 @@ describe('siteThemeToBrand(BASE_SILICA_THEME) — the un-themed fallback', () =>
     });
     expect(brand.siteName).toBe("Bob's Parts");
     expect(brand.logoUrl).toBe('https://x.test/logo.png');
-    // Identity does not change the look — the palette is still the Ember base.
-    expect(brand.primary).toBe('#e04631');
+    // Identity does not change the look — the palette is still the platform base.
+    expect(brand.primary).toBe(PLATFORM_TOKEN_DEFAULTS.light.colorPrimary);
   });
 });

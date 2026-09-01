@@ -160,19 +160,65 @@ function silicaFetchInit(tenantSlug: string, previewToken?: string): RequestInit
 /** The raw frame envelope fetch, `cache()`-memoized per request/tenantSlug so the
  *  home/page fallbacks below (each needing `commerceEnabled`) never re-fetch it —
  *  `getPublishedSilicaFrame` is guaranteed to hit the network at most once. */
+/** One attempt at the frame envelope, with the three outcomes kept apart.
+ *
+ *  `empty` is the API ANSWERING that this property has published nothing — retrying
+ *  gets the same answer. `failed` is not an answer at all: a refused connection, a
+ *  reset socket, a 5xx. Collapsing the two is the bug this split exists to stop. */
+type FrameRead =
+  | { kind: 'ok'; data: PublishedSilicaFrameDto }
+  | { kind: 'empty' }
+  | { kind: 'failed'; reason: string };
+
+async function readFrameEnvelope(url: string, init: RequestInit): Promise<FrameRead> {
+  try {
+    const res = await fetch(url, init);
+    if (res.status >= 500) return { kind: 'failed', reason: `HTTP ${res.status}` };
+    const json = (await res.json()) as SuccessEnvelope<PublishedSilicaFrameDto> | ErrorEnvelope;
+    if (!res.ok || 'error' in json) return { kind: 'empty' };
+    return { kind: 'ok', data: json.data };
+  } catch (err) {
+    return { kind: 'failed', reason: err instanceof Error ? err.message : String(err) };
+  }
+}
+
+/**
+ * The published frame envelope — chrome, module flags and the site's own THEME.
+ *
+ * ── WHY IT RETRIES, AND WHY IT SAYS SO WHEN IT GIVES UP ─────────────────────
+ *
+ * `null` from here is read downstream as "this property has published no chrome and
+ * no theme", and the layout answers that by painting the platform base. Correct for
+ * the question it thinks it is answering, and wrong for a transport failure: a
+ * tenant who HAS published a theme then gets a complete, well-composed page in
+ * colors they never chose. No error, no blank page, nothing in the console — the
+ * page just quietly belongs to somebody else (piggles/docs/personas/issues/343).
+ *
+ * So a failure that is not an answer is retried once, immediately. That covers what
+ * actually happens: a socket reset, a container still coming up, a single 5xx. A
+ * 4xx is the API answering and no amount of asking again will change it.
+ *
+ * A failure that survives the retry cannot be recovered from here — the theme is
+ * genuinely unknown — so it is LOGGED rather than swallowed. It renders on the base
+ * either way; the difference is whether anyone can find out that it did. The base
+ * being brand-neutral is the other half of this (see `BASE_SILICA_THEME`): the
+ * retry makes the wrong-look render rare, and the neutral base makes it harmless.
+ */
 const fetchFrameEnvelope = cache(
   async (tenantSlug: string, previewToken?: string): Promise<PublishedSilicaFrameDto | null> => {
-    try {
-      const res = await fetch(
-        `${BASE_URL}/v1/public/builder/silica/frame?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}${await pathParam()}`,
-        silicaFetchInit(tenantSlug, previewToken)
+    const url = `${BASE_URL}/v1/public/builder/silica/frame?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}${await pathParam()}`;
+    const init = silicaFetchInit(tenantSlug, previewToken);
+    let read = await readFrameEnvelope(url, init);
+    if (read.kind === 'failed') read = await readFrameEnvelope(url, init);
+    if (read.kind === 'failed') {
+      console.warn(
+        `[silica] could not read the published frame for '${tenantSlug}' after a retry ` +
+          `(${read.reason}) — this render falls back to the starter chrome and the base ` +
+          `theme, so a site that HAS published a theme is not wearing it.`
       );
-      const json = (await res.json()) as SuccessEnvelope<PublishedSilicaFrameDto> | ErrorEnvelope;
-      if (!res.ok || 'error' in json) return null;
-      return json.data;
-    } catch {
       return null;
     }
+    return read.kind === 'ok' ? read.data : null;
   }
 );
 

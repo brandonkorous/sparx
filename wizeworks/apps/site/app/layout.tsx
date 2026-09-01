@@ -324,10 +324,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   //
   // site.theme is the SINGLE source of the look (docs/impl theming-spine plan): a
   // site ALWAYS resolves to a concrete theme. The authored theme leads; a site that
-  // has published no theme falls back to BASE_SILICA_THEME (the sparx Ember base)
-  // rather than rendering unthemed. The legacy brand-derived tier
-  // (`buildSilicaThemeCss(compiledV2)`) is GONE: brand is identity-only now, so an
-  // un-themed site wears the base theme, not a brand-column compile.
+  // has published no theme falls back to BASE_SILICA_THEME rather than rendering
+  // unthemed. The legacy brand-derived tier (`buildSilicaThemeCss(compiledV2)`) is
+  // GONE: brand is identity-only now, so an un-themed site wears the base theme, not
+  // a brand-column compile.
+  //
+  // The base belongs to no product on purpose — this app serves every brand's
+  // tenants off one deployment, so a fallback that carried one product's palette
+  // painted that product's colors onto the other's shops. See `BASE_SILICA_THEME`,
+  // and `fetchFrameEnvelope` for the other half: a failed lookup used to be
+  // indistinguishable from "no theme published", which is how a site that HAD one
+  // ended up here at all.
   //
   // Emitted UNCONDITIONALLY, not gated on `silicaActive`. It used to be gated, which
   // was safe only while the legacy `--st-*` payload shipped alongside to clothe a

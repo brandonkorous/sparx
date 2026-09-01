@@ -26,6 +26,7 @@ import {
   type ThemeTokens,
 } from '@wizeworks/site-themes';
 import {
+  BASE_SILICA_THEME,
   firstPartyTheme,
   resolveSparxTheme,
   type FirstPartyTheme,
@@ -103,15 +104,20 @@ export function themePresetFor(theme: Theme): StoredThemePreset {
   };
 }
 
-/** The platform base as a stored preset — the sparx Ember look, under the name the
- *  base theme actually carries (`BASE_SILICA_THEME.name === 'sparx'`). */
-const PLATFORM_SLUG = 'sparx';
+/** The slug the platform base answers to — READ OFF the base rather than spelled,
+ *  so the two can never disagree.
+ *
+ *  It was spelled, as a product's name, back when the base WAS that product's look;
+ *  moving the base to a neutral would have left this pointing a brand's slug at a
+ *  palette that is no longer that brand's, which nothing would have reported. */
+const PLATFORM_SLUG = BASE_SILICA_THEME.name;
 
 /**
- * A theme SLUG → its stored preset, or null when the slug names no theme sparx
- * ships. `sparx` resolves to the platform base, so the one theme without a catalog
- * entry still has an answer instead of being a slug that silently resolves to
- * nothing — the flagship blueprint names it.
+ * A theme SLUG → its stored preset, or null when the slug names no shipped theme.
+ *
+ * The base's own slug is answered from the base constants rather than the catalog,
+ * even though the catalog also carries it: one slug, one answer, and the answer is
+ * the same bag the storefront falls back to.
  */
 export function themePresetForSlug(slug: string): StoredThemePreset | null {
   if (slug === PLATFORM_SLUG) {

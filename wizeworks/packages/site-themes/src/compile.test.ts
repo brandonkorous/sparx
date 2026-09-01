@@ -3,10 +3,14 @@ import { compileTokens, compileTokensFromDefaults, toCommerceSiteThemeColumns } 
 import { PLATFORM_TOKEN_DEFAULTS } from './presets';
 
 describe('compileTokens', () => {
+  // Read off the base rather than restated as literals. The point of the assertion
+  // is that an un-overridden compile IS the base, and spelling the colors out here
+  // made this a third place the base's values were written down — one that has to be
+  // hand-edited every time the base moves, and that says nothing when it isn't.
   it('returns complete light + dark token maps from the platform base', () => {
     const { light, dark } = compileTokens();
-    expect(light.colorPrimary).toBe('#e04631');
-    expect(dark.colorBackground).toBe('#0b1120');
+    expect(light.colorPrimary).toBe(PLATFORM_TOKEN_DEFAULTS.light.colorPrimary);
+    expect(dark.colorBackground).toBe(PLATFORM_TOKEN_DEFAULTS.dark.colorBackground);
     // Every token key is present (no holes) so the storefront always has a value.
     expect(Object.keys(light)).toContain('containerWidth');
   });
@@ -19,7 +23,7 @@ describe('compileTokens', () => {
     expect(light.colorPrimary).toBe('#ff0000');
     expect(dark.colorPrimary).toBe('#00ff00');
     // Untouched tokens fall back to the base default.
-    expect(light.colorAccent).toBe('#c1652e');
+    expect(light.colorAccent).toBe(PLATFORM_TOKEN_DEFAULTS.light.colorAccent);
     expect((light as Record<string, string>).bogus).toBeUndefined();
   });
 
