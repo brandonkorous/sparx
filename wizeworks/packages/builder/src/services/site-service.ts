@@ -63,6 +63,7 @@ import {
   starterPages,
   liveChromeGaps,
   upgradeFrameChrome,
+  upgradePageBody,
   type ChromeGap,
   type RecordAddress,
   type SiteChromeOptions,
@@ -268,6 +269,37 @@ async function healFramesTx(tx: TxClient, layouts: BuilderLayout[]): Promise<Bui
   return out;
 }
 
+/** The same repair, for a stale stored PAGE BODY.
+ *
+ *  `upgradePageBody` is the frame heal's sibling and had the identical problem one
+ *  layer down: written, tested, exported from `@wizeworks/silica-catalog`, and called
+ *  by NOTHING. Its own header describes a contract ("runs on the DRAFT at studio
+ *  load") that no code implemented, so every repair anybody put in it — the product
+ *  card's dead `gap-1.5`, the lazy product hero (issue 345), the form action routed
+ *  nowhere (issue 350) — was inert on every tenant. `healFrameTx` above says nothing
+ *  called the frame version either until issue 296; this is the half that was missed
+ *  then.
+ *
+ *  Same contract, deliberately: DRAFT only, PERSISTED. Draft only because a visitor's
+ *  page must not change under its owner, and persisted because `publish` republishes
+ *  the draft column straight from the row — an author who opens a page and presses
+ *  Publish without editing would otherwise push the stale tree back out and undo a
+ *  repair they were just shown. */
+async function healPageTx(tx: TxClient, page: BuilderPage): Promise<BuilderPage> {
+  if (page.silicaDraftTree == null) return page;
+  const healed = upgradePageBody(page.silicaDraftTree as unknown as SilicaNode);
+  if (!healed.changed) return page;
+  const silicaDraftTree = treeJson(healed.root);
+  await tx.builderPage.update({ where: { id: page.id }, data: { silicaDraftTree } });
+  return { ...page, silicaDraftTree: silicaDraftTree as Prisma.JsonValue };
+}
+
+async function healPagesTx(tx: TxClient, pages: BuilderPage[]): Promise<BuilderPage[]> {
+  const out: BuilderPage[] = [];
+  for (const page of pages) out.push(await healPageTx(tx, page));
+  return out;
+}
+
 /** Load the property's stored silica site, or null if none is materialized yet.
  *  Carries the authored theme when one exists; otherwise the caller composes the
  *  tenant's brand-derived theme.
@@ -315,7 +347,7 @@ export function load(
       }),
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
     ]);
-    return rowsToStoredSite(pages, await healFramesTx(tx, layouts), site);
+    return rowsToStoredSite(await healPagesTx(tx, pages), await healFramesTx(tx, layouts), site);
   });
 }
 
@@ -2055,8 +2087,14 @@ export function loadPage(
   modules: SiteChromeOptions = {}
 ): Promise<PageDocument> {
   return withTenant(ctx, async (tx) => {
-    const row = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
-    if (!row) throw new BuilderNotFoundError('BuilderPage', id);
+    const found = await tx.builderPage.findFirst({ where: { id, propertyId: ctx.propertyId } });
+    if (!found) throw new BuilderNotFoundError('BuilderPage', id);
+    // Healed here as well as in `load`, for the reason `loadFrame` states above: THIS is
+    // the read the studio actually makes when an author opens one page, so a repair that
+    // only ran on the whole-site load would never reach the page they are looking at.
+    // That was issue 296 for the frame; the page half was missed then and stayed missed,
+    // which is how three repairs shipped into `upgradePageBody` and none of them ever ran.
+    const row = await healPageTx(tx, found);
     const stored = row.silicaDraftTree != null;
     // THE home row, not "a page with no address". Her four legacy rows all had a
     // null slug, so every one of them looked like the site root.
