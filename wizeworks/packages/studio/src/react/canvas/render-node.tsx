@@ -200,6 +200,56 @@ export function renderNode(node: Node, ctx: RenderContext, key?: string | number
   return renderElement(node, ctx, key);
 }
 
+/**
+ * Attributes where an empty string is WORSE than absence, so the canvas leaves them off.
+ *
+ * `<img src="">` makes a browser re-request the current document, and `<a href="">`
+ * silently reloads it — which is why the publish path scrubs both before `toHtml` and
+ * pins it in a test. The canvas never did, and every section on the shelf ships its
+ * placeholder picture as `src: ''` so the block reads as a real design before an author
+ * has chosen a photograph. Dropping three of those onto a page therefore fired three
+ * full fetches of the studio route, and React logged an error for each.
+ *
+ * Fixing it here rather than in the catalog keeps the rule where the disagreement was:
+ * a canvas that renders an attribute the live page will not is lying about the page,
+ * whichever tree it is drawing. Deliberately only the URL-bearing set — an empty `alt`
+ * means decorative and an empty `value` is a legitimately empty field.
+ */
+const URL_ATTRS = new Set(['href', 'src', 'srcset', 'poster', 'cite', 'action', 'formaction']);
+
+/**
+ * The element attributes the canvas actually renders — the authored ones, plus the one
+ * a binding fills, under React's prop names.
+ *
+ * TWO RULES, BOTH OF WHICH THE CANVAS USED TO GET WRONG.
+ *
+ * An empty URL attribute is DROPPED, per `URL_ATTRS` above. And a bound attribute is
+ * folded in HERE rather than after the caller's void-tag return, because `img` is a
+ * void tag: applied later, a bound product photo drew its placeholder on the canvas
+ * and its real picture on the live page, on every product card and product hero on
+ * the shelf. A binding that resolves to an empty URL is dropped for the same reason
+ * an authored one is.
+ */
+export function attributeProps(
+  attrs: Record<string, string | number | boolean> | undefined,
+  bound?: { key: string; value: string }
+): Record<string, unknown> {
+  // The binding OVERWRITES the authored value first, and the empty rule is applied to
+  // the result — the same order the publish path runs in (`resolveTree`, then
+  // `dropEmptyUrlAttrs`). A binding that resolves to nothing therefore takes the
+  // authored href with it, which is what makes a card with no URL un-clickable on the
+  // canvas exactly as it is on the live page.
+  const merged: Record<string, string | number | boolean> = { ...(attrs ?? {}) };
+  if (bound) merged[bound.key] = bound.value;
+
+  const props: Record<string, unknown> = {};
+  for (const [name, value] of Object.entries(merged)) {
+    if (value === '' && URL_ATTRS.has(name)) continue;
+    props[ATTR_ALIASES[name] ?? name] = value;
+  }
+  return props;
+}
+
 function renderElement(
   node: AddressableNode,
   ctx: RenderContext,
@@ -207,10 +257,9 @@ function renderElement(
 ): ReactNode {
   if (node.kind !== 'element') return null;
 
-  const props: Record<string, unknown> = {};
-  for (const [name, value] of Object.entries(node.attrs ?? {})) {
-    props[ATTR_ALIASES[name] ?? name] = value;
-  }
+  // Bound attributes are folded in HERE, before the void-tag return below: `img` is a
+  // void tag and `src` is the one attribute binding an image can carry.
+  const props = attributeProps(node.attrs, boundAttr(ctx, node));
 
   const state = stateClasses(ctx, node);
   const editing = Boolean(node.id) && node.id === ctx.editingId;
@@ -239,9 +288,6 @@ function renderElement(
     props.dangerouslySetInnerHTML = { __html: node.rawHtml };
     return createElement(tag, props);
   }
-
-  const attr = boundAttr(ctx, node);
-  if (attr) props[ATTR_ALIASES[attr.key] ?? attr.key] = attr.value;
 
   const bound = boundText(ctx, node);
   if (bound !== undefined) return createElement(tag, props, bound);

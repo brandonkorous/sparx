@@ -14,11 +14,18 @@
 //
 // The catalog is large — silica's primitives plus the app's own composites and
 // section library — so the top of the rail is a search box. A grouped browse is
-// only useful to someone who already knows which group a thing is in.
+// only useful to someone who already knows which group a thing is in, which is why
+// the groups a business owner CAN read come first (see `hostFirst`): the first screen
+// has to be recognisable to somebody who has never met the word "container".
 
 import { useCallback, useMemo, useState } from 'react';
 import { Input, useToast } from '@wizeworks/silicaui-react';
-import { mergeCatalog, paletteGroups, type PaletteItem } from '@wizeworks/silicaui-builder/react';
+import {
+  mergeCatalog,
+  paletteGroups,
+  type PaletteGroup,
+  type PaletteItem,
+} from '@wizeworks/silicaui-builder/react';
 import { defaultMakeId, stampTree, type Node } from '@wizeworks/silicaui-html';
 import type { TreeDoc } from '../../documents/types';
 import { docKey } from '../../documents/types';
@@ -60,6 +67,44 @@ function score(item: PaletteItem, query: string): number {
   return best;
 }
 
+/**
+ * The host's own groups first, the framework's primitives after them.
+ *
+ * WHY. `mergeCatalog` appends what a host contributes, which puts the ready-made
+ * sections — the ones written in a business owner's language — BELOW every primitive
+ * group. On a real shop that measured at 118 rows and about six screens of scrolling
+ * before "How it works", "People and proof" or "Getting in touch" came into view, and
+ * the eleven rows she met first were Section, Container, Stack, Row, Grid, Card,
+ * Clickable Card, App Shell, Scroll Area, Overflow List and Join. Nine of those eleven
+ * mean nothing to someone who sews clothes for a living, and an owner who scrolls a
+ * screen of them and closes the panel has been told, wrongly, that this is a tool for
+ * somebody else. Her About page stayed two paragraphs long.
+ *
+ * The primitives are not demoted for being unimportant — an author laying out a row
+ * of three needs a Grid — but they are what you reach for SECOND, once the shaped
+ * thing is on the page and needs adjusting. Search still finds either instantly, and
+ * ordering here (rather than in the host's own list) keeps every host on the same
+ * side of the decision.
+ *
+ * BY KEY, and only for a key the base did not already carry: `mergeCatalog` folds a
+ * host group into a base group of the same key, and hoisting one of those would move
+ * the framework's own rows along with it.
+ */
+export function hostFirst(
+  merged: readonly PaletteGroup[],
+  contribution?: { extend?: PaletteGroup[] }
+): PaletteGroup[] {
+  const base = new Set(paletteGroups().map((group) => group.key));
+  const added = new Set(
+    (contribution?.extend ?? []).map((group) => group.key).filter((key) => !base.has(key))
+  );
+  if (added.size === 0) return [...merged];
+  return [
+    ...merged.filter((group) => added.has(group.key)),
+    ...merged.filter((group) => !added.has(group.key)),
+  ];
+}
+
 export function Palette({ onInserted }: { onInserted?: () => void } = {}) {
   const host = useStudioHost();
   const doc = useDoc<TreeDoc>();
@@ -75,7 +120,8 @@ export function Palette({ onInserted }: { onInserted?: () => void } = {}) {
   // hundred catalog rows would hide the thing they went looking for.
   const version = useResolutionVersion();
   const groups = useMemo(() => {
-    const catalog = mergeCatalog(paletteGroups(), host.catalog?.(doc.kind));
+    const contribution = host.catalog?.(doc.kind);
+    const catalog = hostFirst(mergeCatalog(paletteGroups(), contribution), contribution);
     const pieces = piecesGroup(session, doc.kind);
     return pieces ? [...catalog, pieces] : catalog;
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -102,6 +102,38 @@ export function DesignTab({ node, device }: { node: AddressableNode; device: Can
   );
 }
 
+/** What one chip in a {@link ChipRow} is currently saying. */
+export interface ChipEmphasis {
+  color?: 'primary';
+  variant?: 'soft';
+}
+
+/**
+ * How a chip should look, given the group's state at this size.
+ *
+ * THE VALUE IN FORCE IS ALWAYS SHOWN, whether it was declared here or inherited from
+ * a smaller size, and the WEIGHT says which. It used to be shown only when declared
+ * here: the selected test required `!state.inherited`, and "Auto" lights only when
+ * there is no value anywhere — so a row whose value came from the base size rendered
+ * six plain buttons and answered nothing. Almost everything is authored at the base
+ * size and the Inspector opens on desktop, so that was the ordinary case rather than
+ * an edge one. An About page column set to `max-w-2xl` — the reason it sat 240px
+ * narrower than every other page on that site — asked "how wide is this?" in the one
+ * control that knows, and got a blank row of six.
+ *
+ * SOFT rather than solid keeps the distinction this file's header is about: solid
+ * means pinned at this size, soft means in force from a smaller one, and clicking a
+ * soft chip still PINS it rather than being a no-op. It is the same treatment "Auto"
+ * already wears for "this is what you are getting, and you did not choose it here".
+ */
+export function chipEmphasis(
+  state: { value?: string; inherited?: boolean },
+  option: string
+): ChipEmphasis {
+  if (state.value !== option) return {};
+  return state.inherited ? { color: 'primary', variant: 'soft' } : { color: 'primary' };
+}
+
 function ChipRow({
   group,
   cls,
@@ -141,12 +173,11 @@ function ChipRow({
           Auto
         </Button>
         {group.options.map((option) => {
-          const selected = state.value === option.value && !state.inherited;
           return (
             <Button
               key={option.value}
               size="sm"
-              {...(selected ? { color: 'primary' as const } : {})}
+              {...chipEmphasis(state, option.value)}
               onClick={() => onPick(option.value)}
             >
               {group.swatches ? (
