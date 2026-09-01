@@ -186,6 +186,19 @@ function setAtPath(root: DataSources, dottedKey: string, value: unknown): void {
 const DEFAULT_PREVIEW_ITEMS = 4;
 const MAX_PREVIEW_ITEMS = 8;
 
+/** What the canvas calls a business it does not yet know the name of.
+ *
+ *  `site.identity.name` is a text field whose key reads as a title, so the generic
+ *  filler gave it a sample HEADLINE — and a canvas waiting on the chrome read
+ *  announced the business as "Built for the work" in its own header and footer. A
+ *  placeholder standing in for a name has to be recognisable AS a placeholder; a
+ *  sentence in some other brand's voice is not, and the owner has no way to tell it
+ *  apart from something she typed.
+ *
+ *  Deliberately the same word the chrome read falls back to when it fails, so the
+ *  canvas has ONE name for "we do not know yet" rather than two. */
+const UNNAMED_BRAND = 'Brand';
+
 /** Build placeholder data shaped to the catalog so every offered binding path
  *  resolves: an array source → as many records as it actually yields (see the caps
  *  above); a record source → one. When the tenant's real chrome is supplied it
@@ -228,6 +241,12 @@ export function buildPreviewRoot(
   if (site) {
     setAtPath(root, 'site.identity', site.identity);
     setAtPath(root, 'site.social', site.social);
+  } else {
+    // No chrome yet. Everything else on `site.identity` may stay synthetic — a
+    // placeholder tagline reads as placeholder — but the NAME may not, for the reason
+    // on `UNNAMED_BRAND`. Written through the same path so a future `site.identity`
+    // source shape cannot route around it.
+    setAtPath(root, 'site.identity.name', UNNAMED_BRAND);
   }
   return root;
 }

@@ -42,9 +42,11 @@ export function ThemePaneSurface({ ctx }: { ctx: SurfaceContext }) {
   if (!state.store) {
     return (
       <div className="bg-base-200 flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+        {/* NOT "your business details" — that screen is name, address, contact,
+            tax and defaults, with no color on it at all (issue 334). */}
         <p className="text-base-content">
-          Your site is using the colors from your business details. Pick a look to change how it
-          feels.
+          You have not picked a look yet, so your site is wearing its own colors. Pick one to change
+          how it feels.
         </p>
         <ThemeLibrary appliedId={state.appliedId} openId={openId} onOpen={setOpenId} />
       </div>

@@ -50,6 +50,10 @@ const DEV_STOREFRONT_ORIGIN = (process.env.NEXT_PUBLIC_STOREFRONT_ORIGIN ?? '').
  *  site's overridden look. */
 export interface ActiveProperty {
   id: string;
+  /** What this site is CALLED. Already in the payload — declared here so the canvas
+   *  can name the business the moment the shell knows it, rather than waiting on the
+   *  fuller chrome read and painting a sample headline in the meantime. */
+  name: string;
   slug: string;
   isPrimary: boolean;
   brandOverride: unknown;

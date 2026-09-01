@@ -20,8 +20,45 @@ import {
   type DataSources,
 } from '@wizeworks/builder-schemas';
 import { useActiveProperty, useBindingCatalog, useSitePreview } from './site-data';
-import { buildPreviewRoot } from './preview-data';
+import { buildPreviewRoot, type SitePreviewData } from './preview-data';
 import { useActivePropertyId, useTenant } from '../api/shell-data';
+
+/**
+ * What the shell already knows about the business, for the moment before the fuller
+ * chrome read lands.
+ *
+ * WHY THIS EXISTS. `site.identity.name` is a text field whose key reads as a title, so
+ * the synthetic placeholder filled it with a sample HEADLINE — and until the chrome
+ * query resolved, the canvas header and footer both announced the business as "Built
+ * for the work". The owner's own studio told her, for a beat on every page open, that
+ * her shop was called something else.
+ *
+ * The name was never missing. `useSitePreview` is keyed on the tenant and site SLUGS,
+ * which arrive from two earlier reads that carry the NAMES alongside them, so the
+ * answer is in hand strictly before the query it was waiting on can start.
+ *
+ * EVERY OTHER FIELD IS `null` ON PURPOSE, and null is not the same as empty: an empty
+ * string is a known-but-empty value that blanks the node, while null leaves the
+ * authored content alone. So a tagline, a logo or a phone line keeps saying what its
+ * author typed until the real value arrives — which is a strict improvement on the
+ * placeholder sentence and the empty-URL image the synthetic root supplied.
+ */
+function knownIdentity(name: string): SitePreviewData {
+  return {
+    identity: {
+      name,
+      tagline: null,
+      logo: null,
+      logoDark: null,
+      phone: null,
+      email: null,
+      address: null,
+      phoneHref: null,
+      emailHref: null,
+    },
+    social: [],
+  };
+}
 
 export interface CanvasPreview {
   /** The data root the brand core draws the tenant's real mark from. */
@@ -47,7 +84,14 @@ export function useCanvasPreview(): CanvasPreview {
     const sources: DataSource[] = catalog.data?.sources.length
       ? [...catalog.data.sources]
       : [...COMMERCE_SOURCES];
-    const root = buildPreviewRoot([...sources, ...SITE_SOURCES], site.data ?? null);
+    // The site's own name wins over the tenant's: one owner can run two shops, and
+    // the canvas is showing ONE of them (docs/49, the same order `useSitePreview`
+    // resolves in).
+    const known = (property.data?.name ?? tenant.data?.name ?? '').trim();
+    const root = buildPreviewRoot(
+      [...sources, ...SITE_SOURCES],
+      site.data ?? (known ? knownIdentity(known) : null)
+    );
     // The platform's own resolver, not a dotted-path lookup of my own: it is what
     // decodes `?? fallback`, attribute refs and formatting, so the canvas and the
     // live site read one binding the same way.
@@ -64,5 +108,8 @@ export function useCanvasPreview(): CanvasPreview {
         return undefined;
       },
     };
-  }, [catalog.data, site.data]);
+    // `tenant.data` and `property.data` belong here as well as `site.data`: they are
+    // what the fallback above is built from, so a memo that ignored them would hold
+    // the placeholder name until something else happened to change.
+  }, [catalog.data, site.data, tenant.data, property.data]);
 }
