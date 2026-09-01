@@ -58,7 +58,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
     'This is your own AI account — the one you already pay for. We use it to write and reply for you, and the cost goes to them, never to us. Without it connected, nothing here writes anything on your behalf.',
 
   // "Voice, rules and facts" is precise and slightly abstract; a shop owner
-  // recognises "how it should sound" faster than "voice". The example is doing
+  // recognizes "how it should sound" faster than "voice". The example is doing
   // the real work, so it earns the length.
   'ai.instructions.pointer':
     'Tell it how you want it to sound and what it should always mention — your opening hours, how you like to sign off, the things you never want said.',
@@ -130,7 +130,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // "Not payroll" has to survive, because getting that wrong costs someone real
   // money. It stays as its own short sentence for the same reason.
   'modules.staff.blurb':
-    'Keep hours, pay rates, shifts, time off and licence renewals, so you know what an hour of work really costs. This is not payroll — we hand the hours to whoever runs yours.',
+    'Keep hours, pay rates, shifts, time off and license renewals, so you know what an hour of work really costs. This is not payroll — we hand the hours to whoever runs yours.',
 
   // ── Selling ──────────────────────────────────────────────────────────────
   'commerce.provider.retired':
@@ -328,11 +328,11 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
 
   // ── Your team, continued ─────────────────────────────────────────────────
   'staff.people.description':
-    'Add the people who work for you and we can keep their hours, what those hours cost, and when their tickets and licences run out.',
+    'Add the people who work for you and we can keep their hours, what those hours cost, and when their tickets and licenses run out.',
   'staff.certifications.description':
-    'If your people need licences, tickets or certificates, record them here and we will warn you before any of them run out — with as much notice as you ask for.',
+    'If your people need licenses, tickets or certificates, record them here and we will warn you before any of them run out — with as much notice as you ask for.',
   'team.roles.unknown':
-    'A job title this version does not recognise. It still works — ask us what it covers.',
+    'A job title this version does not recognize. It still works, and you can ask us what it covers.',
 
   // ── Sentences with values in them ────────────────────────────────────────
   //
@@ -596,7 +596,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'inventory.import.ignored': 'Columns we have no use for and will skip:',
   'inventory.import.autoRecipe': 'Let us work it out',
   'inventory.import.recipeNote':
-    'This only widens the list of headings we recognise. It never changes what the import actually does.',
+    'This only widens the list of headings we recognize. It never changes what the import actually does.',
   'inventory.barcode.none':
     'Nothing scans as {item} yet, so somebody has to find it by name every time. We can make a real barcode for it — any scanner reads it, and it can never clash with a manufacturer’s.',
 
@@ -625,7 +625,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // Money, employment and payroll: plain and calm, no lightness anywhere near
   // them (piggles/CLAUDE.md RULE #3).
   'staff.certs.empty':
-    'Nothing recorded yet. If this person needs a licence, ticket or certificate to do their job, add it here and we will warn you before it runs out.',
+    'Nothing recorded yet. If this person needs a license, ticket or certificate to do their job, add it here and we will warn you before it runs out.',
   'staff.employmentType.note':
     'This is for your own cost reporting. It does not decide anyone’s employment status and nothing is filed on the strength of it.',
   'staff.payroll.sectionNote':

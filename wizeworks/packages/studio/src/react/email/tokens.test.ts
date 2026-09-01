@@ -18,7 +18,7 @@ describe('resolveMergeTags', () => {
     expect(resolveMergeTags('Hi {{customer.firstName ?? "there"}}', host)).toBe('Hi there');
   });
 
-  it('leaves an unrecognised tag exactly as authored', () => {
+  it('leaves an unrecognized tag exactly as authored', () => {
     // Blanking it would make a typo look like a value that happened to be empty.
     expect(resolveMergeTags('Hi {{custmoer.firstName}}', host)).toBe('Hi {{custmoer.firstName}}');
   });

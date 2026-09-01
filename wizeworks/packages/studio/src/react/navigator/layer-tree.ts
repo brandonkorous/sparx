@@ -7,7 +7,7 @@
 // list; the node itself is untouched, still on the canvas, still selectable, and
 // still the parent every move resolves against.
 //
-// A row names the thing an author recognises — the words the node holds, or the
+// A row names the thing an author recognizes — the words the node holds, or the
 // name they gave it, or what kind of thing it is in plain English. Never a tag: a
 // business owner has no reason to know what an `<aside>` is.
 //

@@ -7,7 +7,7 @@
 // the exact syntax it was worth using, so the canvas resolves tags the same way
 // the send does — through the host, which owns the expression language.
 //
-// A tag the host does not recognise is LEFT AS AUTHORED, never blanked. An
+// A tag the host does not recognize is LEFT AS AUTHORED, never blanked. An
 // unknown tag is usually a typo, and a typo that renders as nothing looks like a
 // value that happened to be empty.
 

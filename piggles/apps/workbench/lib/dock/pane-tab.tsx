@@ -85,7 +85,7 @@ function FavouriteButton({
   const favourited = favorites?.some((favorite) => favorite.actionId === surfaceKey) ?? false;
 
   return (
-    <Tooltip content={favourited ? 'Remove from favourites' : 'Add to favourites'}>
+    <Tooltip content={favourited ? 'Remove from favorites' : 'Add to favorites'}>
       <Button
         color="primary"
         variant="ghost"

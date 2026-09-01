@@ -297,7 +297,7 @@ export function PictureRow({
 
 export const ALIGN_OPTIONS = [
   { value: 'left', label: 'Left' },
-  { value: 'center', label: 'Centre' },
+  { value: 'center', label: 'Center' },
   { value: 'right', label: 'Right' },
 ] as const;
 

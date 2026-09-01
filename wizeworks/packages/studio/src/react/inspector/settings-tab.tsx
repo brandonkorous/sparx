@@ -48,7 +48,7 @@ const HEADING_TAGS = [
  * Read-only on purpose, and it SAYS where to go instead. The alternative — the
  * ordinary Words box — accepts the edit, writes it to the fallback, and leaves
  * the page showing the old value, which is the worst of the three possible
- * behaviours: nothing on screen changed and nothing said why.
+ * behaviors: nothing on screen changed and nothing said why.
  */
 function BoundWords({ reference, shown }: { reference: string; shown: string }) {
   const host = useStudioHost();

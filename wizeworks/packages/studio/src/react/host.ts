@@ -187,7 +187,7 @@ export interface StudioHost {
    * families read as two products a few pixels apart.
    *
    * Supply this and the engine asks the app for every glyph it draws by name,
-   * falling back to the baked set for anything the app does not recognise — so a
+   * falling back to the baked set for anything the app does not recognize — so a
    * host answers for the chrome it cares about and leaves the rest alone. The names
    * are silica's own ('undo', 'monitor', 'sun', 'menu').
    *

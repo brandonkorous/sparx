@@ -100,7 +100,7 @@ export const CONTROL_SECTIONS: ControlSection[] = [
         when: isTextual,
         options: [
           { value: 'text-left', label: 'Left' },
-          { value: 'text-center', label: 'Centre' },
+          { value: 'text-center', label: 'Center' },
           { value: 'text-right', label: 'Right' },
         ],
       },
@@ -166,7 +166,7 @@ export const CONTROL_SECTIONS: ControlSection[] = [
         when: holdsChildren,
         options: [
           { value: 'justify-start', label: 'Start' },
-          { value: 'justify-center', label: 'Centre' },
+          { value: 'justify-center', label: 'Center' },
           { value: 'justify-end', label: 'End' },
           { value: 'justify-between', label: 'Spread' },
         ],
@@ -177,7 +177,7 @@ export const CONTROL_SECTIONS: ControlSection[] = [
         when: holdsChildren,
         options: [
           { value: 'items-start', label: 'Start' },
-          { value: 'items-center', label: 'Centre' },
+          { value: 'items-center', label: 'Center' },
           { value: 'items-end', label: 'End' },
           { value: 'items-stretch', label: 'Fill' },
         ],
