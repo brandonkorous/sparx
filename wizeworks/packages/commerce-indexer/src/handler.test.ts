@@ -71,17 +71,20 @@ beforeEach(() => {
 
 describe('an event that names only a variant still reaches the product', () => {
   // Every one of these is a real payload shape from the publishers.
-  const variantOnly = [
+  // `change` is the only field a test name reads, so it is the only one typed;
+  // the rest ride along as the opaque payload `handleEvent` receives.
+  type VariantOnly = Record<string, unknown> & { readonly change?: string };
+  const variantOnly: readonly (readonly [string, VariantOnly])[] = [
     ['inventory.low', { variantId: VARIANT, warehouseId: 'w', available: 0, reorderPoint: 2 }],
     ['inventory.depleted', { variantId: VARIANT, warehouseId: 'w' }],
     ['inventory.adjusted', { variantId: VARIANT, warehouseId: 'w', delta: -6 }],
     ['variant.updated', { variantId: VARIANT, change: 'sku' }],
     ['variant.updated', { variantId: VARIANT, change: 'isDefault' }],
     ['variant.deleted', { variantId: VARIANT }],
-  ] as const;
+  ];
 
   for (const [type, data] of variantOnly) {
-    it(`indexes on ${type} ${String(data.change ?? '')}`.trim(), async () => {
+    it(`indexes on ${type} ${data.change ?? ''}`.trim(), async () => {
       const result = await handleEvent(event(type, data), logger);
 
       expect(productIdForVariant).toHaveBeenCalledWith({ tenantId: TENANT }, VARIANT);
