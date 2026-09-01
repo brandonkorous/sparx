@@ -452,7 +452,9 @@ locals {
 }
 
 resource "azurerm_key_vault_secret" "rocketease" {
-  for_each = local.rocketease_secrets
+  # Merged, not replaced, so turning rocketease_ai_enabled off REMOVES the AI
+  # secrets rather than stranding entries that point at a deleted account.
+  for_each = merge(local.rocketease_secrets, local.rocketease_ai_secrets)
 
   name         = each.key
   value        = each.value.value
@@ -496,4 +498,204 @@ output "rocketease_owner_password" {
   EOT
   value       = var.rocketease_enabled ? random_password.rocketease_owner[0].result : null
   sensitive   = true
+}
+
+# ---------------------------------------------------------------------------
+# Azure OpenAI - image generation for the media pipeline (M12).
+#
+# RocketEase generates ad imagery through `packages/media`, which routes every
+# job through a pinned model registry. The Azure adapter is preferred over the
+# direct OpenAI one when both are configured, for the reason this section
+# exists: the prompt and the brand material it carries stay inside a resource we
+# own, under the Azure agreement, instead of going to a third party the
+# subprocessor page has to name separately.
+#
+# ITS OWN ACCOUNT, not a share of jotDOJO's. kanNINJA reuses
+# `oai-jotdojo-prod-eus2` and that is fine for a low-volume seam, but image
+# generation is customer-facing, bursty, and bills per image. Sharing an account
+# means sharing a rate ceiling with jotDOJO's recognition path, where the
+# failure mode is a customer's render queueing behind somebody's handwriting.
+# Separate accounts also separate the Azure cost metric, which is the only way
+# to price the feature later (docs/media-generation.md section 9).
+#
+# THE DATA-RESIDENCY STORY IS DIFFERENT FROM jotDOJO'S, and this is not a
+# preference. Image models offer ONLY the GlobalStandard SKU - there is no
+# regional Standard to choose, the way whisper forced regional Standard above.
+# GlobalStandard routes capacity across a geography rather than pinning it to
+# eastus2. The model reports area US, so it stays in the United States, which
+# matches what the subprocessor page already says about Microsoft Azure - but it
+# is NOT the same "one region" claim jotDOJO can make, and anything
+# customer-facing must not imply otherwise.
+# ---------------------------------------------------------------------------
+
+variable "rocketease_ai_enabled" {
+  description = <<-EOT
+    Master switch for the account, the image deployment and the four secrets
+    pointing at them. Off is a real state: `packages/media` routes to the direct
+    OpenAI adapter when OPENAI_API_KEY is set, and refuses honestly when nothing
+    is configured at all - canGenerate() returns false and the "Generate image"
+    button never renders.
+
+    S0 has no base fee and a deployment's capacity is a rate ceiling rather than
+    a reservation, so the cost of this section at zero usage is zero.
+  EOT
+  type        = bool
+  default     = true
+}
+
+variable "rocketease_ai_location" {
+  description = <<-EOT
+    DELIBERATELY NOT var.location. Verified against this subscription on
+    2026-08-30 rather than recalled, with the query the jotDOJO section records:
+
+        az cognitiveservices model list -l REGION
+
+        centralus       no image model at all
+        eastus2         gpt-image-1, -1-mini, -1.5, -2   all GlobalStandard
+        westus3         the same four
+        swedencentral   the same four
+
+    centralus - where the VNet, Postgres and AKS live - carries NO image model,
+    so this account cannot follow them. It does not need to: the data plane is
+    reached over HTTPS from the cluster and shares nothing with the VNet.
+
+    eastus2 so one region explains the whole tenant's AI footprint.
+  EOT
+  type        = string
+  default     = "eastus2"
+}
+
+variable "rocketease_ai_capacity" {
+  description = <<-EOT
+    Rate ceiling for the image deployment, in the units Azure quotas by. This
+    subscription's GlobalStandard limits in eastus2 on 2026-08-30:
+
+        gpt-image-1       3     gpt-image-1.5   9
+        gpt-image-1-mini  4     gpt-image-2     2
+
+    2 is the WHOLE gpt-image-2 quota. Media generation is a closed beta
+    (feature_grant, default off), so the ceiling that matters first is
+    MEDIA_CEILING_USD_PER_JOB, not throughput. Raise the Azure quota before
+    raising this number, or the apply fails on a limit rather than a typo.
+  EOT
+  type        = number
+  default     = 2
+}
+
+locals {
+  rocketease_ai_on    = var.rocketease_enabled && var.rocketease_ai_enabled
+  rocketease_ai_count = local.rocketease_ai_on ? 1 : 0
+  rocketease_ai_name  = "oai-rocketease-prod-eus2"
+
+  # The deployment name, which is NOT the model name. It is the URL path
+  # segment, and the platform reads it from AZURE-OPENAI-IMAGE-DEPLOYMENT rather
+  # than assuming it - the model registry pins WHICH model, this says only what
+  # this account calls it.
+  rocketease_ai_deployment = "rocketease-images"
+
+  # VERSION PINNED, and the choice is a deprecation question rather than a
+  # quality one. Inference-deprecation dates in eastus2 on 2026-08-30:
+  #
+  #     gpt-image-1      2026-10-23   <- SEVEN WEEKS. Do not build on it.
+  #     gpt-image-1.5    2026-12-16
+  #     gpt-image-1-mini 2027-04-07
+  #     gpt-image-2      2027-10-21   <- chosen
+  #
+  # jotDOJO's lesson applies here and is worth repeating: an EXISTING deployment
+  # survives its own deprecation, so a stale pin only bites on a REBUILD, which
+  # is precisely when nobody is watching. gpt-image-2 buys fourteen months.
+  #
+  # Capabilities read from the same catalogue rather than assumed:
+  # imageGenerations true, imageEdits true, area US.
+  rocketease_ai_model   = "gpt-image-2"
+  rocketease_ai_version = "2026-04-21"
+}
+
+resource "azurerm_cognitive_account" "rocketease" {
+  count               = local.rocketease_ai_count
+  name                = local.rocketease_ai_name
+  location            = var.rocketease_ai_location
+  resource_group_name = azurerm_resource_group.main.name
+  kind                = "OpenAI"
+  sku_name            = "S0"
+  tags                = local.tags
+
+  # REQUIRED, not cosmetic. Without a custom subdomain the account answers only
+  # on the regional shared host, which does not serve the /openai/deployments/
+  # data plane the adapter builds its URLs against.
+  custom_subdomain_name = local.rocketease_ai_name
+
+  # Public, for the reason recorded in the jotDOJO section: AKS egress leaves
+  # through an AKS-managed SNAT address with no stable Terraform handle, so a
+  # network ACL built on it would break silently the first time AKS rotated it.
+  # The real hardening is managed identity, which removes the key rather than
+  # the network path, and is a project rather than a line.
+  public_network_access_enabled = true
+
+  lifecycle {
+    # A Cognitive Services account SOFT-DELETES and holds its name, including
+    # the custom subdomain - a global DNS label. A careless destroy costs
+    # oai-rocketease-prod-eus2 for the retention window, and every secret below
+    # has to be rewritten against a new name.
+    prevent_destroy = true
+  }
+}
+
+resource "azurerm_cognitive_deployment" "rocketease_images" {
+  count                = local.rocketease_ai_count
+  name                 = local.rocketease_ai_deployment
+  cognitive_account_id = azurerm_cognitive_account.rocketease[0].id
+
+  model {
+    format  = "OpenAI"
+    name    = local.rocketease_ai_model
+    version = local.rocketease_ai_version
+  }
+
+  sku {
+    # GlobalStandard is the ONLY SKU image models offer - see the section
+    # header. This is not the regional-vs-global choice jotDOJO had to make.
+    name     = "GlobalStandard"
+    capacity = var.rocketease_ai_capacity
+  }
+
+  # Hold the pin until Azure retires it, then move rather than go dark.
+  version_upgrade_option = "OnceCurrentVersionExpired"
+}
+
+locals {
+  # Four secrets, three of them not secret at all. They are here because the
+  # vault is the ONLY channel the release reads: ci.yml builds the platform-env
+  # Secret from vault entries and nothing else, so a value that is not here
+  # cannot reach the container.
+  rocketease_ai_secrets = local.rocketease_ai_on ? {
+    "AZURE-OPENAI-ENDPOINT" = {
+      value = azurerm_cognitive_account.rocketease[0].endpoint
+      type  = "url; not secret. The adapter strips a trailing slash itself"
+    }
+    "AZURE-OPENAI-API-KEY" = {
+      value = azurerm_cognitive_account.rocketease[0].primary_access_key
+      type  = "account key; regenerating it in the portal makes this value stale"
+    }
+    "AZURE-OPENAI-API-VERSION" = {
+      # NO DEFAULT IN THE CODE. The adapter reports itself unconfigured without
+      # this, deliberately: Azure changes behaviour across versions and a
+      # guessed one produces a 400 that reads like a bug in our request builder.
+      #
+      # Confirmed 2026-08-30 against Microsoft Learn as the version the
+      # images/generations data plane requires. Not yet exercised against a live
+      # call, because the deployment did not exist when it was written.
+      value = "2025-04-01-preview"
+      type  = "api version; images/generations data plane. Read from MS Learn 2026-08-30"
+    }
+    "AZURE-OPENAI-IMAGE-DEPLOYMENT" = {
+      value = azurerm_cognitive_deployment.rocketease_images[0].name
+      type  = "deployment name; not secret. NOT the model name"
+    }
+  } : {}
+}
+
+output "rocketease_openai_endpoint" {
+  description = "Azure OpenAI data plane for RocketEase image generation. Null when rocketease_ai_enabled is false."
+  value       = local.rocketease_ai_on ? azurerm_cognitive_account.rocketease[0].endpoint : null
 }
