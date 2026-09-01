@@ -599,6 +599,22 @@ variable "rocketease_ai_text_capacity" {
   default     = 50
 }
 
+variable "rocketease_ai_video_capacity" {
+  description = <<-EOT
+    Rate ceiling for the Sora 2 deployment. This subscription's GlobalStandard
+    limit in eastus2 on 2026-09-01 is 9 for sora-2, and 9 is all of it.
+
+    Taking the whole quota is safe here in a way it would not be for text: a
+    video job runs for one to five minutes, so nothing else is going to be
+    competing for the same per-minute budget, and there is no second video
+    deployment to leave room for. The control that matters is
+    MEDIA_CEILING_USD_PER_JOB - Sora bills PER SECOND, so a 12-second clip
+    costs roughly three times a 4-second one and throughput is not the risk.
+  EOT
+  type        = number
+  default     = 9
+}
+
 locals {
   rocketease_ai_on    = var.rocketease_enabled && var.rocketease_ai_enabled
   rocketease_ai_count = local.rocketease_ai_on ? 1 : 0
@@ -639,6 +655,23 @@ locals {
   rocketease_ai_text_deployment = "rocketease-text"
   rocketease_ai_text_model      = "gpt-5.4"
   rocketease_ai_text_version    = "2026-03-05"
+
+  # VIDEO, on the same account again. Sora 2 is a first-party OpenAI model, so
+  # unlike Claude it is not a Marketplace purchase and the Sponsored
+  # subscription can actually deploy it.
+  #
+  # Inference-deprecation is why this takes the LATER of the two versions
+  # offered in eastus2 on 2026-09-01 (2025-10-06 and 2025-12-08), the same
+  # reasoning as gpt-image-2 above: an existing deployment survives its own
+  # deprecation, so a stale pin only bites on a rebuild.
+  #
+  # The video data plane is NOT the images one. It is the v1 async job API
+  # (/openai/v1/video/generations/jobs), the model travels in the BODY rather
+  # than the URL path, and a job takes one to five minutes - so it is polled,
+  # never run inline.
+  rocketease_ai_video_deployment = "rocketease-video"
+  rocketease_ai_video_model      = "sora-2"
+  rocketease_ai_video_version    = "2025-12-08"
 }
 
 resource "azurerm_cognitive_account" "rocketease" {
@@ -745,6 +778,28 @@ resource "azurerm_cognitive_deployment" "rocketease_text" {
   version_upgrade_option = "OnceCurrentVersionExpired"
 }
 
+resource "azurerm_cognitive_deployment" "rocketease_video" {
+  count                = local.rocketease_ai_count
+  name                 = local.rocketease_ai_video_deployment
+  cognitive_account_id = azurerm_cognitive_account.rocketease[0].id
+
+  model {
+    format  = "OpenAI"
+    name    = local.rocketease_ai_video_model
+    version = local.rocketease_ai_video_version
+  }
+
+  sku {
+    # GlobalStandard is the only SKU sora-2 offers. Video cannot have the
+    # DataZoneStandard treatment text gets, which is a real difference worth
+    # knowing: a video prompt leaves the US even though a drafting prompt does not.
+    name     = "GlobalStandard"
+    capacity = var.rocketease_ai_video_capacity
+  }
+
+  version_upgrade_option = "OnceCurrentVersionExpired"
+}
+
 locals {
   # Six secrets, five of them not secret at all. They are here because the
   # vault is the ONLY channel the release reads: ci.yml builds the platform-env
@@ -786,6 +841,20 @@ locals {
       # silently changes what drafting sends.
       value = "2024-10-21"
       type  = "api version; chat/completions data plane. Confirmed against a live call 2026-08-31"
+    }
+    "AZURE-OPENAI-VIDEO-DEPLOYMENT" = {
+      # Presence of this is what makes video generation offerable at all; the
+      # adapter reports itself unconfigured without it, so nothing appears in
+      # the UI rather than failing at the vendor.
+      value = azurerm_cognitive_deployment.rocketease_video[0].name
+      type  = "deployment name; not secret. Travels in the request BODY, not the URL path"
+    }
+    "AZURE-OPENAI-VIDEO-API-VERSION" = {
+      # Literally the string "preview" - not a date. That is what the v1 video
+      # job API takes (Microsoft Learn, read 2026-09-01), and it is why this is
+      # a THIRD api-version rather than a reuse of either of the others.
+      value = "preview"
+      type  = "api version; v1 video job data plane. Read from MS Learn 2026-09-01"
     }
   } : {}
 }
