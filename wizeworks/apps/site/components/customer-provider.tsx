@@ -8,7 +8,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import * as accountApi from '@/lib/customer-client';
-import type { CartHandoff, Customer } from '@/lib/customer-client';
+import {
+  NO_OFFERS,
+  type AccountOffers,
+  type CartHandoff,
+  type Customer,
+} from '@/lib/customer-client';
 
 export type CustomerStatus = 'loading' | 'authenticated' | 'anonymous';
 
@@ -19,6 +24,9 @@ export interface CustomerContextValue {
    *  newsletter signup) tag captures with their origin site. Undefined = primary. */
   propertySlug?: string;
   customer: Customer | null;
+  /** What this shop offers this shopper. `NO_OFFERS` until the read answers, so
+   *  nothing is advertised on the strength of not knowing yet. */
+  offers: AccountOffers;
   status: CustomerStatus;
   login: (email: string, password: string) => Promise<void>;
   register: (input: {
@@ -58,6 +66,7 @@ export function CustomerProvider({
   children: React.ReactNode;
 }) {
   const [customer, setCustomer] = useState<Customer | null>(null);
+  const [offers, setOffers] = useState<AccountOffers>(NO_OFFERS);
   const [status, setStatus] = useState<CustomerStatus>('loading');
   // Sister-site recognition (docs/58 D6): set when a login/register here created
   // a fresh, separate membership because the email already had an account on
@@ -69,10 +78,12 @@ export function CustomerProvider({
   const refresh = useCallback(async () => {
     try {
       const me = await accountApi.getMe(tenantSlug);
-      setCustomer(me);
+      setCustomer(me?.customer ?? null);
+      setOffers(me?.offers ?? NO_OFFERS);
       setStatus(me ? 'authenticated' : 'anonymous');
     } catch {
       setCustomer(null);
+      setOffers(NO_OFFERS);
       setStatus('anonymous');
     }
   }, [tenantSlug]);
@@ -123,6 +134,7 @@ export function CustomerProvider({
       tenantSlug,
       propertySlug,
       customer,
+      offers,
       status,
       login,
       register,
@@ -135,6 +147,7 @@ export function CustomerProvider({
       tenantSlug,
       propertySlug,
       customer,
+      offers,
       status,
       login,
       register,

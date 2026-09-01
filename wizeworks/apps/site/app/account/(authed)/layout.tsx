@@ -11,11 +11,15 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 import { useCustomer } from '@/components/customer-provider';
+import type { AccountOffers } from '@/lib/customer-client';
 import { cn } from '@/lib/cn';
 
 interface AccountNavItem {
   label: string;
   href: string;
+  /** Absent = every shop has this. Present = show it only where the shop can
+   *  actually deliver it (issue 335). */
+  offered?: (offers: AccountOffers) => boolean;
 }
 
 const NAV: AccountNavItem[] = [
@@ -24,18 +28,20 @@ const NAV: AccountNavItem[] = [
   // Ships with the account area rather than being something a tenant has to
   // build: a return she cannot start herself becomes an email to the shop.
   { label: 'Returns', href: '/account/returns' },
+  // Same reasoning as Returns: any shop may be asked to quote for work.
   { label: 'Estimates', href: '/account/estimates' },
-  { label: 'Bookings', href: '/account/bookings' },
+  { label: 'Bookings', href: '/account/bookings', offered: (o) => o.bookings },
+  // Support. Every shop has customers who need to ask something.
   { label: 'Requests', href: '/account/requests' },
   { label: 'Wishlist', href: '/account/wishlist' },
   { label: 'Addresses', href: '/account/addresses' },
   { label: 'Payment methods', href: '/account/payment-methods' },
   { label: 'Profile', href: '/account/profile' },
-  { label: 'B2B Account', href: '/account/b2b' },
+  { label: 'B2B Account', href: '/account/b2b', offered: (o) => o.b2b },
 ];
 
 export default function AuthedAccountLayout({ children }: { children: React.ReactNode }) {
-  const { customer, status, logout } = useCustomer();
+  const { customer, offers, status, logout } = useCustomer();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -79,7 +85,7 @@ export default function AuthedAccountLayout({ children }: { children: React.Reac
             <strong>{displayName}</strong>
             {customer.email ? <span className="text-base-content">{customer.email}</span> : null}
           </div>
-          {NAV.map((item) => {
+          {NAV.filter((item) => item.offered?.(offers) ?? true).map((item) => {
             const active =
               pathname === item.href ||
               (item.href !== '/account' && pathname.startsWith(`${item.href}/`));

@@ -46,7 +46,7 @@ export function ProductCard({
         {img ? (
           <Image
             src={img}
-            alt={product.title}
+            alt={product.primaryImageAlt ?? product.title}
             fill
             sizes="(max-width: 520px) 50vw, (max-width: 860px) 33vw, 230px"
             className="object-cover transition-transform duration-[400ms] group-hover:scale-105"

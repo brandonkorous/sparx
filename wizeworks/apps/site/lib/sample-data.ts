@@ -62,6 +62,7 @@ function sampleListItem(i: number): PublicProductListItem {
     averageRating: 4 + (i % 10) / 10,
     reviewCount: 12 + i * 7,
     primaryImageId: null,
+    primaryImageAlt: null,
     // Sample data has no real variants — an add-to-cart must never fire from it.
     defaultVariantId: null,
     seoTitle: null,
@@ -89,6 +90,7 @@ export const SAMPLE_PRODUCT: PublicProduct = {
   averageRating: 4.6,
   reviewCount: 128,
   primaryImageId: null,
+  primaryImageAlt: null,
   // Sample data has no real variants — an add-to-cart must never fire from it.
   defaultVariantId: null,
   seoTitle: null,

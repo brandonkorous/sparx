@@ -22,7 +22,7 @@ import { Button, Input } from '@wizeworks/silicaui-react';
 
 import { ButtonLink } from '@/components/button-link';
 import { FitmentFacet, type FitmentLevel } from '@/components/facet-panel';
-import type { PublicFitmentDomain, SearchFacets } from '@/lib/commerce';
+import type { PublicFitmentDomain, PublicOptionAxis, SearchFacets } from '@/lib/commerce';
 
 export interface BrowseFacetValues {
   q?: string;
@@ -45,6 +45,10 @@ export interface BrowseFacetsProps {
   /** Typesense facet counts keyed by index field (vendor, product_type, tags, option_facets). */
   facets: SearchFacets;
   values: BrowseFacetValues;
+  /** The shop's declared option order — which axes come first and, inside each, the
+   *  ladder the owner typed. Empty when the read failed, and the panel then keeps the
+   *  facet-count order it had before. */
+  axes: PublicOptionAxis[];
   /** Fitment domain data for the drill (resolved by the page). */
   domains: PublicFitmentDomain[];
   activeDomain: PublicFitmentDomain | null;
@@ -63,11 +67,44 @@ const COUNT_GROUPS: { field: string; label: string; param: 'vendor' | 'productTy
   { field: 'tags', label: 'Tags', param: 'tag' },
 ];
 
+/** Where a name sits in a declared order, or `Infinity` for one the order does not
+ *  mention — which sends it to the end rather than to the front, so an axis added
+ *  since the order was read appears last instead of displacing the ladder. */
+function rankIn(order: readonly string[], name: string): number {
+  const i = order.indexOf(name);
+  return i === -1 ? Number.POSITIVE_INFINITY : i;
+}
+
+/** Sort by declared rank, and leave everything the order does not mention in the
+ *  sequence it arrived in. `Infinity - Infinity` is `NaN`, which a comparator must
+ *  never return — two unranked entries compare EQUAL, and `Array.sort` is stable, so
+ *  they keep their existing relative order instead of being shuffled. */
+function byDeclaredOrder<T>(order: readonly string[], nameOf: (item: T) => string) {
+  return (a: T, b: T): number => {
+    const ra = rankIn(order, nameOf(a));
+    const rb = rankIn(order, nameOf(b));
+    if (ra === rb) return 0;
+    return ra - rb;
+  };
+}
+
 /** Split the flat `option_facets` counts ("Color:Black", "Size:M") into groups keyed by the
  *  option NAME — so the panel renders exactly the option axes the tenant defined, in the
- *  data, with their real values + counts. The checkbox value stays the full token. */
+ *  data, with their real values + counts. The checkbox value stays the full token.
+ *
+ *  Ordered by what the SHOP DECLARED, not by what came back. Typesense returns facet
+ *  values by descending count, and on a shop where every garment comes in every size
+ *  those counts tie — so a Size filter read Small, Medium, Large, Extra Small, and a
+ *  shopper looking for their size had to read the list twice
+ *  (piggles/docs/personas/issues/342). The order is the owner's answer, already on the
+ *  option rows; `axes` carries it here.
+ *
+ *  A group or value the order does not mention keeps the count order at the end of its
+ *  list, so this degrades to exactly the previous behavior when `axes` is empty — which
+ *  is what a failed axes read gives us. */
 function optionGroups(
-  facets: SearchFacets
+  facets: SearchFacets,
+  axes: readonly PublicOptionAxis[]
 ): { name: string; values: { token: string; label: string; count: number }[] }[] {
   const counts = facets.option_facets ?? [];
   const byName = new Map<string, { token: string; label: string; count: number }[]>();
@@ -80,34 +117,61 @@ function optionGroups(
     arr.push({ token: c.value, label, count: c.count });
     byName.set(name, arr);
   }
-  return [...byName.entries()].map(([name, values]) => ({ name, values }));
+  const valueOrder = new Map(axes.map((a) => [a.name, a.values]));
+  return [...byName.entries()]
+    .sort(
+      byDeclaredOrder(
+        axes.map((a) => a.name),
+        ([name]) => name
+      )
+    )
+    .map(([name, values]) => ({
+      name,
+      values: [...values].sort(byDeclaredOrder(valueOrder.get(name) ?? [], (v) => v.label)),
+    }));
 }
 
 function dollars(cents: number): string {
   return String(Math.round(cents / 100));
 }
 
+/** The facet form's id.
+ *
+ *  Exported because the SEARCH field lives outside this form — in the toolbar, above the
+ *  grid on every viewport — and associates itself with it through the `form` attribute.
+ *  A literal spelled on both sides would be one rename away from a search box that
+ *  silently submits nothing, which is the kind of break nothing catches. */
+export const FACET_FORM_ID = 'browse-filters';
+
 export function BrowseFacets({
   action,
   facets,
   values,
+  axes,
   domains,
   activeDomain,
   levels,
   priceRange,
 }: BrowseFacetsProps) {
-  const options = optionGroups(facets);
+  const options = optionGroups(facets, axes);
   const selected = new Set(values.options);
 
   return (
     <form
-      id="browse-filters"
+      id={FACET_FORM_ID}
       className="sticky top-[92px] flex scroll-mt-[92px] flex-col gap-6 max-[900px]:static"
       method="GET"
       action={action}
     >
-      {/* Preserve the text query + sort across filter submits (sort is owned by the toolbar). */}
-      {values.q ? <input type="hidden" name="q" value={values.q} /> : null}
+      {/* Sort is owned by the toolbar and preserved across filter submits.
+       *
+       *  `q` is NOT hidden here any more. It used to be — a hidden field that carried an
+       *  existing search term through a filter submit, on a browse surface with nowhere to
+       *  type one. The whole-catalog and per-category listings both read `q` and both
+       *  retitle themselves "Results for …" when it is set, so the query layer has always
+       *  supported search; the only thing missing was the box. It now lives in the toolbar
+       *  (see `ScopedProductBrowser`) and submits with this form, so there is exactly one
+       *  `q` on the wire. */}
       <input type="hidden" name="sort" value={values.sort ?? 'relevance'} />
 
       <div>

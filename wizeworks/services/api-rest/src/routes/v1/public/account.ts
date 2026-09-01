@@ -177,6 +177,32 @@ async function loadProfile(
   );
 }
 
+/** What this shop actually offers this shopper, for the account nav to hide what
+ *  it does not (issue 335).
+ *
+ *  EVIDENCE, never the module flag. A module being enabled says the tenant COULD
+ *  take bookings; it says nothing about whether they do, and one of the two
+ *  brands ships every module on, so a flag would hide nothing there. */
+export async function loadOffers(
+  ctx: CustomerAuthContext,
+  customerId: string
+): Promise<{ bookings: boolean; b2b: boolean }> {
+  return withTenant(ctx, async (tx) => {
+    const [service, customer] = await Promise.all([
+      // The same predicate the booking surface itself uses to serve a service.
+      tx.schedulingService.findFirst({
+        where: { bookableOnline: true, isActive: true, deletedAt: null },
+        select: { id: true },
+      }),
+      tx.customer.findFirst({
+        where: { id: customerId, deletedAt: null },
+        select: { companyId: true },
+      }),
+    ]);
+    return { bookings: service !== null, b2b: customer?.companyId != null };
+  });
+}
+
 /**
  * Reconcile the shopper's cart for a freshly-authenticated customer: merge
  * or claim their guest cart (`x-cart-token`) and re-price every line against
@@ -272,9 +298,12 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/public/commerce/account/me', async (request) => {
     const ctx = await accountContext(request);
     const customerId = await requireCustomerId(request, ctx, 'account:read');
-    const customer = await loadProfile(ctx, customerId);
+    const [customer, offers] = await Promise.all([
+      loadProfile(ctx, customerId),
+      loadOffers(ctx, customerId),
+    ]);
     if (!customer) throw notFound('Customer', customerId);
-    return ok({ customer });
+    return ok({ customer, offers });
   });
 
   app.patch('/v1/public/commerce/account/me', async (request) => {

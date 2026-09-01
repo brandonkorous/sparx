@@ -16,6 +16,18 @@ export interface Customer {
   phone: string | null;
 }
 
+/** What this shop offers THIS shopper. Read from evidence (a bookable service
+ *  exists; this customer belongs to a B2B account), never from a module flag,
+ *  so the account nav lists only what the shop can actually deliver. */
+export interface AccountOffers {
+  bookings: boolean;
+  b2b: boolean;
+}
+
+/** Nothing on offer until the server says otherwise — an unanswered read must
+ *  not invite somebody to book at a shop that takes no bookings. */
+export const NO_OFFERS: AccountOffers = { bookings: false, b2b: false };
+
 export class AccountError extends Error {
   readonly status: number;
   constructor(message: string, status: number) {
@@ -136,13 +148,17 @@ export async function resetPassword(
   await parse<{ ok: true }>(res);
 }
 
-/** Returns the current customer, or null if not signed in (401). */
-export async function getMe(tenantSlug: string): Promise<Customer | null> {
+/** Returns the current customer and what the shop offers them, or null if not
+ *  signed in (401). */
+export async function getMe(
+  tenantSlug: string
+): Promise<{ customer: Customer; offers: AccountOffers } | null> {
   const res = await fetch(url('/v1/public/commerce/account/me', tenantSlug), {
     cache: 'no-store',
   });
   if (res.status === 401) return null;
-  return (await parse<{ customer: Customer }>(res)).customer;
+  const body = await parse<{ customer: Customer; offers?: AccountOffers }>(res);
+  return { customer: body.customer, offers: body.offers ?? NO_OFFERS };
 }
 
 export async function updateProfile(

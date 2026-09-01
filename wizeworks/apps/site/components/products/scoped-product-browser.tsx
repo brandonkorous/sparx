@@ -11,9 +11,15 @@
 // + a GET form — no client JS. `basePath` points the facet form + pager at the current
 // route so filters stay on THIS surface; `scope` narrows the search to a collection/category.
 
+import { Input } from '@wizeworks/silicaui-react';
+
 import { ButtonLink } from '@/components/button-link';
 import { BrowseEmpty } from '@/components/products/browse-empty';
-import { BrowseFacets, type BrowseFacetValues } from '@/components/products/browse-facets';
+import {
+  BrowseFacets,
+  FACET_FORM_ID,
+  type BrowseFacetValues,
+} from '@/components/products/browse-facets';
 import type { FitmentLevel } from '@/components/facet-panel';
 import { Pagination } from '@/components/pagination';
 import { ProductGrid } from '@/components/product-grid';
@@ -21,6 +27,7 @@ import { SortSelect } from '@/components/sort-select';
 import {
   listFitmentDomains,
   listFitmentNodes,
+  listOptionAxes,
   searchProducts,
   type ProductSearchFilters,
   type ProductSort,
@@ -55,6 +62,20 @@ function dollarsToCents(v: string | undefined): number | undefined {
 }
 
 const PER_PAGE = 24;
+
+/** What the search box says it will search, per surface.
+ *
+ *  Scope-aware for the same reason `BrowseEmpty`'s copy is: this ONE component is the
+ *  whole shop on `/products`, one collection on `/collections/<handle>` and one category
+ *  on `/category/<handle>`, and the form posts back to whichever it is — so a search from
+ *  a category page searches THAT category. A single "Search products" would promise the
+ *  catalog on a page that cannot deliver it. The category wording matches the sentence
+ *  `BrowseEmpty` already uses for the same place. */
+const SEARCH_LABEL: Record<'catalog' | 'collection' | 'category', string> = {
+  catalog: 'Search the shop',
+  collection: 'Search this collection',
+  category: 'Search this part of the shop',
+};
 
 // Resolve the fitment level drill from the URL. Walks the domain's `level` dimensions in
 // order: level 0 = the domain's top-level nodes; each subsequent level loads the children
@@ -127,8 +148,15 @@ export async function ScopedProductBrowser({
   const page = Math.max(1, Number(one(sp.page) ?? '1') || 1);
 
   // Resolve the fitment domain + drill chain so the panel can render the applicability
-  // filter and the deepest selection can narrow the search.
-  const domains = await listFitmentDomains(site.slug).catch<PublicFitmentDomain[]>(() => []);
+  // filter and the deepest selection can narrow the search. The option axes come along
+  // for the ride: the facet COUNTS say which values exist and the axes say what order
+  // the shop put them in, and only the two together make a Size filter read XS, S, M,
+  // L, XL. Fetched in parallel — neither read depends on the other, and the panel below
+  // waits on both anyway.
+  const [domains, axes] = await Promise.all([
+    listFitmentDomains(site.slug).catch<PublicFitmentDomain[]>(() => []),
+    listOptionAxes(site.slug),
+  ]);
   const activeDomain = domains.find((d) => d.slug === fitmentDomainSlug) ?? domains[0] ?? null;
   const { levels, selectedNode, selectedDepth } = activeDomain
     ? await resolveFitmentLevels(site.slug, activeDomain, sp)
@@ -183,6 +211,10 @@ export async function ScopedProductBrowser({
     primaryRange,
   ].some(Boolean);
 
+  // One answer for both the search label and the empty state, which have to agree about
+  // what this listing IS.
+  const scopeKind = scope?.category ? 'category' : scope?.collection ? 'collection' : 'catalog';
+
   const totalPages = Math.max(1, Math.ceil(result.total / result.perPage));
   const { defaultCurrency: currency, defaultLocale: locale } = site.commerce;
 
@@ -217,6 +249,7 @@ export async function ScopedProductBrowser({
             action={basePath}
             facets={result.facets}
             values={facetValues}
+            axes={axes}
             domains={domains}
             activeDomain={activeDomain}
             levels={levels}
@@ -224,13 +257,32 @@ export async function ScopedProductBrowser({
         </aside>
 
         <div className="max-[900px]:order-1">
+          {/* ABOVE THE GRID, ON EVERY VIEWPORT, and part of the facet form rather than a
+              second one. The panel beside this stacks BELOW the products on a phone (its
+              own comment explains why), so a search box living in the panel would sit
+              under the grid — buried, exactly like the filters it was avoiding. `form=`
+              associates a control with a form it is not nested in, which is what that
+              attribute is for: one GET form, one Apply, no duplicated filter state and
+              still no client JS. Enter submits, as it would in any search box. */}
+          <div className="mb-5">
+            <Input
+              form={FACET_FORM_ID}
+              type="search"
+              name="q"
+              defaultValue={q}
+              placeholder={SEARCH_LABEL[scopeKind]}
+              aria-label={SEARCH_LABEL[scopeKind]}
+              className="w-full max-w-sm"
+            />
+          </div>
+
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
             <span className="text-base-content text-base">
               {result.total} {result.total === 1 ? 'product' : 'products'}
             </span>
             <div className="flex items-center gap-3">
               <span className="min-[901px]:hidden">
-                <ButtonLink href="#browse-filters" variant="outline" prefetch={false}>
+                <ButtonLink href={`#${FACET_FORM_ID}`} variant="outline" prefetch={false}>
                   Filter
                 </ButtonLink>
               </span>
@@ -243,13 +295,7 @@ export async function ScopedProductBrowser({
             tenantSlug={site.slug}
             currency={currency}
             locale={locale}
-            empty={
-              <BrowseEmpty
-                narrowed={narrowed}
-                basePath={basePath}
-                scope={scope?.category ? 'category' : scope?.collection ? 'collection' : 'catalog'}
-              />
-            }
+            empty={<BrowseEmpty narrowed={narrowed} basePath={basePath} scope={scopeKind} />}
           />
 
           {totalPages > 1 ? (

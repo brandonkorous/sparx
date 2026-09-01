@@ -129,7 +129,11 @@ function toSilicaProduct(p: PublicProductListItem, tenantSlug: string): Record<s
     // host `format` maps an empty-url image to the placeholder tile, so an imageless
     // product renders "an image goes here" instead of the silica Image component's
     // broken-image glyph (see makeFormat).
-    image: { url: url ?? '', alt: p.title },
+    // Her own words about this photo, else the title. The PDP mapper below has
+    // always done this; the CARD repeated the product name that sits directly
+    // under it, so the description she wrote was used on one page and nowhere
+    // else (issue 338).
+    image: { url: url ?? '', alt: p.primaryImageAlt ?? p.title },
     // Bound by the buy box's hidden field, so its <form> submit carries a real
     // cart line. Empty string (not null) when the product has no live variant:
     // the hidden input renders `value=""`, the field is `required`, and the

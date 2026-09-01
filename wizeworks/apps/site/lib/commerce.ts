@@ -124,6 +124,10 @@ export interface PublicProductListItem {
   averageRating: number | null;
   reviewCount: number;
   primaryImageId: string | null;
+  /** What the owner wrote about that photo, on this product — the console's
+   *  "Description for screen readers". Null when she has written none, and the
+   *  card then falls back to the product title, exactly as the detail page does. */
+  primaryImageAlt: string | null;
   /** Variant an add-to-cart defaults to (explicit default, else lowest position).
    *  Null when the product has no live variant — such a card renders, but its
    *  add-to-cart must never fire. */
@@ -317,6 +321,14 @@ export interface PublicCategory extends PublicCategoryNode {
   seoTitle: string | null;
   seoDescription: string | null;
   ogImageId: string | null;
+}
+
+/** One product-option axis and the order the shop put its values in. Merged across
+ *  the catalog by api-rest — a shop declares Size per product, and the facet panel
+ *  shows one Size group for all of them. */
+export interface PublicOptionAxis {
+  name: string;
+  values: string[];
 }
 
 export interface PublicFitmentDomain {
@@ -981,6 +993,25 @@ export async function listProductQuestions(
       `/v1/public/commerce/products/${encodeURIComponent(handle)}/questions`,
       { tenant: tenantSlug },
       [`commerce:${tenantSlug}:product:${handle}:questions`]
+    );
+    return data;
+  } catch {
+    return [];
+  }
+}
+
+/** The order the shop declared its option axes and values in — Size runs XS, S, M, L,
+ *  XL, not whichever order the facet counts came back in.
+ *
+ *  Fails to an EMPTY list rather than throwing: the panel then falls back to the
+ *  count order it used before, which is imperfect and is not a broken page. A filter
+ *  in a surprising order is a worse shop; a filter that is missing is a broken one. */
+export async function listOptionAxes(tenantSlug: string): Promise<PublicOptionAxis[]> {
+  try {
+    const { data } = await publicGet<PublicOptionAxis[]>(
+      '/v1/public/commerce/option-axes',
+      { tenant: tenantSlug },
+      [`commerce:${tenantSlug}:option-axes`]
     );
     return data;
   } catch {

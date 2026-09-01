@@ -10,6 +10,7 @@
 //   GET /v1/public/commerce/categories                   ?tenant=<slug>
 //   GET /v1/public/commerce/categories/:handle           ?tenant=<slug>
 //   GET /v1/public/commerce/categories/:handle/products  ?tenant=<slug>[&page=&perPage=]
+//   GET /v1/public/commerce/option-axes                  ?tenant=<slug>[&property=<slug>]
 //   GET /v1/public/commerce/fitment/domains              ?tenant=<slug>
 //   GET /v1/public/commerce/fitment/domains/:domainId/nodes ?tenant=<slug>[&parentId=<uuid>]
 //
@@ -47,6 +48,7 @@ import {
   collectionSiteVisibilityWhere,
   categorySiteVisibilityWhere,
 } from '../../../lib/property.js';
+import { mergeOptionAxes } from '../../../lib/option-axes.js';
 import { tryVerifyProductPreview } from '../../../lib/preview.js';
 import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
 import { optionalCustomer } from '../../../lib/customer-session.js';
@@ -324,7 +326,7 @@ function publicProduct(row: {
   seoTitle: string | null;
   seoDescription: string | null;
   updatedAt: Date;
-  images?: { mediaAssetId: string }[];
+  images?: { mediaAssetId: string; alt: string | null }[];
   variants?: { id: string }[];
   reviewRollups?: { sumRating: number; reviewCount: number }[];
 }) {
@@ -347,6 +349,13 @@ function publicProduct(row: {
     // Hero thumbnail asset id (primary, else first product-level by position —
     // see productSelect). The storefront resolves it via /v1/public/media/<id>.
     primaryImageId: row.images?.[0]?.mediaAssetId ?? null,
+    // What the owner wrote about THIS photo on THIS product, for a card to
+    // announce instead of repeating the title beside it. Deliberately not
+    // falling back to the media asset's own `altText`: that describes the FILE,
+    // which may be attached to several products, and a shop where one leather
+    // photo serves a belt and a tote would announce the belt as a tote bag.
+    // Null here means the card keeps the product name, as the detail page does.
+    primaryImageAlt: row.images?.[0]?.alt ?? null,
     // The variant an add-to-cart lands on when the shopper picks no options:
     // the explicit default, else lowest position (see productSelect). A builder
     // buy box binds this so its <form> submits a real cart line (docs/118).
@@ -1086,6 +1095,55 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     );
   });
 
+  // ─── Option axes ───────────────────────────────────────────────────
+  //
+  // The ORDER a shop declared its product options in — "Size runs XS, S, M, L, XL",
+  // "Roast runs Light, Medium, Dark".
+  //
+  // The storefront's facet panel builds its option groups from the search index's
+  // `option_facets` counts, which arrive as flat `Name:Value` tokens ordered by
+  // DESCENDING COUNT. On a shop where every garment comes in every size the counts
+  // tie, so what a shopper got was arbitrary: Small, Medium, Large, Extra Small
+  // (piggles/docs/personas/issues/342). The order exists — it is on the option and
+  // the value rows, and the owner typed it — and the index simply does not carry it.
+  //
+  // Read here rather than added to the index, deliberately. `option_facets` is the
+  // FILTER contract (`option_facets:=[…]`) and must not change shape, a second facet
+  // field means a Typesense schema change plus a full reindex before a single shop
+  // sees its own order, and the counts only ever describe the CURRENT result page —
+  // whereas a shopper narrowing to one product should still see the whole ladder in
+  // the right order. Postgres already holds the answer for the whole catalog.
+  //
+  // Scoped to the SITE, for the same reason the fitment index below is: a donut shop
+  // sharing a tenant with an apparel shop must not be handed the apparel shop's size
+  // ladder.
+  app.get('/v1/public/commerce/option-axes', async (request) => {
+    const q = TenantQuery.parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const rows = await withTenant({ tenantId }, (tx) =>
+      tx.productOption.findMany({
+        where: {
+          product: {
+            status: 'active',
+            deletedAt: null,
+            ...productSiteVisibilityWhere(propertyId),
+          },
+        },
+        select: {
+          // The product id groups the AXIS order: "Size before Color" is a statement
+          // one product makes about its own two axes, and merging them needs to know
+          // which axes were declared together.
+          productId: true,
+          name: true,
+          position: true,
+          values: { select: { value: true, position: true } },
+        },
+      })
+    );
+    return ok(mergeOptionAxes(rows));
+  });
+
   // ─── Fitment ───────────────────────────────────────────────────────
   //
   // Surfaces the fitment domains the tenant has installed plus a generic
@@ -1223,7 +1281,14 @@ function productSelect(propertyId?: string) {
       where: { variantId: null },
       orderBy: [{ isPrimary: 'desc' as const }, { position: 'asc' as const }],
       take: 1,
-      select: { mediaAssetId: true },
+      // `alt` travels with the thumbnail. The console's Photos tab calls this
+      // field "Description for screen readers" and promises, without
+      // qualification, that it is "read aloud to shoppers who cannot see the
+      // picture" — and every place most photos are actually seen (a shop grid,
+      // a home page rail, search results) reads THIS select, not the detail one
+      // below. Fetching only the id is what made that promise true on one page
+      // and false on the rest (issue 338).
+      select: { mediaAssetId: true, alt: true },
     },
     // The default variant, for `defaultVariantId` (see publicProduct). Explicit
     // default first, then lowest position — `isDefault` alone leaves ties in a
@@ -1358,8 +1423,14 @@ function fullProductSelect(propertyId: string) {
         },
       },
     },
+    // The MAIN photo first, then position — the same order the card select above
+    // uses, and the same order the console promises: "Your main photo always
+    // comes first". Ordering by position alone ignored `isPrimary` outright, so
+    // making a photo the main one moved it to the front of the product's Photos
+    // tab and left the product PAGE leading with whatever was uploaded earliest
+    // (issue 337).
     images: {
-      orderBy: { position: 'asc' },
+      orderBy: [{ isPrimary: 'desc' as const }, { position: 'asc' as const }],
       select: {
         id: true,
         mediaAssetId: true,

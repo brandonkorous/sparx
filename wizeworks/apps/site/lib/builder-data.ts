@@ -110,7 +110,7 @@ function mapProduct(p: PublicProductListItem, tenantSlug: string): Record<string
     price: p.priceMinCents != null ? p.priceMinCents / 100 : null,
     compareAtPrice: p.compareAtCents != null ? p.compareAtCents / 100 : null,
     description: p.description ?? '',
-    images: img ? [{ url: img, alt: p.title }] : [],
+    images: img ? [{ url: img, alt: p.primaryImageAlt ?? p.title }] : [],
     sku: '',
   };
 }
