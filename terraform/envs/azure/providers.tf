@@ -38,6 +38,15 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.6"
     }
+    // Exists for ONE resource: the Claude deployment in rocketease.tf.
+    // `azurerm_cognitive_deployment` cannot express `modelProviderData`
+    // (hashicorp/terraform-provider-azurerm#31140), and an Anthropic deployment
+    // is rejected without it. Microsoft's own starter kit reaches for azapi for
+    // exactly this reason - see Azure-Samples/claude, infra-terraform.
+    azapi = {
+      source  = "azure/azapi"
+      version = "~> 2.0"
+    }
     // DNS. Cloudflare is neither an Azure nor a GCP service, which is exactly
     // why the records live in a shared module (../../modules/dns) and this env
     // supplies only the address they point at.
@@ -79,6 +88,11 @@ provider "azurerm" {
       prevent_deletion_if_contains_resources = true
     }
   }
+  subscription_id = var.subscription_id
+}
+
+// Same subscription, different API surface. Used only by the Claude deployment.
+provider "azapi" {
   subscription_id = var.subscription_id
 }
 

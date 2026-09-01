@@ -454,7 +454,7 @@ locals {
 resource "azurerm_key_vault_secret" "rocketease" {
   # Merged, not replaced, so turning rocketease_ai_enabled off REMOVES the AI
   # secrets rather than stranding entries that point at a deleted account.
-  for_each = merge(local.rocketease_secrets, local.rocketease_ai_secrets)
+  for_each = merge(local.rocketease_secrets, local.rocketease_ai_secrets, local.rocketease_claude_secrets)
 
   name         = each.key
   value        = each.value.value
@@ -582,6 +582,23 @@ variable "rocketease_ai_capacity" {
   default     = 2
 }
 
+variable "rocketease_ai_text_capacity" {
+  description = <<-EOT
+    Rate ceiling for the drafting deployment, in thousands of tokens per minute.
+    This subscription's DataZoneStandard limits in eastus2 on 2026-08-31:
+
+        gpt-5.4       300     gpt-5.4-mini   1000
+        gpt-5.5       333     gpt-5.4-nano   2000
+
+    50 is deliberately a sixth of the quota rather than all of it: drafting is
+    interactive and bursty, and leaving headroom means a second deployment (a
+    cheaper tier, or a staging one) does not need a quota fight first. The real
+    spend control is the per-workspace credit ledger in lib/ai/usage.
+  EOT
+  type        = number
+  default     = 50
+}
+
 locals {
   rocketease_ai_on    = var.rocketease_enabled && var.rocketease_ai_enabled
   rocketease_ai_count = local.rocketease_ai_on ? 1 : 0
@@ -609,6 +626,19 @@ locals {
   # imageGenerations true, imageEdits true, area US.
   rocketease_ai_model   = "gpt-image-2"
   rocketease_ai_version = "2026-04-21"
+
+  # TEXT, on the SAME account. Drafting ran on Claude until 2026-08-31; see the
+  # Foundry section below for why it cannot. One account, one key, one endpoint
+  # is a real simplification over two - and unlike images, text gets
+  # DataZoneStandard, so the prompts carrying a customer's brand voice and
+  # strategy stay inside the United States.
+  #
+  # gpt-5.4 rather than -mini: this product's whole value is the copy, drafting
+  # is low-volume and interactive, and the credit ledger in lib/ai/usage is what
+  # actually caps the bill. Swapping tier is one line here plus one vault value.
+  rocketease_ai_text_deployment = "rocketease-text"
+  rocketease_ai_text_model      = "gpt-5.4"
+  rocketease_ai_text_version    = "2026-03-05"
 }
 
 resource "azurerm_cognitive_account" "rocketease" {
@@ -663,8 +693,30 @@ resource "azurerm_cognitive_deployment" "rocketease_images" {
   version_upgrade_option = "OnceCurrentVersionExpired"
 }
 
+resource "azurerm_cognitive_deployment" "rocketease_text" {
+  count                = local.rocketease_ai_count
+  name                 = local.rocketease_ai_text_deployment
+  cognitive_account_id = azurerm_cognitive_account.rocketease[0].id
+
+  model {
+    format  = "OpenAI"
+    name    = local.rocketease_ai_text_model
+    version = local.rocketease_ai_text_version
+  }
+
+  sku {
+    # US-only inference, which image models cannot offer. Text is where it
+    # matters most: an image prompt describes a scene, a drafting prompt
+    # carries the brand voice, the strategy and whatever the customer pasted in.
+    name     = "DataZoneStandard"
+    capacity = var.rocketease_ai_text_capacity
+  }
+
+  version_upgrade_option = "OnceCurrentVersionExpired"
+}
+
 locals {
-  # Four secrets, three of them not secret at all. They are here because the
+  # Six secrets, five of them not secret at all. They are here because the
   # vault is the ONLY channel the release reads: ci.yml builds the platform-env
   # Secret from vault entries and nothing else, so a value that is not here
   # cannot reach the container.
@@ -692,10 +744,294 @@ locals {
       value = azurerm_cognitive_deployment.rocketease_images[0].name
       type  = "deployment name; not secret. NOT the model name"
     }
+    "AZURE-OPENAI-TEXT-DEPLOYMENT" = {
+      # Setting this is what switches drafting to Azure OpenAI. Unset, the
+      # platform falls back to the Anthropic transport, which needs its own key.
+      value = azurerm_cognitive_deployment.rocketease_text[0].name
+      type  = "deployment name; not secret. Presence of this selects the azure-openai text transport"
+    }
+    "AZURE-OPENAI-TEXT-API-VERSION" = {
+      # SEPARATE from the images one on purpose: the two data planes version
+      # independently, and pinning them together means an images upgrade
+      # silently changes what drafting sends.
+      value = "2024-10-21"
+      type  = "api version; chat/completions data plane. Confirmed against a live call 2026-08-31"
+    }
   } : {}
 }
 
 output "rocketease_openai_endpoint" {
   description = "Azure OpenAI data plane for RocketEase image generation. Null when rocketease_ai_enabled is false."
   value       = local.rocketease_ai_on ? azurerm_cognitive_account.rocketease[0].endpoint : null
+}
+
+# ---------------------------------------------------------------------------
+# Microsoft Foundry - Claude for AI drafting.
+#
+# DORMANT SINCE 2026-08-31. Drafting runs on gpt-5.4 on the Azure OpenAI
+# account above; see rocketease_ai_text_deployment.
+#
+# This section argued that consolidating on one vendor did NOT mean switching to
+# GPT, because Claude is in the Foundry catalogue. The reasoning held; the
+# subscription did not. A Sponsored subscription cannot transact in Azure
+# Marketplace, so a partner model cannot be deployed here at all - measured, not
+# inferred, and written up on rocketease_claude_deployment_enabled below.
+#
+# Kept rather than deleted because it is a switch, not a dead end: the account
+# exists, the deployment is one flag, and lib/ai/transport/ picks a transport
+# from configuration. Restoring Claude is a vault value, not a rewrite - which
+# is the property that was missing when this had to be switched in a hurry.
+#
+# A SECOND ACCOUNT, not the OpenAI one above. Claude is `kind = "AIServices"`
+# (Foundry); image generation is `kind = "OpenAI"`. They are different resource
+# kinds with different data planes, so this cannot be a deployment on the
+# existing account.
+#
+# THE RESIDENCY STORY IS BETTER HERE THAN FOR IMAGES, and that is worth stating
+# because it is not uniform across this file. Image models offer GlobalStandard
+# only. Claude's Hosted-on-Azure versions also offer DataZoneStandard, which
+# keeps inference inside the United States - so the text prompts, which carry a
+# customer's brand voice and strategy, do NOT leave the US, while image prompts
+# may. Anthropic's own note: for deployments hosted on Azure, prompts and
+# completions remain within Azure; only usage metadata and safety-flagged
+# content egress.
+# ---------------------------------------------------------------------------
+
+variable "rocketease_claude_enabled" {
+  description = <<-EOT
+    Master switch for the Foundry resource, the Claude deployment and the three
+    secrets pointing at them. Off is a real state: with ANTHROPIC_API_KEY unset
+    the platform hides every AI drafting control and returns AI_UNCONFIGURED,
+    which is the behaviour lib/ai/client.ts has always had.
+  EOT
+  type        = bool
+  default     = true
+}
+
+variable "rocketease_claude_deployment_enabled" {
+  description = <<-EOT
+    The Claude DEPLOYMENT, separate from the account above and OFF by default.
+
+    FLIPPING THIS TO TRUE ACCEPTS ANTHROPIC'S COMMERCIAL TERMS on behalf of the
+    organization named in rocketease_claude_organization_name. The
+    `modelProviderData` block below is an attestation, and the Cognitive
+    Services RP uses it to accept the Azure Marketplace offer - there is no
+    separate click-through anywhere. Treat this variable as the signature.
+
+      https://www.anthropic.com/legal/commercial-terms
+      https://www.anthropic.com/legal/aup
+
+    OFF BECAUSE THE SUBSCRIPTION CANNOT TRANSACT IN AZURE MARKETPLACE, which is
+    measured rather than inferred (2026-08-31):
+
+        quotaId               Sponsored_2016-01-01
+        accepted agreements   0, and none can be accepted
+
+    A Sponsored subscription is one of the types Microsoft excludes from
+    Marketplace third-party purchases, alongside Free Trial, Azure Pass,
+    Visual Studio/MSDN and student. Claude is a partner model, so it is bought
+    through Marketplace, so it cannot be deployed here at all. Every attempt
+    returns the same opaque 715-123420.
+
+    TWO THINGS THIS IS NOT, both ruled out by experiment rather than by reading:
+
+      - not modelProviderData. The resource below now sends it, and the error
+        is unchanged. (It was still a real bug: without it the first attempt
+        failed with InvalidModelProviderData, so this would have blocked the
+        deployment even on an eligible subscription.)
+      - not quota. Capacity 1 fails identically to capacity 13, with 0/40
+        GlobalStandard and 0/13 DataZoneStandard free and no soft-deleted
+        account holding TPM (`az cognitiveservices account list-deleted`).
+        Microsoft's troubleshooting table maps 715-123420 to quota; here that
+        is a red herring, and following it cost an afternoon.
+
+    To unblock: convert this subscription to Pay-As-You-Go, or put the Foundry
+    account on one that already is. Then flip this to true - which is also the
+    act that accepts the Anthropic terms above.
+  EOT
+  type        = bool
+  default     = false
+}
+
+# ---------------------------------------------------------------------------
+# The Anthropic attestation. Sent with the deployment, and legally meaningful:
+# these three values are what the Marketplace offer is accepted UNDER, so they
+# describe the real organization using the model rather than anything handy.
+# ---------------------------------------------------------------------------
+
+variable "rocketease_claude_organization_name" {
+  description = "Legal entity using Claude. RocketEase is a WizeWorks LLC product; see apps/web/lib/site.ts in the app repo."
+  type        = string
+  default     = "WizeWorks LLC"
+}
+
+variable "rocketease_claude_country_code" {
+  description = "Two-letter ISO country code for that entity. California, so US."
+  type        = string
+  default     = "US"
+
+  validation {
+    condition     = length(var.rocketease_claude_country_code) == 2
+    error_message = "Must be a two-letter ISO country code."
+  }
+}
+
+variable "rocketease_claude_industry" {
+  description = "Industry of that entity. LOWERCASE — Foundry matches its portal dropdown exactly."
+  type        = string
+  default     = "technology"
+
+  validation {
+    condition = contains([
+      "technology", "finance", "healthcare", "education",
+      "retail", "manufacturing", "government", "media", "other",
+    ], var.rocketease_claude_industry)
+    error_message = "industry must be one of the lowercase values Foundry accepts."
+  }
+}
+
+variable "rocketease_claude_capacity" {
+  description = <<-EOT
+    Rate ceiling for the Claude deployment. This subscription's eastus2 limits
+    on 2026-08-30, read with `az cognitiveservices usage list -l eastus2`:
+
+        GlobalStandard.claude-opus-5.Azure      40
+        DataZoneStandard.claude-opus-5.Azure    13   <- what we use
+        DataZoneStandard.claude-opus-4-8.Azure  13
+        GlobalStandard.claude-sonnet-4-6        80
+
+    13 is the WHOLE DataZoneStandard quota for this model. Drafting is
+    interactive and low-volume; the ledger cap in lib/ai/usage is what actually
+    protects the bill.
+  EOT
+  type        = number
+  default     = 13
+}
+
+locals {
+  rocketease_claude_on    = var.rocketease_enabled && var.rocketease_claude_enabled
+  rocketease_claude_count = local.rocketease_claude_on ? 1 : 0
+  # The account is free to exist; only the DEPLOYMENT hits the Marketplace.
+  rocketease_claude_deploy_count = local.rocketease_claude_on && var.rocketease_claude_deployment_enabled ? 1 : 0
+  rocketease_claude_name         = "ai-rocketease-prod-eus2"
+
+  # The deployment name is what goes in the `model` field of every request -
+  # NOT the model id, though it defaults to it. Kept identical here so a bill
+  # line, a metric and AI_MODEL all read the same, which is the convention the
+  # jotDOJO section set.
+  rocketease_claude_deployment = "claude-opus-5"
+
+  # MODEL AND VERSION PINNED, and the choice was forced by quota rather than
+  # preference. Verified against this subscription on 2026-08-30:
+  #
+  #   claude-sonnet-5   quota 0 on EVERY sku - cannot be deployed at all,
+  #                     despite being the platform's configured AI_MODEL default
+  #   claude-opus-5     v2 (Hosted on Azure), GlobalStandard 40 / DataZone 13
+  #   claude-opus-4-8   v2, same shape
+  #
+  # VERSION "2" IS LOAD-BEARING: version 1 is Hosted on Anthropic and offers
+  # GlobalStandard only. Version 2 is Hosted on Azure and is the only one that
+  # can be a DataZoneStandard deployment, which is the whole point of the sku
+  # below.
+  rocketease_claude_model   = "claude-opus-5"
+  rocketease_claude_version = "2"
+}
+
+resource "azurerm_cognitive_account" "rocketease_claude" {
+  count               = local.rocketease_claude_count
+  name                = local.rocketease_claude_name
+  location            = var.rocketease_ai_location
+  resource_group_name = azurerm_resource_group.main.name
+  kind                = "AIServices"
+  sku_name            = "S0"
+  tags                = local.tags
+
+  # REQUIRED. The Anthropic data plane is served from
+  # `https://<subdomain>.services.ai.azure.com/anthropic`, which does not exist
+  # without a custom subdomain - the request 404s against the regional host.
+  custom_subdomain_name = local.rocketease_claude_name
+
+  public_network_access_enabled = true
+
+  lifecycle {
+    # Soft-deletes and holds the name, including the global DNS label.
+    prevent_destroy = true
+  }
+}
+
+# azapi, NOT azurerm_cognitive_deployment. The only reason is modelProviderData:
+# azurerm cannot send it (#31140) and Anthropic deployments are refused without
+# it. Everything else about this resource is ordinary.
+resource "azapi_resource" "rocketease_claude" {
+  count     = local.rocketease_claude_deploy_count
+  type      = "Microsoft.CognitiveServices/accounts/deployments@2025-10-01-preview"
+  name      = local.rocketease_claude_deployment
+  parent_id = azurerm_cognitive_account.rocketease_claude[0].id
+
+  # REQUIRED. The provider's baked schema has no modelProviderData, so leaving
+  # validation on strips the one field this whole resource exists to send.
+  schema_validation_enabled = false
+
+  body = {
+    sku = {
+      # US-only inference. See the section header - this is the one place in
+      # this file where we can make that promise, so we make it.
+      name     = "DataZoneStandard"
+      capacity = var.rocketease_claude_capacity
+    }
+    properties = {
+      model = {
+        # Anthropic, not OpenAI. The format decides which data plane serves it.
+        format  = "Anthropic"
+        name    = local.rocketease_claude_model
+        version = local.rocketease_claude_version
+      }
+
+      # The attestation. This is what accepts the Marketplace offer.
+      modelProviderData = {
+        organizationName = var.rocketease_claude_organization_name
+        countryCode      = var.rocketease_claude_country_code
+        industry         = var.rocketease_claude_industry
+      }
+
+      # A partner model follows the Claude API lifecycle. Move rather than go
+      # dark - but only once the pinned version actually expires, so a new
+      # default never silently changes what drafting runs on.
+      versionUpgradeOption = "OnceCurrentVersionExpired"
+      raiPolicyName        = "Microsoft.DefaultV2"
+    }
+  }
+
+  # The deployment NAME is what AI-MODEL carries, so it has to come back out.
+  response_export_values = ["name"]
+}
+
+locals {
+  # None of these three is secret except the key, and they are here for the
+  # reason the rest of this file records: the vault is the only channel the
+  # release reads.
+  # Gated on the DEPLOYMENT: publishing a base URL with no model behind it
+  # would point the app at an endpoint that 404s, which is worse than off.
+  rocketease_claude_secrets = local.rocketease_claude_deploy_count > 0 ? {
+    "ANTHROPIC-BASE-URL" = {
+      # Built from the NAME, not from `.endpoint`. A Foundry account's endpoint
+      # attribute is the cognitiveservices.azure.com host, which does not serve
+      # the Anthropic data plane; that lives on services.ai.azure.com.
+      value = "https://${azurerm_cognitive_account.rocketease_claude[0].name}.services.ai.azure.com/anthropic"
+      type  = "url; not secret. The SDK appends /v1/messages"
+    }
+    "ANTHROPIC-API-KEY" = {
+      value = azurerm_cognitive_account.rocketease_claude[0].primary_access_key
+      type  = "Foundry account key. Sent as x-api-key, which Foundry accepts unchanged"
+    }
+    "AI-MODEL" = {
+      value = azapi_resource.rocketease_claude[0].name
+      type  = "DEPLOYMENT name, which is what the model field carries. Not a model id"
+    }
+  } : {}
+}
+
+output "rocketease_claude_base_url" {
+  description = "Anthropic-compatible data plane for RocketEase AI drafting. Null when rocketease_claude_enabled is false."
+  value       = local.rocketease_claude_on ? "https://${azurerm_cognitive_account.rocketease_claude[0].name}.services.ai.azure.com/anthropic" : null
 }
