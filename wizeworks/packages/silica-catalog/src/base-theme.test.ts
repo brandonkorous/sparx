@@ -12,7 +12,7 @@
 // resolves to.
 
 import { describe, expect, it } from 'vitest';
-import { presetByName, resolveThemeTokens, type Theme } from '@wizeworks/silicaui-html';
+import { presetByName, resolveThemeTokens } from '@wizeworks/silicaui-html';
 
 import { BASE_SILICA_THEME } from './base-theme';
 
@@ -22,7 +22,7 @@ import { BASE_SILICA_THEME } from './base-theme';
 const UPSTREAM_BASELINE = 'quartz';
 
 function upstream(mode: 'light' | 'dark'): Record<string, string> {
-  const preset = presetByName(UPSTREAM_BASELINE) as Theme | undefined;
+  const preset = presetByName(UPSTREAM_BASELINE);
   if (!preset) throw new Error(`silicaui no longer ships a '${UPSTREAM_BASELINE}' preset`);
   return resolveThemeTokens(preset, mode);
 }
