@@ -160,6 +160,175 @@ function repairProductStrip(node: Element): Element {
   return repaired as Element;
 }
 
+/* ── The product hero: the page's LCP image, loaded last ───────────────────── */
+
+/**
+ * Turn the stamped product-detail hero into an EAGER raw `<img>`.
+ *
+ * WHY THIS CLEARS THE BAR ABOVE. Broken on published sites, not merely dated: this is
+ * the largest element above the fold on a shop's highest-traffic page, so it IS the
+ * Largest Contentful Paint — and silicaui's `Image` atom hardcodes `loading="lazy"`,
+ * which defers the request until layout has run. The platform stamped it (no author
+ * picks an atom), and the replacement is exactly what `commerce.ts` emits today.
+ *
+ * It has to become an ELEMENT rather than keep the atom with a prop, because the atom
+ * builds `loading` itself and IGNORES a `loading` prop without a word — probed against
+ * silicaui 0.55.0, where `loading`, `eager` and `priority` all come out `lazy`.
+ *
+ * RECOGNISED BY `rounded-box`, and that was measured rather than assumed. The card
+ * grids on the same page bind `image` with the same alt text, so the binding cannot
+ * tell them apart; the hero is the only one the factory gives a radius, because a card
+ * clips its own. Across every stored product tree in the fleet: eleven carry exactly
+ * one such image, one carries one an author added a border to (still the hero, still
+ * matched), one had the radius removed by an author and is left alone, and one has no
+ * images at all. No tree anywhere has two — so this cannot reach a card.
+ */
+function repairProductHero(node: Extract<Node, { kind: 'component' }>): Element {
+  const props = node.props ?? {};
+  const src = typeof props.src === 'string' ? props.src : '';
+  const alt = typeof props.alt === 'string' ? props.alt : '';
+  const { id, ord, label, data, slot, locked, class: cls } = node;
+  const img: Element = {
+    kind: 'element',
+    tag: 'img',
+    ...(id === undefined ? {} : { id }),
+    ...(ord === undefined ? {} : { ord }),
+    ...(label === undefined ? {} : { label }),
+    ...(data === undefined ? {} : { data }),
+    ...(slot === undefined ? {} : { slot }),
+    ...(locked === undefined ? {} : { locked }),
+    ...(cls === undefined ? {} : { class: cls }),
+    attrs: { src, alt, loading: 'eager' },
+  };
+  return img;
+}
+
+/** The hero, and nothing else: an `Image` atom carrying a value binding and the radius
+ *  only the hero is given. A card has the binding and not the radius; a decorative
+ *  image an author dropped in has the radius and not the binding. */
+function isProductHero(node: Node): node is Extract<Node, { kind: 'component' }> {
+  return (
+    node.kind === 'component' &&
+    node.component === 'Image' &&
+    node.data?.kind === 'value' &&
+    (node.class ?? '').split(/\s+/).includes('rounded-box')
+  );
+}
+
+/* ── The form that thanked people for messages it threw away ────────────── */
+
+/**
+ * Every form in the section kit shipped the host action ref `'submit'`, which the
+ * storefront routes NOWHERE (issue 350). The failure is silent by construction: the
+ * form behavior hands the ref to the host's `onAction`, an unrecognised ref falls
+ * through every branch and returns, the promise resolves, and the behavior settles the
+ * form to `success` — so a visitor's enquiry is discarded and the page thanks them
+ * for it. Nothing is logged and nothing is stored.
+ *
+ * Added 2026-08-30. Measured before it was written: **29 stored pages carry it, 11 of
+ * them published and live**, across 29 different sites, and every one is a contact or
+ * enquiry page. Against the bar above — broken on published sites (a live shop's
+ * contact form is a black hole), the platform stamped it (`convert.ts`'s `form()`
+ * helper, no author ever typed an action ref), and the replacement is known (exactly
+ * what that helper emits now).
+ */
+const DEAD_FORM_ACTION = 'submit';
+
+/** A form the platform stamped with the dead ref. Both marks are required: the
+ *  `form` BEHAVIOR is what does the client-side submit, and the ACTION is what points
+ *  it at a host — a node carrying only one of them is not a live form and is not this
+ *  bug. */
+function hasDeadFormAction(node: Node): node is Element {
+  return (
+    node.kind === 'element' &&
+    node.tag === 'form' &&
+    node.behavior?.type === 'form' &&
+    node.data?.kind === 'action' &&
+    node.data.ref === DEAD_FORM_ACTION
+  );
+}
+
+/** Every `name` on a control inside this form. */
+function controlNames(node: Node, out: string[] = []): string[] {
+  if (node.kind !== 'element' && node.kind !== 'component') return out;
+  if (node.kind === 'element' && ['input', 'textarea', 'select'].includes(node.tag)) {
+    const name = node.attrs?.name;
+    if (typeof name === 'string' && name) out.push(name);
+  }
+  for (const child of node.children ?? []) {
+    if (typeof child !== 'string') controlNames(child, out);
+  }
+  return out;
+}
+
+/**
+ * Where this form should have been going.
+ *
+ * Decided by what the form ASKS FOR, which is the only thing in a stored tree that
+ * still says what it is for: a form whose single question is an email address is a
+ * sign-up and belongs on the email list; anything that also asks a name, a phone
+ * number or a message is somebody writing TO the business and belongs in the
+ * submissions inbox. That split reproduces exactly what the factory emits now —
+ * `newsletterSignup()` is the one form on the shelf with a lone `email` field.
+ *
+ * The fallback is `contact` on purpose. Filing a sign-up as an enquiry puts a real
+ * address in front of a real person, who can act on it; routing an enquiry to the
+ * mailing list drops a customer's question and subscribes them instead.
+ */
+function intendedFormAction(form: Element): 'contact' | 'email-signup' {
+  const names = controlNames(form);
+  return names.length === 1 && names[0] === 'email' ? 'email-signup' : 'contact';
+}
+
+/** What the visitor is told when it works, per destination. The stored tree carries no
+ *  record of which of the four shelf forms it was stamped from, so these are the two
+ *  sentences that are true of every one of them rather than the four specific ones the
+ *  factory emits today. Both beat the behavior's built-in "Submitted.", which tells a
+ *  person nothing about whether their question reached anybody. */
+const HEALED_SUCCESS: Readonly<Record<'contact' | 'email-signup', string>> = {
+  contact: 'Thank you. Your message is with us and we will get back to you.',
+  'email-signup': 'Thank you. You are on the list.',
+};
+
+/** Does this form already author its own status part? The behavior takes the FIRST
+ *  one it finds, so adding a second would be dead markup, and an author who placed one
+ *  deliberately owns where it sits. */
+function hasStatusPart(node: Node): boolean {
+  if (node.kind !== 'element' && node.kind !== 'component') return false;
+  if (node.kind === 'element' && node.attrs?.['data-sui-part'] === 'status') return true;
+  return (node.children ?? []).some((c) => typeof c !== 'string' && hasStatusPart(c));
+}
+
+/**
+ * Repair a stamped form: route it somewhere real, and give it a way to say so.
+ *
+ * The ref is the half that loses the message; the status line is the half that loses
+ * the VISITOR, who pressed Send, saw nothing change and their own text still in the
+ * boxes, and sent the same question twice more (issue 351). Healing only the ref would
+ * fix the owner's inbox and leave the customer exactly as confused, so both go
+ * together.
+ *
+ * The appended paragraph is `empty:hidden` and the behavior only writes into it on a
+ * settle, so a repaired form is pixel-identical until somebody submits it.
+ */
+function repairFormAction(form: Element): Element {
+  const ref = intendedFormAction(form);
+  const attrs = { ...(form.attrs ?? {}) };
+  attrs['data-success-message'] ??= HEALED_SUCCESS[ref];
+
+  const children = [...(form.children ?? [])];
+  if (!hasStatusPart(form)) {
+    children.push({
+      kind: 'element',
+      tag: 'p',
+      class: 'text-base text-base-content empty:hidden',
+      attrs: { 'data-sui-part': 'status', 'aria-live': 'polite' },
+    });
+  }
+
+  return { ...form, data: { kind: 'action', ref }, attrs, children };
+}
+
 /**
  * Repair one class string, preserving order and every token that is not in the table.
  *
@@ -219,13 +388,23 @@ export function upgradePageBody(root: Node): { root: Node; changed: boolean } {
       changed = true;
     }
 
+    if (isProductHero(next)) {
+      next = repairProductHero(next);
+      changed = true;
+    }
+
+    if (hasDeadFormAction(next)) {
+      next = repairFormAction(next);
+      changed = true;
+    }
+
     const healedClass = node.class ? repairDeadClasses(node.class) : null;
     if (healedClass !== null) {
       next = { ...next, class: healedClass };
       changed = true;
     }
 
-    const children = (next as Element).children;
+    const children = next.children;
     if (Array.isArray(children)) {
       let childChanged = false;
       const healedKids = children.map((child) => {

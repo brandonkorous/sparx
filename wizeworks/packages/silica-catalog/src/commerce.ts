@@ -864,10 +864,30 @@ export function buyBox(): Node {
       children: [
         el('div', 'mx-auto grid w-full max-w-5xl gap-8 @2xl:grid-cols-2', {
           children: [
+            // `eager`, and this is the one image on the page that must be.
+            //
+            // silica's `Image` ships `loading="lazy"`, which is right for the card
+            // grids this file also builds and wrong here: this is the largest thing
+            // above the fold on a shop's highest-traffic page, so it IS the Largest
+            // Contentful Paint. Lazy defers the request until layout has run, which
+            // puts the one image the score is measured on last in the queue.
+            //
+            // `fetchpriority` would be the natural companion and is deliberately not
+            // set: `toHtml`'s attribute allowlist for `img` does not carry it, so it
+            // would be dropped silently — the failure this catalog's literal-class
+            // rule exists to avoid, wearing a different hat.
+            //
+            // A raw `img` rather than the `Image` atom, and that is the whole reason:
+            // silicaui's `Image` builds `loading="lazy"` itself and IGNORES a
+            // `loading` prop without a word, so there is no way to author an eager
+            // image through it (probed against silicaui 0.55.0 — `loading`, `eager`
+            // and `priority` all come out `lazy`). The element path honours the attr,
+            // `responsive-images` rewrites elements and atoms alike, and `_shell`'s
+            // `picture()` is already a raw img — so nothing is lost. Revert to the
+            // atom if silicaui ever forwards the prop.
             bind(
-              atom('Image', 'aspect-square w-full rounded-box object-cover', {
-                src: PLACEHOLDER_IMAGE,
-                alt: 'Product image',
+              el('img', 'aspect-square w-full rounded-box object-cover', {
+                attrs: { src: PLACEHOLDER_IMAGE, alt: 'Product image', loading: 'eager' },
               }),
               'image'
             ),

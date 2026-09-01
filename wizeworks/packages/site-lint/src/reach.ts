@@ -41,12 +41,51 @@ import type { PageAddress } from './types';
 import type { RawFinding } from './finding';
 import { addressOf, isTemplate } from './addresses';
 import { classifyHref, findLinks } from './links';
-import { BUILTIN_PATHS, inOpenSubtree, normalizePath } from './routes';
+import { inOpenSubtree, normalizePath } from './routes';
 import { isRecordAddress } from '@wizeworks/silica-catalog';
 
-/** Addresses the storefront reaches by itself, with no authored link involved. */
+/**
+ * Addresses the storefront reaches by itself, with no authored link involved.
+ *
+ * ITS OWN LIST, NOT `BUILTIN_PATHS`, and the difference is the whole reason this rule
+ * went blind. `BUILTIN_PATHS` answers the OUTWARD question `links.ts` asks — does this
+ * address exist, so a link to it is not broken. This rule asks the INWARD one: does
+ * anything actually GET a visitor there. Those sets overlap and are not the same, and
+ * borrowing the first to answer the second exempted three pages that nothing reaches.
+ *
+ * Everything below is reached by something the PLATFORM renders on every page: the
+ * navbar's cart core opens `/cart`, the cart opens `/checkout`, the header's search
+ * field opens `/search`, the account core opens `/account` and its subtree. Point at any
+ * of them and you can name the control.
+ *
+ * `/products`, `/collections` and `/category` were in the borrowed list and are NOT here,
+ * because no such control exists for them. They are browse indexes — a page of every
+ * product, a page of every collection, a page of every category — seeded into every
+ * commerce site by `starterPages` and reached only by an authored link. Exempting them
+ * told this rule that something was reaching them, which is how an apparel maker's seven
+ * curated collections, each with its own photograph and description, sat behind an
+ * address no visitor could ever click (issue 340). Same failure shape as the size guide
+ * this rule was written for; the rule was already here and had been talked out of it.
+ *
+ * `/book` stays: scheduling sites carry it in the nav by default, and the booking cores
+ * link into it, so reporting one would be the false positive this file is careful about.
+ */
+const PLATFORM_REACHED: readonly string[] = [
+  '/cart',
+  '/checkout',
+  '/checkout/save-card',
+  '/search',
+  '/book',
+  '/account',
+  // Not pages at all — no page row will ever sit at one. Listed so the set stays a
+  // readable answer to "what does the platform reach" rather than a filtered subset.
+  '/sitemap.xml',
+  '/robots.txt',
+  '/llms.txt',
+];
+
 function servedByPlatform(address: string): boolean {
-  return BUILTIN_PATHS.includes(address) || inOpenSubtree(address);
+  return PLATFORM_REACHED.includes(address) || inOpenSubtree(address);
 }
 
 /**

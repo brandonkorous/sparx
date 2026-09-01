@@ -6,11 +6,22 @@
 // number to send a newsletter loses the sign-up; asking for an email address to quote
 // a kitchen loses the job.
 //
-// EVERY FORM HERE IS A REAL `<form>` with the `form` behaviour, so a submit reaches the
-// host's action handler and lands in the tenant's Form submissions inbox — not a
-// decorative arrangement of inputs that swallows an enquiry silently. Every field is
-// LABELLED, because a placeholder disappears the moment someone types and a form whose
-// labels vanish is a form people abandon.
+// EVERY FORM HERE IS A REAL `<form>` with the `form` behavior, routed to a host action
+// the storefront actually listens for — the three that carry a message reach the
+// tenant's Form submissions inbox, the sign-up reaches the email list.
+//
+// That sentence used to be here as an ASSERTION and it was false for as long as it
+// stood: the shared `form()` helper shipped the ref `'submit'`, which the storefront
+// routes nowhere, so every one of these forms swallowed every enquiry sent through it
+// and settled to `success` anyway (issue 350). An unroutable ref is not an error
+// anywhere in the chain, which is why a comment could go on claiming the opposite. The
+// helper takes the destination as an argument now and a test sweeps the whole library
+// for a form that reaches nothing.
+//
+// Every field is LABELLED, because a placeholder disappears the moment someone types
+// and a form whose labels vanish is a form people abandon. And every form carries a
+// VISIBLE status line, because the behavior's default one is a 1x1px clipped live
+// region that tells a sighted visitor nothing (issue 351).
 
 import { action, behave, el, type Node } from '@wizeworks/silicaui-html';
 
@@ -55,19 +66,67 @@ function textField(label: string, name: string, placeholder = ''): Node {
   });
 }
 
+/** Where a submitted form is delivered. The `form` behavior does the whole client
+ *  half and then hands this ref to the host's `onAction`; the host is a chain of
+ *  `if (ref === …)` branches, and **a ref it does not recognise is not an error** — the
+ *  handler simply returns, the promise resolves, and the behavior settles the form to
+ *  `success`. So a wrong ref does not fail loudly: it discards the message and thanks
+ *  the visitor for it (issue 350, where every form in this file shipped `'submit'`).
+ *
+ *  `contact` reaches the Form submissions inbox; `email-signup` adds the address to the
+ *  email list. Routed in `apps/site/components/silica-behaviors.tsx`, and `contact` is
+ *  the contract named by `@wizeworks/builder-schemas`' `SILICA_FORM_ACTION` — spelled
+ *  out rather than imported because this package sits UNDER both of them. */
+type FormAction = 'contact' | 'email-signup';
+
+/** The line under the button that tells the visitor what happened.
+ *
+ *  The `form` behavior settles every submit into its `status` part, and a form that
+ *  authors none gets one BUILT for it: a 1x1px `clip-path: inset(50%)` live region,
+ *  announced to a screen reader and rendered to literally nobody else. So a sighted
+ *  visitor pressed Send, watched the button depress, saw their own text still sitting
+ *  in the boxes, and had no way to tell a delivered message from a lost one — which is
+ *  how one enquiry becomes three (issue 351). The buy box hit the same thing and fixed
+ *  it the same way (`buyStatus` in `commerce.ts`).
+ *
+ *  `empty:hidden` keeps it out of the form's `gap-5` at rest: the behavior writes
+ *  `textContent`, so before a submit the element is `:empty`.
+ *
+ *  ONE element carries both outcomes, so the WORDS have to do the distinguishing — the
+ *  behavior writes success and failure into the same node, and there is no
+ *  state-conditional class to author (nothing in silicaui emits CSS for
+ *  `data-sui-state`, and an arbitrary-value variant is exactly what the vocabulary
+ *  check bans). Hence a specific, concrete success sentence per form rather than the
+ *  built-in "Submitted."
+ *
+ *  Authored through `attrs` rather than `part()` because silicaui's `BehaviorRole`
+ *  union does not list `status`; the runtime reads the attribute by name. */
+function formStatus(): Node {
+  return el('p', 'text-base text-base-content empty:hidden', {
+    attrs: { 'data-sui-part': 'status', 'aria-live': 'polite' },
+  });
+}
+
 /** Wrap a set of fields in a submitting form. */
-function form(children: Node[], submitLabel: string): Node {
+function form(
+  children: Node[],
+  submitLabel: string,
+  success: string,
+  to: FormAction = 'contact'
+): Node {
   return action(
     behave(
       el('form', 'flex flex-col gap-5', {
+        attrs: { 'data-success-message': success },
         children: [
           ...children,
           el('button', 'btn btn-primary btn-lg', { attrs: { type: 'submit' }, text: submitLabel }),
+          formStatus(),
         ],
       }),
       { type: 'form' }
     ),
-    'submit'
+    to
   );
 }
 
@@ -88,8 +147,16 @@ export function enquiryForm(): Node {
             // an invented number AND invented hours, in prose that looks like
             // the business wrote it (issue 265). The hours had nothing to bind
             // to, so they are not claimed at all.
+            //
+            // `text-base`, not `text-sm`. This slot is the OTHER WAY TO REACH THE
+            // BUSINESS, sitting beside the form — and whatever an owner rewrites it
+            // to, it stays that. One rewrote it to her studio address and opening
+            // hours, which made the only place her site says where to physically go
+            // the smallest sentence on the page (issue 342's neighbour, 344). This
+            // file's own header sets the floor: `text-sm` is for genuine captions
+            // and metadata, and an alternative route to a business is neither.
             boundPhoneLine(
-              'text-sm text-base-content',
+              'text-base text-base-content',
               'Or call ',
               ' if that is quicker.',
               '(555) 123-4567'
@@ -107,7 +174,8 @@ export function enquiryForm(): Node {
               'A rough idea is plenty to start with.'
             ),
           ],
-          'Send this'
+          'Send this',
+          'Thank you. Your message is with us and we will get back to you.'
         ),
       ],
     }),
@@ -121,7 +189,11 @@ export function callbackForm(): Node {
     sectionNarrowInner([
       el('h2', 'text-3xl font-semibold text-base-content', { text: 'Ask us to call you' }),
       body('Leave a number and a good time. No sales script, no follow-up if you say no.'),
-      form([field('Your name', 'name'), field('Phone number', 'phone', 'tel')], 'Call me back'),
+      form(
+        [field('Your name', 'name'), field('Phone number', 'phone', 'tel')],
+        'Call me back',
+        'Thank you. We have your number and will call you back.'
+      ),
     ]),
   ]);
 }
@@ -139,7 +211,12 @@ export function newsletterSignup(): Node {
     sectionNarrowInner([
       el('h2', 'text-3xl font-semibold text-base-content', { text: 'One email a month' }),
       body('What we made, what we learned, and anything we got wrong. Unsubscribe in one click.'),
-      form([field('Email address', 'email', 'email')], 'Sign me up'),
+      form(
+        [field('Email address', 'email', 'email')],
+        'Sign me up',
+        'Thank you. You are on the list.',
+        'email-signup'
+      ),
       caption('We never pass your address to anyone, and we do not email more than monthly.'),
     ]),
   ]);
@@ -192,7 +269,8 @@ export function quoteRequest(): Node {
                   'Rooms, rough sizes, anything you already know.'
                 ),
               ],
-              'Send my request'
+              'Send my request',
+              'Thank you. Your request is with us and your quote will follow.'
             ),
           ],
         }),

@@ -105,13 +105,23 @@ function featuredImage(): Node {
       el('div', 'mx-auto w-full max-w-5xl px-6 py-10', {
         children: [
           bind(
-            atom('Image', 'aspect-video w-full rounded-box object-cover', {
-              // The shared placeholder tile, not an empty `src`: unbound (the studio
-              // canvas, where no post is in scope) an empty src renders the browser's
-              // broken-image glyph. `fillValue` overwrites it with the post's real
-              // image the moment the node resolves, so it never reaches a live page.
-              src: PLACEHOLDER_IMAGE,
-              alt: '',
+            // A raw `img`, not the `Image` atom, for the one reason given in full on
+            // the product hero (`commerce.ts`): silicaui's `Image` hardcodes
+            // `loading="lazy"` and ignores a `loading` prop.
+            el('img', 'aspect-video w-full rounded-box object-cover', {
+              attrs: {
+                // The shared placeholder tile, not an empty `src`: unbound (the studio
+                // canvas, where no post is in scope) an empty src renders the browser's
+                // broken-image glyph. `fillValue` overwrites it with the post's real
+                // image the moment the node resolves, so it never reaches a live page.
+                src: PLACEHOLDER_IMAGE,
+                alt: '',
+                // `eager` for the same reason the product hero is: this sits directly
+                // under the masthead and is the largest element on the post, so it is
+                // the LCP. The blog INDEX card below stays lazy — a grid is what lazy
+                // loading is for.
+                loading: 'eager',
+              },
             }),
             'featuredImage'
           ),
@@ -123,13 +133,24 @@ function featuredImage(): Node {
 
 /** The written body — the pinned `cms.article-body` core on a PROSE measure.
  *
- *  `max-w-3xl`, not the page's `max-w-5xl`: this band is nothing but body text, and a
- *  line much past ~75 characters is measurably harder to read. */
+ *  THE MEASURE IS CAPPED ON THE CORE, NOT ON THE BAND. A line much past ~75 characters
+ *  is measurably harder to read, so the prose does need `max-w-3xl` — but this band used
+ *  to carry it instead, and `mx-auto` then re-centred the narrower box inside the same
+ *  page. `max-w-5xl` is 1024px and `max-w-3xl` is 768px, so the body started (1024-768)/2
+ *  = 128px to the RIGHT of the headline directly above it and the image above that. A
+ *  reader met a masthead on one left edge and the article on another, which reads as a
+ *  broken page rather than as a comfortable measure (issue 339).
+ *
+ *  Capping the CORE keeps both: the band matches `masthead`, `featuredImage` and
+ *  `backToIndex` exactly, so all four share one left edge, and the prose inside it still
+ *  stops at 768px. This is also the idiom the rest of this file already uses — the
+ *  headline is `max-w-4xl` and the excerpt `max-w-2xl`, both capped on the ELEMENT inside
+ *  a constant `max-w-5xl` band. This function was the only one that shrank the band. */
 function articleBody(): Node {
   return el('section', 'w-full @container bg-base-100 text-base-content', {
     children: [
-      el('div', 'mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24', {
-        children: [hostCore(HOST_KEYS.cmsArticleBody, 'w-full')],
+      el('div', 'mx-auto w-full max-w-5xl px-6 pb-20 @2xl:pb-24', {
+        children: [hostCore(HOST_KEYS.cmsArticleBody, 'w-full max-w-3xl')],
       }),
     ],
   });

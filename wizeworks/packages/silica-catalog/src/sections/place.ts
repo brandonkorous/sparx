@@ -17,7 +17,6 @@ import {
   body,
   card,
   cardTitle,
-  caption,
   gridThree,
   picture,
   primaryAction,
@@ -63,7 +62,7 @@ export function openingHours(): Node {
         }),
       ],
     }),
-    caption('Holiday hours vary — call ahead if you are making a special trip.'),
+    body('Holiday hours vary — call ahead if you are making a special trip.'),
   ]);
 }
 
@@ -166,7 +165,7 @@ export function serviceArea(): Node {
         })
       ),
     }),
-    caption('Outside these? Call us — a longer trip is usually still worth it for a bigger job.'),
+    body('Outside these? Call us — a longer trip is usually still worth it for a bigger job.'),
   ]);
 }
 
@@ -215,7 +214,7 @@ export function priceList(): Node {
         ),
       ],
     }),
-    caption('Prices include VAT and delivery within 50 miles.'),
+    body('Prices include VAT and delivery within 50 miles.'),
   ]);
 }
 
@@ -257,6 +256,6 @@ export function menuSections(): Node {
         ]),
       ],
     }),
-    caption('Please tell us about any allergies — everything is cooked to order.'),
+    body('Please tell us about any allergies — everything is cooked to order.'),
   ]);
 }

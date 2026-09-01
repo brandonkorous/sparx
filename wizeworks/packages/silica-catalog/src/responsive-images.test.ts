@@ -1,6 +1,8 @@
-import { atom, el, type ElementNode, type Node } from '@wizeworks/silicaui-html';
+import { atom, el, toHtml, type ElementNode, type Node } from '@wizeworks/silicaui-html';
 import { describe, expect, it } from 'vitest';
 
+import { blogPostPage } from './cms';
+import { productDetailPage } from './commerce';
 import { MEDIA_WIDTHS, responsiveImages } from './responsive-images';
 import { renderSilicaBody } from './render';
 
@@ -236,5 +238,41 @@ describe('responsiveImages', () => {
     expect(html).toContain('srcset="');
     expect(html).toContain('sizes="100vw"');
     expect(html).toContain(`w=2000 2000w`);
+  });
+});
+
+// ── Which images load eagerly, and which stay lazy ──────────────────────────────
+//
+// silica's `Image` atom ships `loading="lazy"`, which is the right default for the
+// card grids this catalog builds and the wrong one for a page's LARGEST element above
+// the fold. Lazy defers the request until layout has run, so the one image a page's
+// Largest Contentful Paint is measured on goes last in the queue.
+//
+// Found on a real shop: her product page's hero — a 1024px lambswool photograph, the
+// biggest thing on the screen — carried `loading="lazy"`
+// (piggles/docs/personas/issues/345).
+//
+// Asserted in BOTH directions on purpose. "Make the hero eager" is one line, and the
+// tempting follow-up is to make everything eager, which un-does lazy loading for a
+// forty-product grid and is worse than the bug. The cards must stay lazy.
+describe('eager heroes, lazy grids', () => {
+  function loadingOf(html: string, nth = 0): string {
+    const tag = [...html.matchAll(/<img[^>]*>/g)][nth]?.[0] ?? '';
+    return /loading="([^"]*)"/.exec(tag)?.[1] ?? '(absent)';
+  }
+
+  it('loads the product hero eagerly — it is the page LCP', () => {
+    expect(loadingOf(toHtml(productDetailPage()))).toBe('eager');
+  });
+
+  it('loads the journal post hero eagerly, for the same reason', () => {
+    expect(loadingOf(toHtml(blogPostPage()))).toBe('eager');
+  });
+
+  it('leaves the cross-sell cards BELOW it lazy — on the same page', () => {
+    // The strongest form of this assertion: one page, two strategies. Making the hero
+    // eager by making `Image`'s default eager would pass the test above and quietly
+    // un-do lazy loading for every card in the catalog.
+    expect(loadingOf(toHtml(productDetailPage()), 1)).toBe('lazy');
   });
 });

@@ -757,8 +757,47 @@ describe('the starter site', () => {
     // half-step gap classes that compile only while their source file is scanned, and
     // a footer heading two levels below the page title).
     const unexpected = [...new Set(report.findings.map((f) => f.rule))].filter(
-      (rule) => !rule.startsWith('seo-')
+      (rule) => !rule.startsWith('seo-') && rule !== 'page-unreachable'
     );
     expect(unexpected).toEqual([]);
+  });
+
+  // `page-unreachable` is held to the exact ADDRESSES rather than waved past, because the
+  // rule was blind here until 2026-08-29 and a bare rule-name exclusion would hide the
+  // next one the same way. `reach.ts` used to borrow `BUILTIN_PATHS` — the list of
+  // addresses that EXIST — to answer whether anything REACHES an address, which exempted
+  // all three browse indexes `starterPages` seeds. `/collections` is now linked from the
+  // footer's Explore column and is gone from this list (issue 340).
+  //
+  // THESE TWO ARE REAL AND OPEN, and the earlier version of this comment got them wrong.
+  //
+  // It read that `/products` "renders the same `commerce.plp` core as `/shop`… one page at
+  // two addresses" and that deleting it was "the likely answer". Brandon, on 2026-08-29:
+  // the three browse surfaces are not duplicates of each other — `/products` lists ALL
+  // products with filters and search, `/category/<handle>` lists a category's products
+  // with filters and search, `/collections/<handle>` a collection's. Each is a different
+  // question a shopper asks, all three must work, and none of them is a candidate for
+  // deletion. Recorded because a wrong recommendation left in a test comment is how a
+  // working page gets removed by someone reading it in six months.
+  //
+  // What is still open is only their CHROME: both work and neither is linked from the
+  // default footer.
+  //
+  //   · `/products` sits beside `/shop`, which the navbar already links and which renders
+  //     the same listing under the tenant's own intro copy. Linking both invites "Shop"
+  //     and "All products" side by side in one footer, which reads as a mistake even
+  //     though both pages are real. Whether the starter should seed both is the question.
+  //   · `/category` is a real second browse axis — Juniper Row has an 18-node category
+  //     tree with products in it — but linking it by default would put a link to an empty
+  //     page in the footer of every shop that groups by collection and never files a
+  //     category.
+  //
+  // Both are product decisions, left for Brandon. Written as an exact list so settling
+  // either one turns this red and it gets updated deliberately.
+  it('leaves exactly the two browse indexes whose chrome is still an open question', () => {
+    const unreachable = report.findings
+      .filter((f) => f.rule === 'page-unreachable')
+      .map((f) => f.evidence);
+    expect(unreachable).toEqual(['/products', '/category']);
   });
 });

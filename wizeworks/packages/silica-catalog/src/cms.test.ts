@@ -101,7 +101,43 @@ describe('blogPostPage — the default cms.blog_post template', () => {
     expect(html).toContain('Published date');
     expect(html).toMatch(/summary of this post/i);
   });
+
+  // A reader meets one left edge down the whole post, or the page reads as broken.
+  //
+  // Every band centres its own inner box with `mx-auto`, so the box's measure IS the
+  // page's left edge: a narrower measure moves the edge inward by half the difference.
+  // `articleBody` carried `max-w-3xl` on the BAND while its three neighbours carried
+  // `max-w-5xl`, which put the written body (1024-768)/2 = 128px to the right of the
+  // headline above it, on every post on every tenant rendering from this factory
+  // (issue 339). The measure the prose needs is real; capping it on the CORE keeps it
+  // without moving the band.
+  it('gives every band on the post one left edge', () => {
+    const measures = bandMeasures(blogPostPage());
+    expect(measures).toEqual(['5xl', '5xl', '5xl', '5xl']);
+  });
+
+  // The other half of the same fix, and the reason it is not simply "widen the body":
+  // a line much past ~75 characters is measurably harder to read, so the cap has to
+  // survive somewhere. Asserted on the core itself, where it no longer moves the band.
+  it('still caps the prose at a reading measure', () => {
+    expect(toHtml(blogPostPage())).toMatch(
+      /class="[^"]*max-w-3xl[^"]*"[^>]*data-sui-host="cms.article-body"/
+    );
+  });
 });
+
+/** The `max-w-*` on each band's own centred inner box, in document order — the thing
+ *  that decides where that band's content starts.
+ *
+ *  Read off the EMITTED HTML rather than the node tree. The first version of this walked
+ *  the tree for a `class` property, found nothing on any band, and returned four
+ *  identical `'none'`s — which is a set of size one, so it passed against the very code
+ *  it was written to catch. Asserting on what actually ships has no such hole, and the
+ *  expected value is spelled out in full so an empty result cannot read as agreement. */
+function bandMeasures(node: Parameters<typeof toHtml>[0]): string[] {
+  const bands = toHtml(node).matchAll(/<section[^>]*>\s*<div class="([^"]*)"/g);
+  return [...bands].map((m) => /max-w-(\S+?)(?:\s|$)/.exec(m[1] ?? '')?.[1] ?? 'none');
+}
 
 /** The first host node in a subtree, with its lock state. */
 function findHost(node: unknown): { locked?: string } | undefined {

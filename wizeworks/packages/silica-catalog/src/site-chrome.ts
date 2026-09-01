@@ -758,9 +758,28 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
   // Account and legal columns are never touched.
   const explore = findLinkListContainer(filled, 1);
   if (explore) {
-    // A custom-nav site defines its own pages — no forced `/search` (there's no commerce
-    // search route behind it). The module-shaped default keeps the footer-only Search link.
-    const extras: [string, string][] = opts.navLinks ? [] : [['Search', '/search']];
+    // A custom-nav site defines its own pages — no forced `/search` or `/collections`
+    // (there's no commerce route behind either). The module-shaped default keeps both.
+    //
+    // COLLECTIONS BELONGS HERE FOR THE SAME REASON SEARCH DOES. `starterPages` seeds a
+    // `/collections` index into every commerce site, and until now nothing anywhere
+    // linked it — not the navbar, not this column, and no platform control either, unlike
+    // the cart core or the header's search field. A shop owner who grouped her products
+    // into seven collections, gave each one a photograph and a description, and published
+    // them, had built seven pages no visitor could reach by clicking (issue 340). This
+    // column is the site's "everything else" list; a seeded browse index is exactly what
+    // it is for.
+    //
+    // The navbar deliberately does NOT get it: that row is space-constrained and
+    // opinionated, and Shop is the destination most shops want first. The footer costs
+    // nothing and is where a visitor looks for the full map.
+    const { commerceEnabled = true } = opts;
+    const extras: [string, string][] = opts.navLinks
+      ? []
+      : [
+          ...(commerceEnabled ? ([['Collections', '/collections']] as [string, string][]) : []),
+          ['Search', '/search'],
+        ];
     fillNavLinks(explore, [...destinations, ...extras]);
   }
   return ensureLegalLinks(filled);

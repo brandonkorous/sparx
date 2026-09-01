@@ -232,3 +232,161 @@ describe('the section library', () => {
     expect(offenders).toEqual([]);
   });
 });
+
+// ── The 16px floor, on the sentences most likely to lose it ─────────────────────
+//
+// `_shell.ts` states the rule in its own header — "`text-sm` appears only on genuine
+// captions and metadata" — and `caption()` says what a genuine one is: a photo credit,
+// a unit, a footnote, "text deliberately NOT competing for attention".
+//
+// Eight sentences were failing it, and they share a shape: a TERM of the purchase, or
+// an INSTRUCTION addressed to the reader. Delivery cost and lead time, what a price
+// includes, how long a quote holds, call ahead on a holiday, tell us about allergies.
+// Every one of them is something a person decides or acts on, and every one was 14px.
+//
+// The one that surfaced it was the enquiry form's alternative-contact line. It ships
+// as "Or call … if that is quicker", which reads like small print — but the slot is
+// "the other way to reach this business", and an apparel maker rewrote hers to her
+// studio address and opening hours. That made the only place her site says where to
+// physically go the smallest sentence on the page
+// (piggles/docs/personas/issues/344).
+//
+// Pinned by SENTENCE rather than by scanning for `text-sm`, deliberately: a scan would
+// go green the moment someone rewrote the copy, which is exactly when a type decision
+// gets lost. These are the lines whose size is load-bearing.
+describe('sentences a reader has to act on', () => {
+  const MUST_BE_READABLE: [string, string][] = [
+    ['offer_hero', 'Free delivery within 50 miles'],
+    ['bundle_offer', 'Price held for 60 days'],
+    ['cost_examples', 'All figures include VAT'],
+    ['opening_hours', 'Holiday hours vary'],
+    ['service_area', 'Outside these? Call us'],
+    ['price_list', 'Prices include VAT and delivery'],
+    ['menu_sections', 'Please tell us about any allergies'],
+    ['enquiry_form', 'Or call '],
+  ];
+
+  const byKey = new Map(ITEMS.map((i) => [i.key, i]));
+
+  it('covers sections that all still exist', () => {
+    // A renamed section would make every assertion below vacuous — the loop would find
+    // nothing to check and report nothing wrong.
+    for (const [key] of MUST_BE_READABLE) {
+      expect(byKey.get(key), `no section named '${key}'`).toBeDefined();
+    }
+  });
+
+  it.each(MUST_BE_READABLE)('%s renders "%s" at body size', (key, phrase) => {
+    const html = toHtml(resolveTree(byKey.get(key)!.make(), INERT));
+    const paragraph = [...html.matchAll(/<p class="([^"]*)"[^>]*>(.*?)<\/p>/gs)].find((m) =>
+      m[2]!.includes(phrase)
+    );
+    expect(paragraph, `'${phrase}' is not in ${key}`).toBeDefined();
+    expect(paragraph![1], `${key}: "${phrase}" is set at caption size`).not.toMatch(/\btext-sm\b/);
+  });
+});
+
+// Every form on the shelf has to reach a host that is listening for it.
+//
+// A silica <form> does its own client half — validation, FormData, the busy/success/
+// error states — and then stops at a seam: it calls the host's `onAction` with the
+// ref in `data-sui-action`. The storefront's handler is a chain of `if (ref === …)`.
+// **A ref no branch matches is not an error.** The handler returns, the promise
+// resolves, and the behavior settles the form to `success` — so the visitor's message
+// is discarded and the form says it worked.
+//
+// That is what happened: `form()` shipped the ref `'submit'` while the storefront
+// routes `'contact'`, so all four forms in this file swallowed every enquiry sent
+// through them on every published site (issue 350).
+//
+// The routed refs are declared in `apps/site/components/silica-behaviors.tsx`, and
+// `'contact'` is also named as the contract in `@wizeworks/builder-schemas`'
+// `SILICA_FORM_ACTION`. This package sits under both, so the list is repeated here
+// rather than imported — which is exactly why it needs a test.
+describe('every form reaches a handler', () => {
+  const ROUTED = new Set([
+    'contact',
+    'email-signup',
+    'newsletter',
+    'signup',
+    'add-to-cart',
+    'buy-now',
+  ]);
+
+  const byKey = new Map(ITEMS.map((i) => [i.key, i]));
+
+  /** `data-sui-action` on each `<form>` in a section's rendered HTML. */
+  function formActions(key: string): (string | null)[] {
+    const html = toHtml(resolveTree(byKey.get(key)!.make(), INERT));
+    return [...html.matchAll(/<form\b([^>]*)>/g)].map((m) => {
+      const attr = /data-sui-action="([^"]*)"/.exec(m[1]!);
+      return attr ? attr[1]! : null;
+    });
+  }
+
+  it('routes every form in the whole section library', () => {
+    // The sweep, not a list — a form added tomorrow is covered without an edit here.
+    const stray: string[] = [];
+    for (const item of ITEMS) {
+      for (const ref of formActions(item.key)) {
+        if (ref === null) stray.push(`${item.key}: <form> with no action ref at all`);
+        else if (!ROUTED.has(ref)) stray.push(`${item.key}: action "${ref}" is routed nowhere`);
+      }
+    }
+    expect(stray, stray.join('\n')).toEqual([]);
+  });
+
+  // The three that are a message TO the business go to the submissions inbox; the
+  // sign-up goes to the email list. Routing the sign-up as a contact would file every
+  // subscriber as an enquiry and never add the address to anything, which is a quieter
+  // failure than the one this issue was about.
+  it.each([
+    ['enquiry_form', 'contact'],
+    ['callback_form', 'contact'],
+    ['quote_request', 'contact'],
+    ['newsletter_signup', 'email-signup'],
+  ])('%s submits as "%s"', (key, expected) => {
+    expect(byKey.get(key), `no section named '${key}'`).toBeDefined();
+    expect(formActions(key)).toEqual([expected]);
+  });
+});
+
+// A submit the visitor can SEE the result of (issue 351).
+//
+// The form behavior writes its outcome into the `status` part. A form that authors
+// none gets a 1x1px clipped live region built for it, which is announced to a screen
+// reader and shown to nobody else — so a sighted visitor got no confirmation at all,
+// their own text still sitting in the boxes, and no way to tell a delivered message
+// from a lost one.
+//
+// Asserted on the RENDERED HTML rather than the node tree on purpose: `toHtml`
+// sanitises to an attribute allowlist, and an attribute that falls outside it is
+// dropped in silence. That is exactly how `fetchpriority` was lost in issue 345, and
+// a status part the projection strips is the same defect wearing a fix.
+describe('a submit the visitor can see the result of', () => {
+  const byKey = new Map(ITEMS.map((i) => [i.key, i]));
+  const FORMS = ['enquiry_form', 'callback_form', 'quote_request', 'newsletter_signup'] as const;
+
+  it.each(FORMS)('%s renders a visible status line', (key) => {
+    const html = toHtml(resolveTree(byKey.get(key)!.make(), INERT));
+    const status = /<p class="([^"]*)"[^>]*data-sui-part="status"/.exec(html);
+    expect(status, `${key}: no status part survived toHtml`).not.toBeNull();
+    // Not the 1x1 clipped region — a real line of body-size, readable ink.
+    expect(status![1]).toContain('text-base');
+    expect(status![1]).toContain('empty:hidden');
+    expect(html).toContain('aria-live="polite"');
+  });
+
+  it.each(FORMS)('%s says something specific when it works', (key) => {
+    const html = toHtml(resolveTree(byKey.get(key)!.make(), INERT));
+    const message = /data-success-message="([^"]*)"/.exec(html);
+    expect(message, `${key}: no success message survived toHtml`).not.toBeNull();
+    // The built-in fallback is "Submitted.", which tells a person nothing about
+    // whether their question reached anyone.
+    expect(message![1]).not.toBe('Submitted.');
+    expect(message![1]!.length).toBeGreaterThan(20);
+    // One element carries success AND failure, so the words are the only thing
+    // distinguishing them — a message that does not thank anyone is not doing that job.
+    expect(message![1]).toMatch(/Thank you/);
+  });
+});

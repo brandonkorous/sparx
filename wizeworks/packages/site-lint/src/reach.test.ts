@@ -173,15 +173,42 @@ describe('pages that are reached without an authored link', () => {
 
   it("never reports the storefront's own routes, which the platform reaches itself", () => {
     // A cart core, a search box and the account area's own navigation are all links
-    // this check cannot see, because none of them was authored.
+    // this check cannot see, because none of them was authored. Every entry here can be
+    // matched to the control that opens it, which is the bar for being on this list.
     const pages = [
       address({ id: 'c', name: 'Cart', slug: '/cart' }),
       address({ id: 's', name: 'Search', slug: '/search' }),
-      address({ id: 'p', name: 'Products', slug: '/products' }),
       address({ id: 'l', name: 'Login', slug: '/account/login' }),
       address({ id: 'r', name: 'Reset password', slug: '/account/reset' }),
     ];
     expect(checkReach(pages, reached)).toEqual([]);
+  });
+
+  // This test used to include `/products` in the list above, which is how the rule came
+  // to be blind: it inherited `BUILTIN_PATHS` — the addresses that EXIST, so a link to
+  // one is not broken — as if that answered whether anything REACHES them. It does not.
+  // Name the control that opens `/cart` and it is the navbar's cart core; name the one
+  // that opens `/collections` and there is none. Three seeded browse indexes were exempt
+  // on that confusion, and an apparel maker's seven published collections sat behind an
+  // address nothing linked (issue 340).
+  it('DOES report the browse indexes, which no platform control opens', () => {
+    const pages = [
+      address({ id: 'p', name: 'Products', slug: '/products' }),
+      address({ id: 'o', name: 'Collections', slug: '/collections' }),
+      address({ id: 'g', name: 'Categories', slug: '/category' }),
+    ];
+    expect(checkReach(pages, reached).map((f) => f.evidence)).toEqual([
+      '/products',
+      '/collections',
+      '/category',
+    ]);
+  });
+
+  it('goes quiet on a browse index once something links it', () => {
+    // The other direction, so the rule cannot be "always complains about /collections".
+    // An authored footer link is exactly what the finding asks the owner to add.
+    const pages = [address({ id: 'o', name: 'Collections', slug: '/collections' })];
+    expect(checkReach(pages, new Set(['/collections']))).toEqual([]);
   });
 
   it('stays silent when nothing was walked, rather than reporting the whole site', () => {
