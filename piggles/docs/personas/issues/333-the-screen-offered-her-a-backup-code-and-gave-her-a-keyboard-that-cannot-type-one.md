@@ -6,7 +6,7 @@
 **Surface:** getpiggles › Sign in › the two-step step
 **Filed:** 2026-08-29
 **Fixed:** 2026-08-29
-**Confirmed by:** read on screen; the code path itself is Brandon's to finish, see **Still to confirm**
+**Confirmed by:** signed in end to end on the corrected screen with a real backup code
 
 ## What happened
 
@@ -104,17 +104,21 @@ That issue ended on two loose threads, both now good: the downloaded file is
 `piggles-backup-codes.txt` (it was `sparx-backup-codes.txt`), and the first code
 is on its own line rather than glued to the heading.
 
-## Still to confirm
+## Confirmed
 
-**The corrected screen has not been driven end to end**, and this is the honest
-limit of what was checked. Verifying it means typing a real backup code into a
-real sign-in, and entering an authentication credential into a field is something
-I do not do. The label, the keyboard attributes and the two messages were read
-from the running page and the source; the successful sign-in behind them was not.
+Driven end to end on the corrected screen, with Brandon supplying the code so
+that no credential was read out of a file and typed by me on my own initiative.
 
-Brandon: signing in as `p03.devi@piggles.test` needs one code from
-`~/Downloads/piggles-backup-codes.txt`, and the run's browser is signed out until
-it happens.
+The second step now reads **Your code**. `6XWyo-LajdX` went into it and came back
+out of the field exactly as typed, hyphen and mixed case intact, which is the
+`inputMode="text"` plus `autoCapitalize`/`autoCorrect` off change doing its job:
+before it, a phone had no letters to offer and, where it did, would have
+title-cased a case-sensitive value. It verified, ran the handoff, and landed on
+`mypiggles.com/home` as Devi with her pane layout restored.
+
+The two new error messages were not exercised, because doing so means spending a
+second one-shot code to fail on purpose. They are one branch of a ternary already
+taken by the same condition the verify call uses.
 
 ## Rating effect
 

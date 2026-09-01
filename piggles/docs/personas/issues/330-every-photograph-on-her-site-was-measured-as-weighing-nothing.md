@@ -10,20 +10,38 @@
 
 ## How this was found, which is the useful part
 
-A note carried across several sessions said three of Devi's seven product cards
-"show flat illustrations rather than photographs". **That was wrong**, and
-looking properly is what turned up the real defect.
+Chasing a note carried across several sessions: three of Devi's seven product
+cards "show flat illustrations rather than photographs". What it turned up was a
+different defect entirely, described below.
 
-Every one of her products has a real `image/jpeg`. What actually differs is where
-each one is STORED, and the split is exactly backwards from the note:
+**Correction, 2026-08-29 (later the same day).** This section previously said the
+note "was wrong". It was not. Opening her live Shop and looking at the pixels,
+**Marlow Knit, Linen Shirtdress and The Ash Overshirt each render a flat beige
+vector drawing of a garment on a cream ground.** Exactly three, exactly the three
+the note named, and exactly the three whose pictures are her own uploaded files.
 
-| Picture                                             | Stored            | `byte_size` | Alt text |
-| --------------------------------------------------- | ----------------- | ----------- | -------- |
-| `ash-overshirt-bone.jpg` and her other own uploads  | her media library | 26,395      | none     |
-| `kestrel-prod-merino.jpeg` and the rest of the seed | an Unsplash URL   | **0**       | present  |
+What I actually checked was `mime_type` and `byte_size`, concluded "real
+`image/jpeg`, therefore a photograph", and wrote the note off. A JPEG holds
+whatever was encoded into it. The numbers were even arguing the other way: 26 to
+37 KB for a 1257x1572 image is a flat illustration's weight, and a photograph at
+that size is several times it. Reading columns instead of looking at the screen
+is the specific failure the persona rules exist to stop, and it produced a
+confident denial of something true.
 
-The three pictures the note called illustrations are the only three with real
-bytes behind them. The claim was made from memory and never checked.
+The storage split below is real and is what the rest of this issue is about. It
+is simply not what the note was about:
+
+| Picture                                             | Stored            | `byte_size` |
+| --------------------------------------------------- | ----------------- | ----------- |
+| `ash-overshirt-bone.jpg` and her other own uploads  | her media library | 26,395      |
+| `kestrel-prod-merino.jpeg` and the rest of the seed | an Unsplash URL   | **0**       |
+
+The alt-text column that used to sit here said her own uploads had none. That was
+wrong too, from reading the wrong table: description lives on
+`commerce_variant_images.alt`, not on the asset, and **hers are the best-written
+alt text on the site** ("The Marlow Knit in Moss, a deep grey green lambswool
+crew, laid flat and photographed from the front"), while the seeded ones just
+repeat the product title. See the note at the end of this file.
 
 ## What is actually wrong
 
@@ -120,17 +138,31 @@ Proved red before green: with the guard removed, **"leaves a picture stored as
 zero bytes OUT"** and **"does not let a zero-byte VARIANT overwrite a real
 original"** both fail. 21 tests in the file, all passing after.
 
-## Also found, not yet fixed
+## Also found, and it is not a defect
 
-**Her own three uploads have no alt text**, while every seeded picture has some.
-The three are `marlow-knit-moss.jpg`, `linen-shirtdress-chalk.jpg` and
-`ash-overshirt-bone.jpg` — the ones she added herself, through the console.
+An earlier draft of this section reported that her own uploads had no alt text
+while the seeded ones did. **Withdrawn — that read the wrong table.**
+`media_assets.alt_text` is null on everything uploaded through the product screen,
+which is correct: a description belongs to a picture's USE, not to the file, so
+the product's Photos tab writes it to `commerce_variant_images.alt`. Read there,
+her three are the best-described images on the site and the seeded ones are the
+weakest:
 
-`image-no-description` is one of the check's rules, and it did not fire on them,
-because it walks the authored page trees and a product photograph reaches the page
-through a record template's data binding. The check nags about a decorative image
-in a page body and is blind to the product photograph on a shop, which is the
-image that actually matters. Separate defect, separate shape from this one.
+| Picture            | Description                                                                                           |
+| ------------------ | ----------------------------------------------------------------------------------------------------- |
+| `marlow-knit-moss` | The Marlow Knit in Moss, a deep grey green lambswool crew, laid flat and photographed from the front. |
+| `kestrel-prod-tee` | The Everyday Tee                                                                                      |
+
+Six variant images across four products do carry a null `alt`, all of them
+seeded. Not filed as a defect: the field is there, it is on the Photos tab, it
+explains itself, and nothing about the product is preventing it being filled in.
+
+## Actually still open, from the correction above
+
+**Three of her products show a flat illustration where a photograph belongs**,
+which RULE #8 makes part of the deliverable rather than a defect in the software:
+"Real photographs on every page that wants one." Marlow Knit, Linen Shirtdress
+and The Ash Overshirt need real pictures before her site is finished.
 
 ## Rating effect
 

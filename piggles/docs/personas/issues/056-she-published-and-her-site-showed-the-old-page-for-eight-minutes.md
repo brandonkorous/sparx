@@ -6,6 +6,22 @@
 **Surface:** the tenant site › any published page · `wizeworks/services/cache-revalidation-worker`
 **Filed:** 2026-08-21
 
+## Still open, and measured again on 2026-08-29 (P03 · Juniper Row)
+
+Re-observed twice more, on a different tenant and on a different KIND of content, so
+the scope is wider than the builder page this was filed against:
+
+- **A CMS entry.** Her journal post's featured photograph was replaced and published;
+  the database, the media file and the public API all served the new one, and the live
+  page served the old one for over two hours, until a cache-busting query string forced
+  a fresh render. A visitor had no such option.
+- **The frame.** Two footer publishes each took **2 minutes 40 seconds** to reach the
+  page, timed by polling. Consistent with the eight minutes measured here.
+
+Recorded rather than re-filed. It also has a bearing on how persona runs verify
+anything: **a storefront check without a cache-buster can read a pre-fix page and call
+a fix confirmed.**
+
 ## What happened
 
 She is opening on Mondays through August, so she changed the line on **Find us**
