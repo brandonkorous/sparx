@@ -646,9 +646,39 @@ resource "azurerm_cognitive_account" "rocketease" {
   name                = local.rocketease_ai_name
   location            = var.rocketease_ai_location
   resource_group_name = azurerm_resource_group.main.name
-  kind                = "OpenAI"
-  sku_name            = "S0"
-  tags                = local.tags
+
+  # AIServices, NOT OpenAI, since the portal upgrade on 2026-09-01. Terraform
+  # treats `kind` as an in-place update rather than a replacement, so leaving
+  # this as "OpenAI" did not threaten the data - it quietly REVERTED the
+  # upgrade on the next apply, which is worse for being silent.
+  #
+  # What the upgrade did and did not do, measured rather than assumed:
+  #   - both deployments survived, same names and capacities
+  #   - the endpoint host moved from *.openai.azure.com to
+  #     *.cognitiveservices.azure.com. BOTH still answer 200 on the images and
+  #     chat data planes, so the vault value below switching hosts on the next
+  #     apply is safe. Verified with live calls, not with the portal's promise.
+  #   - QUOTA DID NOT CHANGE. gpt-image-2 stayed at 2 RPM in the OpenAI.*
+  #     namespace; no AIServices.* image quota appeared. Resource kind decides
+  #     which model families can be deployed, not the per-model rate limit.
+  kind     = "AIServices"
+  sku_name = "S0"
+  tags     = local.tags
+
+  # Set BY the portal upgrade, and it FORCES REPLACEMENT if config disagrees.
+  # This is the trap in converting a resource by hand: `kind` was a harmless
+  # in-place update, but this one would have destroyed and recreated an account
+  # that soft-deletes and holds a global DNS label. `prevent_destroy` below
+  # catches it, so the failure mode is a stuck pipeline rather than a lost
+  # subdomain - but stuck is still broken.
+  project_management_enabled = true
+
+  # Required by the provider whenever project management is on, and the portal
+  # upgrade assigned one already (principal 8df7c01c...). Declaring it here
+  # ADOPTS that identity rather than creating a second one.
+  identity {
+    type = "SystemAssigned"
+  }
 
   # REQUIRED, not cosmetic. Without a custom subdomain the account answers only
   # on the regional shared host, which does not serve the /openai/deployments/
