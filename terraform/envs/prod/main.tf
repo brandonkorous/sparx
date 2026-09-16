@@ -460,12 +460,12 @@ module "pubsub" {
     "giftcard.redeemed"     = []
 
     # Returns / RMA
-    "return.requested" = []
-    "return.approved"  = []
-    "return.received"  = []
-    "return.refunded"  = []
-    "return.exchanged" = []
-    "return.denied"    = []
+    "return.requested"           = []
+    "return.approved"            = []
+    "return.received"            = []
+    "return.refunded"            = []
+    "return.exchanged"           = []
+    "return.denied"              = []
     "return.replacement_shipped" = []
 
     # Customer-generated content — reviews + product questions
