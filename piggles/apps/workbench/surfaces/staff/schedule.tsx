@@ -404,7 +404,7 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
               {drafts.length > 0 ? (
                 <Text className="text-sm">
                   {drafts.length === 1 ? '1 shift' : `${String(drafts.length)} shifts`} not
-                  published yet — the team cannot see them.
+                  published yet: the team cannot see them.
                 </Text>
               ) : null}
             </div>
@@ -488,8 +488,8 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
             </div>
 
             <p className="px-1 pb-2 text-xs">
-              A shift is who you PLAN to have in. What they actually worked is a separate record —
-              nobody is paid from this screen.
+              A shift is who you PLAN to have in. What they actually worked is a separate record.
+              Nobody is paid from this screen.
             </p>
           </div>
         )}

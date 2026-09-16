@@ -35,6 +35,12 @@ import { INVOICING_REMINDER_3D } from '../../src/seeds/invoicing.js';
 const DAY = 86_400_000;
 const HOUR = 3_600_000;
 
+/** Midnight UTC of the current date, as a timestamp. */
+function startOfUtcDay(): number {
+  const n = new Date();
+  return Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate());
+}
+
 const ownerDb = new PrismaClient({
   datasourceUrl:
     process.env.MIGRATION_DATABASE_URL ??
@@ -174,8 +180,15 @@ describe('billing_document scanner', () => {
         total: 500,
         balance: 500,
         status: opts.status,
-        // + 12h so the floor lands on exactly `dueInDays`.
-        dueAt: new Date(Date.now() + opts.dueInDays * DAY + 12 * HOUR),
+        // Noon UTC on the target DATE.
+        //
+        // `daysUntilDue` counts UTC calendar boundaries, not elapsed hours, so a
+        // due date must be pinned to a date rather than offset from the moment
+        // the test happens to run. The offset this replaced (`Date.now() + N days
+        // + 12h`) was written for the older floor-of-elapsed-hours arithmetic: it
+        // lands on N while the clock is before noon UTC and on N+1 after it, so
+        // the suite passed all morning and failed all evening.
+        dueAt: new Date(startOfUtcDay() + opts.dueInDays * DAY + 12 * HOUR),
         finalizedAt: new Date(),
         // The send route records the send here; there is no column.
         metadata: opts.sentAt ? { sentAt: opts.sentAt, sentTo: 'ar@example.com' } : {},

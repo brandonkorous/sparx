@@ -31,36 +31,36 @@ interface PitchSection {
 const PITCH: PitchSection[] = [
   {
     heading: 'One platform instead of five tools',
-    body: 'Most businesses stitch together a site builder, a CRM, an email tool, an invoicing app and a pile of integrations — then pay for and maintain all of them. sparx is a single platform where those live together and actually talk to each other. Content and commerce, customers and campaigns, one login and one bill.',
+    body: 'Most businesses stitch together a site builder, a CRM, an email tool, an invoicing app and a pile of integrations, then pay for and maintain all of them. sparx is a single platform where those live together and actually talk to each other. Content and commerce, customers and campaigns, one login and one bill.',
   },
   {
     heading: 'They only pay for what they switch on',
-    body: 'sparx is modular. A publisher can run content-only, a services team customers-only, a shop the full commerce stack — each is first-class. Modules switch on independently, and a client pays for exactly the ones they use. Nothing is bundled they didn’t ask for.',
+    body: 'sparx is modular. A publisher can run content-only, a services team customers-only, a shop the full commerce stack. Each is first-class. Modules switch on independently, and a client pays for exactly the ones they use. Nothing is bundled they didn’t ask for.',
     points: [
-      'Site Builder — pages, content and design, live fast',
-      'Commerce — catalogue, checkout and payments',
-      'CMS — pages, posts and structured content',
-      'CRM — customers, pipelines and segments',
-      'Email — broadcasts and flows on their own domain',
+      'Site Builder: pages, content and design, live fast',
+      'Commerce: catalog, checkout and payments',
+      'CMS: pages, posts and structured content',
+      'CRM: customers, pipelines and segments',
+      'Email: broadcasts and flows on their own domain',
       'B2B, invoicing, inventory, scheduling, chat and AI as they grow',
     ],
   },
   {
     heading: 'Live in minutes, not months',
-    body: 'A client picks the modules they need, starts from a complete themed template, and has a real site with real content in under an hour — then refines from there. No developer needed to get to launch.',
+    body: 'A client picks the modules they need, starts from a complete themed template, and has a real site with real content in under an hour, then refines from there. No developer needed to get to launch.',
   },
   {
     heading: 'It grows with them',
-    body: 'When a content site starts selling, they switch on Commerce. When they land wholesale accounts, they switch on B2B. Nothing to migrate, no replatforming — the data and the customers are already there.',
+    body: 'When a content site starts selling, they switch on Commerce. When they land wholesale accounts, they switch on B2B. Nothing to migrate, no replatforming: the data and the customers are already there.',
   },
   {
     heading: 'Getting started costs nothing',
-    body: 'Every sparx account starts with a free trial — enough to build the whole thing and see it work before paying anything. After the trial it’s a subscription priced only on the modules they keep switched on.',
+    body: 'Every sparx account starts with a free trial: enough to build the whole thing and see it work before paying anything. After the trial it’s a subscription priced only on the modules they keep switched on.',
   },
 ];
 
 const ONE_PAGER = {
-  tagline: 'The modular platform for content and commerce — one login, one bill.',
+  tagline: 'The modular platform for content and commerce. One login, one bill.',
   what: 'sparx replaces a business’s site builder, CRM, email tool and more with a single platform whose parts share the same customers, content and data. Turn on only what you need; add the rest as you grow.',
   bestFor: [
     'Owners tired of paying for and wiring up five separate tools',
@@ -79,39 +79,39 @@ interface ModuleGuide {
 const GUIDES: ModuleGuide[] = [
   {
     label: 'Site Builder',
-    blurb: 'Stand up the client’s site — pages, layout and brand.',
+    blurb: 'Stand up the client’s site: pages, layout and brand.',
     steps: [
       'Start from a template that fits the client’s industry, or a blank canvas.',
-      'Set the brand — logo, colors and fonts in the theme, which every page inherits.',
+      'Set the brand: logo, colors and fonts in the theme, which every page inherits.',
       'Build the core pages (home, about, contact) from the component palette.',
       'Point their domain at the site in Settings → Domains, then publish.',
     ],
   },
   {
     label: 'Commerce',
-    blurb: 'Turn the site into a shop — catalogue, checkout, payments.',
+    blurb: 'Turn the site into a shop: catalog, checkout, payments.',
     steps: [
       'Switch on Commerce and connect the client’s payment account.',
-      'Add products (or import a catalogue) with images, variants and prices.',
+      'Add products (or import a catalog) with images, variants and prices.',
       'Set up shipping and tax, then place a test order end to end.',
       'Drop product and cart components onto the site and publish.',
     ],
   },
   {
     label: 'CMS',
-    blurb: 'Give them a real content engine — pages and posts.',
+    blurb: 'Give them a real content engine: pages and posts.',
     steps: [
       'Switch on CMS and define the content types they need (posts, guides, FAQs).',
       'Create a few starter entries so the layout has real content to show.',
       'Add a blog or index component to the site and link it in the navigation.',
-      'Hand off the editor — it’s explicit-save, last-write-wins, like every editor.',
+      'Hand off the editor: it’s explicit-save, last-write-wins, like every editor.',
     ],
   },
   {
     label: 'CRM',
     blurb: 'One view of every customer, lead and deal.',
     steps: [
-      'Switch on CRM — site forms and orders start creating customer records automatically.',
+      'Switch on CRM: site forms and orders start creating customer records automatically.',
       'Set up the pipeline stages that match how the client actually sells.',
       'Import existing contacts and tag them into segments.',
       'Show the client the timeline: every order, email and note on one customer.',

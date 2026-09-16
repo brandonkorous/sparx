@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-tea-house',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Tea House (Loose Leaf)',
   summary:
-    'A complete, working shop for a loose-leaf tea house: a real catalogue of single-origin greens, whites, blacks, oolong, chai and caffeine-free herbals, a matcha, a sampler set, brewing teaware and a flexible tea-club subscription, with categories, collections, a bespoke tea-shop PDP and a full merchandised home page. Calm botanical theme — soft oat-green paper, a muted jade primary, a warm clay accent. Shipped as Steepwell Tea House.',
+    'A complete, working shop for a loose-leaf tea house: a real catalogue of single-origin greens, whites, blacks, oolong, chai and caffeine-free herbals, a matcha, a sampler set, brewing teaware and a flexible tea-club subscription, with categories, collections, a bespoke tea-shop PDP and a full merchandised home page. Calm botanical theme, soft oat-green paper, a muted jade primary, a warm clay accent. Shipped as Steepwell Tea House.',
   vertical: 'retail',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

@@ -134,9 +134,8 @@ export function FileReport({
                 Is this a {result.detected.vendorName} {result.detected.label.toLowerCase()} export?
               </AlertTitle>
               <AlertDescription>
-                It {sentenceList(result.detected.reasons)} — and plenty of files do, so we would
-                only be guessing. Say what your own columns are below and every one of them comes
-                across.
+                It {sentenceList(result.detected.reasons)}, and plenty of files do, so we would only
+                be guessing. Say what your own columns are below and every one of them comes across.
               </AlertDescription>
             </AlertContent>
           </Alert>

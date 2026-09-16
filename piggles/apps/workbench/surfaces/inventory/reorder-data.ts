@@ -184,16 +184,22 @@ export function useReorderWorklist(query: ReorderQuery) {
 }
 
 /**
- * Does any level even have a reorder rule?
+ * How many levels have a reorder rule, out of how many there are.
  *
- * The one fact that tells an empty worklist apart: "nothing is running low" (good
+ * The first count tells an empty worklist apart: "nothing is running low" (good
  * news) versus "no reorder rules exist yet" (nothing can ever warn you). Both are
  * an empty list, and they deserve opposite messages.
+ *
+ * The second is for the case in between, which is the one people are actually
+ * in: some lines have a rule and most do not. That list is not empty, so neither
+ * of the two messages above appears, and what is shown reads as the whole answer
+ * when it is a slice of it.
  */
 export function useReorderSummary() {
   return useQuery({
     queryKey: reorderKeys.summary(),
-    queryFn: () => api.get<{ policyCount: number }>('/v1/inventory/reorder/summary'),
+    queryFn: () =>
+      api.get<{ policyCount: number; levelCount: number }>('/v1/inventory/reorder/summary'),
     staleTime: 60_000,
   });
 }
@@ -336,11 +342,11 @@ export function leadTimeSignal(
     case 'measured':
       return { label, detail: 'Measured from their real deliveries', tone: 'success' };
     case 'supplier':
-      return { label, detail: 'What the supplier says — not yet checked', tone: 'warning' };
+      return { label, detail: 'What the supplier says, not yet checked', tone: 'warning' };
     case 'level':
       return { label, detail: 'The figure set on this stock line', tone: 'info' };
     case 'default':
-      return { label, detail: 'Assumed — nothing is known about this one', tone: 'danger' };
+      return { label, detail: 'Assumed: nothing is known about this one', tone: 'danger' };
     default:
       return { label, detail: 'From the supplier record', tone: 'neutral' };
   }

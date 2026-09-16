@@ -324,18 +324,110 @@ describe('matchBillLine', () => {
     expect(r.needsReview).toBe(false);
   });
 
-  it('still surfaces an under-bill, which is tomorrow’s correction', () => {
+  it('reports an under-bill without blocking the payment', () => {
+    // Juniper Row's PO-000001: 40 metres of linen, delivered in two drops of 38
+    // and 2, and the supplier invoiced the second drop on its own. The invoice
+    // is correct. Blocking it forces the owner either to sign off a variance
+    // that never happened or to dispute a supplier who did nothing unusual.
     const r = matchBillLine({
       purchaseOrderLineId: 'pol-1',
-      billedQuantity: 8,
+      billedQuantity: 2,
+      billedUnitCostCents: 1800,
+      orderedQuantity: 40,
+      orderedUnitCostCents: 1800,
+      receivedQuantity: 40,
+      alreadyBilledQuantity: 0,
+    });
+    expect(r.verdict).toBe('under_billed');
+    expect(r.needsReview).toBe(false);
+    // Nothing is wrongly charged, so nothing is at stake...
+    expect(r.amountVarianceCents).toBe(0);
+    // ...but the 38 metres still to be invoiced are worth saying out loud.
+    expect(r.uninvoicedCents).toBe(38 * 1800);
+  });
+
+  it('catches the same delivery invoiced twice', () => {
+    // The 38-metre drop, invoiced correctly and then invoiced again. Neither
+    // invoice on its own exceeds the 40 that arrived, so nothing but the OTHER
+    // invoices can tell the second one apart from the first.
+    const duplicate = matchBillLine({
+      purchaseOrderLineId: 'pol-1',
+      billedQuantity: 38,
+      billedUnitCostCents: 1800,
+      orderedQuantity: 40,
+      orderedUnitCostCents: 1800,
+      receivedQuantity: 40,
+      alreadyBilledQuantity: 38,
+    });
+    expect(duplicate.verdict).toBe('over_billed');
+    expect(duplicate.quantityVarianceUnits).toBe(36);
+    expect(duplicate.amountVarianceCents).toBe(36 * 1800);
+    expect(duplicate.needsReview).toBe(true);
+
+    // The same invoice with the other one not counted, which is how this used
+    // to behave: it passes, unreviewed, and the shop pays for 76 metres of 40.
+    const blind = matchBillLine({
+      purchaseOrderLineId: 'pol-1',
+      billedQuantity: 38,
+      billedUnitCostCents: 1800,
+      orderedQuantity: 40,
+      orderedUnitCostCents: 1800,
+      receivedQuantity: 40,
+      alreadyBilledQuantity: 0,
+    });
+    expect(blind.needsReview).toBe(false);
+  });
+
+  it('reports an overcharge on a partial invoice rather than the shortfall', () => {
+    // Two metres billed at $20.00 against an agreed $18.00, on a line where all
+    // 40 arrived. The shortfall is expected; the $4.00 is the money. Testing
+    // quantity first hid this, and once a shortfall stopped blocking, it would
+    // have sailed through.
+    const r = matchBillLine({
+      purchaseOrderLineId: 'pol-1',
+      billedQuantity: 2,
+      billedUnitCostCents: 2000,
+      orderedQuantity: 40,
+      orderedUnitCostCents: 1800,
+      receivedQuantity: 40,
+      alreadyBilledQuantity: 0,
+    });
+    expect(r.verdict).toBe('price_higher');
+    expect(r.priceVarianceCents).toBe(200);
+    expect(r.needsReview).toBe(true);
+    // Positive. Folding the 38 uninvoiced metres in here made this read as
+    // $680.00 in the shop's favour, thanking a supplier for overcharging.
+    expect(r.amountVarianceCents).toBe(400);
+  });
+
+  it('leaves nothing billable once other invoices have covered the delivery', () => {
+    const r = matchBillLine({
+      purchaseOrderLineId: 'pol-1',
+      billedQuantity: 5,
+      billedUnitCostCents: 1800,
+      orderedQuantity: 40,
+      orderedUnitCostCents: 1800,
+      receivedQuantity: 40,
+      alreadyBilledQuantity: 40,
+    });
+    expect(r.verdict).toBe('over_billed');
+    expect(r.quantityVarianceUnits).toBe(5);
+    expect(r.uninvoicedCents).toBe(0);
+  });
+
+  it('behaves exactly as before on a one-drop, one-invoice order', () => {
+    // `alreadyBilledQuantity` is optional, and omitting it must change nothing.
+    const r = matchBillLine({
+      purchaseOrderLineId: 'pol-1',
+      billedQuantity: 10,
       billedUnitCostCents: 400,
       orderedQuantity: 10,
       orderedUnitCostCents: 400,
-      receivedQuantity: 10,
+      receivedQuantity: 8,
     });
-    expect(r.verdict).toBe('under_billed');
-    expect(r.amountVarianceCents).toBe(-800);
-    expect(r.needsReview).toBe(true);
+    expect(r.verdict).toBe('over_billed');
+    expect(r.quantityVarianceUnits).toBe(2);
+    expect(r.amountVarianceCents).toBe(800);
   });
 
   it('calls out a line nobody ordered on its own terms', () => {

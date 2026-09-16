@@ -95,7 +95,7 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
             module={MODULE}
             icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
             title="Could not load that settlement"
-            description="It may have been cancelled, or the server is unreachable. Nothing owed to anybody has changed."
+            description="It may have been canceled, or the server is unreachable. Nothing owed to anybody has changed."
             onRetry={() => {
               void refetch();
             }}
@@ -175,7 +175,7 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
                   onClick={() => {
                     void confirm({
                       title: `Close ${data.number}?`,
-                      description: `${formatCents(data.totalCents, data.currency)} becomes owed to ${owner}. A closed period cannot be edited or rebuilt — a later correction goes in the NEXT period, which is what lets them reconcile against their own paperwork.`,
+                      description: `${formatCents(data.totalCents, data.currency)} becomes owed to ${owner}. A closed period cannot be edited or rebuilt: a later correction goes in the NEXT period, which is what lets them reconcile against their own paperwork.`,
                       confirmLabel: 'Close the period',
                       cancelLabel: 'Keep it as a draft',
                       color: 'warning',
@@ -245,7 +245,7 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
                   cancel.mutate(undefined, {
                     onSuccess: () => {
                       afterCommit(() => {
-                        toast.add({ title: `${data.number} cancelled`, type: 'info' });
+                        toast.add({ title: `${data.number} canceled`, type: 'info' });
                       });
                     },
                     onError: fail('Could not cancel it'),
@@ -268,7 +268,7 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
               {plural(data.unpricedUnits, 'unit', 'units')} sold with no cost recorded
             </AlertTitle>
             <AlertDescription>
-              They are not in the total below, and they are not worth nothing — nobody has recorded
+              They are not in the total below, and they are not worth nothing. Nobody has recorded
               what they cost. Closing now would pay {owner} short. Put a cost on those items, then
               rebuild.
             </AlertDescription>

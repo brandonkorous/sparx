@@ -35,6 +35,7 @@ import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { recomputeTotals, type DocumentWithLines } from './billing-document-service';
+import { deriveDocumentStatus } from './billing-ar';
 import { applyStageEntryEffects } from './billing-document-stage-service';
 
 /** An address as commerce freezes it on an order. */
@@ -173,12 +174,35 @@ export async function listInvoicesForOrder(
       },
     })
   );
+  // One clock for the whole list, so two rows on the same screen cannot disagree
+  // about what "today" is.
+  const now = new Date();
   return rows.map((r) => {
     const meta = (r.metadata ?? {}) as Record<string, unknown>;
     return {
       id: r.id,
       number: r.number,
-      status: r.status,
+      // ASKED, not read. The stored column is written by `recomputeTotals`, which
+      // runs when something is DONE to a document — a line, a payment, a void. A
+      // due date passing is not something being done, so a bill that goes late
+      // while nobody touches it keeps saying `partial` or `unpaid` forever, and
+      // the order pane's "Late" badge can never be reached by it.
+      //
+      // That is not hypothetical: an order on this dev database showed "Part
+      // paid" over an invoice due eight days earlier with $27.00 outstanding.
+      // Its shop was owed $986.50 across eight late invoices and had a "Late"
+      // badge it could not reach and an Overdue list that was empty.
+      //
+      // `deriveDocumentStatus` is the platform's AR status machine and already
+      // gets this right — it was simply only ever consulted at write time. Asked
+      // here with the clock, it answers for now.
+      status: deriveDocumentStatus({
+        total: Number(r.total),
+        amountPaid: Number(r.amountPaid),
+        dueAt: r.dueAt,
+        voided: r.status === 'void',
+        now,
+      }),
       total: Number(r.total),
       amountPaid: Number(r.amountPaid),
       balance: Number(r.balance),

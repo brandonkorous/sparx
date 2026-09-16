@@ -35,7 +35,7 @@ export default function ConceptsPage() {
         { label: 'Core concepts' },
       ]}
       title="Core concepts"
-      lede="sparx is a modular content and commerce operating system. Five ideas shape every endpoint in these docs — understand them once and the rest of the API follows."
+      lede="sparx is a modular content and commerce operating system. Five ideas shape every endpoint in these docs: understand them once and the rest of the API follows."
       meta={
         <>
           <span>Updated 2026-06-05</span>
@@ -57,14 +57,14 @@ export default function ConceptsPage() {
     >
       <DocSection id="tenancy" title="Tenants & isolation">
         <p>
-          Every account on sparx is a <strong>tenant</strong>. A tenant owns all of its data —
-          sites, products, customers, content, emails — and is completely isolated from every other
-          tenant. Authentication is handled by self-hosted{' '}
+          Every account on sparx is a <strong>tenant</strong>. A tenant owns all of its data (sites,
+          products, customers, content, emails) and is completely isolated from every other tenant.
+          Authentication is handled by self-hosted{' '}
           <DocLink href="https://www.better-auth.com">Better Auth</DocLink>, whose organizations map
           one-to-one to sparx tenants.
         </p>
         <p>
-          Isolation is not an application convenience you have to remember to apply — it’s enforced
+          Isolation is not an application convenience you have to remember to apply: it’s enforced
           at the database. Every tenant-scoped table carries a <InlineCode>tenant_id</InlineCode>,
           and PostgreSQL <strong>Row-Level Security</strong> policies are the backstop: even a buggy
           query can only ever see the current tenant’s rows. Your API key carries a tenant context,
@@ -79,7 +79,7 @@ export default function ConceptsPage() {
       <DocSection id="modules" title="Modules">
         <p>
           sparx is one platform made of independently-activated <strong>modules</strong>. A tenant
-          turns on only what it uses and pays only for that — a CMS-only publisher, a CRM-only team,
+          turns on only what it uses and pays only for that: a CMS-only publisher, a CRM-only team,
           and a full B2B distributor are all equally first-class. Selling is one capability, never
           the assumption.
         </p>
@@ -96,7 +96,7 @@ export default function ConceptsPage() {
                 <code>builder</code>
               </td>
               <td>
-                The visual site builder — pages, layouts, and reusable components as node trees.
+                The visual site builder: pages, layouts, and reusable components as node trees.
               </td>
             </tr>
             <tr>
@@ -121,7 +121,7 @@ export default function ConceptsPage() {
               <td>
                 <code>invoicing</code>
               </td>
-              <td>Quotes, estimates, invoices, and payments — one document engine.</td>
+              <td>Quotes, estimates, invoices, and payments. One document engine.</td>
             </tr>
             <tr>
               <td>
@@ -145,7 +145,7 @@ export default function ConceptsPage() {
               <td>
                 <code>ai</code>
               </td>
-              <td>The MCP server — AI agents reading and writing live tenant data.</td>
+              <td>The MCP server: AI agents reading and writing live tenant data.</td>
             </tr>
           </tbody>
         </DocTable>
@@ -164,8 +164,8 @@ export default function ConceptsPage() {
         />
         <DocImage
           src="/docs/dash-modules.png"
-          alt="The Settings → Modules screen — each module (Builder, Commerce, CMS, CRM, Email active; B2B, Dropship, AI inactive) with an Activate or Deactivate button."
-          caption="Settings → Modules — activate only what you use. Disabled modules return 404, run no consumers, and store no rows."
+          alt="The Settings → Modules screen. Each module (Builder, Commerce, CMS, CRM, Email active; B2B, Dropship, AI inactive) with an Activate or Deactivate button."
+          caption="Settings → Modules: activate only what you use. Disabled modules return 404, run no consumers, and store no rows."
         />
       </DocSection>
 
@@ -173,21 +173,21 @@ export default function ConceptsPage() {
         <p>
           Every feature exists as an API endpoint <em>before</em> it exists as a screen. The
           dashboard at <InlineCode>app.sparx.works</InlineCode> is just one consumer of the same
-          surface your code calls — anything the UI can do, you can do. The API is exposed two ways
+          surface your code calls. Anything the UI can do, you can do. The API is exposed two ways
           from one schema:
         </p>
         <ul>
           <li>
-            <strong>REST</strong> at <InlineCode>api.sparx.works/v1</InlineCode> —
-            resource-oriented, the default for most integrations and webhooks.
+            <strong>REST</strong> at <InlineCode>api.sparx.works/v1</InlineCode>: resource-oriented,
+            the default for most integrations and webhooks.
           </li>
           <li>
-            <strong>GraphQL</strong> — the same data, for fetching a deep object graph in one round
+            <strong>GraphQL</strong>: the same data, for fetching a deep object graph in one round
             trip.
           </li>
           <li>
-            <strong>MCP</strong> at <InlineCode>mcp.sparx.works</InlineCode> — the API as tools an
-            AI agent can call directly.
+            <strong>MCP</strong> at <InlineCode>mcp.sparx.works</InlineCode>: the API as tools an AI
+            agent can call directly.
           </li>
         </ul>
         <p>
@@ -204,13 +204,13 @@ export default function ConceptsPage() {
 
       <DocSection id="events" title="Events">
         <p>
-          sparx never inlines side effects in a request handler. When something happens — an order
-          is paid, a content entry is published — the handler writes its data and{' '}
+          sparx never inlines side effects in a request handler. When something happens (an order is
+          paid, a content entry is published), the handler writes its data and{' '}
           <strong>publishes an event</strong>. Workers consume those events asynchronously:
           rendering and sending email, reindexing search, revalidating caches.
         </p>
         <p>
-          This keeps writes fast and the system loosely coupled — and it’s the same stream you can
+          This keeps writes fast and the system loosely coupled, and it’s the same stream you can
           subscribe to. See <DocLink href="/docs/guides/webhooks">Webhooks &amp; events</DocLink>{' '}
           for the catalog, the signed delivery model, and how to receive events in your own app.
         </p>
@@ -224,12 +224,12 @@ export default function ConceptsPage() {
         <p>
           Modules share a single database, not a constellation of disconnected services. A customer
           created in the CRM is the same customer Commerce attaches an order to and Email sends a
-          broadcast to — there are no parallel records to reconcile. The{' '}
+          broadcast to. There are no parallel records to reconcile. The{' '}
           <strong>CRM owns the customer spine</strong> (<InlineCode>customers</InlineCode> and{' '}
           <InlineCode>b2b_accounts</InlineCode>); other modules reference it.
         </p>
         <p>
-          The flip side of one shared layer is that isolation has to be ironclad — which is exactly
+          The flip side of one shared layer is that isolation has to be ironclad, which is exactly
           why <DocLink href="#tenancy">Row-Level Security</DocLink> sits underneath everything. Your
           data is yours: it’s never blended with another tenant’s, and it’s exportable.
         </p>
@@ -278,7 +278,7 @@ export default function ConceptsPage() {
           </tbody>
         </DocTable>
         <p>
-          Next, get a key and make your first authenticated call —{' '}
+          Next, get a key and make your first authenticated call:{' '}
           <DocLink href="/docs/authentication">Authentication</DocLink>.
         </p>
       </DocSection>

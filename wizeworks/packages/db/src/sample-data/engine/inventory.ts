@@ -203,7 +203,7 @@ export async function applyInventory(ctx: ApplyCtx, pack: SampleDataPack): Promi
           status: def.status,
           currency: 'USD',
           reference: 'Replenishment',
-          shippingCents: def.shipping,
+          freightCents: def.shipping,
           subtotalCents: subtotal,
           totalCents: subtotal + def.shipping,
           ...(def.submitted

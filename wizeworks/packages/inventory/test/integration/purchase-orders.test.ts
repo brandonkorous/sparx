@@ -83,7 +83,7 @@ describe('purchase-order service — create, lines, lifecycle', () => {
     const po = await createPurchaseOrder(ctx(), {
       supplierId: supplier.id,
       warehouseId: f.warehouseId,
-      shippingCents: 200,
+      freightCents: 200,
       lines: [
         { variantId: f.variantId, quantity: 10 }, // → 480 from the link
         { variantId: v2, quantity: 5 }, // → 500 from the variant cost
@@ -141,7 +141,7 @@ describe('purchase-order service — create, lines, lifecycle', () => {
     const lineId = detail.lines[0]!.id;
     detail = await updatePurchaseOrderLine(ctx(), po.id, lineId, { quantity: 4 });
     expect(detail.subtotalCents).toBe(2000);
-    detail = await updatePurchaseOrder(ctx(), po.id, { shippingCents: 350 });
+    detail = await updatePurchaseOrder(ctx(), po.id, { freightCents: 350 });
     expect(detail.totalCents).toBe(2350);
 
     // Submit → ordered + expected arrival from the 7-day lead time.
@@ -154,7 +154,7 @@ describe('purchase-order service — create, lines, lifecycle', () => {
     expect(Math.abs(lead - 7 * DAY_MS)).toBeLessThan(60_000);
 
     // Submitted PO is locked: no header edit, no line add, no delete.
-    await expect(updatePurchaseOrder(ctx(), po.id, { shippingCents: 0 })).rejects.toBeInstanceOf(
+    await expect(updatePurchaseOrder(ctx(), po.id, { freightCents: 0 })).rejects.toBeInstanceOf(
       InventoryConflictError
     );
     await expect(

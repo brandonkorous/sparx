@@ -103,7 +103,7 @@ export function MarginTool() {
 
           <Panel
             title="The numbers"
-            description="Only the ones the answer needs — the rest are worked out."
+            description="Only the ones the answer needs: the rest are worked out."
           >
             {solve !== 'cost' ? (
               <TextField
@@ -141,7 +141,7 @@ export function MarginTool() {
           >
             <TextField
               label="Your fixed costs each month"
-              hint="Rent, software, insurance, wages — including your own. Leaving your own wage out is why a business can look profitable and feel poor."
+              hint="Rent, software, insurance, wages, including your own. Leaving your own wage out is why a business can look profitable and feel poor."
               inputMode="decimal"
               value={fixedCosts}
               onChange={setFixedCosts}
@@ -157,10 +157,10 @@ export function MarginTool() {
                 <>
                   <h2 className="text-2xl font-extrabold">That margin cannot exist</h2>
                   <p className="mt-3 text-base">
-                    A margin is a share of the selling price, so it can never reach 100% — that
-                    would mean the item cost you nothing. If you are aiming above 50%, you may be
-                    thinking of markup, which has no ceiling. Adding 100% to a $12.50 cost gives a
-                    $25.00 price and a 50% margin.
+                    A margin is a share of the selling price, so it can never reach 100%. That would
+                    mean the item cost you nothing. If you are aiming above 50%, you may be thinking
+                    of markup, which has no ceiling. Adding 100% to a $12.50 cost gives a $25.00
+                    price and a 50% margin.
                   </p>
                 </>
               ) : (
@@ -179,7 +179,7 @@ export function MarginTool() {
                   </p>
                   <p className="mt-3 text-base">
                     {solve === 'margin'
-                      ? `A ${margin.toFixed(1)}% margin is a ${markup.toFixed(1)}% markup — the same deal, described from the other end.`
+                      ? `A ${margin.toFixed(1)}% margin is a ${markup.toFixed(1)}% markup: the same deal, described from the other end.`
                       : `That leaves ${money(profit)} on each one, which is a ${margin.toFixed(1)}% margin and a ${markup.toFixed(1)}% markup.`}
                   </p>
                 </>
@@ -195,8 +195,8 @@ export function MarginTool() {
                   ['What it costs you', money(finalCost)],
                   ['What you charge', money(finalPrice)],
                   ['Profit on each one', money(profit)],
-                  ['Margin — share of the price', `${margin.toFixed(1)}%`],
-                  ['Markup — added to the cost', `${markup.toFixed(1)}%`],
+                  ['Margin: share of the price', `${margin.toFixed(1)}%`],
+                  ['Markup: added to the cost', `${markup.toFixed(1)}%`],
                 ].map(([label, value]) => (
                   <div
                     key={label}

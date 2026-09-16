@@ -50,7 +50,7 @@ export interface PurchaseOrderRow {
   expectedArrivalAt: string | null;
   receivedAt: string | null;
   subtotalCents: number;
-  shippingCents: number;
+  freightCents: number;
   totalCents: number;
   lineCount: number;
   quantityOrdered: number;
@@ -112,7 +112,7 @@ export function serializePurchaseOrderRow(po: PoWithLineQty): PurchaseOrderRow {
     expectedArrivalAt: po.expectedArrivalAt?.toISOString() ?? null,
     receivedAt: po.receivedAt?.toISOString() ?? null,
     subtotalCents: po.subtotalCents,
-    shippingCents: po.shippingCents,
+    freightCents: po.freightCents,
     totalCents: po.totalCents,
     lineCount: po.lines.length,
     quantityOrdered,
@@ -192,8 +192,8 @@ export function assertStatus(
   }
 }
 
-/** Recompute the denormalized subtotal/total from the current lines + shipping.
- *  Call after any line or shipping mutation. */
+/** Recompute the denormalized subtotal/total from the current lines + freight.
+ *  Call after any line or freight mutation. */
 export async function recomputeTotals(tx: TxClient, purchaseOrderId: string): Promise<void> {
   const [lines, po] = await Promise.all([
     tx.purchaseOrderLine.findMany({
@@ -202,14 +202,103 @@ export async function recomputeTotals(tx: TxClient, purchaseOrderId: string): Pr
     }),
     tx.purchaseOrder.findUnique({
       where: { id: purchaseOrderId },
-      select: { shippingCents: true },
+      select: { tenantId: true, freightCents: true },
     }),
   ]);
   const subtotal = lines.reduce((s, l) => s + l.quantityOrdered * l.unitCostCents, 0);
-  const shipping = po?.shippingCents ?? 0;
+  const freight = po?.freightCents ?? 0;
   await tx.purchaseOrder.update({
     where: { id: purchaseOrderId },
-    data: { subtotalCents: subtotal, totalCents: subtotal + shipping },
+    data: { subtotalCents: subtotal, totalCents: subtotal + freight },
+  });
+  if (po) await syncOrderFreightCharge(tx, po.tenantId, purchaseOrderId, freight);
+}
+
+/**
+ * Keep the order's freight charge in step with the freight typed on the order.
+ *
+ * FREIGHT IS INBOUND — what it costs to get these goods from the supplier to
+ * you — so it is part of what the stock cost and has to reach the value of what
+ * arrives. SHIPPING is the outbound word, what a customer pays to have an order
+ * sent to them, and it is a selling expense that never touches stock value.
+ * Both were called shipping, and the inbound one behaved like the outbound one
+ * as a result: a line on the order total and nothing more. A dressmaker typed
+ * $25 of carriage on a $720 order, paid $745, and the 38 metres that arrived
+ * were valued at $684 (persona issue 496).
+ *
+ * It is written as a real PurchaseOrderCharge rather than read straight off the
+ * order, because that is what already apportions a cost across part-deliveries:
+ * `allocatedCents` is what stops four shipments each claiming the whole $25,
+ * and there is nowhere to record that against a number living on the order.
+ *
+ * `isOrderFreight` marks the one charge this function owns. A freight charge
+ * somebody added themselves is untouched — they are different facts (the
+ * supplier's carriage line versus the forwarder's own invoice) and a person who
+ * recorded both meant both.
+ *
+ * This function itself never re-costs anything — it only keeps the charge in
+ * step with the typed freight, and never trims it below what deliveries have
+ * already taken.
+ *
+ * The ORDER does get replayed, though, and it is worth knowing which. Posting a
+ * delivery calls `reallocateOrderCharges`, which zeroes every charge on the
+ * order and re-runs all of its deliveries in the sequence they arrived. So
+ * raising freight after some stock has landed DOES reach what landed earlier,
+ * on the next posting. That is deliberate and it is what makes the total
+ * honest: when the last 2 metres of a 40-metre order were booked in, the first
+ * 38 picked up their $23.75 share and all forty settled at $18.63 against the
+ * $745 actually paid. Without the replay that $23.75 would simply have
+ * evaporated, which is the defect this whole change exists to close (496).
+ *
+ * What is NOT rewritten is a sale. The replay moves the value of what is still
+ * on hand; units already sold were sold at the cost recorded at the time.
+ */
+async function syncOrderFreightCharge(
+  tx: TxClient,
+  tenantId: string,
+  purchaseOrderId: string,
+  freightCents: number
+): Promise<void> {
+  const existing = await tx.purchaseOrderCharge.findFirst({
+    where: { tenantId, purchaseOrderId, isOrderFreight: true },
+    select: { id: true, amountCents: true, allocatedCents: true },
+  });
+
+  if (freightCents <= 0) {
+    // Cleared. What has already been apportioned to a posted delivery stays
+    // apportioned, so the row only goes when it never reached anything.
+    if (existing?.allocatedCents === 0) {
+      await tx.purchaseOrderCharge.delete({ where: { id: existing.id } });
+    } else if (existing) {
+      await tx.purchaseOrderCharge.update({
+        where: { id: existing.id },
+        data: { amountCents: existing.allocatedCents },
+      });
+    }
+    return;
+  }
+
+  if (!existing) {
+    await tx.purchaseOrderCharge.create({
+      data: {
+        tenantId,
+        purchaseOrderId,
+        kind: 'freight',
+        description: 'Freight on the order',
+        amountCents: freightCents,
+        allocationBasis: 'value',
+        isOrderFreight: true,
+      },
+    });
+    return;
+  }
+
+  if (existing.amountCents === freightCents) return;
+  // Never below what deliveries have already taken, or the running total of
+  // what has been apportioned would exceed the charge it came from.
+  await tx.purchaseOrderCharge.update({
+    where: { id: existing.id },
+    data: { amountCents: Math.max(freightCents, existing.allocatedCents) },
   });
 }
 

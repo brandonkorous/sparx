@@ -62,9 +62,16 @@ function toView(
   };
 }
 
-/** The `From` a send would carry with these fields — the view's `resolvedFrom`. */
-function senderFor(tenantId: string, row: EmailSettings | null): Promise<string> {
-  return buildTenantFrom(tenantId, row?.fromName ?? null, row?.fromAddress ?? null);
+/** The `From` a send would carry with these fields — the view's `resolvedFrom`.
+ *
+ *  The SITE is passed because a blank sender name falls back to that site's own
+ *  name, and one owner's two shops must not borrow each other's. */
+function senderFor(
+  tenantId: string,
+  propertyId: string,
+  row: EmailSettings | null
+): Promise<string> {
+  return buildTenantFrom(tenantId, row?.fromName ?? null, row?.fromAddress ?? null, propertyId);
 }
 
 /**
@@ -98,7 +105,7 @@ export async function get(
   });
   // Outside withTenant: buildTenantFrom reads the non-RLS `tenants` dispatch row
   // on the plain client, which has no tenant context to borrow.
-  return toView(ctx.tenantId, siteId, row, await senderFor(ctx.tenantId, row));
+  return toView(ctx.tenantId, siteId, row, await senderFor(ctx.tenantId, siteId, row));
 }
 
 export async function update(
@@ -149,5 +156,5 @@ export async function update(
     dedupeKey: `email.settings.updated:${ctx.tenantId}:${propertyId}:${row.updatedAt.toISOString()}`,
   });
 
-  return toView(ctx.tenantId, propertyId, row, await senderFor(ctx.tenantId, row));
+  return toView(ctx.tenantId, propertyId, row, await senderFor(ctx.tenantId, propertyId, row));
 }

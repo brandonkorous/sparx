@@ -103,7 +103,11 @@ export async function acceptUpsell(
         propertyId: true,
         currency: true,
         channel: true,
-        email: true,
+        // An order has no `email` column — the address belongs to the customer
+        // it was placed by. Naming it here threw on every post-purchase offer
+        // rather than failing to compile: tsc does not check the keys of a
+        // `select`.
+        customer: { select: { email: true } },
         shippingAddress: true,
         billingAddress: true,
       },
@@ -155,7 +159,7 @@ export async function acceptUpsell(
   const { sessionId } = await checkoutService.start(ctx, { cartId, channel: original.channel });
   await checkoutService.submitContact(ctx, {
     sessionId,
-    email: original.email,
+    email: original.customer.email,
     ...(original.shippingAddress ? { shippingAddress: original.shippingAddress } : {}),
     ...(original.billingAddress ? { billingAddress: original.billingAddress } : {}),
   });

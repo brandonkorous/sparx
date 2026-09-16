@@ -37,7 +37,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { PackageCheck, PackageSearch, Ban } from 'lucide-react';
-import { PANE_SHELL } from '../../components/pane-toolbar';
+import { PANE_SHELL, PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
 import { useConfirm } from '../../lib/confirm';
 import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -67,7 +67,7 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Mark ${data.number} as not coming?`,
       description:
-        'The record stays — a notice that was given and then withdrawn is evidence of a promise. What changes is that it stops appearing as something you are waiting for.',
+        'The record stays: a notice that was given and then withdrawn is evidence of a promise. What changes is that it stops appearing as something you are waiting for.',
       confirmLabel: 'It is not coming',
       cancelLabel: 'Keep waiting',
       color: 'danger',
@@ -117,7 +117,7 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   ).length;
 
   return (
-    <div className={`${PANE_SHELL} overflow-y-auto`}>
+    <div className={PANE_SHELL_SCROLL}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Heading level={2} className="text-lg">
           <span className="font-mono">{data.number}</span> · {data.supplierName ?? 'Supplier'}
@@ -188,7 +188,7 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             <AlertTitle>Nothing has been checked in against this yet</AlertTitle>
             <AlertDescription>
               The quantities below are what the supplier SAYS is on the way. Nothing has been
-              compared, because nothing has arrived — book the delivery in and this screen will tell
+              compared, because nothing has arrived: book the delivery in and this screen will tell
               you, line by line, whether it agreed.
             </AlertDescription>
           </AlertContent>
@@ -199,7 +199,7 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             <AlertTitle>What arrived does not match what they said</AlertTitle>
             <AlertDescription>
               {shortLines > 0
-                ? `${plural(shortLines, 'line', 'lines')} came in short of the notice. Check the invoice before it is paid — this is exactly the gap that gets billed for.`
+                ? `${plural(shortLines, 'line', 'lines')} came in short of the notice. Check the invoice before it is paid. This is exactly the gap that gets billed for.`
                 : 'More arrived than the notice claimed. Worth checking before it is paid for twice.'}
             </AlertDescription>
           </AlertContent>

@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-esthetics-results',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Esthetics (Results)',
   summary:
-    'A luminous, results-driven esthetics studio site — a soft-plum palette, a warm-peach accent and a clean near-white ground, with glowing-skin photography. Installs a working booking flow: a real treatment menu (signature facials, chemical peels, dermaplaning, microneedling), licensed estheticians you book by name, two treatment rooms as bookable resources, and a deposit policy. Ships as "Lumière Skin Studio", a clean, expert skincare studio.',
+    'A luminous, results-driven esthetics studio site: a soft-plum palette, a warm-peach accent and a clean near-white ground, with glowing-skin photography. Installs a working booking flow: a real treatment menu (signature facials, chemical peels, dermaplaning, microneedling), licensed estheticians you book by name, two treatment rooms as bookable resources, and a deposit policy. Ships as "Lumière Skin Studio", a clean, expert skincare studio.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

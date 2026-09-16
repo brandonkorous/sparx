@@ -197,7 +197,7 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
       const ok = await confirm({
         title: `Retire ${product.title}?`,
         description:
-          'It comes off your website and out of your working catalog, but nothing is deleted — past orders keep their record of it and you can bring it back at any time.',
+          'It comes off your website and out of your working catalog, but nothing is deleted: past orders keep their record of it and you can bring it back at any time.',
         confirmLabel: 'Retire it',
         cancelLabel: 'Keep it',
         color: 'warning',
@@ -225,7 +225,7 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
     const ok = await confirm({
       title: `Delete ${product.title}?`,
       description:
-        'Its price, codes, description and every version of it go with it, and it disappears from your website immediately. Orders that already contain it keep their record of what was bought. This cannot be undone — retire it instead if you might sell it again.',
+        'Its price, codes, description and every version of it go with it, and it disappears from your website immediately. Orders that already contain it keep their record of what was bought. This cannot be undone: retire it instead if you might sell it again.',
       confirmLabel: 'Delete this product',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -322,7 +322,7 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
                 items={facets?.vendors ?? []}
                 value={draft.vendor}
                 placeholder="Who makes it"
-                emptyMessage="No match — type your own."
+                emptyMessage="No match. Type your own."
                 aria-label="Brand"
                 onValueChange={(next) => {
                   set('vendor', next);
@@ -331,8 +331,8 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
             }
           />
           <FieldDescription>
-            Who makes or supplies it. Type anything — the suggestions are just the ones you have
-            used before.
+            Who makes or supplies it. Type anything: the suggestions are just the ones you have used
+            before.
           </FieldDescription>
         </Field>
 
@@ -345,7 +345,7 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
                 items={facets?.productTypes ?? []}
                 value={draft.productType}
                 placeholder="Footwear, Furniture, Service…"
-                emptyMessage="No match — type your own."
+                emptyMessage="No match. Type your own."
                 aria-label="Kind of thing"
                 onValueChange={(next) => {
                   set('productType', next);
@@ -374,7 +374,7 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
             }
           />
           <FieldDescription>
-            Your own words for grouping products — “summer”, “clearance”, “gift”. Only you see these
+            Your own words for grouping products: “summer”, “clearance”, “gift”. Only you see these
             unless you use them on your website.
           </FieldDescription>
         </Field>
@@ -464,7 +464,7 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Text className="text-sm">
             {retired
-              ? 'This product is retired. Bringing it back puts it in your working catalog again — it stays off sale until you say otherwise.'
+              ? 'This product is retired. Bringing it back puts it in your working catalog again. It stays off sale until you say otherwise.'
               : 'Retiring takes it off your website and out of your working catalog without deleting anything. You can bring it back at any time.'}
           </Text>
           <Button

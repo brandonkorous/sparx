@@ -147,7 +147,7 @@ export async function glReconciliationReport(
         WHERE sbl.tenant_id = ${ctx.tenantId}::uuid
           AND sbl.purchase_order_line_id IS NOT NULL
           AND sb.billed_at <= ${asOf}
-          AND sb.status <> 'cancelled'
+          AND sb.status <> 'canceled'
         GROUP BY sbl.purchase_order_line_id
       ), paired AS (
         SELECT COALESCE(r.pol_id, b.pol_id) AS pol_id,
@@ -219,7 +219,7 @@ export async function glReconciliationReport(
       {
         kind: 'goods_received_not_invoiced',
         description:
-          'On your shelves with no supplier invoice yet — counted here, but not in your books until the bill arrives',
+          'On your shelves with no supplier invoice yet: counted here, but not in your books until the bill arrives',
         amountCents: grniCents,
         source: 'sparx',
         reference: `${Number(timing?.grni_lines ?? 0)} order lines`,
@@ -227,7 +227,7 @@ export async function glReconciliationReport(
       {
         kind: 'invoiced_not_received',
         description:
-          'Invoiced by a supplier but not yet booked in — your books have it, your shelves do not',
+          'Invoiced by a supplier but not yet booked in. Your books have it, your shelves do not',
         amountCents: -inrCents,
         source: 'sparx',
         reference: `${Number(timing?.inr_lines ?? 0)} order lines`,
@@ -235,7 +235,7 @@ export async function glReconciliationReport(
       {
         kind: 'non_owned_stock',
         description:
-          'Consigned or customer-owned stock in your building. It is left out of your value here; if your books include it, this is the difference (measured today, not at the date above — ownership is not dated)',
+          'Consigned or customer-owned stock in your building. It is left out of your value here; if your books include it, this is the difference (measured today, not at the date above: ownership is not dated)',
         amountCents: nonOwnedCents,
         source: 'sparx',
         reference: `${Number(nonOwned?.levels ?? 0)} lines`,
@@ -284,7 +284,7 @@ export async function glReconciliationReport(
         unexplainedCents === null
           ? 'Cannot be worked out until your inventory account balance is entered'
           : unexplainedCents === 0
-            ? 'Nothing unexplained — the two agree once the timing differences are allowed for'
+            ? 'Nothing unexplained: the two agree once the timing differences are allowed for'
             : 'Left over after every timing difference above. This is the part worth investigating',
       amountCents: unexplainedCents,
       source: 'sparx',

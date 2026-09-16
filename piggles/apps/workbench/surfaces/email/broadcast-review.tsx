@@ -72,7 +72,7 @@ export function BroadcastReview({
       title: 'Cancel this scheduled broadcast?',
       description: `“${broadcast.name}” is set to send ${
         broadcast.scheduledAt ? `on ${formatWhen(broadcast.scheduledAt)}` : 'later'
-      }. Cancelling stops it going out for good — nobody receives it. You can always start a new broadcast later.`,
+      }. Canceling stops it going out for good. Nobody receives it. You can always start a new broadcast later.`,
       confirmLabel: 'Cancel the send',
       cancelLabel: 'Leave it scheduled',
       color: 'danger',
@@ -80,7 +80,7 @@ export function BroadcastReview({
     if (!ok) return;
     cancel.mutate(broadcast.id, {
       onSuccess: () => {
-        toast.add({ title: 'Scheduled send cancelled', type: 'success' });
+        toast.add({ title: 'Scheduled send canceled', type: 'success' });
       },
       onError: (error) => {
         toast.add({
@@ -183,7 +183,11 @@ export function BroadcastReview({
                   Loading results…
                 </Text>
               ) : (
-                <StatsGrid stats={stats.data} recipients={broadcast.recipientCount} />
+                <StatsGrid
+                  stats={stats.data}
+                  recipients={broadcast.recipientCount}
+                  sentAt={broadcast.sentAt}
+                />
               )}
             </FormSection>
           ) : null}
@@ -213,7 +217,7 @@ function StateNotice({ broadcast }: { broadcast: Broadcast }) {
     return (
       <Alert color="warning">
         <AlertContent>
-          <AlertTitle>This send was cancelled</AlertTitle>
+          <AlertTitle>This send was canceled</AlertTitle>
           <AlertDescription>
             It never went out. You can start a new broadcast whenever you’re ready.
           </AlertDescription>

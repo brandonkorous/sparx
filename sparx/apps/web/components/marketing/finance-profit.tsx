@@ -99,7 +99,7 @@ export function FinanceProfit() {
                 </Badge>
               </div>
               <Text>
-                Sales came in at $31,480 — two-thirds of March. The cost of the work fell with them,
+                Sales came in at $31,480: two-thirds of March. The cost of the work fell with them,
                 because it always does. The $14,300 wage bill did not move a dollar, because it
                 never does. That is the whole story of the month, and it is invisible in a bank
                 balance that was still comfortably positive on the 28th.
@@ -124,8 +124,8 @@ export function FinanceProfit() {
               <DailyBars />
               <Text>
                 Each bar is colored by its own sign rather than hanging below a line somebody has to
-                find first. Four days in March cost more than they brought in — the 3rd, the 7th,
-                the 11th and the 16th — and every one of them is a day you can go and look at.
+                find first. Four days in March cost more than they brought in (the 3rd, the 7th, the
+                11th and the 16th) and every one of them is a day you can go and look at.
               </Text>
             </CardBody>
           </Card>
@@ -269,8 +269,8 @@ export function FinanceJobs() {
           headline={<>And then it tells you which work was worth doing</>}
           lede={
             <>
-              Every order and every booking, ranked by what you kept on it, worst first — because
-              the job that lost money is the one you can do something about. Each row opens into the
+              Every order and every booking, ranked by what you kept on it, worst first, because the
+              job that lost money is the one you can do something about. Each row opens into the
               parts, the hours and the share of running costs that got it there, so the answer comes
               with its own working.
             </>
@@ -326,7 +326,7 @@ export function FinanceJobs() {
             </Heading>
             <Text>
               An order knows exactly what it collected. A booking only knows what that service is
-              priced at — a deposit, a discount at the counter or a no-show fee never reached it. So
+              priced at: a deposit, a discount at the counter or a no-show fee never reached it. So
               a booking’s row is labelled instead of quietly averaged into the same column, and the
               summary counts the two separately. A number nobody measured should never appear as
               though somebody had.
@@ -340,7 +340,7 @@ export function FinanceJobs() {
             </Heading>
             <Text>
               A pallet of substrate covers eleven jobs and a month of rent covers all of them. Split
-              a cost by percentage or by amount across as many jobs as you like — what is left
+              a cost by percentage or by amount across as many jobs as you like: what is left
               unallocated stays visible as its own figure rather than being quietly spread, so you
               can always see how much of the answer is estimated.
             </Text>
@@ -391,7 +391,7 @@ export function FinanceHandoff() {
     },
     {
       title: '“Mostly worked” is a real answer',
-      body: 'The failure that matters is three rows out of a hundred and forty. Each run records what went, what did not, and why — so you get “137 sent, 3 need attention”, with the three named, instead of a green tick that was not quite true.',
+      body: 'The failure that matters is three rows out of a hundred and forty. Each run records what went, what did not, and why, so you get “137 sent, 3 need attention”, with the three named, instead of a green tick that was not quite true.',
     },
   ];
   return (
@@ -403,8 +403,8 @@ export function FinanceHandoff() {
           lede={
             <>
               sparx does not do bookkeeping, and it is not going to start. There is no general
-              ledger here, no chart of accounts, no double entry, no payroll and no tax filing —
-              those belong to the software and the person you already trust with them. What sparx
+              ledger here, no chart of accounts, no double entry, no payroll and no tax filing.
+              Those belong to the software and the person you already trust with them. What sparx
               owes that person is a clean handoff, and that is a feature rather than an
               afterthought.
             </>
@@ -476,11 +476,11 @@ export function FinanceCapabilities() {
   const items: { title: string; body: string }[] = [
     {
       title: 'A photo of the receipt, on the cost',
-      body: 'Attach the receipt, the supplier invoice, the delivery note — from the same media library the rest of sparx uses. When someone queries a line eight months later, the paper is on the row.',
+      body: 'Attach the receipt, the supplier invoice, the delivery note: from the same media library the rest of sparx uses. When someone queries a line eight months later, the paper is on the row.',
     },
     {
       title: 'Every business you run, separately',
-      body: 'Costs belong to a business, not to a login. Run three under one account and each keeps its own spending, its own profit and its own comparison — with the shared bills that genuinely belong to none of them kept in their own bucket rather than quietly dropped into one.',
+      body: 'Costs belong to a business, not to a login. Run three under one account and each keeps its own spending, its own profit and its own comparison, with the shared bills that genuinely belong to none of them kept in their own bucket rather than quietly dropped into one.',
     },
     {
       title: 'Who you pay, and how much of it',
@@ -488,7 +488,7 @@ export function FinanceCapabilities() {
     },
     {
       title: 'Stock is not an expense, and we mean it',
-      body: 'Buying inventory converts cash into stock; it becomes a cost the day the stock sells. Filing purchase orders as expenses double-counts every part — once when it arrives, again when it goes out — so sparx refuses to, and reads the real figure from your stock instead.',
+      body: 'Buying inventory converts cash into stock; it becomes a cost the day the stock sells. Filing purchase orders as expenses double-counts every part (once when it arrives, again when it goes out) so sparx refuses to, and reads the real figure from your stock instead.',
     },
     {
       title: 'The sparx bill records itself',
@@ -496,7 +496,7 @@ export function FinanceCapabilities() {
     },
     {
       title: 'It is all on the API too',
-      body: 'Every figure on every screen here is available over the API and to an AI assistant through MCP, using your own key. Ask what last quarter cost, or wire the numbers into whatever you already use — the screens are one way in, not the only one.',
+      body: 'Every figure on every screen here is available over the API and to an AI assistant through MCP, using your own key. Ask what last quarter cost, or wire the numbers into whatever you already use: the screens are one way in, not the only one.',
     },
   ];
   return (

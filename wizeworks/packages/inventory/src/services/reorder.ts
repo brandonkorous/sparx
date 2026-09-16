@@ -371,7 +371,7 @@ async function draftGroupsOnTx(
       warehouseId: g.warehouseId,
       currency: supplier.currency ?? 'USD',
       reference: 'Reorder',
-      shippingCents: 0,
+      freightCents: 0,
       lines: g.lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
     });
     out.push({
@@ -473,7 +473,7 @@ export async function autoDraftReorder(
       warehouseId,
       currency: link.supplier.currency ?? 'USD',
       reference: 'Auto-reorder',
-      shippingCents: 0,
+      freightCents: 0,
       lines: [{ variantId, quantity }],
     });
     await auditReorder(tx, ctx, detail.id, 'reorder_drafted', { variantId, quantity });

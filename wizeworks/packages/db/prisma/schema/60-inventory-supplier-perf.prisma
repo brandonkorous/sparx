@@ -495,8 +495,10 @@ model SupplierBill {
 
   subtotalCents Int @default(0) @map("subtotal_cents")
   taxCents      Int @default(0) @map("tax_cents")
-  shippingCents Int @default(0) @map("shipping_cents")
-  totalCents    Int @default(0) @map("total_cents")
+
+  /// INBOUND transport the supplier billed — see PurchaseOrder.freightCents.
+  freightCents Int @default(0) @map("freight_cents")
+  totalCents   Int @default(0) @map("total_cents")
 
   /// Null until it is paid. Not 0 — an unpaid bill and a bill paid with a zero
   /// credit note are different facts, and only one of them should stop chasing.

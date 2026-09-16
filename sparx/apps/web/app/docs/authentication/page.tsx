@@ -40,7 +40,7 @@ export default function AuthenticationPage() {
         { label: 'Authentication' },
       ]}
       title="Authentication"
-      lede="Every sparx API request is authenticated with a Bearer token. For server-to-server integrations that token is an API key — a tenant-scoped secret you create once in the dashboard and send on every call."
+      lede="Every sparx API request is authenticated with a Bearer token. For server-to-server integrations that token is an API key: a tenant-scoped secret you create once in the dashboard and send on every call."
       meta={
         <>
           <span>Updated 2026-06-05</span>
@@ -68,16 +68,16 @@ export default function AuthenticationPage() {
         </p>
         <ul>
           <li>
-            <strong>API keys</strong> (<InlineCode>sk_live_…</InlineCode>) — long-lived secrets you
+            <strong>API keys</strong> (<InlineCode>sk_live_…</InlineCode>): long-lived secrets you
             create for an integration. This is what your code uses.
           </li>
           <li>
-            <strong>Dashboard tokens</strong> — short-lived JWTs the dashboard issues for a
-            signed-in staff user. You won’t handle these directly.
+            <strong>Dashboard tokens</strong>: short-lived JWTs the dashboard issues for a signed-in
+            staff user. You won’t handle these directly.
           </li>
         </ul>
         <p>
-          A request with no <InlineCode>Authorization</InlineCode> header is treated as anonymous —
+          A request with no <InlineCode>Authorization</InlineCode> header is treated as anonymous:
           endpoints that require auth reject it with <InlineCode>401</InlineCode>.
         </p>
       </DocSection>
@@ -85,24 +85,24 @@ export default function AuthenticationPage() {
       <DocSection id="create" title="Create an API key">
         <p>
           In your dashboard, open <InlineCode>Settings → AI integrations</InlineCode> and create a
-          key. The full secret is shown <strong>exactly once</strong> at creation — copy it then and
+          key. The full secret is shown <strong>exactly once</strong> at creation. Copy it then and
           store it as <InlineCode>SPARX_KEY</InlineCode> in your environment. sparx keeps only a
           hash, so it can never show you the secret again.
         </p>
         <DocImage
           src="/docs/dash-ai-integrations.png"
-          alt="The Settings → AI integrations screen — an ‘Issue a new key’ form with a label field, optional expiry, and scope checkboxes (read:crm, write:crm, write:crm_bulk), above the active-keys list."
-          caption="Settings → AI integrations — issue a scoped key. The secret is shown once at creation."
+          alt="The Settings → AI integrations screen: an ‘Issue a new key’ form with a label field, optional expiry, and scope checkboxes (read:crm, write:crm, write:crm_bulk), above the active-keys list."
+          caption="Settings → AI integrations: issue a scoped key. The secret is shown once at creation."
         />
         <Callout type="warn" title="Copy the secret immediately">
           Only the key’s short prefix is stored in readable form; the secret half is hashed with
           SHA-256 and never recoverable. If you lose it, revoke the key and create a new one.
         </Callout>
         <Callout type="danger" title="Keep keys server-side">
-          An <InlineCode>sk_live_</InlineCode> key can read and write your tenant’s data — never
-          ship it in a browser bundle, mobile app, or public repo. For client-side or AI-agent
-          access, use the <DocLink href="/docs/mcp">MCP server</DocLink> or a scoped key behind your
-          own backend.
+          An <InlineCode>sk_live_</InlineCode> key can read and write your tenant’s data, never ship
+          it in a browser bundle, mobile app, or public repo. For client-side or AI-agent access,
+          use the <DocLink href="/docs/mcp">MCP server</DocLink> or a scoped key behind your own
+          backend.
         </Callout>
       </DocSection>
 
@@ -122,15 +122,15 @@ export default function AuthenticationPage() {
         <CodeBlock tabs={[{ label: 'sk_live_…', code: FORMAT }]} />
         <ul>
           <li>
-            <InlineCode>sk_live_</InlineCode> — a fixed public prefix that identifies the token as a
+            <InlineCode>sk_live_</InlineCode>: a fixed public prefix that identifies the token as a
             live API key.
           </li>
           <li>
-            <strong>key id</strong> — a short public identifier sparx stores in the clear and uses
-            to look the key up.
+            <strong>key id</strong>: a short public identifier sparx stores in the clear and uses to
+            look the key up.
           </li>
           <li>
-            <strong>secret</strong> — the half that proves you hold the key. sparx stores only its
+            <strong>secret</strong>: the half that proves you hold the key. sparx stores only its
             SHA-256 hash and compares in constant time, so a database leak never exposes a usable
             key.
           </li>
@@ -140,12 +140,12 @@ export default function AuthenticationPage() {
       <DocSection id="scope" title="Tenant scope, roles & scopes">
         <p>
           A key belongs to exactly one tenant. That tenant context travels with every request the
-          key makes — you never pass a <InlineCode>tenant_id</InlineCode>, and a key physically
+          key makes. You never pass a <InlineCode>tenant_id</InlineCode>, and a key physically
           cannot reach another tenant’s data: isolation is enforced underneath the API by PostgreSQL
           Row-Level Security (see <DocLink href="/docs/concepts#tenancy">Core concepts</DocLink>).
         </p>
         <p>
-          Within its tenant, an API key acts with the <strong>editor</strong> role — it can read and
+          Within its tenant, an API key acts with the <strong>editor</strong> role. It can read and
           write business data, but not perform owner/admin-only operations (like managing other
           staff or, for example, creating webhook subscriptions, which require admin). Keys also
           carry <strong>scopes</strong> that narrow what a given key may do; scope enforcement
@@ -162,7 +162,7 @@ export default function AuthenticationPage() {
       <DocSection id="lifecycle" title="Rotation & revocation">
         <p>
           Keys are long-lived but revocable. From{' '}
-          <InlineCode>Settings → AI integrations</InlineCode> you can revoke a key immediately — the
+          <InlineCode>Settings → AI integrations</InlineCode> you can revoke a key immediately: the
           next request it makes fails with <InlineCode>401</InlineCode>. A key may also carry an
           expiry, after which it stops working automatically. To rotate, create a new key, deploy
           it, then revoke the old one. sparx tracks each key’s last-used time so you can spot stale
@@ -205,7 +205,7 @@ export default function AuthenticationPage() {
           </tbody>
         </DocTable>
         <p>
-          Both come back in the standard error envelope —{' '}
+          Both come back in the standard error envelope:{' '}
           <InlineCode>{`{ "success": false, "error": { "code", "message" } }`}</InlineCode>. With
           your key in hand, head to the <DocLink href="/docs/quickstart">Quickstart</DocLink> to
           make your first write, or wire up <DocLink href="/docs/guides/webhooks">Webhooks</DocLink>

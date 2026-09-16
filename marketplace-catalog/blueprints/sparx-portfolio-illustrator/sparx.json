@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "sparx-portfolio-illustrator",
   "name": "Illustrator Portfolio",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "tagline": "A loud, work-wall portfolio for an illustrator.",
-  "description": "A personality-first portfolio for an illustrator: a loud two-tone hero, a dense playful work wall of tiled pieces that tilt on hover, a warm “hi, I’m me” band, and case-study pages that walk the brief, the making and where it ran. The palette IS the brand — warm riso-cream carried by a coral primary and a cobalt accent, expressive Syne display. Shipped as Pilar Ortega.",
+  "description": "A personality-first portfolio for an illustrator: a loud two-tone hero, a dense playful work wall of tiled pieces that tilt on hover, a warm “hi, I’m me” band, and case-study pages that walk the brief, the making and where it ran. The palette IS the brand, warm riso-cream carried by a coral primary and a cobalt accent, expressive Syne display. Shipped as Pilar Ortega.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "content",
@@ -27,7 +27,7 @@
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "Illustrator Portfolio — home page preview"
+      "alt": "Illustrator Portfolio: home page preview"
     }
   ],
   "author": {

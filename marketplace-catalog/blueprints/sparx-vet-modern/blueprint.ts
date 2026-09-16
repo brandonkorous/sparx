@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-vet-modern',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Veterinary (Modern)',
   summary:
-    'A calm, modern veterinary-wellness site — a sage-and-cream palette, a refined serif display and soft, unhurried photography. Installs a working booking flow for fear-free care: real appointment types (wellness, nutrition, telehealth, senior), three vets you book by name plus two calm exam rooms as resources, and a wellness-plan policy. Ships as "Fauna Veterinary", a whole-pet, fear-free practice for dogs and cats.',
+    'A calm, modern veterinary-wellness site: a sage-and-cream palette, a refined serif display and soft, unhurried photography. Installs a working booking flow for fear-free care: real appointment types (wellness, nutrition, telehealth, senior), three vets you book by name plus two calm exam rooms as resources, and a wellness-plan policy. Ships as "Fauna Veterinary", a whole-pet, fear-free practice for dogs and cats.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

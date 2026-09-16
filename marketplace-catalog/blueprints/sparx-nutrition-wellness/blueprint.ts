@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-nutrition-wellness',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Nutrition (Wellness)',
   summary:
-    'A warm, non-diet nutrition site — a soft-cream palette, a sage primary and a terracotta accent, with fresh-food photography carrying the page. Installs a working online booking flow: a free discovery call plus initial, gut-health, weight, intuitive-eating and family consults, three registered dietitians you book by name with evening and Saturday hours, and a no-show hold policy. Ships as "Nourish Nutrition", a caring whole-health practice.',
+    'A warm, non-diet nutrition site: a soft-cream palette, a sage primary and a terracotta accent, with fresh-food photography carrying the page. Installs a working online booking flow: a free discovery call plus initial, gut-health, weight, intuitive-eating and family consults, three registered dietitians you book by name with evening and Saturday hours, and a no-show hold policy. Ships as "Nourish Nutrition", a caring whole-health practice.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

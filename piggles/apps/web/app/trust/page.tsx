@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 const PILLARS = [
   {
     title: 'Your data is yours, and leaving is easy',
-    body: 'Export your customers, products, orders, invoices and everything you have written, whenever you like, in formats other software can actually open. You do not have to ask, you do not have to be cancelling, and nobody will make it slow on purpose. Software that is hard to leave is relying on something other than being good.',
+    body: 'Export your customers, products, orders, invoices and everything you have written, whenever you like, in formats other software can actually open. You do not have to ask, you do not have to be canceling, and nobody will make it slow on purpose. Software that is hard to leave is relying on something other than being good.',
   },
   {
     title: 'Your business is separated from every other one',
@@ -46,7 +46,7 @@ const PILLARS = [
   },
   {
     title: 'Encrypted on the way and at rest',
-    body: 'Everything travels over an encrypted connection — your browser, your customers’ browsers, and every connection between the parts of the system. What is stored is encrypted on disk, and the keys are held apart from the data.',
+    body: 'Everything travels over an encrypted connection. Your browser, your customers’ browsers, and every connection between the parts of the system. What is stored is encrypted on disk, and the keys are held apart from the data.',
   },
   {
     title: 'Everyone signs in as themselves',
@@ -54,7 +54,7 @@ const PILLARS = [
   },
   {
     title: 'A second lock, if you want one',
-    body: 'Turn on two-step sign-in and a stolen password is not enough on its own — signing in also needs a code from your phone. You get backup codes for the day the phone is the problem, and you can hand out access to your team without handing out your own way in.',
+    body: 'Turn on two-step sign-in and a stolen password is not enough on its own: signing in also needs a code from your phone. You get backup codes for the day the phone is the problem, and you can hand out access to your team without handing out your own way in.',
   },
   {
     title: 'We never see your card details',
@@ -69,7 +69,7 @@ const PILLARS = [
 const OPERATIONS = [
   {
     title: 'Backed up continuously',
-    body: 'Not nightly, and not to the same place the live system lives. Restores are tested rather than assumed — a backup nobody has ever restored is a hope.',
+    body: 'Not nightly, and not to the same place the live system lives. Restores are tested rather than assumed: a backup nobody has ever restored is a hope.',
   },
   {
     title: 'Watched around the clock',
@@ -88,7 +88,7 @@ const OPERATIONS = [
 const FAQ = [
   {
     q: 'Do you use my business data to train AI?',
-    a: 'No. Not to train a model, not to improve a shared assistant, not anonymised, not aggregated. Any AI feature runs on a key you connect yourself, which means the data goes where you agreed and nowhere else — and you can revoke it whenever you want.',
+    a: 'No. Not to train a model, not to improve a shared assistant, not anonymised, not aggregated. Any AI feature runs on a key you connect yourself, which means the data goes where you agreed and nowhere else, and you can revoke it whenever you want.',
   },
   {
     q: 'Who at Piggles can see my information?',
@@ -96,7 +96,7 @@ const FAQ = [
   },
   {
     q: 'What happens to my data if I cancel?',
-    a: 'You can export everything before you go. After you cancel, your data is kept for a short window in case you change your mind or forgot to export, and then it is deleted — including from backups as they age out. If you want it gone sooner, ask and we will do it.',
+    a: 'You can export everything before you go. After you cancel, your data is kept for a short window in case you change your mind or forgot to export, and then it is deleted, including from backups as they age out. If you want it gone sooner, ask and we will do it.',
   },
   {
     q: 'Where is my data actually stored?',
@@ -104,7 +104,7 @@ const FAQ = [
   },
   {
     q: 'Is my customers’ information safe too?',
-    a: 'It is treated exactly like yours, because legally and practically it is your responsibility and we are handling it for you. Same separation, same encryption, same rules about who can see it — and their unsubscribes and deletion requests are honoured properly.',
+    a: 'It is treated exactly like yours, because legally and practically it is your responsibility and we are handling it for you. Same separation, same encryption, same rules about who can see it, and their unsubscribes and deletion requests are honoured properly.',
   },
   {
     q: 'What if I need something in writing for a client?',
@@ -134,7 +134,7 @@ export default function TrustPage() {
     <>
       <PageHero
         heading="The boring things, done properly."
-        lede="You are about to run your business on this. Here is exactly how your information is kept, who can reach it, and how you get it back — in plain words, with nothing dressed up."
+        lede="You are about to run your business on this. Here is exactly how your information is kept, who can reach it, and how you get it back: in plain words, with nothing dressed up."
         figure={<TrustFigure />}
       >
         <a

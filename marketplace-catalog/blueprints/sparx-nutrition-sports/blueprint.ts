@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-nutrition-sports',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Nutrition (Sports & Performance)',
   summary:
-    'A bold, athletic sports-nutrition site — a crisp near-white ground, an electric-blue primary and a lime accent with a sturdy condensed display. Installs a working booking flow: a real consult menu (free strategy call, performance assessment, fueling plans, endurance & strength sessions, body-composition testing, follow-ups), three sports dietitians booked by name with their own hours, and a no-show policy. Ships as "Fuel Performance Nutrition".',
+    'A bold, athletic sports-nutrition site: a crisp near-white ground, an electric-blue primary and a lime accent with a sturdy condensed display. Installs a working booking flow: a real consult menu (free strategy call, performance assessment, fueling plans, endurance & strength sessions, body-composition testing, follow-ups), three sports dietitians booked by name with their own hours, and a no-show policy. Ships as "Fuel Performance Nutrition".',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

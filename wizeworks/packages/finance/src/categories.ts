@@ -12,7 +12,12 @@
 
 import { withTenant, type FinanceExpenseCategory, type TxClient } from '@wizeworks/db';
 
-import { CategoryInUseError, ExpenseCategoryNotFoundError, SystemCategoryError } from './errors';
+import {
+  CategoryInUseError,
+  DuplicateCategoryNameError,
+  ExpenseCategoryNotFoundError,
+  SystemCategoryError,
+} from './errors';
 import type { CreateCategoryInput, ExpenseKind, UpdateCategoryInput } from './schemas';
 
 /** A seeded category. `slug` is the stable machine handle a deriver targets. */
@@ -161,27 +166,63 @@ export async function listCategories(
   );
 }
 
+/**
+ * Refuse a name the tenant is already using.
+ *
+ * The unique index on this table is `(tenantId, slug)`, and a tenant-invented
+ * category has NO slug — deliberately, see `createCategory` below. Postgres
+ * treats NULLs as distinct, so that index says nothing at all about invented
+ * rows and the NAME was never guarded by anything: two categories called
+ * "Packaging" were accepted, and showed up as two identical lines in the picker
+ * where a cost is filed.
+ *
+ * Case- and space-insensitive, because "rent" and "Rent " are the same word to
+ * the person typing them and would render as two rows nobody can tell apart.
+ *
+ * Runs inside the caller's transaction so it cannot race a second create, and
+ * looks at ARCHIVED rows too: an archived category still labels every cost
+ * already filed under it, so a second row sharing its name makes the history
+ * ambiguous as well as the picker.
+ */
+async function assertNameFree(
+  tx: TxClient,
+  tenantId: string,
+  name: string,
+  exceptId: string | null
+): Promise<void> {
+  const clash = await tx.financeExpenseCategory.findFirst({
+    where: {
+      tenantId,
+      name: { equals: name.trim(), mode: 'insensitive' },
+      ...(exceptId === null ? {} : { id: { not: exceptId } }),
+    },
+    select: { name: true, archivedAt: true },
+  });
+  if (clash) throw new DuplicateCategoryNameError(clash.name, clash.archivedAt !== null);
+}
+
 export async function createCategory(
   tenantId: string,
   input: CreateCategoryInput
 ): Promise<FinanceExpenseCategory> {
-  return withTenant({ tenantId }, (tx) =>
-    tx.financeExpenseCategory.create({
+  return withTenant({ tenantId }, async (tx) => {
+    await assertNameFree(tx, tenantId, input.name, null);
+    return tx.financeExpenseCategory.create({
       data: {
         tenantId,
         // Tenant-invented categories carry no slug: the slug namespace belongs to
         // the seeded set that derivers address, and letting a tenant mint 'wages'
         // would let them collide with it.
         slug: null,
-        name: input.name,
+        name: input.name.trim(),
         kind: input.kind,
         color: input.color ?? null,
         exportCode: input.exportCode ?? null,
         sortOrder: input.sortOrder,
         isSystem: false,
       },
-    })
-  );
+    });
+  });
 }
 
 export async function updateCategory(
@@ -192,10 +233,14 @@ export async function updateCategory(
   return withTenant({ tenantId }, async (tx) => {
     const existing = await tx.financeExpenseCategory.findUnique({ where: { id } });
     if (!existing) throw new ExpenseCategoryNotFoundError(id);
+    // A RENAME can collide just as easily as a create, and worse: renaming an
+    // invented category to "Rent" leaves two rows called Rent, only one of which
+    // the deriver finds by slug.
+    if (rest.name !== undefined) await assertNameFree(tx, tenantId, rest.name, id);
     return tx.financeExpenseCategory.update({
       where: { id },
       data: {
-        ...(rest.name !== undefined ? { name: rest.name } : {}),
+        ...(rest.name !== undefined ? { name: rest.name.trim() } : {}),
         ...(rest.kind !== undefined ? { kind: rest.kind } : {}),
         ...(rest.color !== undefined ? { color: rest.color ?? null } : {}),
         ...(rest.exportCode !== undefined ? { exportCode: rest.exportCode ?? null } : {}),

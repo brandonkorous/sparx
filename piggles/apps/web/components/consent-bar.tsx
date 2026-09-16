@@ -101,8 +101,8 @@ export function ConsentBar() {
           />
           <span className="text-base">
             Also remember which advert I clicked, if I came from one. This is the more precise half
-            — it identifies a single click rather than just the campaign — so it is a separate
-            choice, and the rest works without it.
+            (it identifies a single click rather than just the campaign) so it is a separate choice,
+            and the rest works without it.
           </span>
         </label>
 

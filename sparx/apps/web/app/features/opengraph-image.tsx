@@ -15,7 +15,7 @@ import { OgWordmark } from '@/lib/og-wordmark';
 export const runtime = 'nodejs';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
-export const alt = 'Everything inside sparx — over 300 capabilities, one platform.';
+export const alt = 'Everything inside sparx: over 300 capabilities, one platform.';
 
 export default function Image() {
   const counts = capabilityCounts();
@@ -93,8 +93,8 @@ export default function Image() {
           </div>
         </div>
         <span style={{ fontSize: 28, lineHeight: 1.4, color: '#A1A1AA', maxWidth: 980 }}>
-          {liveFloor}+ live today across {counts.modules} modules — one platform, one data layer,
-          one bill. The whole thing, in one place.
+          {liveFloor}+ live today across {counts.modules} modules. One platform, one data layer, one
+          bill. The whole thing, in one place.
         </span>
       </div>
 

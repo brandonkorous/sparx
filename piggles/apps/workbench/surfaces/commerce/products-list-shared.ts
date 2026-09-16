@@ -50,9 +50,7 @@ export function emptyAdvice(search: string, filterLabel: string | null): string 
   const parts: string[] = [];
   if (search) parts.push('Try part of the product name, its web address, or the brand.');
   if (filterLabel) {
-    parts.push(
-      `You are only seeing products marked “${filterLabel}” — switch to All for the rest.`
-    );
+    parts.push(`You are only seeing products marked “${filterLabel}”. Switch to All for the rest.`);
   }
   return parts.join(' ');
 }

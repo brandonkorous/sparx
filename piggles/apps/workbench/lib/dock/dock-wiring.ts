@@ -8,6 +8,7 @@ import type { DockviewApi } from 'dockview';
 import { loadLayout } from '@/lib/workbench/persistence';
 import type { WorkbenchController } from '@/lib/workbench/controller';
 import type { PaneDescriptor } from '@/lib/surfaces/descriptor';
+import { titleFor } from '@/lib/surfaces/registry';
 import { DEFAULT_LAYOUT } from './default-layout';
 import { PIGGLES_DOCK_THEME } from '../dock-theme';
 
@@ -49,6 +50,7 @@ export function restoreOrDefault(
   try {
     api.fromJSON(stored.grid as Parameters<DockviewApi['fromJSON']>[0]);
     adoptPanesMissingFromGrid(api, controller, stored.panes);
+    retitleFromDescriptors(api, controller);
   } catch (error) {
     // A layout saved by an older build can fail to deserialize. Falling back to
     // the default beats a blank screen nobody can escape.
@@ -76,6 +78,28 @@ function adoptPanesMissingFromGrid(
   for (const descriptor of Object.values(panes)) {
     if (api.getPanel(descriptor.id)) continue;
     controller.open(descriptor.surface, descriptor.params, { focus: false });
+  }
+}
+
+/**
+ * Re-labels every restored panel from its descriptor.
+ *
+ * dockview serializes its OWN copy of each tab's title, so a pane's name is
+ * stored in two halves of the same file — ours in `panes`, dockview's inside the
+ * opaque `grid` — and on restore dockview's half is the one a person reads.
+ * Sweeping a stale name out of the descriptors was therefore not enough: a tab
+ * saved as "Connections" came back saying "Connections" while the rail, the
+ * launcher and the command palette all said "Your social accounts", because the
+ * word was still sitting in the other half.
+ *
+ * The descriptor is the authority and the grid holds the ARRANGEMENT. Pushing
+ * the derived name back over dockview's copy is what makes that true rather than
+ * merely documented — and it is why a rename now reaches a layout somebody saved
+ * a year ago instead of only a pane they open today.
+ */
+export function retitleFromDescriptors(api: DockviewApi, controller: WorkbenchController): void {
+  for (const [paneId, descriptor] of Object.entries(controller.snapshotDescriptors())) {
+    api.getPanel(paneId)?.setTitle(titleFor(descriptor));
   }
 }
 

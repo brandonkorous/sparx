@@ -20,7 +20,10 @@ export interface DeriveStatusArgs {
 export function deriveDocumentStatus(args: DeriveStatusArgs): DocumentStatus {
   const { total, amountPaid, dueAt, voided, now } = args;
   if (voided) return 'void';
-  const pastDue = dueAt !== null && dueAt.getTime() < now.getTime();
+  // Past due means the due DATE has gone by, not that the clock has passed some
+  // hour on it. Comparing instants turned a bill due today into an overdue one
+  // partway through its own due date — see `daysPastDue`.
+  const pastDue = daysPastDue(dueAt, now) > 0;
   if (amountPaid <= 0) {
     // Nothing paid: overdue only if something is actually owed past the due date.
     return pastDue && total > 0 ? 'overdue' : 'unpaid';
@@ -87,6 +90,42 @@ export interface AgingInputRow {
   dueAt: Date | null;
 }
 
+const DAY_MS = 86_400_000;
+
+/** The UTC calendar day a moment falls on, as midnight. */
+function utcDay(at: Date): number {
+  return Date.UTC(at.getUTCFullYear(), at.getUTCMonth(), at.getUTCDate());
+}
+
+/**
+ * How many whole days past its due date a document is — counted in CALENDAR
+ * DAYS, not in elapsed 24-hour periods.
+ *
+ * A due date is a DAY. Nobody sets a due time, no screen shows one, and every
+ * surface prints it as a calendar day in UTC (`formatDay`, whose own comment
+ * says "the day it actually is"). So "due Sep 8" read on Sep 9 is one day late,
+ * whatever o'clock the document happened to be raised at.
+ *
+ * This was elapsed milliseconds — `floor((now - dueAt) / DAY)` — and the two
+ * disagree for any document not due at exactly midnight, which is all of them.
+ * On a real shop's screen that put two invoices BOTH PRINTED "Due Sep 8, 2026"
+ * on adjacent rows, one marked "1 day late" and the other "Not yet due", with
+ * $234.60 sitting in the wrong aging bucket: the second was raised at noon, so
+ * only 0.93 of a 24-hour period had passed. The label a shop reads was decided
+ * by a time she was never shown.
+ *
+ * The same figure drives the dunning ladder, which matches `overdueDays` on an
+ * EXACT day (7 / 14 / 30). Under the old rule the day a customer got chased was
+ * set by the hour the invoice was created rather than the date on it.
+ *
+ * UTC on both sides, deliberately: it is the basis the due date is DISPLAYED
+ * in, so the number and the printed date can never disagree.
+ */
+export function daysPastDue(dueAt: Date | null, now: Date): number {
+  if (!dueAt) return 0;
+  return Math.round((utcDay(now) - utcDay(dueAt)) / DAY_MS);
+}
+
 /** Bucket open balances by days past `dueAt`. A row with no `dueAt` (a pay-now
  *  retail document, not on terms) counts as `current`; a non-positive balance is
  *  skipped. `current` also holds anything not yet past due. */
@@ -101,10 +140,9 @@ export function bucketAging(
     d61_90: { count: 0, balance: 0 },
     d90_plus: { count: 0, balance: 0 },
   };
-  const DAY = 86_400_000;
   for (const r of rows) {
     if (r.balance <= 0) continue;
-    const daysPast = r.dueAt ? Math.floor((now.getTime() - r.dueAt.getTime()) / DAY) : 0;
+    const daysPast = daysPastDue(r.dueAt, now);
     const key: AgingBucketKey =
       daysPast <= 0
         ? 'current'

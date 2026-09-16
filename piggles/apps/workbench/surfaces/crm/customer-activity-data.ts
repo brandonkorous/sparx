@@ -108,7 +108,7 @@ export function activityTypeLabel(type: string): string {
     // the generic humaniser and read "Shipped" beside "Order placed".
     'order.shipped': 'Order shipped',
     'order.delivered': 'Order delivered',
-    'order.cancelled': 'Order cancelled',
+    'order.cancelled': 'Order canceled',
     'order.refunded': 'Order refunded',
     'email.opened': 'Email opened',
     'email.clicked': 'Email clicked',

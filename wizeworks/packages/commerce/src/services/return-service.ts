@@ -9,8 +9,10 @@ import {
   CreateReturnRequestInput,
   DenyReturnInput,
   IssueReturnRefundInput,
+  RecordReplacementShipmentInput,
   RecordReturnInspectionInput,
   SettleReturnExchangeInput,
+  type ReplacementShipment,
   type ReturnStatus,
 } from '@wizeworks/commerce-schemas';
 import { orderRefundsService } from '@wizeworks/crm';
@@ -31,6 +33,7 @@ import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
 import { CUSTOMER_NAME_SELECT, customerDisplayName } from './customer-name';
 import { attemptReturnLabel } from './return-label-purchase';
+import { canRecordInspection, inspectionAdvancesStatus, isSettledReturn } from './return-status';
 
 /** A restockable return line resolved to its variant + (optional) location. */
 interface RestockLine {
@@ -68,6 +71,11 @@ export interface ReturnDetail extends ReturnSummary {
     id: string;
     orderItemId: string;
     orderItemName: string | null;
+    // WHAT came back, not just what it was called. A swap is chosen from the
+    // catalog, and without these the screen picking the replacement has no idea
+    // which product the customer is even talking about (persona issue 450).
+    productId: string | null;
+    variantId: string | null;
     quantity: number;
     approvedQuantity: number;
     reasonCode: string;
@@ -86,12 +94,21 @@ export interface ReturnDetail extends ReturnSummary {
   }[];
   labels: {
     id: string;
+    /** 'inbound' (the label the customer sends it back with) or 'outbound' (the
+     *  replacement travelling to them). Every row was inbound until a
+     *  replacement got a journey of its own. */
+    direction: string;
     providerSlug: string;
-    labelRef: string;
+    /** The carrier as a person names it. Null on a label bought through a
+     *  provider, which carries the carrier inside the label. */
+    carrier: string | null;
+    labelRef: string | null;
     trackingNumber: string | null;
     trackingUrl: string | null;
     labelMediaId: string | null;
     costCents: number;
+    /** When it was actually posted, which is not when the row was written. */
+    shippedAt: string | null;
   }[];
 }
 
@@ -252,12 +269,21 @@ export async function get(ctx: ServiceContext, returnId: string): Promise<Return
         customerId: true,
         orderNumber: true,
         customer: { select: CUSTOMER_NAME_SELECT },
-        items: { select: { id: true, name: true } },
+        items: { select: { id: true, name: true, productId: true, variantId: true } },
       },
     });
 
     // orderItemId → display name (sku/title snapshot frozen on the order line).
     const orderItemName = new Map((order?.items ?? []).map((it) => [it.id, it.name]));
+    // orderItemId → the catalog rows behind it. Null on a line typed by hand or
+    // for a product since deleted, which the screen must survive rather than
+    // assume away.
+    const orderItemProduct = new Map(
+      (order?.items ?? []).map((it) => [
+        it.id,
+        { productId: it.productId, variantId: it.variantId },
+      ])
+    );
     // returnLineItemId → the product it returns (via its orderItemId).
     const lineItemName = new Map(
       row.items.map((li) => [li.id, orderItemName.get(li.orderItemId) ?? null])
@@ -279,11 +305,11 @@ export async function get(ctx: ServiceContext, returnId: string): Promise<Return
       customerName: customerDisplayName(order?.customer ?? null),
       orderNumber: order?.orderNumber ?? null,
     };
-    return { row, meta, orderItemName, lineItemName, warehouseName };
+    return { row, meta, orderItemName, orderItemProduct, lineItemName, warehouseName };
   });
   if (!detail) throw new CommerceNotFoundError('ReturnRequest', returnId);
 
-  const { row, meta, orderItemName, lineItemName, warehouseName } = detail;
+  const { row, meta, orderItemName, orderItemProduct, lineItemName, warehouseName } = detail;
   return {
     ...toSummary(row, meta),
     staffNote: row.staffNote,
@@ -298,6 +324,8 @@ export async function get(ctx: ServiceContext, returnId: string): Promise<Return
       id: it.id,
       orderItemId: it.orderItemId,
       orderItemName: orderItemName.get(it.orderItemId) ?? null,
+      productId: orderItemProduct.get(it.orderItemId)?.productId ?? null,
+      variantId: orderItemProduct.get(it.orderItemId)?.variantId ?? null,
       quantity: it.quantity,
       approvedQuantity: it.approvedQuantity,
       reasonCode: it.reasonCode,
@@ -316,12 +344,15 @@ export async function get(ctx: ServiceContext, returnId: string): Promise<Return
     })),
     labels: row.labels.map((lbl) => ({
       id: lbl.id,
+      direction: lbl.direction,
       providerSlug: lbl.providerSlug,
+      carrier: lbl.carrier,
       labelRef: lbl.labelRef,
       trackingNumber: lbl.trackingNumber,
       trackingUrl: lbl.trackingUrl,
       labelMediaId: lbl.labelMediaId,
       costCents: lbl.costCents,
+      shippedAt: lbl.shippedAt?.toISOString() ?? null,
     })),
   };
 }
@@ -485,6 +516,22 @@ export async function deny(ctx: ServiceContext, rawInput: unknown): Promise<void
       diff: { after: { status: 'denied', reason: input.reason } },
     });
   });
+
+  // The shopper asked for something and the answer is no. Turning a return down
+  // is one of the three ways a return ENDS, and it was the only ending that
+  // published nothing — so the console's own words, "They are told the reason
+  // you give here", were not true of anything (persona issue 448).
+  //
+  // The reason rides in the payload because it is a fact about THIS decision.
+  // It is stored on the row as `staffNote`, which is the shared note field an
+  // approval also writes to, so reading it back later cannot tell a reason
+  // meant for a customer from a note meant for the team.
+  await publishCommerceEvent({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    topic: 'return.denied',
+    data: { returnId: input.returnId, reason: input.reason },
+  });
 }
 
 export async function markReceived(ctx: ServiceContext, returnId: string): Promise<void> {
@@ -524,8 +571,8 @@ export async function markReceived(ctx: ServiceContext, returnId: string): Promi
 export async function recordInspection(ctx: ServiceContext, rawInput: unknown): Promise<void> {
   const input = RecordReturnInspectionInput.parse(rawInput);
   await withTenant(ctx, async (tx) => {
-    const ret = await assertReturnWritable(tx, input.returnId);
-    if (ret.status !== 'received' && ret.status !== 'inspecting') {
+    const ret = await assertReturnWritable(tx, input.returnId, { allowSettled: true });
+    if (!canRecordInspection(ret.status)) {
       throw new CommerceConflictError(`Cannot record inspection from status "${ret.status}"`);
     }
     for (const ins of input.inspections) {
@@ -547,10 +594,14 @@ export async function recordInspection(ctx: ServiceContext, rawInput: unknown): 
         },
       });
     }
-    await tx.returnRequest.update({
-      where: { id: ret.id },
-      data: { status: 'inspected' },
-    });
+    // A settled return stays settled. Writing down what came back never walks
+    // it backwards into a stage that offers to pay the customer a second time.
+    if (inspectionAdvancesStatus(ret.status)) {
+      await tx.returnRequest.update({
+        where: { id: ret.id },
+        data: { status: 'inspected' },
+      });
+    }
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -565,6 +616,74 @@ export async function recordInspection(ctx: ServiceContext, rawInput: unknown): 
 }
 
 /**
+ * The replacement's own journey, written down.
+ *
+ * A swap moved stock, fired an event and emailed the customer, and recorded
+ * NOTHING about how the replacement was travelling — so the email could only say
+ * "on its way" and stop, on a platform whose ordinary shipping confirmation
+ * leads with the tracking number because that is the thing the recipient opened
+ * it for. The customer then writes to ask where it is, which is the exchange the
+ * shop bought this product to stop having.
+ *
+ * `ReturnLabel` with `direction: 'outbound'`. The same table holds the inbound
+ * leg — the label the customer uses to send the goods back — because both rows
+ * are the same fact pointing opposite ways: a parcel that exists because of this
+ * return, with a number you can follow it by.
+ *
+ * `providerSlug` is `manual` and `labelRef` is null when a person typed the
+ * number in, which is how most replacements go out. Those two columns answer
+ * "which integration bought this label", and inventing a value for them would be
+ * the same mistake as a $0.00 refund standing in for a swap.
+ */
+async function writeReplacementShipment(
+  tx: TxClient,
+  tenantId: string,
+  returnId: string,
+  shipment: ReplacementShipment
+): Promise<void> {
+  await tx.returnLabel.create({
+    data: {
+      tenantId,
+      returnId,
+      direction: 'outbound',
+      providerSlug: 'manual',
+      labelRef: null,
+      carrier: carrierLabel(shipment),
+      trackingNumber: shipment.trackingNumber,
+      trackingUrl: shipment.trackingUrl ?? null,
+      shippedAt: shipment.shippedAt ? new Date(shipment.shippedAt) : new Date(),
+    },
+  });
+}
+
+/** What the shop called the carrier. `other` means they typed it themselves, and
+ *  the typed name is the answer — storing "other" would lose it. */
+function carrierLabel(shipment: ReplacementShipment): string | null {
+  if (shipment.carrier === 'other') {
+    // Not `??`: an EMPTY typed name is no answer at all, and storing `''` would
+    // read back as somebody having named a courier.
+    const typed = shipment.carrierOther?.trim() ?? '';
+    return typed === '' ? null : typed;
+  }
+  return shipment.carrier ?? null;
+}
+
+/** The parcel facts an email needs, as empty strings rather than undefined: a
+ *  bound row with an empty value self-drops, where a missing key renders the raw
+ *  token to a customer. */
+function shipmentFields(shipment: ReplacementShipment | undefined): {
+  replacementCarrier: string;
+  replacementTracking: string;
+  replacementTrackingUrl: string;
+} {
+  return {
+    replacementCarrier: shipment ? (carrierLabel(shipment) ?? '') : '',
+    replacementTracking: shipment?.trackingNumber ?? '',
+    replacementTrackingUrl: shipment?.trackingUrl ?? '',
+  };
+}
+
+/**
  * Settle an exchange by sending the replacement. NO money moves.
  *
  * The only other way out of `inspected` was `issueRefund`, so an even swap could
@@ -575,15 +694,23 @@ export async function recordInspection(ctx: ServiceContext, rawInput: unknown): 
  * The returned goods restock exactly as they do on a refund — same collector,
  * same idempotency key — so a line already put back by an explicit disposition
  * is a no-op here rather than a second movement.
+ *
+ * `unitsRestocked` is how many actually went back, and it is returned because
+ * the caller cannot work it out. Nothing restocks until an inspection says a
+ * line is fit to sell, so a swap settled without one puts NOTHING back — and
+ * both consoles said "one came back on the shelf" anyway, seconds before the
+ * same pane said nothing had been written down about the goods. A screen that
+ * cannot know must be told, or it guesses and prints the guess as fact.
  */
 export async function settleExchange(
   ctx: ServiceContext,
   rawInput: unknown
-): Promise<{ returnId: string }> {
+): Promise<{ returnId: string; unitsRestocked: number }> {
   const input = SettleReturnExchangeInput.parse(rawInput);
   const inventoryActive = await isInventoryActive(ctx.tenantId);
 
   let restockLines: RestockLine[] = [];
+  let unitsRestocked = 0;
   let sentLabel = '';
   await withTenant(ctx, async (tx) => {
     const ret = await assertReturnWritable(tx, input.returnId);
@@ -610,7 +737,7 @@ export async function settleExchange(
     // for a developer — "M · Slate" is what Devi called it when she picked it.
     const values = replacement.optionAssignments.map((row) => row.optionValue.value).join(' · ');
     const version = replacement.title ?? (values === '' ? replacement.sku : values);
-    sentLabel = `${replacement.product.title} — ${version}`;
+    sentLabel = `${replacement.product.title}: ${version}`;
 
     // The staff note is the only place the record can say WHAT went out — a
     // return has no column for a replacement. Appended rather than replacing so
@@ -629,6 +756,12 @@ export async function settleExchange(
       },
     });
     if (inventoryActive) restockLines = await collectRestockLines(tx, ret.id);
+    // Known at settle time only when the parcel has already gone. Most shops
+    // settle first and post afterwards, and record it through
+    // `recordReplacementShipment` then.
+    if (input.shipment) {
+      await writeReplacementShipment(tx, ctx.tenantId, ret.id, input.shipment);
+    }
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -654,6 +787,8 @@ export async function settleExchange(
     const fallbackWarehouseId = await inventoryService.resolveDefaultWarehouseId(ctx);
     for (const line of restockLines) {
       const warehouseId = line.warehouseId ?? fallbackWarehouseId;
+      // Counted only past this guard. A line with nowhere to go did not go
+      // anywhere, and saying it did is the thing being fixed.
       if (!warehouseId) continue;
       await inventoryService.adjust(ctx, {
         variantId: line.variantId,
@@ -665,6 +800,10 @@ export async function settleExchange(
         idempotencyKey: `return-restock:${input.returnId}:${line.inspectionId}`,
         ...(line.binId ? { binId: line.binId } : {}),
       });
+      // Counted even when the key deduplicates the write, because the question a
+      // shop is asking is "are these goods back on my shelf", not "did a row get
+      // written in this request". An explicit disposition put them there first.
+      unitsRestocked += line.quantity;
     }
     if (fallbackWarehouseId) {
       await inventoryService.adjust(ctx, {
@@ -690,6 +829,70 @@ export async function settleExchange(
       returnId: input.returnId,
       replacementVariantId: input.replacementVariantId,
       quantity: input.quantity,
+      // The name a person would say, computed once above for the staff note and
+      // carried here so the customer's email can name it too. A return has no
+      // column for its replacement, so this is the only place the fact exists —
+      // the same reason a subscription's one-time pay link rides in its payload.
+      replacementLabel: sentLabel,
+      // Empty unless the parcel had already gone when she settled. When it is
+      // here, the swap's own email prints the tracking number and
+      // `return.replacement_shipped` never fires — one email, not two.
+      ...shipmentFields(input.shipment),
+    },
+  });
+
+  return { returnId: input.returnId, unitsRestocked };
+}
+
+/**
+ * Record how the replacement travelled, after the swap was settled.
+ *
+ * The common path rather than the exception: she decides what to send while the
+ * customer is waiting, and the parcel goes out that afternoon or the next
+ * morning. Until this existed, a tracking number that arrived five minutes after
+ * the settle screen closed had nowhere in the product to go — a fact about the
+ * world with no route in, which is the same shape as goods that could no longer
+ * be recorded once a return was settled (persona issue 452).
+ *
+ * Publishes its own event, so the customer is told THEN. A swap settled with the
+ * number already in hand never reaches here, and never sends a second email.
+ */
+export async function recordReplacementShipment(
+  ctx: ServiceContext,
+  rawInput: unknown
+): Promise<{ returnId: string }> {
+  const input = RecordReplacementShipmentInput.parse(rawInput);
+
+  await withTenant(ctx, async (tx) => {
+    const ret = await tx.returnRequest.findFirst({ where: { id: input.returnId } });
+    if (!ret) throw new CommerceNotFoundError('ReturnRequest', input.returnId);
+    // Only a settled swap has a replacement to be travelling. A refund sends
+    // nothing, and a return still being decided has not chosen what to send.
+    if (ret.status !== 'exchanged') {
+      throw new CommerceConflictError(
+        `Cannot record a replacement shipment on a return in status "${ret.status}"; expected "exchanged"`
+      );
+    }
+    await writeReplacementShipment(tx, ctx.tenantId, ret.id, input.shipment);
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'commerce.return.replacement_shipped',
+      entityType: 'ReturnRequest',
+      entityId: ret.id,
+      diff: { after: shipmentFields(input.shipment) },
+    });
+  });
+
+  await publishCommerceEvent({
+    tenantId: ctx.tenantId,
+    actorId: ctx.userId ?? null,
+    topic: 'return.replacement_shipped',
+    data: {
+      returnId: input.returnId,
+      ...shipmentFields(input.shipment),
     },
   });
 
@@ -998,10 +1201,16 @@ async function collectRestockLines(tx: TxClient, returnId: string): Promise<Rest
 
 // ─── helpers ─────────────────────────────────────────────────────────
 
-async function assertReturnWritable(tx: TxClient, returnId: string): Promise<ReturnRequest> {
+async function assertReturnWritable(
+  tx: TxClient,
+  returnId: string,
+  /** Recording what physically came back is a fact about the GOODS, not the
+   *  money, so it is the one write a settled return still accepts (issue 452). */
+  { allowSettled = false }: { allowSettled?: boolean } = {}
+): Promise<ReturnRequest> {
   const ret = await tx.returnRequest.findFirst({ where: { id: returnId } });
   if (!ret) throw new CommerceNotFoundError('ReturnRequest', returnId);
-  if (ret.status === 'cancelled' || ret.status === 'refunded') {
+  if (ret.status === 'cancelled' || (isSettledReturn(ret.status) && !allowSettled)) {
     throw new CommerceConflictError(`Cannot mutate a ${ret.status} return`);
   }
   return ret;

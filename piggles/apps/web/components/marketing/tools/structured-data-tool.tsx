@@ -51,7 +51,7 @@ interface Hours {
 /** The picker's own words, reused so the email describes the page the same way
  *  the screen did. The word "schema" appears nowhere here either. */
 const KIND_LABELS: Record<Kind, string> = {
-  business: 'Your business — address, hours, phone',
+  business: 'Your business: address, hours, phone',
   product: 'One thing you sell',
   article: 'Something you wrote',
   event: 'Something happening on a date',
@@ -130,7 +130,7 @@ export function StructuredDataTool() {
             ...(codeFits ? [{ label: 'Code to add', value: json }] : []),
           ],
           note: codeFits
-            ? 'This goes inside the <head> of that one page, and only that page — it describes that page specifically. If somebody else looks after your website, forward this to them.'
+            ? 'This goes inside the <head> of that one page, and only that page. It describes that page specifically. If somebody else looks after your website, forward this to them.'
             : 'Your code is too long to send by email in one piece. Open the tool again and use the copy button, then paste it into the <head> of that page.',
         }
       : null
@@ -146,7 +146,7 @@ export function StructuredDataTool() {
               value={kind}
               onChange={(v) => setKind(v)}
               options={[
-                { value: 'business', label: 'Your business — address, hours, phone' },
+                { value: 'business', label: 'Your business: address, hours, phone' },
                 { value: 'product', label: 'One thing you sell' },
                 { value: 'article', label: 'Something you wrote' },
                 { value: 'event', label: 'Something happening on a date' },
@@ -155,8 +155,8 @@ export function StructuredDataTool() {
             />
             <Aside>
               <strong>It has to be true.</strong> Markup describing things that are not on the page
-              — a rating for reviews you do not have, a price you do not charge — is the fastest
-              route to a manual penalty, and those are much harder to undo than to avoid.
+              (a rating for reviews you do not have, a price you do not charge) is the fastest route
+              to a manual penalty, and those are much harder to undo than to avoid.
             </Aside>
           </Panel>
 
@@ -400,7 +400,7 @@ export function StructuredDataTool() {
                   />
                   <AreaField
                     label="Answer"
-                    hint="Write it so it stands alone — it may be read in a search result, away from this page."
+                    hint="Write it so it stands alone. It may be read in a search result, away from this page."
                     value={faq.a}
                     onChange={(v) => setFaqs(faqs.map((f, j) => (i === j ? { ...f, a: v } : f)))}
                     rows={3}
@@ -426,7 +426,7 @@ export function StructuredDataTool() {
             <CardBody>
               <h3 className="text-lg font-bold">Paste this into your page</h3>
               <p className="mt-2 text-base">
-                It goes inside the {'<head>'}, or anywhere in the body — search engines read it
+                It goes inside the {'<head>'}, or anywhere in the body. Search engines read it
                 either way. It is invisible to visitors and changes nothing about how the page
                 looks.
               </p>
@@ -441,7 +441,7 @@ export function StructuredDataTool() {
               <h3 className="text-lg font-bold">Then check it</h3>
               <p className="mt-2 text-base">
                 Once the page is live, put its address into Google&rsquo;s Rich Results Test. It
-                reports what it found and what it would be eligible to show — which is the only way
+                reports what it found and what it would be eligible to show, which is the only way
                 to know this worked, since none of it is visible on the page.
               </p>
               <p className="mt-3 text-base">

@@ -13,6 +13,7 @@ import { withTenant } from '@wizeworks/db';
 import type { Prisma, TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { indexInventoryEntityOnCommit } from '../events';
 import {
   InventoryConflictError,
   InventoryNotFoundError,
@@ -157,6 +158,7 @@ async function createOnce(ctx: ServiceContext, input: CreateInventoryCountInput)
       entityId: count.id,
       diff: { after: { number: count.number, type: input.type, lineCount: lines.length } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'inventory_count', count.id);
 
     return count.id;
   });
@@ -221,8 +223,8 @@ async function buildInitialLines(
     });
     if (variants.length > OPENING_COUNT_CAP) {
       throw new InventoryValidationError(
-        `An opening count covers everything you sell, and you have more than ${OPENING_COUNT_CAP.toLocaleString()} items. Count one area at a time instead — import your quantities, then count the fast movers first.`,
-        [{ field: 'type', message: 'catalogue too large for a single opening count' }]
+        `An opening count covers everything you sell, and you have more than ${OPENING_COUNT_CAP.toLocaleString()} items. Count one area at a time instead. Import your quantities, then count the fast movers first.`,
+        [{ field: 'type', message: 'catalog too large for a single opening count' }]
       );
     }
     const levels = await tx.inventoryLevel.findMany({
@@ -380,7 +382,7 @@ async function loadCountForEdit(
   if (!count) throw new InventoryNotFoundError('InventoryCount', countId);
   if (count.status !== 'counting') {
     throw new InventoryConflictError(
-      `Cannot edit a count while ${count.status} — it is no longer being counted`,
+      `Cannot edit a count while ${count.status}: it is no longer being counted`,
       'status'
     );
   }

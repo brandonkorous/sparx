@@ -337,3 +337,113 @@ describe('resolveSilicaEmailData — shipping confirmation', () => {
     expect((await resolve()).trackingNumber).toBe('SECOND-BOX');
   });
 });
+
+// The return source, against the real `return-replacement-shipped` template.
+//
+// The replacement got a delivery record of its own (persona issue 453), and its
+// carrier is stored the same way an order's is: a lowercase code. The shipping
+// confirmation above already had this defect and it was fixed there — so a
+// SECOND customer-facing email binding the raw column is the same mistake in a
+// new place, a day later.
+//
+// The other half is that this table now holds parcels going BOTH ways, and only
+// the outbound one is the replacement.
+describe('resolveSilicaEmailData — replacement tracking', () => {
+  let fixture: TestTenant;
+  let customerId: string;
+  let returnId: string;
+
+  beforeAll(async () => {
+    fixture = await createTestTenant();
+    await withTenant({ tenantId: fixture.tenantId }, async (tx) => {
+      const customer = await tx.customer.create({
+        data: { tenantId: fixture.tenantId, type: 'retail', email: 'swap@parcel.test' },
+        select: { id: true },
+      });
+      customerId = customer.id;
+      const order = await tx.order.create({
+        data: {
+          tenantId: fixture.tenantId,
+          customerId,
+          orderNumber: 'SO-SWAP',
+          status: 'fulfilled',
+          total: 96,
+          subtotal: 96,
+          placedAt: new Date(),
+        },
+        select: { id: true },
+      });
+      const ret = await tx.returnRequest.create({
+        data: {
+          tenantId: fixture.tenantId,
+          orderId: order.id,
+          requestedBy: 'staff',
+          status: 'exchanged',
+          preferredOutcome: 'exchange',
+        },
+        select: { id: true },
+      });
+      returnId = ret.id;
+      // The prepaid label the customer posted the goods back with, written
+      // FIRST because that is the real order: the label is bought on approval
+      // and the replacement is posted days later. So the REPLACEMENT is the
+      // newest row on the return, and "the latest label" is now the wrong
+      // answer to every question about the inbound leg.
+      await tx.returnLabel.create({
+        data: {
+          tenantId: fixture.tenantId,
+          returnId,
+          direction: 'inbound',
+          providerSlug: 'shippo',
+          labelRef: 'LBL-IN',
+          trackingNumber: 'BACK-TO-US',
+          trackingUrl: 'https://example.test/post-it-back',
+        },
+      });
+      await tx.returnLabel.create({
+        data: {
+          tenantId: fixture.tenantId,
+          returnId,
+          direction: 'outbound',
+          providerSlug: 'manual',
+          carrier: 'usps',
+          trackingNumber: 'OUT-TO-THEM',
+          trackingUrl: 'https://example.test/follow-the-replacement',
+          shippedAt: new Date(),
+        },
+      });
+    });
+  });
+
+  afterAll(async () => {
+    await dropTestTenant(fixture.tenantId);
+  });
+
+  const resolve = async (): Promise<Record<string, unknown>> => {
+    const tpl = getDefaultEmailTemplate('return-replacement-shipped')!;
+    const data = await resolveSilicaEmailData(
+      { tenantId: fixture.tenantId },
+      tpl.doc,
+      { email: 'swap@parcel.test', customerId, returnId },
+      [tpl.subject, tpl.preheader]
+    );
+    return data.return as Record<string, unknown>;
+  };
+
+  it('names the carrier in words a customer reads, never the stored code', async () => {
+    expect((await resolve()).replacementCarrier).toBe('USPS');
+  });
+
+  it('reports the parcel going OUT as the replacement', async () => {
+    expect((await resolve()).replacementTracking).toBe('OUT-TO-THEM');
+  });
+
+  it('still points the customer at the page for POSTING, not the one already sent', async () => {
+    // The neighbour a second direction in this table would have broken
+    // silently. `labelUrl` is what a customer clicks to send the goods back,
+    // and the replacement is now the newest row on the return — so a reader
+    // taking "the latest label" hands somebody about to walk to the post
+    // office a tracking page for a parcel that is already on its way to them.
+    expect((await resolve()).labelUrl).toBe('https://example.test/post-it-back');
+  });
+});

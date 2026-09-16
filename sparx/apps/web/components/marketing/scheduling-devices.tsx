@@ -68,16 +68,16 @@ export function SchedulingNoOverlap() {
       <SectionHeader
         accent={M.color}
         headline="Double-booking is impossible, not unlikely"
-        lede="Most tools check for conflicts in code, then hope the check ran before someone else booked. sparx enforces it in the database itself: a resource cannot hold two overlapping bookings at the same time, full stop. A racing second request fails cleanly and is offered the next open slot — even if your calendar sync lags."
+        lede="Most tools check for conflicts in code, then hope the check ran before someone else booked. sparx enforces it in the database itself: a resource cannot hold two overlapping bookings at the same time, full stop. A racing second request fails cleanly and is offered the next open slot: even if your calendar sync lags."
       />
       <div className="mt-13 flex flex-col gap-6 lg:flex-row">
         <ResourceLane />
         <RejectedRace />
       </div>
       <Text className="mt-6 max-w-[760px]">
-        Enforced by a Postgres exclusion constraint on every exclusive resource &mdash; staff,
-        tables, rooms, bays, equipment. Pooled capacity (intentional overbooking) is a separate,
-        deliberate setting, never an accident.
+        Enforced by a Postgres exclusion constraint on every exclusive resource: staff, tables,
+        rooms, bays, equipment. Pooled capacity (intentional overbooking) is a separate, deliberate
+        setting, never an accident.
       </Text>
     </Section>
   );
@@ -169,7 +169,7 @@ function RejectedRace() {
       </MockupCode>
       <Text>
         The overlap never commits. The customer is shown the next open time instead of a
-        double-booked staff member &mdash; no apology email, no awkward call.
+        double-booked staff member: no apology email, no awkward call.
       </Text>
     </div>
   );
@@ -182,7 +182,7 @@ export function SchedulingReminders() {
       <SectionHeader
         accent={M.color}
         headline="Reminders that fill the gaps a no-show leaves"
-        lede="Deposits and reminders are the highest-ROI things a booking tool does. sparx sends confirmations, reminders, and follow-ups by email and SMS on the cadence you set — and when someone cancels, the waitlist auto-promotes the next person before the slot ever sits empty."
+        lede="Deposits and reminders are the highest-ROI things a booking tool does. sparx sends confirmations, reminders, and follow-ups by email and SMS on the cadence you set, and when someone cancels, the waitlist auto-promotes the next person before the slot ever sits empty."
       />
       {/* See the note in SchedulingNoOverlap: the unlayered `.mkt-*` gap wins. */}
       <div className="mt-13 flex flex-col gap-6 lg:flex-row">

@@ -88,10 +88,6 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
   const [actionError, setActionError] = useState<string | null>(null);
   const [returnStatus, setReturnStatus] = useState<'success' | 'cancelled' | null>(null);
 
-  useEffect(() => {
-    ctx.setTitle('Your sparx bill');
-  }, [ctx]);
-
   // Stripe sends the tenant back here after Checkout with `?billing=success|cancelled`
   // (the api-rest checkout route builds that return URL). It arrives as a PANE
   // PARAMETER, not as something read off `window.location`: the address bar
@@ -171,7 +167,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<CreditCard className="size-6" aria-hidden />}
             title="Could not load your bill"
-            description="Something went wrong reaching the server. Your subscription is unaffected — try again in a moment."
+            description="Something went wrong reaching the server. Your subscription is unaffected. Try again in a moment."
             actions={
               <Button
                 size="sm"
@@ -195,7 +191,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
               <Alert color="success" variant="soft">
                 <div className="flex items-start justify-between gap-3">
                   <Text>
-                    Payment method saved — you’re all set. Any discount code you entered has been
+                    Payment method saved: you’re all set. Any discount code you entered has been
                     applied, and your bill below reflects your plan.
                   </Text>
                   <Button
@@ -212,7 +208,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
               <Alert color="info">
                 <div className="flex items-start justify-between gap-3">
                   <Text>
-                    Checkout was cancelled — no changes were made. You can set up billing whenever
+                    Checkout was canceled: no changes were made. You can set up billing whenever
                     you’re ready.
                   </Text>
                   <Button
@@ -248,7 +244,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
               <Alert color="info">
                 <Text>
                   You’re on a custom plan arranged with the sparx team. The breakdown below is for
-                  reference — any changes go through your account contact rather than self-serve.
+                  reference: any changes go through your account contact rather than self-serve.
                 </Text>
               </Alert>
             ) : null}

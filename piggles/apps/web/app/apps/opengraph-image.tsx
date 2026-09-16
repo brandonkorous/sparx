@@ -9,7 +9,7 @@ export const alt = 'All fifteen Piggles apps';
 export default function Image() {
   return renderOg({
     title: 'Fifteen apps. One subscription.',
-    subtitle: 'Grouped the way a business works, not the way a software catalogue is filed.',
+    subtitle: 'Grouped the way a business works, not the way a software catalog is filed.',
     // Fifteen things, arranged — which is what she is doing, and what the page is.
     pose: MASCOT_POSES.organizer,
   });

@@ -46,7 +46,7 @@ export function StaffWages() {
           lede={
             <>
               Approve a fortnight and those hours are costed at each day’s rate, marked up by your
-              employer costs, and filed as spending under Wages — split across your businesses, and
+              employer costs, and filed as spending under Wages: split across your businesses, and
               charged to the jobs the hours named. If you run Finance, that is the wages slice below
               arriving on its own. If you don’t, the hours and the total are still yours.
             </>
@@ -118,7 +118,7 @@ export function StaffWages() {
             <Text className="mt-3">
               Both numbers are right, and the gap between them is the 22% that never reaches
               anybody’s pocket. Ridgeline had been doing this arithmetic with the smaller figure,
-              which made labour look like a third of the month rather than more than a third — and
+              which made labor look like a third of the month rather than more than a third, and
               made every job quoted off that assumption a little thinner than it appeared.
             </Text>
           </div>
@@ -130,7 +130,7 @@ export function StaffWages() {
               Somebody on a salary is being paid this month whether or not they clocked anything, so
               they appear in the figure whether or not they clocked anything. A system that costed
               only what got logged would quietly leave the biggest wages in most businesses out of
-              the total — because salaried people are exactly the ones who never clock.
+              the total, because salaried people are exactly the ones who never clock.
             </Text>
           </div>
           <div>
@@ -139,7 +139,7 @@ export function StaffWages() {
             </Heading>
             <Text className="mt-3">
               If somebody works across both of the things you own, their hours cost each one
-              separately — the workshop’s wages and the parts counter’s wages are two figures, not
+              separately: the workshop’s wages and the parts counter’s wages are two figures, not
               one divided by guesswork.
             </Text>
           </div>
@@ -168,7 +168,7 @@ const JOBS: {
   negative: boolean;
 }[] = [
   {
-    name: 'Farrow — engine rebuild',
+    name: 'Farrow: engine rebuild',
     who: 'Dave, Priya',
     charged: '$1,980',
     parts: '$1,120',
@@ -179,7 +179,7 @@ const JOBS: {
     negative: true,
   },
   {
-    name: 'Wynn — clutch replacement',
+    name: 'Wynn: clutch replacement',
     who: 'Marta',
     charged: '$860',
     parts: '$395',
@@ -190,7 +190,7 @@ const JOBS: {
     negative: false,
   },
   {
-    name: 'Ellison — brake overhaul',
+    name: 'Ellison: brake overhaul',
     who: 'Dave, Marta, Sam',
     charged: '$1,240',
     parts: '$412',
@@ -201,7 +201,7 @@ const JOBS: {
     negative: false,
   },
   {
-    name: 'Kestrel — fleet service ×4',
+    name: 'Kestrel: fleet service ×4',
     who: 'Priya, Sam',
     charged: '$2,960',
     parts: '$640',
@@ -222,7 +222,7 @@ export function StaffJobs() {
           headline={<>And then the question from four sections ago has an answer</>}
           lede={
             <>
-              Every job ranked by what you kept on it, worst first — because the one that lost money
+              Every job ranked by what you kept on it, worst first, because the one that lost money
               is the one you can still do something about. The hours are what make this possible:
               without them a job’s cost is its parts, and parts were never the part you were getting
               wrong.
@@ -285,12 +285,12 @@ export function StaffJobs() {
             <Text>
               The Farrow rebuild came in at twenty-six hours against the sixteen it was quoted at,
               and that is the entire difference between a job that made $300 and one that lost
-              twelve dollars. Nobody was careless — it just took longer, and until the hours were
+              twelve dollars. Nobody was careless. It just took longer, and until the hours were
               written against the job, there was nothing anywhere that could say so.
             </Text>
             <Text className="text-sm">
-              Job-by-job profit is the Finance module’s screen. Team is what puts the labour into
-              it; run them together and the ranking includes what the work actually took.
+              Job-by-job profit is the Finance module’s screen. Team is what puts the labor into it;
+              run them together and the ranking includes what the work actually took.
             </Text>
           </div>
         </CardBody>
@@ -313,15 +313,15 @@ export function StaffWeek() {
     },
     {
       title: 'Time off with an answer',
-      body: 'Requests arrive in a queue that shows what is waiting on you rather than everything that ever happened. Approve one and those days come off the rota — and if that person is bookable by your customers, the booking system stops offering them, then starts again if the leave is withdrawn.',
+      body: 'Requests arrive in a queue that shows what is waiting on you rather than everything that ever happened. Approve one and those days come off the rota, and if that person is bookable by your customers, the booking system stops offering them, then starts again if the leave is withdrawn.',
     },
     {
       title: 'Licences that warn you first',
-      body: 'A ticket, a licence, an inspection certificate — each with as much notice as you actually need, because the one you renew by post is not the one you renew online. Expired shows red on the roster before you assign the job. And a qualification that never expires is recorded as exactly that, so it never nags you.',
+      body: 'A ticket, a license, an inspection certificate. Each with as much notice as you actually need, because the one you renew by post is not the one you renew online. Expired shows red on the roster before you assign the job. And a qualification that never expires is recorded as exactly that, so it never nags you.',
     },
     {
       title: 'People who never log in',
-      body: 'The technician who has never opened sparx still has hours, a rate, and a licence with a date on it — and is very often the person whose cost matters most. Nobody here needs a login to exist, and nobody is charged for having one.',
+      body: 'The technician who has never opened sparx still has hours, a rate, and a license with a date on it, and is very often the person whose cost matters most. Nobody here needs a login to exist, and nobody is charged for having one.',
     },
   ];
   return (
@@ -332,9 +332,9 @@ export function StaffWeek() {
           headline={<>The rest of the week, handled</>}
           lede={
             <>
-              The cost figure is the argument. This is the part you use on a Monday morning — and
-              the reason a business with nine people on the floor keeps it open rather than opening
-              it once a fortnight.
+              The cost figure is the argument. This is the part you use on a Monday morning, and the
+              reason a business with nine people on the floor keeps it open rather than opening it
+              once a fortnight.
             </>
           }
         />
@@ -371,9 +371,9 @@ export function StaffHandoff() {
             lede={
               <>
                 sparx does not withhold tax, does not file anything, does not administer a benefit,
-                and does not pay anybody — not in this version and not in a later one. Becoming a
-                tax filer in fifty states is a different company, and the people who already do it
-                have spent a decade earning the trust it takes.
+                and does not pay anybody, not in this version and not in a later one. Becoming a tax
+                filer in fifty states is a different company, and the people who already do it have
+                spent a decade earning the trust it takes.
               </>
             }
           />
@@ -403,7 +403,7 @@ export function StaffHandoff() {
               <HourRow who="Everybody, March" hours="672.00 h" cost="$22,533.40" emphasis />
             </div>
             <Text className="text-sm">
-              Hours in decimal, because that is what a payroll system parses — the screens say “7h
+              Hours in decimal, because that is what a payroll system parses: the screens say “7h
               30m” because that is what a person reads. Any hours nobody could price are in the
               hours column and flagged separately, never dropped: they still have to be paid.
             </Text>
@@ -425,11 +425,11 @@ export function StaffCapabilities() {
     {
       title: 'People',
       items: [
-        'Employees, contractors and volunteers — a cost distinction, never a legal one',
+        'Employees, contractors and volunteers: a cost distinction, never a legal one',
         'Nobody needs a login to be on the roster',
         'Links to their sparx login and their bookable calendar when those exist',
         'Works across every business you run under one account',
-        'Somebody who leaves is archived, not deleted — last year’s figures keep their subject',
+        'Somebody who leaves is archived, not deleted: last year’s figures keep their subject',
       ],
     },
     {
@@ -437,8 +437,8 @@ export function StaffCapabilities() {
       items: [
         'Clock in and out from a phone, or type a duration in afterwards',
         'Hours can name the order or booking they went into',
-        'Effective-dated pay rates — hourly, salaried, commission, or unpaid',
-        'Employer costs as a percentage on top, so labour is not 15–30% light',
+        'Effective-dated pay rates: hourly, salaried, commission, or unpaid',
+        'Employer costs as a percentage on top, so labor is not 15–30% light',
         'Approval before anything counts, and a deliberate reopen to correct it',
         'Unpriced hours reported as a number, never costed at zero',
       ],
@@ -448,7 +448,7 @@ export function StaffCapabilities() {
       items: [
         'Shifts by week, per business, drafted then published in one act',
         'Time-off requests with an approve/decline queue',
-        'Approved leave blocks the booking calendar, and cancelling releases it',
+        'Approved leave blocks the booking calendar, and canceling releases it',
         'Certifications and licences with per-item warning windows',
         'Commission recorded against an order or a deal, once per sale',
       ],
@@ -457,7 +457,7 @@ export function StaffCapabilities() {
       title: 'Where it goes',
       items: [
         'Wages filed into Finance as spending, per business and per job',
-        'Safe to re-file — it updates the same records rather than doubling them',
+        'Safe to re-file: it updates the same records rather than doubling them',
         'A payroll hours file with each person’s payroll id',
         'Everything reachable through the same API and MCP as the rest of sparx',
       ],

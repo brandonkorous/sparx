@@ -33,7 +33,7 @@ export function BootcampHero() {
         </div>
         <Text size={19} className="max-w-[600px]">
           In-person and virtual sessions, led by certified sparx partners. Build a real business
-          &mdash; site, customers, email, automation &mdash; and graduate the day you hit publish.
+          (site, customers, email, automation) and graduate the day you hit publish.
         </Text>
         <div className="flex flex-wrap items-center gap-3">
           <a href="#directory">
@@ -71,7 +71,7 @@ export function BootcampWhoFor() {
   const who = [
     {
       t: 'You have an idea',
-      d: 'A product, a service, a shop in your head — and you need the structure to turn it into something real and live.',
+      d: 'A product, a service, a shop in your head, and you need the structure to turn it into something real and live.',
     },
     {
       t: "You're early-stage",
@@ -114,7 +114,7 @@ export function BootcampFormats() {
     },
     { nm: 'Virtual · live', ds: 'Live online sessions you join from anywhere, screen-to-screen.' },
     { nm: 'Hybrid', ds: 'Kick off in person, finish the build on your own with live check-ins.' },
-    { nm: 'Async · self-paced', ds: 'A cohort on your schedule — work through it week by week.' },
+    { nm: 'Async · self-paced', ds: 'A cohort on your schedule: work through it week by week.' },
   ];
   return (
     <Section surface="surface" padding="lg">
@@ -186,35 +186,35 @@ export const BOOTCAMP_FAQ: FaqItem[] = [
     id: 'b-what',
     question: 'What is the Business OS Bootcamp?',
     answer:
-      'It’s a hands-on program, led by certified sparx partners, where you build a real business on one platform — site, CRM, email, and an automation layer — over a cohort. You build it piece by piece, and the graduation moment is hitting publish and going live.',
+      'It’s a hands-on program, led by certified sparx partners, where you build a real business on one platform (site, CRM, email, and an automation layer) over a cohort. You build it piece by piece, and the graduation moment is hitting publish and going live.',
   },
   {
     id: 'b-cost',
     question: 'Do I have to pay for sparx during the bootcamp?',
     answer:
-      'sparx starts with a 14-day free trial, so you can dive straight into building during the bootcamp at no cost. After the trial, sparx is a paid subscription — and you only pay for the modules you actually switch on. The bootcamp session itself is priced separately by the hosting partner; some are free, some are paid, and each listing shows its price.',
+      'sparx starts with a 14-day free trial, so you can dive straight into building during the bootcamp at no cost. After the trial, sparx is a paid subscription, and you only pay for the modules you actually switch on. The bootcamp session itself is priced separately by the hosting partner; some are free, some are paid, and each listing shows its price.',
   },
   {
     id: 'b-who',
     question: 'Who runs the bootcamps?',
     answer:
-      'Certified sparx partners — consultants, agencies, and developers who’ve been through the certification process. Every listing shows the host and their tier badge, and certified partners appear higher in the directory. sparx provides the platform; the partner provides the teaching.',
+      'Certified sparx partners: consultants, agencies, and developers who’ve been through the certification process. Every listing shows the host and their tier badge, and certified partners appear higher in the directory. sparx provides the platform; the partner provides the teaching.',
   },
   {
     id: 'b-online',
     question: 'Are there online options?',
     answer:
-      'Yes. Bootcamps run in four formats — in-person cohort, virtual (live online), hybrid, and async (self-paced). Filter the directory by format and location to find one that fits, whether you want a room to show up to or a cohort you join from anywhere.',
+      'Yes. Bootcamps run in four formats: in-person cohort, virtual (live online), hybrid, and async (self-paced). Filter the directory by format and location to find one that fits, whether you want a room to show up to or a cohort you join from anywhere.',
   },
   {
     id: 'b-register',
     question: 'What happens after I register?',
     answer:
-      'For bootcamps with on-platform registration, your RSVP goes straight to the hosting partner — it creates a lead in their CRM and reserves your seat, and they follow up with the details. Some hosts use an external registration link (Eventbrite, Luma, or a form) instead; either way the listing shows exactly how to sign up.',
+      'For bootcamps with on-platform registration, your RSVP goes straight to the hosting partner. It creates a lead in their CRM and reserves your seat, and they follow up with the details. Some hosts use an external registration link (Eventbrite, Luma, or a form) instead; either way the listing shows exactly how to sign up.',
   },
   {
     id: 'b-host',
-    question: 'I want to host a bootcamp — how?',
+    question: 'I want to host a bootcamp: how?',
     answer:
       'Hosting is a certified-partner capability. Join the sparx Partner Program and reach the Certified tier to create and publish bootcamp listings on sparx.works/bootcamp. Registered partners can build listings too, but only Certified partners publish them publicly.',
   },

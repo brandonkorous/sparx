@@ -131,7 +131,7 @@ export async function scanToPick(
     }
 
     if (!match) {
-      const message = `Nothing in the catalogue matches ${resolution.scanned}.`;
+      const message = `Nothing in the catalog matches ${resolution.scanned}.`;
       const id = await recordScan(tx, ctx.tenantId, {
         ...base,
         outcome: 'not_found',
@@ -205,7 +205,7 @@ export async function scanToPick(
   if (!recorded.id) {
     return {
       outcome: 'duplicate',
-      message: 'Already picked — this scan had reached us before.',
+      message: 'Already picked. This scan had reached us before.',
       match,
       scanEventId: null,
       pick: null,
@@ -296,7 +296,7 @@ export async function scanToPack(
     }
 
     if (!match) {
-      const message = `Nothing in the catalogue matches ${resolution.scanned}.`;
+      const message = `Nothing in the catalog matches ${resolution.scanned}.`;
       const id = await recordScan(tx, ctx.tenantId, {
         ...base,
         outcome: 'not_found',
@@ -322,7 +322,7 @@ export async function scanToPack(
             FROM inventory_shipment_package_lines pl
             JOIN inventory_shipment_packages pk ON pk.id = pl.package_id
            WHERE pl.order_item_id = oi.id
-             AND pk.status <> 'cancelled'
+             AND pk.status <> 'canceled'
              AND pk.id <> ${packageId}::uuid
         ) other ON TRUE
         LEFT JOIN LATERAL (
@@ -383,7 +383,7 @@ export async function scanToPack(
   if (!recorded.id) {
     return {
       outcome: 'duplicate',
-      message: 'Already in the box — this scan had reached us before.',
+      message: 'Already in the box. This scan had reached us before.',
       match,
       scanEventId: null,
       package: null,
@@ -409,7 +409,7 @@ export async function scanToPack(
 
   return {
     outcome: 'applied',
-    message: `${match.title} — ${recorded.quantity} in the box.`,
+    message: `${match.title}: ${recorded.quantity} in the box.`,
     match,
     scanEventId: recorded.id,
     package: box,

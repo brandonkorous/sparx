@@ -149,7 +149,7 @@ function CollectionLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         error={error}
         noun="collection"
         title="Could not load this collection"
-        description="This is a problem reaching the server. The collection itself is unaffected — nothing has been lost."
+        description="This is a problem reaching the server. The collection itself is unaffected. Nothing has been lost."
         onRetry={() => {
           void refetch();
         }}
@@ -366,7 +366,7 @@ function CollectionEditor({
       title: `Delete ${collection.name}?`,
       description:
         count > 0
-          ? `This collection is removed from your website. The ${String(count)} product${count === 1 ? '' : 's'} in it ${count === 1 ? 'is' : 'are'} kept — only the grouping goes. This cannot be undone.`
+          ? `This collection is removed from your website. The ${String(count)} product${count === 1 ? '' : 's'} in it ${count === 1 ? 'is' : 'are'} kept. Only the grouping goes. This cannot be undone.`
           : 'This collection is removed from your website. The products themselves are kept. This cannot be undone.',
       confirmLabel: 'Delete this collection',
       cancelLabel: 'Keep it',
@@ -427,7 +427,7 @@ function CollectionEditor({
                 Add a collection
               </Heading>
               <Text>
-                A collection is a themed group of products you show together — a summer sale, a gift
+                A collection is a themed group of products you show together: a summer sale, a gift
                 guide, this month&apos;s arrivals. Unlike a category, it is not part of your menu:
                 it is a set you can place anywhere on your site.
               </Text>
@@ -476,7 +476,7 @@ function CollectionEditor({
                 }
               />
               <FieldDescription>
-                The end of this collection&apos;s page address — yoursite.com/collections/
+                The end of this collection&apos;s page address: yoursite.com/collections/
                 {effectiveHandle || '…'}.
               </FieldDescription>
             </Field>
@@ -512,8 +512,7 @@ function CollectionEditor({
                 }
               />
               <FieldDescription>
-                Marks it as one to highlight — themes can show featured collections on the home
-                page.
+                Marks it as one to highlight: themes can show featured collections on the home page.
               </FieldDescription>
             </Field>
           </FormSection>
@@ -546,7 +545,7 @@ function CollectionEditor({
                 />
                 <FieldDescription>
                   {isRules
-                    ? 'You describe what belongs — say, everything under a set price from a certain brand — and matching products are pulled in automatically, and drop out again when they stop matching.'
+                    ? 'You describe what belongs (say, everything under a set price from a certain brand) and matching products are pulled in automatically, and drop out again when they stop matching.'
                     : 'You choose each product by hand. Good for a curated set that will not change on its own.'}
                 </FieldDescription>
               </Field>
@@ -585,7 +584,7 @@ function CollectionEditor({
               {!isNew && collection ? (
                 <Text className="text-sm">
                   {collection.productCount === 0
-                    ? 'No products match these conditions yet — or the last check has not run. Membership is worked out in the background after you save.'
+                    ? 'No products match these conditions yet, or the last check has not run. Membership is worked out in the background after you save.'
                     : `${String(collection.productCount)} product${collection.productCount === 1 ? '' : 's'} matched when membership was last worked out. It refreshes in the background after a change.`}
                 </Text>
               ) : null}
@@ -684,13 +683,13 @@ function CollectionEditor({
           {!isNew && collection ? (
             <div className="border-base-300 flex flex-col gap-3 border-t pt-4">
               <Text className="text-sm">
-                A collection&apos;s kind — hand-picked or automatic — is fixed once it is created.
-                To switch, delete this one and make a new one.
+                A collection&apos;s kind (hand-picked or automatic) is fixed once it is created. To
+                switch, delete this one and make a new one.
               </Text>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Text className="text-sm">
-                  Deleting removes this collection from your website. The products in it are kept —
-                  only the grouping goes.
+                  Deleting removes this collection from your website. The products in it are kept.
+                  Only the grouping goes.
                 </Text>
                 <Button
                   size="sm"

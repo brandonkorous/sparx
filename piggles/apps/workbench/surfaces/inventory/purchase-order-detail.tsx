@@ -25,7 +25,7 @@
 // not the server — so the pane stays dirty on its behalf and nothing is committed
 // until the order itself is saved. That is the one sanctioned use of a modal here.
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
 import {
@@ -54,7 +54,9 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
+import { resolvePurchasePrice } from '@wizeworks/commerce-schemas';
 import { useConfirm } from '../../lib/confirm';
+import { usePriceLadder } from './supplier-performance-data';
 import {
   faBan,
   faBarcodeRead,
@@ -73,7 +75,13 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { PurchaseOrderProcurement } from './purchase-order-procurement';
 import { FormSection } from '../../components/form-section';
-import { MoneyTextInput, moneyCents } from '../../components/money-input';
+// `MoneyInput`, not `MoneyTextInput`: this field's amount lives in the draft as
+// CENTS, so the caller cannot own the text. Handing `MoneyTextInput` a `text`
+// rebuilt from those cents on every render meant each keystroke was rewritten
+// mid-word — select "0.00", type "25.00", and the field settles on "201.00", a
+// freight charge nobody typed, saved with no complaint (issue 484).
+// `MoneyInput` takes the number and keeps the typed text to itself.
+import { MoneyInput, MoneyTextInput, moneyCents } from '../../components/money-input';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -123,10 +131,12 @@ const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 function centsToInput(cents: number): string {
   return (cents / 100).toFixed(2);
 }
+/** Nothing typed reads as nothing set. Everything else goes through
+ *  `moneyCents`, which reads "8,50", "$8.00" and "1,250.00" the way a person
+ *  writes them; `Number.parseFloat` read one spelling and returned NaN for the
+ *  rest (issues 086 and 486). */
 function inputToCents(value: string): number | null {
-  const parsed = Number.parseFloat(value);
-  if (!Number.isFinite(parsed) || parsed < 0) return null;
-  return Math.round(parsed * 100);
+  return value.trim() === '' ? null : moneyCents(value);
 }
 
 /* ── Draft assembly ─────────────────────────────────────────────────────── */
@@ -145,11 +155,50 @@ function emptyDraft(): Draft {
       paymentTerms: null,
       reference: null,
       expectedArrivalAt: null,
-      shippingCents: 0,
+      freightCents: 0,
       notes: null,
     },
     lines: [],
   };
+}
+
+/**
+ * A value on an order that is settled and can no longer be typed into.
+ *
+ * Every field in Order details used to go `disabled` the moment the order was
+ * placed, and silica draws a disabled control at half opacity — correctly,
+ * because half opacity is what "you cannot use this" looks like. But a PLACED
+ * order is not a form somebody has been locked out of. It is the record they
+ * open every day for the three weeks they are waiting for the goods, and six of
+ * its eight fields were faded: the supplier, where it lands, the terms, the
+ * carriage and the arrival date, all half there (issue 494).
+ *
+ * A value nobody can change is not a disabled control, it is a FACT, so it
+ * reads as one — full ink, no box, no affordance suggesting it can be typed
+ * into. `min-h-10` is the silica field height, so the value lines up with any
+ * live control still sitting beside it.
+ */
+function SettledField({
+  label,
+  value,
+  empty,
+  description,
+}: {
+  label: string;
+  value: string | null;
+  /** Said in words when there is nothing, because a blank cannot be read. */
+  empty: string;
+  description?: ReactNode;
+}) {
+  return (
+    <Field>
+      <FieldLabel>{label}</FieldLabel>
+      <p className="flex min-h-10 items-center text-sm">
+        {value === null || value === '' ? empty : value}
+      </p>
+      {description ? <FieldDescription>{description}</FieldDescription> : null}
+    </Field>
+  );
 }
 
 function draftFromDetail(detail: PurchaseOrderDetail): Draft {
@@ -161,7 +210,7 @@ function draftFromDetail(detail: PurchaseOrderDetail): Draft {
       paymentTerms: detail.paymentTerms,
       reference: detail.reference,
       expectedArrivalAt: detail.expectedArrivalAt,
-      shippingCents: detail.shippingCents,
+      freightCents: detail.freightCents,
       notes: detail.notes,
     },
     lines: detail.lines.map((line) => ({
@@ -223,6 +272,26 @@ function LineEditor({
   const [skuLookup, setSkuLookup] = useState('');
   const [lookupError, setLookupError] = useState<string | null>(null);
 
+  // ── The quantity ladder this line is being priced against (issue 487) ─────
+  //
+  // "Set the ladder here and a purchase order picks the right price for the
+  // quantity being ordered" is what the Quantity prices card promises on the
+  // supplier's pane. It was not true from this screen. The server DOES resolve
+  // the ladder, but only when the buyer sent no cost — "an explicit figure is a
+  // negotiated one and always wins" — and this dialog filled the box with the
+  // supplier's base price the moment an item was chosen. The screen was typing
+  // a price on her behalf and the server was treating it as hers, so a rung
+  // saved minutes earlier could never fire.
+  //
+  // So the ladder is read here and the box follows the QUANTITY, using the same
+  // `resolvePurchasePrice` the server uses. `costTouched` is the line between
+  // the two: a figure she typed is hers and is never overwritten, and a line
+  // already on the order opens touched, because the price it carries was agreed
+  // when it was added.
+  const [supplierVariantId, setSupplierVariantId] = useState('');
+  const [costTouched, setCostTouched] = useState(false);
+  const ladder = usePriceLadder(supplierVariantId);
+
   // Reset the form each time the dialog opens onto a (possibly different) line.
   useEffect(() => {
     if (!open) return;
@@ -243,11 +312,34 @@ function LineEditor({
       setQuantity('1');
       setCost('');
     }
+    setSupplierVariantId('');
+    // An existing line's price was agreed when it was added; only a fresh line
+    // is the ladder's to fill.
+    setCostTouched(existing !== null);
     setSkuLookup('');
     setLookupError(null);
   }, [open, existing]);
 
   const qty = Number.parseInt(quantity, 10);
+
+  /** What this supplier charges at THIS quantity, and what the next rung down
+   *  would cost. The same function the server resolves lines with, so the
+   *  figure on screen and the figure written are one answer. */
+  const laddered = useMemo(() => {
+    const data = ladder.data;
+    if (!data || data.baseUnitCostCents === null) return null;
+    return resolvePurchasePrice(
+      Number.isFinite(qty) && qty > 0 ? qty : 0,
+      data.baseUnitCostCents,
+      data.breaks
+    );
+  }, [ladder.data, qty]);
+
+  useEffect(() => {
+    if (costTouched || laddered === null) return;
+    setCost(centsToInput(laddered.unitCostCents));
+  }, [costTouched, laddered]);
+
   const costCents = inputToCents(cost);
   const valid = variant !== null && Number.isFinite(qty) && qty > 0 && costCents !== null;
 
@@ -293,6 +385,7 @@ function LineEditor({
     });
     setDescription(sv.productTitle ?? sv.variantSku ?? '');
     if (sv.supplierSku) setSupplierSku(sv.supplierSku);
+    setSupplierVariantId(sv.id);
     if (sv.unitCostCents !== null && cost.trim() === '') setCost(centsToInput(sv.unitCostCents));
   };
 
@@ -308,6 +401,11 @@ function LineEditor({
         productTitle: found.productTitle,
       });
       setDescription(found.productTitle ?? found.sku);
+      // An item found by code may still be one you buy from this supplier, in
+      // which case its ladder applies exactly as if it had been picked above.
+      setSupplierVariantId(
+        (supplierVariants.data ?? []).find((sv) => sv.variantId === found.variantId)?.id ?? ''
+      );
       setSkuLookup('');
     } catch (err) {
       setLookupError(
@@ -506,7 +604,10 @@ function LineEditor({
                       className="text-right"
                       aria-label="Cost each"
                       text={cost}
-                      onTextChange={setCost}
+                      onTextChange={(text) => {
+                        setCostTouched(true);
+                        setCost(text);
+                      }}
                     />
                   }
                 />
@@ -528,6 +629,16 @@ function LineEditor({
                 />
               </Field>
             </div>
+
+            {laddered && !costTouched && laddered.source === 'break' ? (
+              <Text className="text-sm">Their price for {laddered.appliedAtQuantity} or more.</Text>
+            ) : null}
+            {laddered && laddered.nextBreakAtQuantity !== null ? (
+              <Text className="text-sm">
+                Order {laddered.nextBreakAtQuantity} or more and they charge{' '}
+                {formatCents(laddered.nextBreakUnitCostCents ?? 0, currency)} each.
+              </Text>
+            ) : null}
 
             {lineTotal !== null ? (
               <div className="flex items-baseline gap-2">
@@ -574,14 +685,21 @@ function LineEditor({
  * needs its freight apportioned across the deliveries as they arrive, and the
  * only moment anyone knows the total is when the order is placed. Each delivery
  * takes its share by value, and the panel shows how much has landed so far, so
- * "£200 quoted, £80 already on deliveries" is legible rather than a mystery.
+ * "$200 quoted, $80 already on deliveries" is legible rather than a mystery.
  */
 function OrderChargesSection({
   purchaseOrderId,
   currency,
+  freightCents,
 }: {
   purchaseOrderId: string;
   currency: string;
+  /** The order's own Freight. Passed in so this card can name it rather than
+   *  claim nothing is expected while $25 of carriage sits on the same screen
+   *  (issue 496). It is already spread across the items by the freight charge
+   *  the server keeps in step with it, so what belongs HERE is everything
+   *  else: duty, customs, a broker's fee. */
+  freightCents: number;
 }) {
   const toast = useToast();
   const confirm = useConfirm();
@@ -652,7 +770,7 @@ function OrderChargesSection({
   return (
     <FormSection
       title="What you expect it to cost to get here"
-      description="Shipping, import duty, customs fees you have been quoted. Each delivery against this order carries its share, so what you hold is valued at what it really cost rather than at the invoice price."
+      description="Import duty, customs fees, a broker's bill you have been quoted. Each delivery against this order carries its share, so what you hold is valued at what it really cost rather than at the invoice price."
       action={
         adding ? null : (
           <Button
@@ -671,8 +789,9 @@ function OrderChargesSection({
     >
       {rows.length === 0 && !adding ? (
         <Text className="text-sm">
-          Nothing expected on top of the goods. If a shipping quote comes in later, add it here and
-          every delivery against this order picks up its share.
+          {freightCents > 0
+            ? `The ${formatCents(freightCents, currency)} of freight on this order is already being spread across the items as they arrive. Anything else (duty, customs, a broker's fee) goes here.`
+            : 'Nothing expected on top of the goods and the freight. If a customs or duty bill comes in later, add it here and every delivery against this order picks up its share.'}
         </Text>
       ) : null}
 
@@ -879,26 +998,43 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const status = detail?.status ?? 'draft';
   const editable = isNew || (detail !== null && isEditable(status));
 
-  // Seed local state once the record lands (or immediately for a new order).
+  const dirty = useMemo(() => JSON.stringify(draft) !== baseline, [draft, baseline]);
+
+  // Seed local state when the record lands (or immediately for a new order),
+  // and RE-seed whenever the server changes it under a form nobody is editing.
+  //
+  // `loaded` used to be a one-way latch: the first fetch filled the form and
+  // every fetch after it was dropped on the floor. That is only safe while this
+  // pane is the ONLY writer of the record, and it is not — PLACING an order is
+  // the server working out the expected arrival from the supplier's lead time,
+  // and the date it computed reached the query, sat in `detail`, and never
+  // reached the box beside "Expected", which went on reading empty over a
+  // record that had a date in it (issue 493). Every lifecycle action here has
+  // the same shape: the server enriches the record and the form does not look.
+  //
+  // The guard that belongs here is DIRTY, not loaded. A refetch that would
+  // overwrite something half-typed is still dropped, which is the thing the
+  // latch was really protecting; a refetch landing on a clean form is just the
+  // truth arriving, and there was never a reason to refuse it.
   useEffect(() => {
     if (isNew) {
       setLoaded(true);
       return;
     }
-    if (detail && !loaded) {
-      const next = draftFromDetail(detail);
-      setDraft(next);
-      setOriginal(detail.lines);
-      setBaseline(JSON.stringify(next));
-      setLoaded(true);
-    }
-  }, [isNew, detail, loaded]);
+    if (!detail) return;
+    const next = draftFromDetail(detail);
+    const serialized = JSON.stringify(next);
+    // Nothing new to show, or something typed that must not be clobbered.
+    if (loaded && (dirty || serialized === baseline)) return;
+    setDraft(next);
+    setOriginal(detail.lines);
+    setBaseline(serialized);
+    setLoaded(true);
+  }, [isNew, detail, loaded, dirty, baseline]);
 
   useEffect(() => {
     ctx.setTitle(isNew ? 'New purchase order' : (detail?.number ?? 'Purchase order'));
   }, [ctx, isNew, detail?.number]);
-
-  const dirty = useMemo(() => JSON.stringify(draft) !== baseline, [draft, baseline]);
 
   const activeLocations = (locationsQuery.data?.items ?? []).filter(
     (location) => location.isActive
@@ -921,7 +1057,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   );
 
   const subtotal = subtotalOf(draft.lines);
-  const total = subtotal + draft.header.shippingCents;
+  const total = subtotal + draft.header.freightCents;
   const currency = draft.header.currency || 'USD';
 
   const supplierChosen = draft.header.supplierId !== '';
@@ -978,20 +1114,27 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         { id, header: draft.header, lines: draft.lines, original },
         {
           onSuccess: (saved) => {
+            // Rebased BEFORE the pane swap, and on BOTH paths. `target:
+            // 'replace'` changes this pane's params in place rather than
+            // remounting it, so the seed effect never runs again and a baseline
+            // left at the empty draft keeps the pane dirty forever: an unsaved
+            // dot on the tab, "Not saved: PO-000001" in the status bar, and a
+            // leave-guard over an order that is safely written (issue 483).
+            // Same rebase the update path already did; it was simply inside the
+            // `else`.
+            const next = draftFromDetail(saved);
+            setDraft(next);
+            setOriginal(saved.lines);
+            setBaseline(JSON.stringify(next));
             if (isNew) {
               ctx.open('inventory.purchase-orders.detail', { id: saved.id }, { target: 'replace' });
-              afterPaneChange(() => {
-                toast.add({ title: `${saved.number} saved as a draft`, type: 'success' });
-              });
-            } else {
-              const next = draftFromDetail(saved);
-              setDraft(next);
-              setOriginal(saved.lines);
-              setBaseline(JSON.stringify(next));
-              afterPaneChange(() => {
-                toast.add({ title: `${saved.number} saved`, type: 'success' });
-              });
             }
+            afterPaneChange(() => {
+              toast.add({
+                title: `${saved.number} saved${isNew ? ' as a draft' : ''}`,
+                type: 'success',
+              });
+            });
             resolve(saved);
           },
           onError: (error) => {
@@ -1016,7 +1159,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Place ${detail.number} with ${supplierName ?? 'the supplier'}?`,
       description:
-        'This sends the order and locks it — you will not be able to change the items or quantities afterwards. As the goods arrive you book them in under Receiving.',
+        'This sends the order and locks it. You will not be able to change the items or quantities afterwards. As the goods arrive you book them in under Receiving.',
       confirmLabel: 'Place the order',
       cancelLabel: 'Keep it a draft',
       color: 'module',
@@ -1043,7 +1186,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Cancel ${detail.number}?`,
       description:
-        'This calls the order off for good. Nothing has been received against it, so nothing is undone — but it cannot be reopened. Start a new order if you still need the goods.',
+        'This calls the order off for good. Nothing has been received against it, so nothing is undone, but it cannot be reopened. Start a new order if you still need the goods.',
       confirmLabel: 'Cancel the order',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -1052,7 +1195,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     cancel.mutate(undefined, {
       onSuccess: () => {
         afterPaneChange(() => {
-          toast.add({ title: `${detail.number} cancelled`, type: 'success' });
+          toast.add({ title: `${detail.number} canceled`, type: 'success' });
         });
       },
       onError: (error) => {
@@ -1070,7 +1213,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Close ${detail.number}?`,
       description:
-        'Closing stops you receiving any more against this order — use it when the rest will not arrive (a supplier short-shipped and settled). What has already been received stays booked in.',
+        'Closing stops you receiving any more against this order. Use it when the rest will not arrive (a supplier short-shipped and settled). What has already been received stays booked in.',
       confirmLabel: 'Close the order',
       cancelLabel: 'Leave it open',
       color: 'warning',
@@ -1394,110 +1537,165 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   <FieldDescription>Fixed once the order is saved.</FieldDescription>
                 </Field>
               ) : (
-                <Field>
-                  <FieldLabel>Supplier</FieldLabel>
-                  <Input color="module" value={supplierName ?? ''} readOnly disabled />
-                </Field>
+                <SettledField
+                  label="Supplier"
+                  value={supplierName}
+                  empty="Not recorded"
+                  description="Fixed when the order was raised, because the costs on it were agreed with them."
+                />
               )}
 
-              <Field>
-                <FieldLabel required>Where it lands</FieldLabel>
-                <NativeSelect
-                  color="module"
-                  value={draft.header.warehouseId}
-                  disabled={!editable}
-                  aria-label="Where it lands"
-                  onChange={(event) => {
-                    setHeader('warehouseId', event.target.value);
-                  }}
-                >
-                  <option value="">Choose a location…</option>
-                  {activeLocations.map((location) => (
-                    <option key={location.id} value={location.id}>
-                      {location.name}
-                    </option>
-                  ))}
-                </NativeSelect>
-                <FieldDescription>The stock arrives into this location.</FieldDescription>
-              </Field>
-
-              <Field>
-                <FieldLabel>Your reference</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={draft.header.reference ?? ''}
-                      placeholder="A quote number, say"
-                      disabled={!editable}
-                      onChange={(event) => {
-                        setHeader(
-                          'reference',
-                          event.target.value === '' ? null : event.target.value
-                        );
-                      }}
-                    />
-                  }
-                />
-              </Field>
-
-              <Field>
-                <FieldLabel>Expected</FieldLabel>
-                <DateInput
-                  color="module"
+              {editable ? (
+                <Field>
+                  <FieldLabel required>Where it lands</FieldLabel>
+                  <NativeSelect
+                    color="module"
+                    value={draft.header.warehouseId}
+                    aria-label="Where it lands"
+                    onChange={(event) => {
+                      setHeader('warehouseId', event.target.value);
+                    }}
+                  >
+                    <option value="">Choose a location…</option>
+                    {activeLocations.map((location) => (
+                      <option key={location.id} value={location.id}>
+                        {location.name}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                  <FieldDescription>The stock arrives into this location.</FieldDescription>
+                </Field>
+              ) : (
+                <SettledField
+                  label="Where it lands"
                   value={
-                    draft.header.expectedArrivalAt ? new Date(draft.header.expectedArrivalAt) : null
+                    activeLocations.find((location) => location.id === draft.header.warehouseId)
+                      ?.name ?? null
                   }
-                  disabled={!editable}
-                  aria-label="Expected arrival date"
-                  onValueChange={(date) => {
-                    setHeader('expectedArrivalAt', date ? date.toISOString() : null);
-                  }}
+                  empty="Not recorded"
+                  description="The stock arrives into this location."
                 />
-                <FieldDescription>
-                  When you expect it. Left blank, the supplier&apos;s usual lead time fills it in
-                  when you place the order.
-                </FieldDescription>
-              </Field>
+              )}
 
-              <Field>
-                <FieldLabel>How you pay</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={draft.header.paymentTerms ?? ''}
-                      placeholder="net 30"
-                      disabled={!editable}
-                      onChange={(event) => {
-                        setHeader(
-                          'paymentTerms',
-                          event.target.value === '' ? null : event.target.value
-                        );
-                      }}
-                    />
-                  }
+              {editable ? (
+                <Field>
+                  <FieldLabel>Your reference</FieldLabel>
+                  <FieldControl
+                    render={
+                      <Input
+                        color="module"
+                        value={draft.header.reference ?? ''}
+                        placeholder="A quote number, say"
+                        onChange={(event) => {
+                          setHeader(
+                            'reference',
+                            event.target.value === '' ? null : event.target.value
+                          );
+                        }}
+                      />
+                    }
+                  />
+                </Field>
+              ) : (
+                <SettledField
+                  label="Your reference"
+                  value={draft.header.reference}
+                  empty="None given"
                 />
-              </Field>
+              )}
 
-              <Field>
-                <FieldLabel>Shipping cost</FieldLabel>
-                <FieldControl
-                  render={
-                    <MoneyTextInput
-                      color="module"
-                      className="text-right"
-                      aria-label="Shipping cost"
-                      disabled={!editable}
-                      text={centsToInput(draft.header.shippingCents)}
-                      onTextChange={(text) => {
-                        setHeader('shippingCents', moneyCents(text) ?? 0);
-                      }}
-                    />
+              {editable ? (
+                <Field>
+                  <FieldLabel>Expected</FieldLabel>
+                  <DateInput
+                    color="module"
+                    value={
+                      draft.header.expectedArrivalAt
+                        ? new Date(draft.header.expectedArrivalAt)
+                        : null
+                    }
+                    aria-label="Expected arrival date"
+                    onValueChange={(date) => {
+                      setHeader('expectedArrivalAt', date ? date.toISOString() : null);
+                    }}
+                  />
+                  <FieldDescription>
+                    When you expect it. Left blank, the supplier&apos;s usual lead time fills it in
+                    when you place the order.
+                  </FieldDescription>
+                </Field>
+              ) : (
+                <SettledField
+                  label="Expected"
+                  value={
+                    draft.header.expectedArrivalAt
+                      ? formatDay(draft.header.expectedArrivalAt)
+                      : null
                   }
+                  empty="No date"
+                  /* Points at the live control rather than repeating it. The
+                     greyed box that used to sit here was a dead second lever for
+                     a value the card below already changes. */
+                  description="Change it under When it is expected, below, if the supplier gives you a new date."
                 />
-                <FieldDescription>Added to the order total, not to any one item.</FieldDescription>
-              </Field>
+              )}
+
+              {editable ? (
+                <Field>
+                  <FieldLabel>How you pay</FieldLabel>
+                  <FieldControl
+                    render={
+                      <Input
+                        color="module"
+                        value={draft.header.paymentTerms ?? ''}
+                        placeholder="net 30"
+                        onChange={(event) => {
+                          setHeader(
+                            'paymentTerms',
+                            event.target.value === '' ? null : event.target.value
+                          );
+                        }}
+                      />
+                    }
+                  />
+                </Field>
+              ) : (
+                <SettledField
+                  label="How you pay"
+                  value={draft.header.paymentTerms}
+                  empty="Not agreed"
+                />
+              )}
+
+              {editable ? (
+                <Field>
+                  <FieldLabel>Freight</FieldLabel>
+                  <FieldControl
+                    render={
+                      <MoneyInput
+                        color="module"
+                        size="md"
+                        aria-label="Freight"
+                        value={draft.header.freightCents / 100}
+                        onValueChange={(value) => {
+                          setHeader('freightCents', Math.round(value * 100));
+                        }}
+                      />
+                    }
+                  />
+                  <FieldDescription>
+                    What it costs to get these goods to you. It is spread across the items as they
+                    arrive, so what you hold is valued at what it really cost.
+                  </FieldDescription>
+                </Field>
+              ) : (
+                <SettledField
+                  label="Freight"
+                  value={formatCents(draft.header.freightCents, currency)}
+                  empty="None"
+                  description="Spread across the items as they arrive, so what you hold is valued at what it really cost."
+                />
+              )}
             </div>
           </FormSection>
 
@@ -1665,11 +1863,11 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   <Text className="text-sm">Items</Text>
                   <Text className="tabular-nums">{formatCents(subtotal, currency)}</Text>
                 </div>
-                {draft.header.shippingCents > 0 ? (
+                {draft.header.freightCents > 0 ? (
                   <div className="flex w-full max-w-xs items-baseline justify-between">
-                    <Text className="text-sm">Shipping</Text>
+                    <Text className="text-sm">Freight</Text>
                     <Text className="tabular-nums">
-                      {formatCents(draft.header.shippingCents, currency)}
+                      {formatCents(draft.header.freightCents, currency)}
                     </Text>
                   </div>
                 ) : null}
@@ -1685,7 +1883,13 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
           {/* Only once the order exists — a charge needs an order to hang off,
               and an estimate typed against nothing would vanish on save. */}
-          {isNew ? null : <OrderChargesSection purchaseOrderId={id} currency={currency} />}
+          {isNew ? null : (
+            <OrderChargesSection
+              purchaseOrderId={id}
+              currency={currency}
+              freightCents={draft.header.freightCents}
+            />
+          )}
 
           {/* Everything that happens AROUND the order (docs/146 Phase 8): who is
               holding it, when it is now expected, what they say has shipped, and
@@ -1703,23 +1907,36 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           )}
 
           <FormSection title="Notes">
-            <Field>
-              <FieldLabel>Notes for this order</FieldLabel>
-              <FieldControl
-                render={
-                  <Textarea
-                    color="module"
-                    rows={3}
-                    value={draft.header.notes ?? ''}
-                    placeholder="Delivery instructions, a PO reference on their side…"
-                    disabled={!editable}
-                    onChange={(event) => {
-                      setHeader('notes', event.target.value === '' ? null : event.target.value);
-                    }}
-                  />
-                }
-              />
-            </Field>
+            {editable ? (
+              <Field>
+                <FieldLabel>Notes for this order</FieldLabel>
+                <FieldControl
+                  render={
+                    <Textarea
+                      color="module"
+                      rows={3}
+                      value={draft.header.notes ?? ''}
+                      placeholder="Delivery instructions, a PO reference on their side…"
+                      onChange={(event) => {
+                        setHeader('notes', event.target.value === '' ? null : event.target.value);
+                      }}
+                    />
+                  }
+                />
+              </Field>
+            ) : (
+              // The last of the six faded fields (issue 494). A note written
+              // before the order went out is the one thing on this card
+              // somebody actually comes back to READ, and it was the field
+              // drawn hardest to read. `whitespace-pre-wrap` keeps the lines
+              // they typed, which a textarea was doing for free.
+              <Field>
+                <FieldLabel>Notes for this order</FieldLabel>
+                <p className="min-h-10 text-sm whitespace-pre-wrap">
+                  {draft.header.notes ?? 'Nothing noted.'}
+                </p>
+              </Field>
+            )}
           </FormSection>
         </div>
       </div>

@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "BlueWave Pool Care — weekly pool cleaning & maintenance",
-      "seoDescription": "BlueWave Pool Care keeps your pool sparkling with weekly cleaning, chemical balancing, openings, closings and filter care on an automatic schedule. Licensed, insured, and easy to book online — get a free quote.",
+      "seoTitle": "BlueWave Pool Care: weekly pool cleaning & maintenance",
+      "seoDescription": "BlueWave Pool Care keeps your pool sparkling with weekly cleaning, chemical balancing, openings, closings and filter care on an automatic schedule. Licensed, insured, and easy to book online: get a free quote.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Weekly cleaning, chemical balancing and everything your pool needs — on a schedule you never have to think about. Licensed, insured, and easy to book online."
+                      "Weekly cleaning, chemical balancing and everything your pool needs: on a schedule you never have to think about. Licensed, insured, and easy to book online."
                     ],
                     "id": "976fd594-2a4d-4378-94f3-ba5e3307d748",
                     "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A real, insured local company caring for your pool — not a truck that shows up once and disappears when the water turns green."
+                              "A real, insured local company caring for your pool, not a truck that shows up once and disappears when the water turns green."
                             ],
                             "id": "79e0e061-c092-4a04-9255-4f5f472436cb",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every visit we test and adjust chlorine, pH and more — so the water stays clear, gentle on skin and eyes, and safe to swim in."
+                              "Every visit we test and adjust chlorine, pH and more, so the water stays clear, gentle on skin and eyes, and safe to swim in."
                             ],
                             "id": "b7769083-346d-41d0-bac1-793c1ea535c6",
                             "ord": "a1"
@@ -873,7 +873,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We look at your pool and send a flat-rate weekly price — no obligation."
+                              "We look at your pool and send a flat-rate weekly price: no obligation."
                             ],
                             "id": "c02255f7-1517-4db2-b339-87566bb43205",
                             "ord": "a2"
@@ -928,7 +928,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Skim, brush, vacuum, empty baskets and balance — kept on schedule."
+                              "Skim, brush, vacuum, empty baskets and balance: kept on schedule."
                             ],
                             "id": "f3f493ac-33bd-49e5-a3f1-a231651ba08b",
                             "ord": "a2"
@@ -1037,9 +1037,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "The spring reset — cover off, equipment on, water clear."
-                            ],
+                            "children": ["The spring reset: cover off, equipment on, water clear."],
                             "id": "f9e16925-5e55-40d1-a008-8b688d9baea0",
                             "ord": "a2"
                           }
@@ -1227,7 +1225,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Sign up once and your pool takes care of itself. We arrive on the same day each week, clean it, balance the water, and text you a quick recap — you never have to call, remember, or chase anyone down."
+                          "Sign up once and your pool takes care of itself. We arrive on the same day each week, clean it, balance the water, and text you a quick recap. You never have to call, remember, or chase anyone down."
                         ],
                         "id": "d52c4105-009b-4f73-8ec4-7239cca4f9a0",
                         "ord": "a1"
@@ -1237,7 +1235,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "No contracts, no lock-in. You’re billed per completed visit and can pause or cancel any time. It’s the easiest your backyard has ever been — clear water waiting every weekend."
+                          "No contracts, no lock-in. You’re billed per completed visit and can pause or cancel any time. It’s the easiest your backyard has ever been: clear water waiting every weekend."
                         ],
                         "id": "6309e153-454b-418f-b9d0-c17dbeeb3adb",
                         "ord": "a2"
@@ -1302,7 +1300,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The same friendly, trained faces at your pool each week — people who take real pride in clear water."
+                          "The same friendly, trained faces at your pool each week: people who take real pride in clear water."
                         ],
                         "id": "6574ee32-1261-4cff-afa5-56b5bc27c515",
                         "ord": "a1"
@@ -1415,7 +1413,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Openings, closings and chemistry — the know-how behind safe, balanced water."
+                                  "Openings, closings and chemistry: the know-how behind safe, balanced water."
                                 ],
                                 "id": "6b64e3d3-8c7a-4093-8d54-df4c0274a72c",
                                 "ord": "a2"
@@ -1511,7 +1509,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“Signed up for the weekly plan and I don’t think about the pool anymore — it’s just clear and ready every Saturday. The techs are friendly and I always get a text when they’re done.”"
+                      "“Signed up for the weekly plan and I don’t think about the pool anymore: it’s just clear and ready every Saturday. The techs are friendly and I always get a text when they’re done.”"
                     ],
                     "id": "b57f385f-f733-414c-85eb-a8491548e663",
                     "ord": "a0"
@@ -1586,7 +1584,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — BlueWave Pool Care",
+      "seoTitle": "Book: BlueWave Pool Care",
       "seoDescription": "See what BlueWave Pool Care offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1710,7 +1708,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "164a66b6-81e1-40b7-aa83-7e44863afa1d",
                         "ord": "a1"
@@ -1742,7 +1740,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Need to move a visit? Just give us 24 hours’ notice and we’ll find you a new day. We text a reminder the day before and two hours ahead, so nobody’s surprised — and you never have to be home for us to service the pool."
+                              "Need to move a visit? Just give us 24 hours’ notice and we’ll find you a new day. We text a reminder the day before and two hours ahead, so nobody’s surprised, and you never have to be home for us to service the pool."
                             ],
                             "id": "0a148075-7b46-4aec-a962-712f11ab9586",
                             "ord": "a1"
@@ -1779,7 +1777,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Weekly plans bill per completed visit — no long-term contract, cancel any time with 24 hours’ notice. For your first service we confirm the day before, then every visit after runs on the same schedule automatically and we send a quick recap when the pool’s done."
+                              "Weekly plans bill per completed visit: no long-term contract, cancel any time with 24 hours’ notice. For your first service we confirm the day before, then every visit after runs on the same schedule automatically and we send a quick recap when the pool’s done."
                             ],
                             "id": "7caabf6b-227e-487f-a1a7-2384e4a9ff3a",
                             "ord": "a1"
@@ -1817,7 +1815,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — BlueWave Pool Care",
+      "seoTitle": "About: BlueWave Pool Care",
       "seoDescription": "Who BlueWave Pool Care is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1866,7 +1864,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "BlueWave started with a simple idea: owning a pool should be all fun and no chore. No skimming after work, no guessing at chemicals, no green surprise after a week away — just clear water, always ready."
+                          "BlueWave started with a simple idea: owning a pool should be all fun and no chore. No skimming after work, no guessing at chemicals, no green surprise after a week away. Just clear water, always ready."
                         ],
                         "id": "def58baa-1c7a-4aae-879f-3ad42fe2b3a0",
                         "ord": "a1"
@@ -1876,7 +1874,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We’re a local, licensed and insured team that treats every pool like our own — the same trained techs each week, flat-rate plans you can count on, and a standing promise to make it right if a visit isn’t perfect."
+                          "We’re a local, licensed and insured team that treats every pool like our own: the same trained techs each week, flat-rate plans you can count on, and a standing promise to make it right if a visit isn’t perfect."
                         ],
                         "id": "f83a4b25-4e95-4911-975d-60ea98b7b6ce",
                         "ord": "a2"
@@ -1981,7 +1979,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You know what weekly service costs before we start — no surprise fees, no upsells, no haggling."
+                              "You know what weekly service costs before we start: no surprise fees, no upsells, no haggling."
                             ],
                             "id": "c8d23eeb-9656-4001-a91e-60c70c50b015",
                             "ord": "a1"
@@ -2036,7 +2034,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — BlueWave Pool Care",
+      "seoTitle": "Visit: BlueWave Pool Care",
       "seoDescription": "Where to find BlueWave Pool Care, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2073,7 +2071,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and BlueWave Pool Care will get back to you — usually the same day."
+                          "Questions before you book? Send a note and BlueWave Pool Care will get back to you, usually the same day."
                         ],
                         "id": "a780d6c7-b779-4ecb-810e-224c493adfcf",
                         "ord": "a1"
@@ -2500,7 +2498,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Get a free quote and see the next available days online — no phone tag, no waiting on a callback."
+                      "Get a free quote and see the next available days online: no phone tag, no waiting on a callback."
                     ],
                     "id": "cac95e85-5c1e-4fe9-8478-f6df8ab35552",
                     "ord": "a1"

@@ -157,8 +157,8 @@ export function PricingSwitchboard() {
           Switch on what you use
         </Display>
         <Text variant="lead" className="mt-4 max-w-[480px]">
-          Every module is one switch. Flip it and the stack summary recomputes the instant you do —
-          one platform, one invoice, nothing you&apos;re not using.
+          Every module is one switch. Flip it and the stack summary recomputes the instant you do.
+          One platform, one invoice, nothing you&apos;re not using.
         </Text>
       </div>
 

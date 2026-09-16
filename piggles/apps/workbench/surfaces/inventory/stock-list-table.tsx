@@ -20,7 +20,7 @@ import {
   type StockLevel,
   type StockSortKey,
 } from './data';
-import { humanDuration, stockAgeTone } from './integrity-data';
+import { countVerdict } from './integrity-data';
 
 interface Modifiers {
   shiftKey: boolean;
@@ -167,22 +167,24 @@ function StockRow({
   );
 }
 
-/** What this level IS, plus how long since anybody checked. One component
+/** What this level IS, plus a count that is genuinely overdue. One component
  *  because the row shows it in a column when there is room and under the
  *  product name when there is not. */
 function StateBadges({ level }: { level: StockLevel }) {
   const state = levelState(level);
+  // Only against a schedule the business set itself, and only once it is
+  // actually late — see `countVerdict`. The badge this replaced measured how
+  // long since the quantity last MOVED and called it a check, which flagged 69
+  // of one dressmaker's 73 rows and stayed quiet on the ones that mattered.
+  const count = countVerdict(level.lastCountedAt, level.countIntervalDays);
   return (
     <span className="flex flex-wrap items-center gap-1">
       <Badge color={state.tone} variant="soft" size="sm">
         {state.label}
       </Badge>
-      {/* Only when the number has actually gone stale. A row of "2 hours"
-          beside every healthy line is noise that trains people to stop reading
-          the column before it ever means anything. */}
-      {stockAgeTone(level.ageSeconds) !== 'success' ? (
-        <Badge color={stockAgeTone(level.ageSeconds)} variant="soft" size="sm">
-          {humanDuration(level.ageSeconds)} old
+      {count ? (
+        <Badge color={count.tone} variant="soft" size="sm">
+          {count.label}
         </Badge>
       ) : null}
     </span>

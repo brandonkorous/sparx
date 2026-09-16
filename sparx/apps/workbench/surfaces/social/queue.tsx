@@ -20,7 +20,7 @@
 
 import { useMemo, useState } from 'react';
 import { Badge, Button, EmptyState, Heading, SearchInput, Text } from '@wizeworks/silicaui-react';
-import { Plus, Send, ServerCrash } from 'lucide-react';
+import { Link2, Plus, Send, ServerCrash } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -158,7 +158,16 @@ function PipelineStrip({
 
 export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
   const board = useSocialBoard(ctx);
-  const { posts, canWrite, all, assetsById, avatarByTargetId, catalogMap, counts } = board;
+  const {
+    posts,
+    canWrite,
+    all,
+    assetsById,
+    avatarByTargetId,
+    catalogMap,
+    counts,
+    nothingConnected,
+  } = board;
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<string | null>(null);
 
@@ -221,7 +230,7 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                 color="module"
                 size="sm"
                 className="ml-auto shrink-0 whitespace-nowrap"
-                title="Write a new post — hold Shift to open alongside, Alt for a new window"
+                title="Write a new post: hold Shift to open alongside, Alt for a new window"
                 onClick={(event) => {
                   board.openNew(event);
                 }}
@@ -254,9 +263,28 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<Send className="size-6" aria-hidden />}
               title="No posts yet"
-              description="Write a post once and send it to every account you have connected. Drafts, scheduled posts and everything you have already sent will show up here."
+              // Empty for two different reasons. With nothing connected there is
+              // nowhere for a post to GO, so offering "New post" sends them to the
+              // composer to be told that and sent back — the one thing to do is
+              // the same thing the composer would offer, one screen earlier.
+              description={
+                nothingConnected
+                  ? 'Connect the accounts this business already has, then write once and post to all of them. Drafts, scheduled posts and everything you have sent show up here.'
+                  : 'Write a post once and send it to every account you have connected. Drafts, scheduled posts and everything you have already sent will show up here.'
+              }
               actions={
-                canWrite ? (
+                !canWrite ? undefined : nothingConnected ? (
+                  <Button
+                    color="module"
+                    size="sm"
+                    onClick={() => {
+                      ctx.open('social.connections');
+                    }}
+                  >
+                    <Link2 className="size-4" aria-hidden />
+                    Connect an account
+                  </Button>
+                ) : (
                   <Button
                     color="module"
                     size="sm"
@@ -267,7 +295,7 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                     <Plus className="size-4" aria-hidden />
                     New post
                   </Button>
-                ) : undefined
+                )
               }
             />
           </div>

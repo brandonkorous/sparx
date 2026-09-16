@@ -114,7 +114,7 @@ function PlatformHero() {
     { v: '1', s: 'place your whole business lives' },
     { v: '$10', suffix: '/mo', s: 'starting price' },
     { v: 'AI', spark: true, s: 'that works from your real data' },
-    { v: '100%', s: 'yours — export it any time' },
+    { v: '100%', s: 'yours: export it any time' },
   ] as const;
 
   return (
@@ -139,7 +139,7 @@ function PlatformHero() {
 
           <Text variant="lead" className="max-w-2xl text-xl">
             Run your whole business from one place. Builder, Commerce, CMS, CRM, Invoicing, Email,
-            B2B, Dropship, Inventory, Live Chat, Scheduling, Finance and AI — plus Social, SEO and
+            B2B, Dropship, Inventory, Live Chat, Scheduling, Finance and AI: plus Social, SEO and
             Automations free with any of them. Everything you switch on shares the same customers
             and the same records, behind one login, on one bill. A publisher, a shop, a wholesale
             distributor and a team that only wants a customer list are all equally at home here.
@@ -204,7 +204,7 @@ function OneSystem() {
             <>
               Every other &ldquo;all-in-one&rdquo; is a bundle of separate products stitched
               together with syncs that drift and break. sparx modules read and write the same
-              records. Your CRM is built <em>on</em> your commerce data — not connected to a copy of
+              records. Your CRM is built <em>on</em> your commerce data, not connected to a copy of
               it.
             </>
           }
@@ -271,8 +271,8 @@ function OneSystem() {
             </Heading>
             <Text className="mt-1">
               Your customers, orders, content and contacts are one set of records that every part
-              reads — not copies being kept in step. And your business is fenced off from every
-              other business on sparx, by the database itself.
+              reads, not copies being kept in step. And your business is fenced off from every other
+              business on sparx, by the database itself.
             </Text>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -301,7 +301,7 @@ function OneSystem() {
         </div>
 
         <Text className="text-md mt-9 max-w-[620px] text-center">
-          <b className="font-medium">Turn a module off and it stops billing</b> — no migration, no
+          <b className="font-medium">Turn a module off and it stops billing</b>: no migration, no
           exports, no goodbyes. The data stays where it was; it just goes quiet.
         </Text>
       </div>
@@ -362,7 +362,7 @@ function OneRecord() {
           <>
             Because every module writes to the same tables, there are no duplicate records and
             nothing to keep in sync. The buyer who placed an order, opened your email, and called
-            your sales line is a single profile — with each module&apos;s view of them attached.
+            your sales line is a single profile, with each module&apos;s view of them attached.
           </>
         }
       />
@@ -404,7 +404,7 @@ function OneRecord() {
         {/* foot */}
         <div className="flex items-center gap-2.5 px-6 py-4">
           <Dot color="var(--color-success)" size={7} />
-          <Text>One profile, written by four modules — no integration, no copy, no drift.</Text>
+          <Text>One profile, written by four modules: no integration, no copy, no drift.</Text>
         </div>
       </div>
     </Band>
@@ -416,7 +416,7 @@ function FourCommitments() {
   const items = [
     {
       title: 'Modular',
-      body: 'Switch on only what you need. Anything switched off does nothing and costs nothing. Add the next part when you’re ready — without starting over.',
+      body: 'Switch on only what you need. Anything switched off does nothing and costs nothing. Add the next part when you’re ready, without starting over.',
     },
     {
       title: 'One set of records',
@@ -424,11 +424,11 @@ function FourCommitments() {
     },
     {
       title: 'Open, never locked in',
-      body: 'Everything sparx can do, your other tools can do too — including an AI assistant you connect yourself, working from your live business information rather than a stale export.',
+      body: 'Everything sparx can do, your other tools can do too, including an AI assistant you connect yourself, working from your live business information rather than a stale export.',
     },
     {
       title: 'Permanent',
-      body: 'You own the data and the site. Export anytime, edit anything no-code, drop to full code when you want. AI can build it — sparx is what keeps it.',
+      body: 'You own the data and the site. Export anytime, edit anything no-code, drop to full code when you want. AI can build it: sparx is what keeps it.',
     },
   ];
 
@@ -464,13 +464,13 @@ function GrowsWithYou() {
     {
       when: 'When you sell',
       title: 'The same site sells',
-      body: 'Turn on Commerce. Your existing pages gain cart and checkout — no rebuild.',
+      body: 'Turn on Commerce. Your existing pages gain cart and checkout: no rebuild.',
       tags: [{ label: '+ Commerce', module: 'commerce' as const }],
     },
     {
       when: 'As you grow',
       title: 'Customers, nurtured',
-      body: 'Add CRM and Email. They already know every buyer from day one — no import.',
+      body: 'Add CRM and Email. They already know every buyer from day one: no import.',
       tags: [
         { label: '+ CRM', module: 'crm' as const },
         { label: '+ Email', module: 'email' as const },
@@ -491,8 +491,8 @@ function GrowsWithYou() {
         lede={
           <>
             Most platforms make you migrate to grow. sparx doesn&apos;t. Switch on a module and it
-            reads the catalog, customers, and content already there. Switch it off and it goes quiet
-            — the data stays exactly where it was.
+            reads the catalog, customers, and content already there. Switch it off and it goes
+            quiet: the data stays exactly where it was.
           </>
         }
       />
@@ -537,7 +537,7 @@ function ModulesStrip() {
       label: 'Builder',
       price: '$10/mo',
       title: 'Site builder',
-      body: 'Themes, pages, and live URLs — no code.',
+      body: 'Themes, pages, and live URLs: no code.',
     },
     {
       module: 'commerce',
@@ -600,14 +600,14 @@ function ModulesStrip() {
       label: 'Invoicing',
       price: '$19/mo',
       title: 'Get paid',
-      body: 'Quotes, invoices, payment links — free with Commerce or B2B.',
+      body: 'Quotes, invoices, payment links: free with Commerce or B2B.',
     },
     {
       module: 'inventory',
       label: 'Inventory',
       price: '$29/mo',
       title: 'Track stock',
-      body: 'Locations, reorder points, live sync — free with Commerce or B2B.',
+      body: 'Locations, reorder points, live sync: free with Commerce or B2B.',
     },
     {
       module: 'chat',
@@ -621,14 +621,14 @@ function ModulesStrip() {
       label: 'Finance',
       price: '$29/mo',
       title: 'Know what you kept',
-      body: 'Spending, profit and job margins — free with Commerce or B2B.',
+      body: 'Spending, profit and job margins: free with Commerce or B2B.',
     },
     {
       module: 'staff',
       label: 'Team',
       price: '$29/mo',
       title: 'Cost the work',
-      body: 'Hours, rates, shifts and licence renewals. Not payroll.',
+      body: 'Hours, rates, shifts and license renewals. Not payroll.',
     },
   ];
 
@@ -672,7 +672,7 @@ function ModulesStrip() {
 
       <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
         <Text className="max-w-[520px]">
-          Content-only, commerce-only, or the whole platform — every combination shares the same
+          Content-only, commerce-only, or the whole platform: every combination shares the same
           dashboard, the same data, and the same bill.
         </Text>
         <a href="/modules" className={buttonClasses({ variant: 'outline' })}>
@@ -789,7 +789,7 @@ function ApiSurface() {
               which is the inline definition the audience rule asks for. */}
           <Text className="border-base-300 border-t px-5 py-4">
             One customer, asked for directly. Everything Commerce, CRM, Email and B2B know about
-            them comes back together — because it was never four separate records.
+            them comes back together, because it was never four separate records.
           </Text>
         </div>
       </div>
@@ -824,11 +824,11 @@ function Foundations() {
     },
     {
       title: 'Self-hosted email',
-      body: 'Transactional and marketing email send from your own domain and reputation on sparx.email — no third-party markup, no shared-IP deliverability roulette.',
+      body: 'Transactional and marketing email send from your own domain and reputation on sparx.email: no third-party markup, no shared-IP deliverability roulette.',
     },
     {
       title: 'Nothing keeps you waiting',
-      body: 'When something happens — an order lands, a form comes in — the follow-on work runs in the background instead of holding up the page. New automations slot in without disturbing anything already running.',
+      body: 'When something happens (an order lands, a form comes in), the follow-on work runs in the background instead of holding up the page. New automations slot in without disturbing anything already running.',
     },
     {
       title: 'One dashboard, module-aware',
@@ -836,11 +836,11 @@ function Foundations() {
     },
     {
       title: 'Multi-property, multi-brand',
-      body: 'Run several sites under one account — separate addresses, looks and catalogs — sharing the same customers, content and bill wherever you want them to.',
+      body: 'Run several sites under one account (separate addresses, looks and catalogs) sharing the same customers, content and bill wherever you want them to.',
     },
     {
       title: 'Own it, export it, leave anytime',
-      body: 'Your data is yours. Take all of it with you whenever you want, and open it to your own tools meanwhile. Turn something off and it simply stops — your records stay exactly as they were.',
+      body: 'Your data is yours. Take all of it with you whenever you want, and open it to your own tools meanwhile. Turn something off and it simply stops. Your records stay exactly as they were.',
     },
   ];
 
@@ -938,8 +938,8 @@ function PlatformCta() {
           <Spark />
         </Heading>
         <Text variant="lead" className="mt-6 mb-9 max-w-[560px]">
-          Content, commerce, or both. Start with one module and a live site in five minutes — add
-          the rest whenever you&apos;re ready.
+          Content, commerce, or both. Start with one module and a live site in five minutes. Add the
+          rest whenever you&apos;re ready.
         </Text>
         <div className="flex flex-wrap items-center justify-center gap-3.5">
           <Button color="primary" size="xl">

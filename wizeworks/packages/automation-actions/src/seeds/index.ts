@@ -68,7 +68,14 @@ import {
   SUBSCRIPTION_RENEWED_EMAIL,
   SUBSCRIPTION_RESUMED_EMAIL,
 } from './subscriptions.js';
-import { RETURN_APPROVED_EMAIL, RETURN_RECEIVED_EMAIL, RETURN_REFUNDED_EMAIL } from './returns.js';
+import {
+  RETURN_APPROVED_EMAIL,
+  RETURN_DENIED_EMAIL,
+  RETURN_EXCHANGED_EMAIL,
+  RETURN_RECEIVED_EMAIL,
+  RETURN_REFUNDED_EMAIL,
+  RETURN_REPLACEMENT_SHIPPED_EMAIL,
+} from './returns.js';
 import { CHAT_NO_RESPONSE_ALERT, CHAT_SATISFACTION_SURVEY } from './chat.js';
 import { INVENTORY_AUTO_REORDER } from './inventory.js';
 import { FORM_HANDLE_SUBMISSIONS } from './forms.js';
@@ -137,6 +144,9 @@ export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
   { module: 'commerce', spec: RETURN_APPROVED_EMAIL },
   { module: 'commerce', spec: RETURN_RECEIVED_EMAIL },
   { module: 'commerce', spec: RETURN_REFUNDED_EMAIL },
+  { module: 'commerce', spec: RETURN_EXCHANGED_EMAIL },
+  { module: 'commerce', spec: RETURN_REPLACEMENT_SHIPPED_EMAIL },
+  { module: 'commerce', spec: RETURN_DENIED_EMAIL },
   // B2B
   { module: 'b2b', spec: B2B_OVERDUE_ESCALATION },
   { module: 'b2b', spec: B2B_NEW_ACCOUNT_TASK },

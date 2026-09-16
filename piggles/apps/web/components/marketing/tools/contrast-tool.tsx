@@ -16,13 +16,13 @@ import { useReportToolResult } from './tool-result-context';
  */
 const COMMON_PAIRS: { label: string; note: string; fg: string; bg: string }[] = [
   {
-    label: 'Pale grey on white',
+    label: 'Pale gray on white',
     note: 'The classic. Looks refined, vanishes outdoors.',
     fg: '#9CA3AF',
     bg: '#FFFFFF',
   },
   {
-    label: 'Mid grey on white',
+    label: 'Mid gray on white',
     note: 'The usual “secondary text” color.',
     fg: '#6B7280',
     bg: '#FFFFFF',
@@ -46,7 +46,7 @@ const COMMON_PAIRS: { label: string; note: string; fg: string; bg: string }[] = 
     bg: '#000000',
   },
   {
-    label: 'Off-white on dark grey',
+    label: 'Off-white on dark gray',
     note: 'What dark mode should use instead.',
     fg: '#F4F5F7',
     bg: '#202631',
@@ -129,7 +129,7 @@ export function ContrastTool() {
               ? [
                   {
                     label: 'Nearest shade that works',
-                    value: `${suggestion.hex.toUpperCase()} — the same color, ${suggestion.direction}`,
+                    value: `${suggestion.hex.toUpperCase()}: the same color, ${suggestion.direction}`,
                   },
                 ]
               : []),
@@ -253,7 +253,7 @@ export function ContrastTool() {
 
                 <p className="mt-3 text-base">
                   {verdict.aaaNormal
-                    ? 'Comfortably readable at any size, and it clears the stricter standard as well — worth having on anything people read at length.'
+                    ? 'Comfortably readable at any size, and it clears the stricter standard as well: worth having on anything people read at length.'
                     : verdict.aaNormal
                       ? 'Readable at any size. This clears the standard that applies to ordinary body text.'
                       : verdict.aaLarge

@@ -182,8 +182,8 @@ export function NewRateForm({
               }
             />
             <FieldDescription>
-              A percentage — your share of payroll taxes, insurance, workers’ comp. Leaving it at
-              zero makes your labour costs read about 15–30% light.
+              A percentage. Your share of payroll taxes, insurance, workers’ comp. Leaving it at
+              zero makes your labor costs read about 15–30% light.
             </FieldDescription>
           </Field>
         ) : null}

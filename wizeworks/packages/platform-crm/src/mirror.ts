@@ -264,7 +264,7 @@ async function ensureMirror(
     // Loud: in prod this means a signup went unrecorded. Never guess a tenant.
     logger.warn(
       { tenantId },
-      'platform-crm: no platform tenant resolved (set SPARX_PLATFORM_TENANT_ID) — skipping'
+      'platform-crm: no platform tenant resolved (set SPARX_PLATFORM_TENANT_ID), skipping'
     );
     return { skipped: 'no-platform-tenant' };
   }
@@ -278,7 +278,7 @@ async function ensureMirror(
   if (!(await isModuleEnabled(target.tenantId, 'crm'))) {
     logger.warn(
       { tenantId, platformTenantId: target.tenantId },
-      'platform-crm: CRM is not enabled on the platform tenant — signup not mirrored'
+      'platform-crm: CRM is not enabled on the platform tenant, signup not mirrored'
     );
     return { skipped: 'platform-crm-disabled' };
   }
@@ -580,7 +580,7 @@ export async function recordSubscriptionChange(
       toStageId: nextStageId,
       closedReason:
         next === 'churned'
-          ? 'Subscription cancelled'
+          ? 'Subscription canceled'
           : next === 'trial_expired'
             ? 'Trial ended without a subscription'
             : undefined,

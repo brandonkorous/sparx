@@ -205,7 +205,7 @@ function CreateProblem({
     return (
       <Alert color="warning">
         <AlertContent>
-          <AlertTitle>Adding another site needs the Builder module</AlertTitle>
+          <AlertTitle>Adding another site needs the My Site app</AlertTitle>
           <AlertDescription>
             Your first site is included. Turn on Builder from Modules to publish more than one
             website from this account.

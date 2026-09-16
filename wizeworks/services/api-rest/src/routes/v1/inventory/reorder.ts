@@ -343,17 +343,26 @@ const inventoryReorderRoutes: FastifyPluginAsync = async (app) => {
     return reply.send(paged(filtered.slice(skip, skip + take), { total, skip, per_page: take }));
   });
 
-  // Whether ANY level has a reorder rule at all. It's what tells an empty worklist
-  // apart: no rule anywhere ("set one up") reads nothing like every rule being
-  // comfortably above its trigger ("nothing to buy — good"). Route-local because it
-  // is one count and needs no service surface of its own.
+  // How many levels have a reorder rule, out of how many there are.
+  //
+  // The first count tells an empty worklist apart: no rule anywhere ("set one
+  // up") reads nothing like every rule being comfortably above its trigger
+  // ("nothing to buy — good").
+  //
+  // The second exists because that is only the ZERO case, and the shape that
+  // actually reaches people is partial. One rule out of seventy-two is not an
+  // empty list, so neither message fires, and a one-row worklist is served as
+  // the complete answer to "what should I reorder" while seventy-one lines are
+  // ineligible to appear on it however low they get. The denominator is the only
+  // thing that can say so.
   app.get('/v1/inventory/reorder/summary', async (request, reply) => {
     await requireInventoryModule(request);
     requireRole(request, 'viewer');
-    const policyCount = await withRequestTenant(request, (tx) =>
-      tx.inventoryLevel.count({ where: { reorderPoint: { not: null } } })
-    );
-    return reply.send(ok({ policyCount }));
+    const { policyCount, levelCount } = await withRequestTenant(request, async (tx) => ({
+      policyCount: await tx.inventoryLevel.count({ where: { reorderPoint: { not: null } } }),
+      levelCount: await tx.inventoryLevel.count(),
+    }));
+    return reply.send(ok({ policyCount, levelCount }));
   });
 
   app.post('/v1/inventory/reorder/draft', async (request, reply) => {

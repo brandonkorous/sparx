@@ -10,7 +10,9 @@
 // The load-bearing behaviors, in the order they matter:
 //   (1) the sale is copied, not re-priced — the invoice totals what the order does,
 //   (2) money already received comes across, so the balance is what is truly owed,
-//   (3) PAYING THE INVOICE SETTLES THE ORDER. Without this the link is decorative,
+//   (3) PAYING THE INVOICE SETTLES THE ORDER — and the BUYER. Without the first
+//       the link is decorative; without the second the shop's customer list says
+//       the person who just paid has never spent anything (issue 533),
 //   (4) the seeded deposit is not double-counted onto the order,
 //   (5) it refuses, by name, in the three cases where an invoice would be wrong.
 
@@ -178,6 +180,34 @@ describe('an invoice can bill an order', () => {
     expect(payments[0]?.processor).toBe('check');
     const meta = payments[0]?.metadata as { billingDocumentId?: string } | null;
     expect(meta?.billingDocumentId).toBe(document.id);
+  });
+
+  it('settles the BUYER when the invoice is paid, not only the order', async () => {
+    // Issue 533. The test above stopped exactly where the code stopped.
+    //
+    // `customer.totalSpent` is `SUM(order.amountPaid)`, so paying an invoice
+    // makes the buyer's figures stale the same instant it settles the order.
+    // Recomputing the two was written as a PAIR at five call sites, and this
+    // path was one of the two that did not keep it — so a shop's own customer
+    // list read "$0.00 spent" beside an order marked Paid and an invoice marked
+    // Paid, for the woman who had just handed over $180.
+    //
+    // Asserted as a DELTA, not an absolute: these tests share one customer and
+    // every order above adds to her.
+    const before = Number((await customerService.get(test.ctx, customerId)).totalSpent);
+
+    const order = await placeOrder([{ sku: 'FEN-TROUSER', unitPrice: 164 }]);
+    const { document } = await billingFromOrderService.createInvoiceForOrder(test.ctx, {
+      orderId: order.id,
+    });
+    await billingPaymentService.recordPayment(test.ctx, document.id, {
+      kind: 'payment',
+      method: 'check',
+      amount: 164,
+    });
+
+    const after = await customerService.get(test.ctx, customerId);
+    expect(Number(after.totalSpent) - before).toBe(164);
   });
 
   it('settles part of an order when the invoice is part paid', async () => {

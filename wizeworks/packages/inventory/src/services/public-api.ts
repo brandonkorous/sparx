@@ -71,6 +71,36 @@ export interface PublicInventoryRow {
    *  each client, so a browser with a skewed clock cannot paint half a stock
    *  list as stale. */
   ageSeconds: number;
+  /**
+   * When somebody last CHECKED this number against the shelf. Null if nobody
+   * ever has.
+   *
+   * `asOf` is not this, and the difference is the whole point. `asOf` moves
+   * whenever the quantity is re-established, and a SALE re-establishes it — so
+   * a line selling briskly reads perfectly fresh while nobody has physically
+   * looked at it in a month, and a line that simply is not selling reads stale
+   * when its count is perfectly good. Exactly backwards from the risk: what
+   * makes a book number drift from the shelf is handling, and handling is what
+   * selling IS.
+   *
+   * Only a `recount` (somebody counted it) or a `sync` (an outside system of
+   * record asserted the true quantity) is a check. Every other reason is a
+   * movement the book already knew about.
+   */
+  lastCountedAt: string | null;
+  /**
+   * How often this level is SUPPOSED to be counted, in days, from the tenant's
+   * own cycle-count schedule. Null when no schedule covers it.
+   *
+   * Served so a client can pass a verdict instead of inventing a deadline. With
+   * no schedule there is no such thing as overdue, and painting a warning
+   * against a promise nobody made is the same lie in the other direction as a
+   * green tick on a feed that never promised anything (`freshnessVerdict`).
+   *
+   * Zone-scoped schedules are deliberately excluded: a zone covers part of a
+   * level's stock, so it cannot speak for the whole row.
+   */
+  countIntervalDays: number | null;
 }
 
 /**
@@ -252,12 +282,56 @@ export async function listInventory(
         avgCostCents: true,
         updatedAt: true,
         asOf: true,
+        // For matching a cycle-count schedule that covers only one class.
+        abcClass: true,
         warehouse: { select: { code: true, name: true } },
         variant: {
           select: { sku: true, product: { select: { id: true, title: true } } },
         },
       },
     });
+
+    // When each of these was last CHECKED, and how often it is meant to be.
+    // Two more reads on the page that is already in hand rather than a column on
+    // the level: a level row records the quantity, and "who last verified it" is
+    // a fact about the ledger, which is where it stays true.
+    const [countedRows, schedules] = await Promise.all([
+      tx.$queryRaw<{ variantId: string; warehouseId: string; lastCountedAt: Date }[]>`
+        SELECT variant_id AS "variantId",
+               warehouse_id AS "warehouseId",
+               MAX(created_at) AS "lastCountedAt"
+          FROM inventory_movements
+         WHERE tenant_id = ${ctx.tenantId}::uuid
+           AND reason IN ('recount', 'sync')
+           AND (variant_id, warehouse_id) IN (${Prisma.join(
+             keys.map((k) => Prisma.sql`(${k.variantId}::uuid, ${k.warehouseId}::uuid)`)
+           )})
+         GROUP BY 1, 2
+      `,
+      tx.cycleCountSchedule.findMany({
+        where: {
+          tenantId: ctx.tenantId,
+          isActive: true,
+          // See `countIntervalDays` — a zone covers part of a level.
+          zoneName: null,
+          warehouseId: { in: [...new Set(keys.map((k) => k.warehouseId))] },
+        },
+        select: { warehouseId: true, abcClass: true, intervalDays: true },
+      }),
+    ]);
+    const countedByKey = new Map(
+      countedRows.map((c) => [`${c.variantId}:${c.warehouseId}`, c.lastCountedAt])
+    );
+    /** The tightest cadence that actually covers this level, or null. A
+     *  schedule with no class covers every class. */
+    const intervalFor = (warehouseId: string, abcClass: string | null): number | null => {
+      const days = schedules
+        .filter(
+          (s) => s.warehouseId === warehouseId && (s.abcClass === null || s.abcClass === abcClass)
+        )
+        .map((s) => s.intervalDays);
+      return days.length === 0 ? null : Math.min(...days);
+    };
 
     const byKey = new Map(rows.map((r) => [`${r.variantId}:${r.warehouseId}`, r]));
     // Re-ordered to the KEY query's order — `findMany` with an OR set makes no
@@ -287,6 +361,8 @@ export async function listInventory(
           updatedAt: r.updatedAt.toISOString(),
           asOf: r.asOf.toISOString(),
           ageSeconds: Math.max(0, Math.floor((Date.now() - r.asOf.getTime()) / 1000)),
+          lastCountedAt: countedByKey.get(`${r.variantId}:${r.warehouseId}`)?.toISOString() ?? null,
+          countIntervalDays: intervalFor(r.warehouseId, r.abcClass),
         },
       ];
     });

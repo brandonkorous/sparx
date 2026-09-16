@@ -11,6 +11,7 @@ import { Prisma, withTenant } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { indexInventoryEntityOnCommit } from '../events';
 import { InventoryNotFoundError, InventoryValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 
@@ -139,7 +140,7 @@ export async function createPurchaseOrderOnTx(
       paymentTerms: input.paymentTerms ?? supplier.paymentTerms ?? null,
       reference: input.reference ?? null,
       expectedArrivalAt: input.expectedArrivalAt ? new Date(input.expectedArrivalAt) : null,
-      shippingCents: input.shippingCents,
+      freightCents: input.freightCents,
       notes: input.notes ?? null,
     },
     select: { id: true, number: true },
@@ -164,6 +165,7 @@ export async function createPurchaseOrderOnTx(
       after: { number: po.number, supplierId: input.supplierId, lineCount: lineData.length },
     },
   });
+  await indexInventoryEntityOnCommit(ctx, 'purchase_order', po.id);
 
   return loadPurchaseOrderDetail(tx, po.id);
 }
@@ -199,11 +201,11 @@ export async function updatePurchaseOrder(
               expectedArrivalAt: input.expectedArrivalAt ? new Date(input.expectedArrivalAt) : null,
             }
           : {}),
-        ...(input.shippingCents !== undefined ? { shippingCents: input.shippingCents } : {}),
+        ...(input.freightCents !== undefined ? { freightCents: input.freightCents } : {}),
         ...(input.notes !== undefined ? { notes: input.notes } : {}),
       },
     });
-    if (input.shippingCents !== undefined) await recomputeTotals(tx, id);
+    if (input.freightCents !== undefined) await recomputeTotals(tx, id);
 
     await writeAuditLog({
       tx,
@@ -215,6 +217,7 @@ export async function updatePurchaseOrder(
       entityId: id,
       diff: { after: { id } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'purchase_order', id);
 
     return loadPurchaseOrderDetail(tx, id);
   });
@@ -238,6 +241,7 @@ export async function deletePurchaseOrder(ctx: ServiceContext, id: string): Prom
       entityId: id,
       diff: { before: { number: po.number } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'purchase_order', id, 'delete');
   });
 }
 
@@ -246,7 +250,7 @@ function assertNoDuplicateVariants(lines: PurchaseOrderLineInput[]): void {
   for (const line of lines) {
     if (seen.has(line.variantId)) {
       throw new InventoryValidationError(
-        'A variant appears more than once — combine the quantities into a single line',
+        'A variant appears more than once: combine the quantities into a single line',
         [{ field: 'lines', message: `duplicate variant ${line.variantId}` }]
       );
     }

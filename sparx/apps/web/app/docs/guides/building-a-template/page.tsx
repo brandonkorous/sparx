@@ -16,7 +16,7 @@ import { CodeBlock } from '@/components/docs/code-block';
 export const metadata: Metadata = {
   title: 'Building a template',
   description:
-    'How to build a sparx template (blueprint) end-to-end — a one-click, fully themed site you design in the Builder, capture as a declarative manifest, register, and test.',
+    'How to build a sparx template (blueprint) end-to-end: a one-click, fully themed site you design in the Builder, capture as a declarative manifest, register, and test.',
   alternates: { canonical: '/docs/guides/building-a-template' },
 };
 
@@ -97,7 +97,7 @@ const CONTENT_CODE = `content: [
     slug: 'made-to-last',
     body: {
       title: 'Made to last',
-      excerpt: 'Why we obsess over materials — and what "durable" really means.',
+      excerpt: 'Why we obsess over materials, and what "durable" really means.',
       body: doc(
         'Durability is a series of small decisions: the weight of a fabric…',
         'We start every product from the material up…'
@@ -254,7 +254,7 @@ const EMAILS_CODE = `emails: [
   {
     name: 'Welcome',
     subject: 'Welcome to Driftwood 👋',
-    preheader: "You're in — here's what we're about.",
+    preheader: "You're in: here's what we're about.",
     tree: node('Section', {
       layout: { direction: 'stack', gap: 'md' },
       children: [
@@ -287,7 +287,7 @@ const COMPONENT_CODE = `// In components:
 
 // On a page (note customType + the version pin):
 node(customType('promo_banner'), {
-  props: { $ref: { version: 1 }, heading: 'Spring refresh — 20% off', buttonLabel: 'Shop the sale', buttonHref: '/collections/featured' },
+  props: { $ref: { version: 1 }, heading: 'Spring refresh: 20% off', buttonLabel: 'Shop the sale', buttonHref: '/collections/featured' },
 }),`;
 
 const REGISTER_CODE = `// wizeworks/packages/blueprints/src/registry.ts
@@ -308,7 +308,7 @@ export default function BuildingATemplatePage() {
         { label: 'Building a template' },
       ]}
       title="Building a template"
-      lede="A template is a one-click starting point for a whole site. This guide walks through building one end-to-end — you design it visually in the Builder, capture what you built as a declarative manifest, register it, and test the install."
+      lede="A template is a one-click starting point for a whole site. This guide walks through building one end-to-end. You design it visually in the Builder, capture what you built as a declarative manifest, register it, and test the install."
       meta={
         <>
           <span>Updated 2026-06-05</span>
@@ -368,17 +368,16 @@ export default function BuildingATemplatePage() {
         </p>
         <Callout type="note" title="Templates in the UI, “Blueprint” in the code">
           In the dashboard the feature is called <strong>Templates</strong>. In the code it’s called
-          a <strong>Blueprint</strong> — because “template” is already used for page templates,
-          email templates, and content templates. Same thing; “blueprint” just keeps the code
-          unambiguous.
+          a <strong>Blueprint</strong>: because “template” is already used for page templates, email
+          templates, and content templates. Same thing; “blueprint” just keeps the code unambiguous.
         </Callout>
         <p>
-          Here’s what one looks like after install and go-live — the flagship{' '}
+          Here’s what one looks like after install and go-live: the flagship{' '}
           <strong>Retail Store + Blog</strong> template (“Driftwood Supply Co.”):
         </p>
         <DocImage
           src="/docs/installed-retail-store-blog.png"
-          alt="The installed Driftwood Supply Co. home page — a full-bleed hero, featured products, and a journal section"
+          alt="The installed Driftwood Supply Co. home page: a full-bleed hero, featured products, and a journal section"
           caption="The Retail Store + Blog template after install and go-live."
         />
       </DocSection>
@@ -391,7 +390,7 @@ export default function BuildingATemplatePage() {
         <Steps>
           <Step n={1} title="Design it in the Builder">
             <p>
-              Build it like any normal site — drag sections, set the brand and theme, add a few
+              Build it like any normal site. Drag sections, set the brand and theme, add a few
               products and posts. Use a throwaway tenant/property as your scratchpad.
             </p>
           </Step>
@@ -425,7 +424,7 @@ export default function BuildingATemplatePage() {
         <p>Each template is one TypeScript file plus a one-line registration:</p>
         <CodeBlock tabs={[{ label: 'wizeworks/packages/blueprints/', code: FILE_TREE }]} />
         <p>
-          The manifest is <strong>declarative data</strong> — no code runs at install time, which
+          The manifest is <strong>declarative data</strong>: no code runs at install time, which
           keeps the marketplace safe. It’s plain TypeScript objects validated by{' '}
           <DocLink href="https://zod.dev">Zod</DocLink>, so a typo or a bad reference fails the
           moment the file loads, not in production.
@@ -441,7 +440,7 @@ export default function BuildingATemplatePage() {
         <p>
           <InlineCode>parseBlueprint(manifest)</InlineCode> validates the whole thing (including
           cross-references, e.g. every <InlineCode>categoryHandles</InlineCode> points at a real
-          category) and applies defaults. If you got something wrong, the package won’t build —
+          category) and applies defaults. If you got something wrong, the package won’t build:
           that’s the safety net.
         </p>
 
@@ -513,7 +512,7 @@ export default function BuildingATemplatePage() {
         <DocSubsection id="manifest-theme" title="Theme">
           <p>
             A template <strong>ships its own named theme</strong>. It layers a brand “look” over one
-            of the built-in presets, so a single setting themes the entire stack — site <em>and</em>{' '}
+            of the built-in presets, so a single setting themes the entire stack: site <em>and</em>{' '}
             emails. Pick a <InlineCode>basePresetKey</InlineCode> whose personality fits, then
             override the brand tokens.
           </p>
@@ -556,8 +555,8 @@ export default function BuildingATemplatePage() {
 
         <DocSubsection id="manifest-content" title="Content">
           <p>
-            Most templates use the <strong>built-in</strong> content types —{' '}
-            <InlineCode>page</InlineCode> and <InlineCode>blog_post</InlineCode> — so you don’t
+            Most templates use the <strong>built-in</strong> content types (
+            <InlineCode>page</InlineCode> and <InlineCode>blog_post</InlineCode>), so you don’t
             define any custom types (<InlineCode>contentTypes: []</InlineCode>). Each entry names
             its <InlineCode>typeKey</InlineCode>, an optional <InlineCode>slug</InlineCode>, and a{' '}
             <InlineCode>body</InlineCode> validated against that type’s schema. Entries default to{' '}
@@ -575,7 +574,7 @@ export default function BuildingATemplatePage() {
           <p>
             Three lists: <InlineCode>categories</InlineCode>, <InlineCode>collections</InlineCode>,
             and <InlineCode>products</InlineCode>. Everything links by <strong>handle</strong> (a
-            stable slug), never by id — the manifest can’t know runtime ids.
+            stable slug), never by id: the manifest can’t know runtime ids.
           </p>
           <CodeBlock tabs={[{ label: 'ts', code: COMMERCE_CODE }]} />
           <p>
@@ -598,8 +597,8 @@ export default function BuildingATemplatePage() {
 
         <DocSubsection id="trees-model" title="The node model">
           <p>
-            Every node — whether it’s a section that arranges children or a leaf that renders
-            content — has the same shape:
+            Every node (whether it’s a section that arranges children or a leaf that renders
+            content) has the same shape:
           </p>
           <CodeBlock tabs={[{ label: 'ts', code: NODE_SHAPE }]} />
           <p>
@@ -805,14 +804,14 @@ export default function BuildingATemplatePage() {
           <p>
             A leaf is either <strong>static</strong> (you give it <InlineCode>text</InlineCode>) or{' '}
             <strong>bound</strong> to a field. A{' '}
-            <strong>container bound to an array iterates</strong> — it renders its children once per
+            <strong>container bound to an array iterates</strong>: it renders its children once per
             item, and inside, <InlineCode>item.*</InlineCode> refers to the current record. This is
             how a product grid or a blog list works:
           </p>
           <CodeBlock tabs={[{ label: 'ts', code: BINDING_CODE }]} />
           <p>
             On a <strong>collection page</strong> (a per-record template), the record itself is in
-            scope — bind to <InlineCode>product.title</InlineCode>,{' '}
+            scope: bind to <InlineCode>product.title</InlineCode>,{' '}
             <InlineCode>blog_post.body</InlineCode>, <InlineCode>page.body</InlineCode>, etc.
             Because text and styling come from <strong>tokens and the theme</strong>, the same tree
             re-themes automatically for whatever brand installs it. That’s why you author once and
@@ -879,13 +878,13 @@ export default function BuildingATemplatePage() {
         </p>
         <CodeBlock tabs={[{ label: 'registry.ts', code: REGISTER_CODE }]} />
         <p>
-          That’s it — the <InlineCode>/marketplace</InlineCode> Blueprints category, the install
-          API, and the marketplace all read from this registry.
+          That’s it: the <InlineCode>/marketplace</InlineCode> Blueprints category, the install API,
+          and the marketplace all read from this registry.
         </p>
         <DocImage
           src="/docs/dash-templates.png"
-          alt="The Templates gallery in the dashboard — a grid of installable template cards (Retail Store + Blog, Tattoo Studio, Beauty Salon & Spa, Antique Shop, Auto Parts), each showing its module pills and an Install button."
-          caption="The Templates gallery — every registered template appears here for tenants to install."
+          alt="The Templates gallery in the dashboard: a grid of installable template cards (Retail Store + Blog, Tattoo Studio, Beauty Salon & Spa, Antique Shop, Auto Parts), each showing its module pills and an Install button."
+          caption="The Templates gallery: every registered template appears here for tenants to install."
         />
       </DocSection>
 
@@ -914,7 +913,7 @@ export default function BuildingATemplatePage() {
           </Step>
           <Step n={4} title="Go live">
             <p>
-              Click <strong>Go live</strong> — it publishes every page, activates the layout, sets
+              Click <strong>Go live</strong>: it publishes every page, activates the layout, sets
               products live, and publishes content. Open the site and confirm it renders.
             </p>
           </Step>
@@ -926,7 +925,7 @@ export default function BuildingATemplatePage() {
         <ul>
           <li>
             <strong>No eyebrows.</strong> Never put a small uppercase/mono kicker label above a
-            heading. Carry hierarchy with size, weight, and color. (Platform-wide — see the brand
+            heading. Carry hierarchy with size, weight, and color. (Platform-wide: see the brand
             guide.)
           </li>
           <li>
@@ -957,7 +956,7 @@ export default function BuildingATemplatePage() {
           </li>
           <li>
             <strong>Installs land on the active property.</strong> On a secondary (non-primary)
-            site, the brand applies as that site’s override — it won’t repaint the primary site.
+            site, the brand applies as that site’s override. It won’t repaint the primary site.
           </li>
           <li>
             <strong>Everything installs as a draft.</strong> Go-live is a deliberate, separate step.

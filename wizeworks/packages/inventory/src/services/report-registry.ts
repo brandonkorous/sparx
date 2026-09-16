@@ -344,7 +344,7 @@ const deadStock: ReportDefinition<SlowMoverReport> = {
     { label: 'Cash trapped in excess', value: money(r.totals.excessValueCents) },
     {
       label: 'Dead lines',
-      value: `${NUMBER.format(r.totals.deadItems)} — ${money(r.totals.deadValueCents)}`,
+      value: `${NUMBER.format(r.totals.deadItems)}: ${money(r.totals.deadValueCents)}`,
     },
     ...(r.totals.itemsWithoutCost > 0
       ? [
@@ -464,11 +464,11 @@ const shrinkage: ReportDefinition<ShrinkageReport> = {
     ]),
   }),
   summary: (r) => [
-    { label: 'Written off', value: `${units(r.totalUnits)} — ${money(r.totalValueCents)}` },
+    { label: 'Written off', value: `${units(r.totalUnits)}: ${money(r.totalValueCents)}` },
     { label: 'Share of your stock value', value: percent(r.percentOfValuation) },
     {
       label: 'Found at a count',
-      value: `${units(r.recountGainUnits)} — ${money(r.recountGainValueCents)}`,
+      value: `${units(r.recountGainUnits)}: ${money(r.recountGainValueCents)}`,
     },
   ],
 };
@@ -766,7 +766,7 @@ const expiring: ReportDefinition<ExpiringStockReport> = {
 const scorecard: ReportDefinition<SupplierScorecardReport> = {
   key: 'supplier_scorecard',
   label: 'How your suppliers are doing',
-  description: 'On-time, fill rate, lead time and price behaviour, per supplier.',
+  description: 'On-time, fill rate, lead time and price behavior, per supplier.',
   windowed: false,
   run: (ctx, filters) =>
     listSupplierScorecards(ctx, {
@@ -922,7 +922,7 @@ const holdingCost: ReportDefinition<HoldingCostReport> = {
     { label: 'A month', value: money(r.monthlyHoldingCostCents) },
     {
       label: 'Carrying rate used',
-      value: `${r.annualRatePct}%${r.usingDefaultRate ? ' (the category default — set yours)' : ''}`,
+      value: `${r.annualRatePct}%${r.usingDefaultRate ? ' (the category default: set yours)' : ''}`,
       ...(r.usingDefaultRate ? { isGap: true } : {}),
     },
   ],

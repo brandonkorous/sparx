@@ -49,22 +49,55 @@ export const SAVED_VIEW_PRESETS: Record<string, readonly SavedViewPreset[]> = {
     { target: '/commerce/products', name: 'Drafts', params: { status: 'draft' } },
   ],
   crm: [
-    { target: '/crm/orders', name: 'To fulfill', params: { status: 'placed' } },
-    { target: '/crm/orders', name: 'Awaiting payment', params: { paymentStatus: 'pending' } },
-    { target: '/crm/customers', name: 'Leads', params: { lifecycle_stage: 'lead' } },
-    { target: '/crm/customers', name: 'Top spenders', params: { sort: 'totalSpent' } },
-    { target: '/crm/deals', name: 'Open deals', params: { state: 'open' } },
-    { target: '/crm/b2b', name: 'Credit hold', params: { status: 'credit_hold' } },
+    // NOTHING FOR THE CRM LISTS, on purpose, and this is the second system —
+    // not an oversight.
+    //
+    // Customers, orders, deals and accounts do not read `saved_views` at all.
+    // They mount `<SavedViewsMenu objectKey="contact" …>`, which is the CRM's
+    // own feature over `crm_saved_views`, keyed by object rather than by
+    // pathname. Six presets used to be seeded here for `/crm/orders`,
+    // `/crm/customers`, `/crm/deals` and `/crm/b2b`: every one was written to
+    // every tenant, and no screen has ever been able to ask for them.
+    //
+    // Seeding starter views for the CRM means seeding them THERE, through
+    // `crm/saved-view-service`, and it is a different piece of work from this
+    // file. `check:saved-view-targets` keeps the mistake from coming back.
   ],
   b2b: [
     { target: '/b2b/accounts', name: 'Credit hold', params: { status: 'credit_hold' } },
-    { target: '/b2b/quotes', name: 'Awaiting review', params: { stage: 'Under Review' } },
+    // No quotes view. "Awaiting review" filtered `stage: 'Under Review'`, and
+    // the stage filter does not exist anywhere in the chain: the quotes pane has
+    // no filters at all (only paging), `useQuotes` sends `account_id`, `take`
+    // and `skip`, and `GET /v1/b2b/quotes` takes no stage. So the preset named a
+    // filter three layers could not apply, on a target no pane registers.
+    // Filtering quotes by stage is a real capability and belongs in its own
+    // change, front to back; a seeded row cannot stand in for it.
     { target: '/b2b/invoices', name: 'Overdue', params: { status: 'overdue' } },
     { target: '/b2b/invoices', name: 'Unpaid', params: { status: 'unpaid' } },
   ],
   invoicing: [
-    { target: '/invoicing/documents', name: 'Overdue', params: { status: 'overdue' } },
-    { target: '/invoicing/documents', name: 'Unpaid', params: { status: 'unpaid' } },
+    // `pastDue`, not `status: 'overdue'`. The status column is written when
+    // something is DONE to a document; a due date passing is not something being
+    // done, so nothing writes it and this view found only the late invoices that
+    // happened to be touched afterwards. Measured before the change: 54
+    // documents / $51,456.69 genuinely past due, 30 / $26,983.76 returned, and
+    // one shop owed $986.50 across eight late invoices whose Overdue list was
+    // empty. `pastDue` asks the due date instead, the way the aging report
+    // always has.
+    //
+    // The STRING 'true', not a boolean, and not a style choice: a saved view is
+    // a snapshot of a list's URL query params, and a query param is text. The
+    // console's whole pipeline says so in its types (`Record<string, string>`)
+    // and `normalise()` compares values with `!== ''`. The route's `queryBool`
+    // reads it back into a real boolean at the edge, which is where that
+    // conversion belongs.
+    // '/invoicing/invoices', which is the path the LIST registers. It used to
+    // read '/invoicing/documents' — the API route, not the screen — so both of
+    // these sat in the database on a target no pane ever asks for, and the
+    // Views menu on the invoices list said 'No saved views yet' over two rows
+    // that existed. A preset's target is a pathname, never an endpoint.
+    { target: '/invoicing/invoices', name: 'Overdue', params: { pastDue: 'true' } },
+    { target: '/invoicing/invoices', name: 'Unpaid', params: { status: 'unpaid' } },
   ],
   cms: [
     { target: '/cms/content', name: 'Drafts', params: { status: 'draft' } },

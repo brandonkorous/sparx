@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-law-modern',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Law Firm (Modern)',
   summary:
-    'A sharp, modern business & litigation law-firm site — a midnight-slate palette, a confident blue accent and a precise modern sans. Installs a working consultation-booking flow: real consult types (litigation, formation, M&A, IP, employment), three partner attorneys booked by name with their own hours, and a credited-deposit policy. Ships as "Meridian Law Group", a boutique with big-firm reach.',
+    'A sharp, modern business & litigation law-firm site: a midnight-slate palette, a confident blue accent and a precise modern sans. Installs a working consultation-booking flow: real consult types (litigation, formation, M&A, IP, employment), three partner attorneys booked by name with their own hours, and a credited-deposit policy. Ships as "Meridian Law Group", a boutique with big-firm reach.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

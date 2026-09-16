@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-pressurewash-home',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Pressure Washing (Home)',
   summary:
-    'A bright, satisfying residential pressure & soft washing site — a vivid aqua palette on a crisp near-white ground, built around booking a free quote online. Installs a working flow: a $0 quote booking, driveway, house soft-wash, deck, roof and gutter services plus a full-exterior package, and three techs you book with their own hours. Ships as "Blast Master Pressure Washing" — make it look new again.',
+    'A bright, satisfying residential pressure & soft washing site: a vivid aqua palette on a crisp near-white ground, built around booking a free quote online. Installs a working flow: a $0 quote booking, driveway, house soft-wash, deck, roof and gutter services plus a full-exterior package, and three techs you book with their own hours. Ships as "Blast Master Pressure Washing". Make it look new again.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

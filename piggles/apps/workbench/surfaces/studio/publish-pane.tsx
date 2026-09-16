@@ -11,12 +11,11 @@
 // unasked would make opening this pane expensive for someone who only wanted to see
 // whether anything was outstanding.
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, Button, useToast } from '@wizeworks/silicaui-react';
 import { faCloudArrowUp } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneWaiting } from '../../components/pane-waiting';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   usePublishSite,
   usePublishState,
@@ -45,16 +44,12 @@ function waiting(state: PublishState): string {
   return `${parts.join(', and ')} that visitors are not seeing yet.`;
 }
 
-export function PublishPaneSurface({ ctx }: { ctx: SurfaceContext }) {
+export function PublishPaneSurface() {
   const state = usePublishState();
   const publish = usePublishSite();
   const check = useSiteCheck();
   const toast = useToast();
   const [report, setReport] = useState<SiteCheckReport | null>(null);
-
-  useEffect(() => {
-    ctx.setTitle('Publish');
-  }, [ctx]);
 
   const runCheck = () => {
     void check

@@ -8,6 +8,7 @@
 // Always called AFTER a DB transaction commits — never inside one. A rolled-back
 // write must never emit a phantom event.
 
+import { afterCommit } from '@wizeworks/db';
 import {
   createPublisher,
   indexEntity,
@@ -91,4 +92,28 @@ export async function indexInventoryEntity(
     recordId,
     op,
   });
+}
+
+/**
+ * The same signal, queued from INSIDE the transaction.
+ *
+ * Every purchasing service writes its audit row and returns without ever
+ * leaving `withTenant`, so there is no post-commit line to hang the index call
+ * on the way `warehouses.ts` does. `afterCommit` is the mechanism that already
+ * solves this: it runs when the OUTERMOST transaction commits and is discarded
+ * on rollback, so nothing announces a purchase order that was undone, and a
+ * service composed into a larger transaction still waits for that one.
+ *
+ * Call it beside the audit write. That is the one place every write in these
+ * services already touches, and it already names the record.
+ */
+export async function indexInventoryEntityOnCommit(
+  ctx: { tenantId: string; userId?: string | null },
+  entityType: string,
+  recordId: string,
+  op: 'upsert' | 'delete' = 'upsert'
+): Promise<void> {
+  await afterCommit(`index ${entityType} ${recordId}`, () =>
+    indexInventoryEntity(ctx, entityType, recordId, op)
+  );
 }

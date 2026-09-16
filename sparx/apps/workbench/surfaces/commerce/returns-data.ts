@@ -35,6 +35,9 @@ export type ReturnStatus =
   | 'inspecting'
   | 'inspected'
   | 'refunded'
+  // Settled by sending a replacement. Its own end rather than a $0.00 refund,
+  // so "how much did we give back" stays answerable (issue 220).
+  | 'exchanged'
   | 'cancelled';
 
 /** A row in the returns list — enough to name the return and the sale it came
@@ -55,6 +58,10 @@ export interface ReturnLine {
   id: string;
   orderItemId: string;
   orderItemName: string | null;
+  /** WHAT came back, from the order line it returns. Null on a hand-typed line
+   *  or a product since deleted (issue 450). */
+  productId: string | null;
+  variantId: string | null;
   quantity: number;
   approvedQuantity: number;
   reasonCode: string;
@@ -75,12 +82,32 @@ export interface ReturnInspectionRecord {
 
 export interface ReturnLabelRecord {
   id: string;
+  /** Which way this parcel is going. 'inbound' is the prepaid label the customer
+   *  sends the goods back with; 'outbound' is the replacement travelling to
+   *  them. Every row was inbound until a replacement got a journey of its own. */
+  direction: string;
   providerSlug: string;
-  labelRef: string;
+  /** The carrier as a person names it. Null on a label bought through a
+   *  provider, which carries the carrier inside the label itself. */
+  carrier: string | null;
+  labelRef: string | null;
   trackingNumber: string | null;
   trackingUrl: string | null;
   labelMediaId: string | null;
   costCents: number;
+  /** When it was actually posted, which is not when the row was written. */
+  shippedAt: string | null;
+}
+
+/** How a replacement is travelling. The tracking number is the point: everything
+ *  else can be absent and the record still answers "it went, here is how to
+ *  follow it". */
+export interface ReplacementShipmentBody {
+  carrier?: string;
+  carrierOther?: string;
+  trackingNumber: string;
+  trackingUrl?: string;
+  shippedAt?: string;
 }
 
 export interface ReturnDetail extends ReturnSummary {
@@ -202,6 +229,54 @@ export function useRefundReturn(id: string) {
   );
 }
 
+/** What the swap is settled with. `shipment` is present only when the parcel had
+ *  already gone — most shops settle first and record the tracking number
+ *  afterwards, through `useRecordReplacementShipment` below. */
+export interface SettleExchangeBody {
+  replacementVariantId: string;
+  quantity: number;
+  shipment?: ReplacementShipmentBody;
+}
+
+/** What settling a swap actually did.
+ *
+ *  `unitsRestocked` exists because the screen cannot work it out. Goods go back
+ *  on the shelf only once an inspection says they are fit to sell, so a swap
+ *  settled without one puts nothing back — and this modal said "one came back on
+ *  the shelf" regardless, seconds before the pane behind it said nothing had
+ *  been written down about the goods. */
+export interface SettleExchangeResult {
+  returnId: string;
+  unitsRestocked: number;
+}
+
+/** Settling by SENDING something rather than by moving money. A separate
+ *  endpoint from the refund, because it is a separate thing (issue 220). */
+export function useSettleExchange(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: SettleExchangeBody) =>
+      api.post<SettleExchangeResult>(`/v1/commerce/returns/${id}/exchange`, body),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: RETURNS_KEY });
+      // Both halves of the swap moved stock, so every stock screen is stale.
+      void queryClient.invalidateQueries({ queryKey: ['inventory'] });
+    },
+  });
+}
+
+/** Recording how the replacement travelled, AFTER the swap was settled.
+ *
+ *  The ordinary way round: she decides what to send while the customer waits and
+ *  the parcel goes out that afternoon, so the tracking number does not exist yet
+ *  when the swap is settled. This is what tells the customer. */
+export function useRecordReplacementShipment(id: string) {
+  return useReturnAction<{ shipment: ReplacementShipmentBody }>(
+    (returnId, body) => api.post(`/v1/commerce/returns/${returnId}/replacement-shipment`, body),
+    id
+  );
+}
+
 /**
  * The server's own sentence for a 4xx. These routes explain the real problem
  * ("Cannot approve return from status \"refunded\"", "No payment gateway is
@@ -215,12 +290,40 @@ export function returnErrorMessage(error: unknown, fallback: string): string {
 
 /* ── Saying what a state means ──────────────────────────────────────────── */
 
+/** How a settled return ends depends on what the customer ASKED for, so the two
+ *  states that talk about settling take the outcome too. Everything else is the
+ *  same sentence whatever they wanted. */
+// A plain string rather than the five known codes: `preferredOutcome` arrives
+// as whatever the server stored, and a union would only be a union in the type
+// system.
+type Settling = string;
+
+/** What "finish this" means for each outcome. Getting this wrong told a
+ *  customer owed a replacement that she had to be given her money back
+ *  (issue 220). */
+function finishBy(outcome: Settling): string {
+  switch (outcome) {
+    case 'exchange':
+      return 'Send the replacement they asked for to finish. No money moves.';
+    case 'account_credit':
+    case 'store_credit':
+      return 'Give them the credit they asked for to finish.';
+    case 'repair':
+      return 'Repair it and send it back to finish.';
+    default:
+      return 'Give the customer their money back to finish.';
+  }
+}
+
 /**
  * Where a return is, in the words a business owner uses. The stored values are a
  * developer's vocabulary — "inspected" and "in_transit" tell an owner nothing
  * about what they should do next.
  */
-export function returnState(status: ReturnStatus): { label: string; tone: Tone; detail: string } {
+export function returnState(
+  status: ReturnStatus,
+  outcome: Settling = 'refund'
+): { label: string; tone: Tone; detail: string } {
   switch (status) {
     case 'requested':
       return {
@@ -238,7 +341,7 @@ export function returnState(status: ReturnStatus): { label: string; tone: Tone; 
       return {
         label: 'Waiting to be sent',
         tone: 'info',
-        detail: 'Approved — the customer has not put it in the post yet.',
+        detail: 'Approved: the customer has not put it in the post yet.',
       };
     case 'in_transit':
       return {
@@ -250,7 +353,9 @@ export function returnState(status: ReturnStatus): { label: string; tone: Tone; 
       return {
         label: 'Back with you',
         tone: 'info',
-        detail: 'The goods have arrived. Check their condition, then settle the refund.',
+        detail: `The goods have arrived. Check their condition, then ${
+          outcome === 'exchange' ? 'send the replacement' : 'settle it'
+        }.`,
       };
     case 'inspecting':
       return {
@@ -262,13 +367,19 @@ export function returnState(status: ReturnStatus): { label: string; tone: Tone; 
       return {
         label: 'Checked, ready to settle',
         tone: 'info',
-        detail: 'You have recorded the condition. Give the customer their money back to finish.',
+        detail: `You have recorded the condition. ${finishBy(outcome)}`,
       };
     case 'refunded':
       return {
         label: 'Settled',
         tone: 'success',
         detail: 'The customer has had their money back and this return is done.',
+      };
+    case 'exchanged':
+      return {
+        label: 'Swapped',
+        tone: 'success',
+        detail: 'You sent the replacement. Nothing was owed either way, so no money moved.',
       };
     case 'denied':
       return {
@@ -313,8 +424,8 @@ export const OUTCOME_LABELS: Record<string, string> = {
 export const CONDITION_LABELS: Record<string, string> = {
   unopened: 'Unopened',
   like_new: 'As new',
-  used_good: 'Used — good',
-  used_acceptable: 'Used — acceptable',
+  used_good: 'Used: good',
+  used_acceptable: 'Used: acceptable',
   damaged: 'Damaged',
   destroyed: 'Destroyed',
 };

@@ -23,8 +23,10 @@ import {
   DenyReturnModal,
   ExchangeReturnModal,
   InspectReturnModal,
+  RecordReplacementShipmentModal,
   RefundReturnModal,
 } from './return-actions';
+import { needsShipmentRecord } from './return-shipment';
 import { ActionRow } from './return-action-dialog';
 
 export function ReturnMoves({
@@ -46,6 +48,7 @@ export function ReturnMoves({
   const [inspectOpen, setInspectOpen] = useState(false);
   const [refundOpen, setRefundOpen] = useState(false);
   const [exchangeOpen, setExchangeOpen] = useState(false);
+  const [shippedOpen, setShippedOpen] = useState(false);
 
   // Nothing can be done to a return whose sale is gone: the lines point at
   // order items that no longer exist, so approving it would buy a prepaid label
@@ -60,7 +63,14 @@ export function ReturnMoves({
     detail.status === 'approved' ||
     detail.status === 'awaiting_shipment' ||
     detail.status === 'in_transit';
-  const canInspect = detail.status === 'received' || detail.status === 'inspecting';
+  // Settled, and nobody ever wrote down what came back. The goods are real and
+  // on a shelf, but the returns bench lists inspections, so without this row
+  // they appear on no screen in the product ever again (issue 452).
+  const goodsUnaccounted =
+    (detail.status === 'refunded' || detail.status === 'exchanged') &&
+    detail.inspections.length === 0;
+  const canInspect =
+    detail.status === 'received' || detail.status === 'inspecting' || goodsUnaccounted;
   // Ready to settle — but HOW depends on what the customer asked for. An even
   // swap moves no money, so offering only a refund there offers the one move
   // that is wrong (issue 220).
@@ -68,7 +78,13 @@ export function ReturnMoves({
   const swapping = detail.preferredOutcome === 'exchange';
   const canRefund = settling && !swapping;
   const canExchange = settling && swapping;
-  const hasAction = canApprove || canDeny || canReceive || canInspect || canRefund || canExchange;
+  // The swap is settled and nobody has said how the replacement is travelling.
+  // The ordinary state rather than an unusual one: she settles it while the
+  // customer waits and walks to the post office afterwards, so without a route
+  // back in the tracking number has nowhere to go.
+  const canSayShipped = needsShipmentRecord(detail);
+  const hasAction =
+    canApprove || canDeny || canReceive || canInspect || canRefund || canExchange || canSayShipped;
   const onReceive = async () => {
     const ok = await confirm({
       title: 'Mark the goods as received?',
@@ -98,6 +114,23 @@ export function ReturnMoves({
     <>
       {hasAction ? (
         <div className="flex flex-col">
+          {canSayShipped ? (
+            <ActionRow
+              title="Say how it went out"
+              description="They are waiting to hear how to follow their replacement. Putting the tracking number in emails it to them."
+            >
+              <Button
+                size="sm"
+                color="module"
+                onClick={() => {
+                  setShippedOpen(true);
+                }}
+              >
+                Add tracking…
+              </Button>
+            </ActionRow>
+          ) : null}
+
           {canApprove ? (
             <ActionRow
               title="Approve this return"
@@ -137,8 +170,12 @@ export function ReturnMoves({
 
           {canInspect ? (
             <ActionRow
-              title="Record what came back"
-              description="Note the condition of each item and whether it can go back on the shelf."
+              title={goodsUnaccounted ? 'Say what came back' : 'Record what came back'}
+              description={
+                goodsUnaccounted
+                  ? 'This return is finished, but nothing was written down about the goods themselves. Note their condition so they show up on your returns bench.'
+                  : 'Note the condition of each item and whether it can go back on the shelf.'
+              }
             >
               <Button
                 size="sm"
@@ -191,7 +228,7 @@ export function ReturnMoves({
           {canDeny ? (
             <ActionRow
               title="Turn this return down"
-              description="Decline it — the customer keeps the item and no money changes hands. You give a reason they are told."
+              description="Decline it: the customer keeps the item and no money changes hands. You give a reason they are told."
             >
               <Button
                 size="sm"
@@ -243,6 +280,13 @@ export function ReturnMoves({
         open={exchangeOpen}
         onClose={() => {
           setExchangeOpen(false);
+        }}
+      />
+      <RecordReplacementShipmentModal
+        detail={detail}
+        open={shippedOpen}
+        onClose={() => {
+          setShippedOpen(false);
         }}
       />
     </>

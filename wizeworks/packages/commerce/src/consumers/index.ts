@@ -53,7 +53,7 @@ export function registerCommerceConsumers(
         // Best-effort, mirroring the platform bus's per-subscriber isolation: a
         // restock failure must not block the cancel. Idempotency means a later
         // manual adjust or redelivery still converges.
-        console.error('[commerce-consumer]', 'order.cancelled restock failed', { orderId, err });
+        console.error('[commerce-consumer]', 'order.canceled restock failed', { orderId, err });
       }
     })
   );

@@ -326,6 +326,12 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   // Publish read the CURRENT document.
   const docRef = useRef<EmailDocument | null>(null);
   const seededForId = useRef<string | null>(null);
+  // The document as it was seeded or last saved. `dirty` is the comparison
+  // against it, made in onChange because the document lives in a ref rather
+  // than in state. The flag used to be sticky: any edit set it and only a save
+  // cleared it, so undoing back to the saved design still left the pane
+  // claiming unsaved work and still confirmed on close (issue 507).
+  const baselineRef = useRef<string>('');
   const [dirty, setDirty] = useState(false);
 
   const [renaming, setRenaming] = useState(false);
@@ -350,6 +356,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   if (active && seededForId.current !== active.id) {
     seededForId.current = active.id;
     docRef.current = active.silicaDoc as EmailDocument;
+    baselineRef.current = JSON.stringify(active.silicaDoc);
     setDirty(false);
   }
 
@@ -483,7 +490,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     const doc = project.templates[0]?.document;
     if (!doc) return;
     docRef.current = doc;
-    setDirty(true);
+    setDirty(JSON.stringify(doc) !== baselineRef.current);
   }, []);
 
   const onSave = useCallback(async () => {
@@ -491,6 +498,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     if (!doc || !activeId) return;
     try {
       await save.mutateAsync(doc);
+      baselineRef.current = JSON.stringify(doc);
       setDirty(false);
     } catch (error) {
       toast.add({
@@ -508,7 +516,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     if (!dirty) return true;
     return confirm({
       title: 'Discard unsaved changes?',
-      description: `“${active?.name ?? 'This email'}” has changes you haven't saved. Leaving loses them — save first if you want to keep them.`,
+      description: `“${active?.name ?? 'This email'}” has changes you haven't saved. Leaving loses them. Save first if you want to keep them.`,
       confirmLabel: 'Discard and continue',
       cancelLabel: 'Keep editing',
       color: 'warning',
@@ -627,7 +635,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     const when = new Date(version.createdAt).toLocaleString();
     const ok = await confirm({
       title: 'Restore this version?',
-      description: `This replaces what's on the canvas with the version published ${when}. Your current draft is overwritten, but nothing goes live until you Publish — so you can review it first.`,
+      description: `This replaces what's on the canvas with the version published ${when}. Your current draft is overwritten, but nothing goes live until you Publish, so you can review it first.`,
       confirmLabel: 'Restore to canvas',
       cancelLabel: 'Cancel',
       color: 'warning',
@@ -637,6 +645,8 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
       await restore.mutateAsync(version.id);
       // The server rewrote the draft; reseed the canvas from it and remount so the
       // restored content replaces what silica currently holds.
+      // `seededForId = null` makes the seed above run again, which sets the
+      // baseline from the restored draft.
       seededForId.current = null;
       setRemountKey((k) => k + 1);
       setDirty(false);
@@ -727,7 +737,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Mail className="size-6" aria-hidden />}
           title="No emails yet"
-          description="Create your first email — it opens straight into the editor."
+          description="Create your first email. It opens straight into the editor."
           actions={
             <Button
               size="sm"
@@ -832,7 +842,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
                   so the marker has to BE text. It goes after the name so the names still
                   align and the list stays scannable. */}
               {email.name}
-              {email.key ? ' — sent automatically' : ''}
+              {email.key ? ' (sent automatically)' : ''}
             </option>
           ))}
         </NativeSelect>
@@ -892,7 +902,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
           color="warning"
           variant="soft"
           size="sm"
-          title="You've saved changes that aren't live yet — Publish to send them to recipients."
+          title="You've saved changes that aren't live yet. Publish to send them to recipients."
         >
           Unpublished changes
         </Badge>
@@ -1166,8 +1176,8 @@ function TrackingMenu({
               Click tracking
             </Heading>
             <Text className="text-sm">
-              Links in this email that go to your own site are tracked automatically, so clicks —
-              and any sales that follow — show up in your reports. Links to other websites can’t be
+              Links in this email that go to your own site are tracked automatically, so clicks (and
+              any sales that follow) show up in your reports. Links to other websites can’t be
               tracked.
             </Text>
           </div>
@@ -1244,7 +1254,7 @@ function PreviewChecks({ checks }: { checks: EmailCheck[] }) {
     ? `${issueCount} thing${issueCount === 1 ? '' : 's'} to fix before sending`
     : issueCount
       ? `${issueCount} suggestion${issueCount === 1 ? '' : 's'}`
-      : 'Ready to send — every check passed';
+      : 'Ready to send: every check passed';
   const badgeLabel = errorCount ? 'Action needed' : issueCount ? 'Review' : 'Ready';
 
   return (
@@ -1464,7 +1474,7 @@ function HistoryDialog({
             <div className="flex flex-col gap-0.5">
               <DialogTitle>Publish history</DialogTitle>
               <Text className="text-sm">
-                Every version you’ve published. Restore one to bring it back to the canvas — nothing
+                Every version you’ve published. Restore one to bring it back to the canvas. Nothing
                 goes live until you Publish it again.
               </Text>
             </div>

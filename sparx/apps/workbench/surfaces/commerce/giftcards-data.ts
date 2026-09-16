@@ -103,7 +103,7 @@ export function giftCardState(status: string): { label: string; tone: Tone; deta
       return {
         label: 'Used up',
         tone: 'neutral',
-        detail: 'Its whole balance has been spent — nothing left on it.',
+        detail: 'Its whole balance has been spent. Nothing left on it.',
       };
     case 'expired':
       return {
@@ -115,7 +115,7 @@ export function giftCardState(status: string): { label: string; tone: Tone; deta
       return {
         label: 'Cancelled',
         tone: 'danger',
-        detail: 'It was cancelled and can no longer be spent.',
+        detail: 'It was canceled and can no longer be spent.',
       };
     default:
       return { label: status, tone: 'neutral', detail: '' };

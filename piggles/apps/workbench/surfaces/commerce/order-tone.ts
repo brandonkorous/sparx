@@ -34,18 +34,26 @@ export function shippingState(order: Order): { label: string; tone: Tone; detail
         detail: collected ? 'The customer picked this up.' : 'This order reached the customer.',
       };
     case 'fulfilled':
+      // This branch had no collected form while the two on either side of it did,
+      // so a collect order that had been picked and packed read "On the way" —
+      // about a parcel sitting on the shop’s own counter. Nothing had gone
+      // anywhere, there was no carrier, and an owner reading it would have told a
+      // customer their order was in transit. Every branch that can be reached by
+      // a collection now says which of the two it is.
       return {
-        label: 'On the way',
+        label: collected ? 'Ready to collect' : 'On the way',
         tone: 'info',
-        detail: 'This order has been sent and is with the carrier.',
+        detail: collected
+          ? 'This order is packed and waiting for the customer to come and get it.'
+          : 'This order has been sent and is with the carrier.',
       };
     case 'cancelled':
       return {
         label: 'Cancelled',
         tone: 'danger',
         detail: order.cancelledReason
-          ? `This order was cancelled: ${order.cancelledReason}`
-          : 'This order was cancelled and nothing more will be sent.',
+          ? `This order was canceled: ${order.cancelledReason}`
+          : 'This order was canceled and nothing more will be sent.',
       };
     case 'refunded':
       return {

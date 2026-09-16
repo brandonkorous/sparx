@@ -92,6 +92,13 @@ on:
           # and without this every one of them keeps telling visitors it is sold
           # out until somebody edits it. Reports what it ASKED for; the rebuilds
           # run on the worker. Dry-runs by default. Safe to re-run.
+          #
+          # The OTHER case is a new PROJECTOR. Adding one makes a kind of record
+          # searchable from that release onward, and leaves every record that
+          # already exists invisible to search until this runs: nothing in the
+          # past raises an event. Issue 508 added seven at once (suppliers,
+          # orders to suppliers, deliveries, supplier invoices, returns,
+          # transfers, counts), so that release needs this behind it.
           - reindex-search
       environment:
         description: 'Where to run it'

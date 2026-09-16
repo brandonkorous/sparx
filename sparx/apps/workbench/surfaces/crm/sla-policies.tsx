@@ -167,10 +167,10 @@ export function SlaPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
               No response times set up yet
             </Heading>
             <Text>
-              A response time is your promise about how quickly you will get back to someone — and
-              it is counted only during the hours you are open, so a message that arrives on a
-              Sunday night is not late on Monday morning. One is created for you the first time a
-              support request comes in.
+              A response time is your promise about how quickly you will get back to someone, and it
+              is counted only during the hours you are open, so a message that arrives on a Sunday
+              night is not late on Monday morning. One is created for you the first time a support
+              request comes in.
             </Text>
           </div>
         </div>
@@ -258,7 +258,7 @@ function PolicyEditor({
   const warn = Number(draft.warnAtPercent);
   const warnError =
     !Number.isInteger(warn) || warn < 1 || warn > 99
-      ? 'The early warning has to be between 1 and 99 per cent.'
+      ? 'The early warning has to be between 1 and 99 percent.'
       : null;
 
   const blocked = dayError ?? warnError;
@@ -367,9 +367,9 @@ function PolicyEditor({
             </Heading>
             <Text>
               How quickly you promise to get back to someone, and when you are open to do it. The
-              clock only runs during your opening hours — so if you promise a reply within four
-              hours and a message arrives at half past four in the afternoon, it is due at half past
-              nine the next morning, not overnight.
+              clock only runs during your opening hours, so if you promise a reply within four hours
+              and a message arrives at half past four in the afternoon, it is due at half past nine
+              the next morning, not overnight.
             </Text>
           </div>
 
@@ -489,14 +489,14 @@ function PolicyEditor({
                 aria-label="Your timezone"
               />
               <FieldDescription>
-                The hours above are counted in this timezone — the one your team actually works in.
+                The hours above are counted in this timezone: the one your team actually works in.
               </FieldDescription>
             </Field>
           </FormSection>
 
           <FormSection
             title="What you promise"
-            description="In working minutes, counted only while you are open. Leave a box empty to make no promise at that level — better than a number you cannot keep."
+            description="In working minutes, counted only while you are open. Leave a box empty to make no promise at that level: better than a number you cannot keep."
           >
             <Card className="p-0">
               <Table size="sm">
@@ -579,7 +579,7 @@ function PolicyEditor({
                 </div>
                 <Clock className="size-4" aria-hidden />
                 <Text>
-                  per cent of the time used — so an hour’s promise goes amber at{' '}
+                  percent of the time used, so an hour’s promise goes amber at{' '}
                   {Number.isFinite(warn) ? Math.max(1, Math.floor((60 * warn) / 100)) : 48} minutes.
                 </Text>
               </div>

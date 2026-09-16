@@ -22,7 +22,7 @@ import { CodeBlock } from '@/components/docs/code-block';
 export const metadata: Metadata = {
   title: 'Quickstart',
   description:
-    'Go from zero to a live sparx integration in about ten minutes — create an API key, place your first order over the REST API, read the response, and react to events.',
+    'Go from zero to a live sparx integration in about ten minutes: create an API key, place your first order over the REST API, read the response, and react to events.',
   alternates: { canonical: '/docs/quickstart' },
 };
 
@@ -95,7 +95,7 @@ const RESPONSE_CODE = `{
   }
 }`;
 
-const WEBHOOK_CODE = `// Receive webhook deliveries — see the Webhooks guide for the full setup.
+const WEBHOOK_CODE = `// Receive webhook deliveries: see the Webhooks guide for the full setup.
 import { verifySparxWebhook } from "./verify";
 
 export async function POST(req: Request) {
@@ -121,7 +121,7 @@ export default function QuickstartPage() {
       ]}
       title="Quickstart"
       badge={<Badge tone="gray">API v1</Badge>}
-      lede="Go from zero to a live integration in about ten minutes. You'll create an API key, place an order over the REST API, read the response, and see how to react to events — the same surface the dashboard uses, because every sparx feature is an API endpoint first."
+      lede="Go from zero to a live integration in about ten minutes. You'll create an API key, place an order over the REST API, read the response, and see how to react to events: the same surface the dashboard uses, because every sparx feature is an API endpoint first."
       meta={
         <>
           <span>Updated 2026-06-05</span>
@@ -144,14 +144,14 @@ export default function QuickstartPage() {
       <Callout type="info" title="Prerequisites">
         You need a sparx tenant with the <strong>CRM</strong> module active, and an existing
         customer to attach the order to. No tenant yet?{' '}
-        <DocLink href="/pricing">Create one free</DocLink> — live in under five minutes, no card
+        <DocLink href="/pricing">Create one free</DocLink>: live in under five minutes, no card
         required.
       </Callout>
 
       <DocSection id="overview" title="Overview">
         <p>
           sparx is API-first: the dashboard, the live site, and AI agents over MCP are all consumers
-          of the same REST and GraphQL surface. An integration touches three things — an
+          of the same REST and GraphQL surface. An integration touches three things: an
           authenticated <strong>client</strong> (your API key), a <strong>resource</strong> you read
           or write, and the <strong>events</strong> sparx emits in response.
         </p>
@@ -179,12 +179,12 @@ export default function QuickstartPage() {
           <Step n={1} title="Create an API key" done>
             <p>
               In your dashboard, open <InlineCode>Settings → AI integrations</InlineCode> and create
-              a key. The secret (<InlineCode>sk_live_…</InlineCode>) is shown once — store it as{' '}
+              a key. The secret (<InlineCode>sk_live_…</InlineCode>) is shown once: store it as{' '}
               <InlineCode>SPARX_KEY</InlineCode>. Full details in{' '}
               <DocLink href="/docs/authentication">Authentication</DocLink>.
             </p>
             <Callout type="warn">
-              Keys inherit Row-Level Security — a key can never read another tenant&rsquo;s data,
+              Keys inherit Row-Level Security: a key can never read another tenant&rsquo;s data,
               even on a malformed request. Keep it server-side and treat it like a password.
             </Callout>
           </Step>
@@ -192,7 +192,7 @@ export default function QuickstartPage() {
           <Step n={2} title="Place your first order">
             <p>
               Orders live in the CRM, which owns the customer and order spine. POST a customer id
-              and one or more line items; sparx computes the totals. Here it is in three languages —
+              and one or more line items; sparx computes the totals. Here it is in three languages:
               no SDK required, just HTTP:
             </p>
             <EndpointChip method="POST" path="/v1/orders" />
@@ -288,12 +288,12 @@ export default function QuickstartPage() {
               Creating that order emitted an <InlineCode>order.placed</InlineCode> event on the
               internal bus. To receive events in your own app, register a webhook and verify each
               signed delivery. Subscribable events span orders, content, media, redirects, and email
-              delivery — the full catalog is in{' '}
+              delivery: the full catalog is in{' '}
               <DocLink href="/docs/guides/webhooks">Webhooks &amp; events</DocLink>:
             </p>
             <CodeBlock tabs={[{ label: 'webhook.ts', code: WEBHOOK_CODE }]} />
             <Callout type="tip" title="The same event stream powers AI.">
-              An MCP agent reads and writes live data directly — no exports, no CSVs. Webhooks are
+              An MCP agent reads and writes live data directly: no exports, no CSVs. Webhooks are
               for notifying external systems; <DocLink href="/docs/mcp">MCP</DocLink> is for agents.
             </Callout>
           </Step>
@@ -302,7 +302,7 @@ export default function QuickstartPage() {
 
       <DocSection id="advanced" title="Conventions">
         <p>
-          A couple of patterns that apply across every endpoint — worth knowing before you go
+          A couple of patterns that apply across every endpoint: worth knowing before you go
           further.
         </p>
         <Accordion title="The response envelope">
@@ -380,21 +380,21 @@ export default function QuickstartPage() {
               <td>
                 <code>rate_limited</code>
               </td>
-              <td>Too many requests — back off and retry.</td>
+              <td>Too many requests: back off and retry.</td>
             </tr>
           </tbody>
         </DocTable>
-        <DocQuote cite="— sparx API design principle">
+        <DocQuote cite="sparx API design principle">
           &ldquo;AI builds it, sparx keeps it.&rdquo; Every endpoint you call today is versioned and
-          deprecation-warned — never silently broken under you.
+          deprecation-warned, never silently broken under you.
         </DocQuote>
       </DocSection>
 
       <DocSection id="faq" title="Frequently asked">
         <Accordion title="Do I need the dashboard to use the API?">
           <p>
-            No. The dashboard is one consumer of the API — you can run an entire tenant headless.
-            The only thing that requires the dashboard is creating your first API key.
+            No. The dashboard is one consumer of the API. You can run an entire tenant headless. The
+            only thing that requires the dashboard is creating your first API key.
           </p>
         </Accordion>
         <Accordion title="Is GraphQL or REST recommended?">
@@ -453,7 +453,7 @@ export default function QuickstartPage() {
               </svg>
             }
           >
-            Create an order — every parameter, with request and response examples.
+            Create an order: every parameter, with request and response examples.
           </NextCard>
         </NextSteps>
       </DocSection>

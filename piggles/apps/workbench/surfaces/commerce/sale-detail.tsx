@@ -85,10 +85,6 @@ export function SaleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const asking = useMemo(() => depositDue(lines) ?? total, [lines, total]);
 
   useEffect(() => {
-    ctx.setTitle('Take a sale');
-  }, [ctx]);
-
-  useEffect(() => {
     if (!amountTouched) setPaid(asking > 0 ? asking.toFixed(2) : '');
   }, [asking, amountTouched]);
 
@@ -165,7 +161,7 @@ export function SaleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="Who it was for"
-            description="The sale goes onto their record, so what they have spent with you stays true. Everyone who buys from you needs a record — add them in Customers if this is their first time."
+            description="The sale goes onto their record, so what they have spent with you stays true. Everyone who buys from you needs a record. Add them in Customers if this is their first time."
           >
             <CustomerPicker
               value={customer?.id ?? null}

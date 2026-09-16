@@ -244,7 +244,7 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
       const created = await createDashboard.mutateAsync(input);
       setActiveId(created.id);
       setBoardDraft(null);
-      toast.add({ title: `“${created.name}” created — add a report to it.`, type: 'success' });
+      toast.add({ title: `“${created.name}” created. Add a report to it.`, type: 'success' });
       return;
     }
     const saved = await updateDashboard.mutateAsync(input);
@@ -258,8 +258,8 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
       title: `Delete “${target.name}”?`,
       description:
         count > 0
-          ? `The ${String(count)} report${count === 1 ? '' : 's'} on it stay exactly as they are — this only removes the board they were arranged on.`
-          : 'The reports it points at stay exactly as they are — this only removes the board.',
+          ? `The ${String(count)} report${count === 1 ? '' : 's'} on it stay exactly as they are. This only removes the board they were arranged on.`
+          : 'The reports it points at stay exactly as they are. This only removes the board.',
       confirmLabel: 'Delete this board',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -313,8 +313,8 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   />
                   <FieldDescription>
-                    Name it after the question it answers — that is what you will be looking for
-                    when there are four of these.
+                    Name it after the question it answers. That is what you will be looking for when
+                    there are four of these.
                   </FieldDescription>
                 </Field>
 
@@ -628,8 +628,8 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
                       person for a state they did not cause. */}
                   {(reports?.items.length ?? 0) === 0 ? (
                     <FieldDescription>
-                      There are no reports yet. Build one under “Build a report” — or open one of
-                      the ready-made ones there, copy it, and change a thing.
+                      There are no reports yet. Build one under “Build a report”, or open one of the
+                      ready-made ones there, copy it, and change a thing.
                     </FieldDescription>
                   ) : (
                     <Select
@@ -680,7 +680,7 @@ export function DashboardsSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   />
                   <FieldDescription>
-                    The report itself is untouched — this is what the card is called here.
+                    The report itself is untouched. This is what the card is called here.
                   </FieldDescription>
                 </Field>
               </form>

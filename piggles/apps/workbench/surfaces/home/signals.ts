@@ -75,9 +75,13 @@ export const SIGNALS: Signal[] = [
     icon: faFileExclamation,
     module: 'invoicing',
     surface: 'invoicing.invoices.list',
-    one: 'invoice is overdue',
-    many: 'invoices are overdue',
-    clear: 'nothing is overdue',
+    // 'Late', the word the invoices list itself uses on the band at the top of
+    // it and on the badge on every row. 'Overdue' was also the name of the stored
+    // status that turned out not to mean late at all, and no screen a business
+    // owner reads should carry one word twice meaning two things.
+    one: 'invoice is late',
+    many: 'invoices are late',
+    clear: 'nothing is late',
     noun: 'invoices',
   },
   // Before 'stock' on purpose: sold out is the worse of the two and the one that

@@ -75,7 +75,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'shopify to sparx',
     ],
     headline: 'Your Shopify store, without the app bill',
-    lede: 'Products, variants, customers, orders, stock by location and discount codes — from the export files Shopify already makes for you. No developer, no agency, no CSV surgery.',
+    lede: 'Products, variants, customers, orders, stock by location and discount codes: from the export files Shopify already makes for you. No developer, no agency, no CSV surgery.',
     painTitle: 'You did not choose eleven subscriptions. They accumulated.',
     pains: [
       {
@@ -88,12 +88,12 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       },
       {
         title: 'The things you actually need are the things that cost extra',
-        body: 'B2B pricing, purchase orders, real stock across two locations, a CRM that knows what someone bought — these are not exotic requests. They are what running a business looks like after year two, and on Shopify each one is a different vendor.',
+        body: 'B2B pricing, purchase orders, real stock across two locations, a CRM that knows what someone bought. These are not exotic requests. They are what running a business looks like after year two, and on Shopify each one is a different vendor.',
       },
     ],
     turnTitle: 'The problem was never Shopify. It was buying a business in pieces.',
     turnBody:
-      'sparx is the store, the stock, the customers, the email and the site as one system that shares one database. A customer record already knows what they bought, what they asked, and what they owe — not because an app syncs it overnight, but because there is nothing to sync. That is why the app bill goes away rather than getting cheaper: there is nothing left to bolt on.',
+      'sparx is the store, the stock, the customers, the email and the site as one system that shares one database. A customer record already knows what they bought, what they asked, and what they owe, not because an app syncs it overnight, but because there is nothing to sync. That is why the app bill goes away rather than getting cheaper: there is nothing left to bolt on.',
     consequences: [
       'One invoice instead of eleven, and modules you can switch off when you stop using them.',
       'Stock that is right across every location, because one ledger writes it.',
@@ -101,12 +101,12 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'B2B pricing, purchase orders and multi-location stock included rather than quoted.',
     ],
     limits: [
-      'Collections, pages and blog posts have no native Shopify CSV export — those come from the live connection instead, or you can rebuild them in the builder.',
+      'Collections, pages and blog posts have no native Shopify CSV export. Those come from the live connection instead, or you can rebuild them in the builder.',
       'Your theme does not come with you. You choose a new one, and your content drops into it.',
       'Draft orders, gift card balances and app-specific data (subscription plans, loyalty points) stay behind.',
     ],
     effort:
-      'A catalogue of a few thousand products and its customers usually lands in an afternoon. Orders and stock add another hour.',
+      'A catalog of a few thousand products and its customers usually lands in an afternoon. Orders and stock add another hour.',
   },
 
   {
@@ -123,7 +123,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'leave wordpress ecommerce',
     ],
     headline: 'Stop being your own systems administrator',
-    lede: 'Your products with their variations, your customers, and the whole WordPress side — posts, pages, categories, media and every old link — from the two exports you already have.',
+    lede: 'Your products with their variations, your customers, and the whole WordPress side (posts, pages, categories, media and every old link) from the two exports you already have.',
     painTitle: 'You wanted a shop. You got a maintenance schedule.',
     pains: [
       {
@@ -149,7 +149,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'Hosting, SSL and the CDN are simply part of it.',
     ],
     limits: [
-      'Comments do not come across — we have nowhere to put them, and most people leaving are leaving comment spam behind too.',
+      'Comments do not come across. We have nowhere to put them, and most people leaving are leaving comment spam behind too.',
       'Menus are rebuilt in the builder, where navigation is a layout decision rather than a database table.',
       'Theme settings, widgets and page-builder layouts are meaningless off WordPress. Your writing comes; the shell is rebuilt.',
     ],
@@ -171,7 +171,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'bigcommerce sales threshold',
     ],
     headline: 'Growing should not move you into a more expensive plan',
-    lede: 'Products with their variants and option sets, categories, customers and order history — from the CSV exports in your BigCommerce dashboard.',
+    lede: 'Products with their variants and option sets, categories, customers and order history: from the CSV exports in your BigCommerce dashboard.',
     painTitle: 'A good year costs you money in a way that makes no sense.',
     pains: [
       {
@@ -184,23 +184,23 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       },
       {
         title: 'It is still only the shop',
-        body: 'BigCommerce sells well and knows nothing about the rest of the business — the quotes, the trade accounts, the mailing list, the stock in the second unit.',
+        body: 'BigCommerce sells well and knows nothing about the rest of the business: the quotes, the trade accounts, the mailing list, the stock in the second unit.',
       },
     ],
     turnTitle: 'Pay for capability, not for succeeding.',
     turnBody:
-      'sparx charges per module you switch on, not per pound you take. A record year costs exactly what a quiet one does. And the modules are not just commerce — the CRM, the stock system, the email and the site are the same product, so the shop stops being an island.',
+      'sparx charges per module you switch on, not per pound you take. A record year costs exactly what a quiet one does. And the modules are not just commerce: the CRM, the stock system, the email and the site are the same product, so the shop stops being an island.',
     consequences: [
       'Your bill is the same in December as it is in February.',
       'Trade pricing, price lists and customer groups are the B2B module, not a tier.',
       'One place for a customer, whether they bought online, on a quote or over the phone.',
     ],
     limits: [
-      'Option sets become product options, and complex option RULES (surcharge this combination, hide that one) do not come across — they are re-created where you need them.',
+      'Option sets become product options, and complex option RULES (surcharge this combination, hide that one) do not come across. They are re-created where you need them.',
       'Blog posts and web pages are rebuilt in the builder; BigCommerce has no export for them.',
       'Gift certificate balances stay behind.',
     ],
-    effort: 'Three files, most of an afternoon for a catalogue with real variant depth.',
+    effort: 'Three files, most of an afternoon for a catalog with real variant depth.',
   },
 
   {
@@ -209,7 +209,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     noun: 'store',
     seoTitle: 'Move from Adobe Commerce (Magento) to sparx',
     seoDescription:
-      'Bring your Magento catalogue — configurable products unpacked into real variants — plus customers and multi-source stock, from the standard data-transfer exports.',
+      'Bring your Magento catalog (configurable products unpacked into real variants) plus customers and multi-source stock, from the standard data-transfer exports.',
     keywords: [
       'magento alternative',
       'adobe commerce alternative',
@@ -217,7 +217,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'magento import',
     ],
     headline: 'You should not need a developer to change a price',
-    lede: 'Your catalogue with configurable products unpacked into real variants, your customers, and stock across every source — from System → Data Transfer → Export.',
+    lede: 'Your catalog with configurable products unpacked into real variants, your customers, and stock across every source: from System → Data Transfer → Export.',
     painTitle: 'Everything is possible, and nothing is quick.',
     pains: [
       {
@@ -226,29 +226,29 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       },
       {
         title: 'The platform costs less than keeping it running',
-        body: 'Hosting sized for Magento, a developer on retainer, an agency for upgrades, and an upgrade cycle that is itself a project. The licence was never the number that mattered.',
+        body: 'Hosting sized for Magento, a developer on retainer, an agency for upgrades, and an upgrade cycle that is itself a project. The license was never the number that mattered.',
       },
       {
         title: 'It was built for a bigger company than yours',
-        body: 'Multi-source inventory, complex catalogue rules, staged content. Serious capability, and a serious ongoing cost to operate, aimed at a team with people whose whole job this is.',
+        body: 'Multi-source inventory, complex catalog rules, staged content. Serious capability, and a serious ongoing cost to operate, aimed at a team with people whose whole job this is.',
       },
     ],
     turnTitle: 'Enterprise capability, without the enterprise operating model.',
     turnBody:
-      'sparx keeps what you actually use from Magento — real variants, multi-location stock, trade pricing, price lists, a proper API — and removes the part where using it requires someone else. The person who prices the products changes the prices.',
+      'sparx keeps what you actually use from Magento (real variants, multi-location stock, trade pricing, price lists, a proper API) and removes the part where using it requires someone else. The person who prices the products changes the prices.',
     consequences: [
       'Configurable products arrive as real variants with their options, not as a pile of orphan simple products.',
-      'Stock arrives per source, so a two-warehouse catalogue stays a two-warehouse catalogue.',
+      'Stock arrives per source, so a two-warehouse catalog stays a two-warehouse catalog.',
       'An API and an MCP server, so anything you did automate keeps being automatable.',
       'No hosting to size, no upgrade project, no retainer.',
     ],
     limits: [
-      'Per-store-view rows are skipped — you get the default view, which is the catalogue your shop is actually built on.',
-      'Catalogue price rules, cart price rules and custom EAV attributes with their own logic do not come across.',
+      'Per-store-view rows are skipped. You get the default view, which is the catalog your shop is actually built on.',
+      'Catalog price rules, cart price rules and custom EAV attributes with their own logic do not come across.',
       'Your theme and any custom modules stay behind.',
     ],
     effort:
-      'A large catalogue takes an afternoon. The configurable-product unpacking is the part that would otherwise take a fortnight.',
+      'A large catalog takes an afternoon. The configurable-product unpacking is the part that would otherwise take a fortnight.',
   },
 
   {
@@ -257,7 +257,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     noun: 'site',
     seoTitle: 'Move from Squarespace to sparx',
     seoDescription:
-      'Bring your Squarespace products, orders, contacts, pages and blog posts across — with the old URLs redirected so your search rankings survive.',
+      'Bring your Squarespace products, orders, contacts, pages and blog posts across, with the old URLs redirected so your search rankings survive.',
     keywords: [
       'squarespace alternative',
       'migrate from squarespace',
@@ -265,7 +265,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'leave squarespace',
     ],
     headline: 'You have outgrown the website, not the taste',
-    lede: 'Products with their options, orders, contacts, and every page and post you have written — with the old addresses redirected so nothing you have earned in search is lost.',
+    lede: 'Products with their options, orders, contacts, and every page and post you have written, with the old addresses redirected so nothing you have earned in search is lost.',
     painTitle: 'It was the right choice for the business you had then.',
     pains: [
       {
@@ -283,12 +283,12 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     ],
     turnTitle: 'Keep the site. Add the business underneath it.',
     turnBody:
-      'sparx builds sites too — but the site sits on top of a real commerce engine, a real CRM and a real stock system, so the shop can grow without you moving house again. Your writing comes with you, and so do your rankings.',
+      'sparx builds sites too, but the site sits on top of a real commerce engine, a real CRM and a real stock system, so the shop can grow without you moving house again. Your writing comes with you, and so do your rankings.',
     consequences: [
       'Every post and page arrives with its old URL redirected to its new one, automatically.',
       'Products keep their options and their photos.',
       'Contacts become customers who remember what they bought.',
-      'The next thing you need — trade pricing, a second location, invoicing — is a switch rather than a move.',
+      'The next thing you need (trade pricing, a second location, invoicing) is a switch rather than a move.',
     ],
     limits: [
       'The design does not come across. You pick a new theme, and your content drops into it.',
@@ -307,7 +307,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'Bring your Wix products with their variants and correct prices, your contacts and your orders across from the CSV exports in your Wix dashboard.',
     keywords: ['wix alternative', 'migrate from wix', 'wix export', 'leave wix', 'wix lock in'],
     headline: 'Getting out of Wix is the hard part. Not any more.',
-    lede: 'Products with their variants priced correctly, contacts with their subscription state, and your orders — from the three exports Wix does let you take.',
+    lede: 'Products with their variants priced correctly, contacts with their subscription state, and your orders: from the three exports Wix does let you take.',
     painTitle: 'The easiest platform to start on is the hardest one to leave.',
     pains: [
       {
@@ -325,14 +325,14 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     ],
     turnTitle: 'A builder with a business underneath it.',
     turnBody:
-      'sparx has a visual builder too — the difference is what it is sitting on. Commerce, CRM, stock, email and CMS are the same product sharing one database, so the site is the front of a business rather than the whole of it. And your data is yours: everything here exports.',
+      'sparx has a visual builder too: the difference is what it is sitting on. Commerce, CRM, stock, email and CMS are the same product sharing one database, so the site is the front of a business rather than the whole of it. And your data is yours: everything here exports.',
     consequences: [
-      'Variant prices arrive correct, surcharges included — most importers read a Wix variant priced at parent-plus-four as free.',
+      'Variant prices arrive correct, surcharges included. Most importers read a Wix variant priced at parent-plus-four as free.',
       'Contacts keep their labels and their subscription state, so your mailing list stays legal.',
       'What you build here can always be taken away again, in the same shape it went in.',
     ],
     limits: [
-      'The site design does not come across — Wix has no export for it. You choose a theme and rebuild the pages, which is usually an evening.',
+      'The site design does not come across: Wix has no export for it. You choose a theme and rebuild the pages, which is usually an evening.',
       'Wix Bookings, Wix Blog posts and members areas stay behind.',
     ],
     effort:
@@ -345,7 +345,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     noun: 'site',
     seoTitle: 'Move from Webflow to sparx',
     seoDescription:
-      'Bring your Webflow CMS collections and ecommerce products across — including the custom fields that make a collection worth having.',
+      'Bring your Webflow CMS collections and ecommerce products across, including the custom fields that make a collection worth having.',
     keywords: [
       'webflow alternative',
       'migrate from webflow',
@@ -353,7 +353,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'webflow ecommerce alternative',
     ],
     headline: 'A beautiful site is not a business',
-    lede: 'Your CMS collections with every custom field intact, and your products — from the CSV exports Webflow makes per collection.',
+    lede: 'Your CMS collections with every custom field intact, and your products: from the CSV exports Webflow makes per collection.',
     painTitle: 'The site is excellent. Everything behind it is missing.',
     pains: [
       {
@@ -373,7 +373,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     turnBody:
       'sparx has a real visual builder, and behind it the commerce, CRM, stock and email that Webflow expects you to buy elsewhere and wire together. The form that captures an enquiry writes to the same place the order does.',
     consequences: [
-      'Custom collection fields come across as custom properties rather than being dropped — a Case Studies collection is not a blog post with three fields missing.',
+      'Custom collection fields come across as custom properties rather than being dropped: a Case Studies collection is not a blog post with three fields missing.',
       'The enquiry, the quote and the order are the same customer, automatically.',
       'No item caps.',
     ],
@@ -390,7 +390,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     noun: 'shop',
     seoTitle: 'Move from Etsy to your own shop',
     seoDescription:
-      'Bring your Etsy listings, variations, sold orders and — crucially — your buyers across, reconstructed from the only file Etsy gives you.',
+      'Bring your Etsy listings, variations, sold orders and (crucially) your buyers across, reconstructed from the only file Etsy gives you.',
     keywords: [
       'etsy alternative',
       'sell off etsy',
@@ -399,7 +399,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'etsy export',
     ],
     headline: 'Own the customer, not just the listing',
-    lede: 'Listings with their variations, sold orders, and a real buyer list rebuilt from your orders file — the customer list Etsy never gives you.',
+    lede: 'Listings with their variations, sold orders, and a real buyer list rebuilt from your orders file: the customer list Etsy never gives you.',
     painTitle: 'You built the shop. They kept the relationship.',
     pains: [
       {
@@ -417,15 +417,15 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     ],
     turnTitle: 'Keep selling there. Stop only selling there.',
     turnBody:
-      'This is not usually a switch — it is adding a shop you own beside the one you rent. The difference is that on your own site the buyer is yours: you can email them, they can find you directly, and a repeat order costs you nothing in commission.',
+      'This is not usually a switch. It is adding a shop you own beside the one you rent. The difference is that on your own site the buyer is yours: you can email them, they can find you directly, and a repeat order costs you nothing in commission.',
     consequences: [
-      'A real customer list, rebuilt from your sold-orders file — the thing Etsy has never given you.',
+      'A real customer list, rebuilt from your sold-orders file: the thing Etsy has never given you.',
       'Email built in, so a new collection is an email rather than an ad spend.',
       'Every repeat order is worth roughly a tenth more, because nobody takes a cut of it.',
     ],
     limits: [
       'Etsy reports stock per LISTING, not per variation, so quantities need a once-over after the move. Everything else lands as-is.',
-      'Reviews stay on Etsy — they are theirs.',
+      'Reviews stay on Etsy. They are theirs.',
       'Digital download files are re-uploaded once.',
     ],
     effort:
@@ -438,7 +438,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     noun: 'shop',
     seoTitle: 'Move from Square to sparx',
     seoDescription:
-      'Bring your Square item library, per-location stock counts and customer directory across — the best inventory export of any platform, imported properly.',
+      'Bring your Square item library, per-location stock counts and customer directory across: the best inventory export of any platform, imported properly.',
     keywords: [
       'square online alternative',
       'migrate from square',
@@ -446,7 +446,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'weebly alternative',
     ],
     headline: 'Great at the counter. Thin everywhere else.',
-    lede: 'Your item library with its variations, stock counted per location, and your customer directory — from the exports in your Square dashboard.',
+    lede: 'Your item library with its variations, stock counted per location, and your customer directory: from the exports in your Square dashboard.',
     painTitle: 'The till is excellent. The rest is an afterthought.',
     pains: [
       {
@@ -464,7 +464,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     ],
     turnTitle: 'Keep the till. Put a real business behind it.',
     turnBody:
-      'sparx takes the thing Square does best — stock counted honestly, per location — and puts a full commerce, purchasing and CRM system around it. Your three shops stay three shops, with three real counts.',
+      'sparx takes the thing Square does best (stock counted honestly, per location) and puts a full commerce, purchasing and CRM system around it. Your three shops stay three shops, with three real counts.',
     consequences: [
       'Stock arrives per location, not merged into one number you then have to re-count.',
       'Unit costs come across, so margin reporting works on day one.',
@@ -476,7 +476,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'Loyalty balances and gift card balances stay behind.',
     ],
     effort:
-      'One item library export covers both the catalogue and the stock. Most shops are across in under an hour.',
+      'One item library export covers both the catalog and the stock. Most shops are across in under an hour.',
   },
 
   {
@@ -493,7 +493,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'artist shop platform',
     ],
     headline: 'You have outgrown a five-product shop',
-    lede: 'Your products with their options, and your order history — from the exports in your Big Cartel admin.',
+    lede: 'Your products with their options, and your order history: from the exports in your Big Cartel admin.',
     painTitle: 'It was perfect at twelve products. You have ninety.',
     pains: [
       {
@@ -511,14 +511,14 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     ],
     turnTitle: 'The same simplicity, with room above it.',
     turnBody:
-      'sparx starts as simple as you need — switch on commerce and nothing else, and it is a shop. The difference is what happens when you need the next thing: stock across two places, a mailing list, wholesale pricing for the shop that wants to stock you. It is a switch rather than a move.',
+      'sparx starts as simple as you need. Switch on commerce and nothing else, and it is a shop. The difference is what happens when you need the next thing: stock across two places, a mailing list, wholesale pricing for the shop that wants to stock you. It is a switch rather than a move.',
     consequences: [
       'Options become real product options with their own stock and prices.',
       'Repeat buyers are visible as repeat buyers.',
       'Wholesale is a module away when the first shop asks for a trade price.',
     ],
     limits: [
-      'Your theme is rebuilt — Big Cartel themes are theirs.',
+      'Your theme is rebuilt: Big Cartel themes are theirs.',
       'Discount codes are re-created; the export does not include them.',
     ],
     effort: 'Two files, half an hour.',
@@ -537,7 +537,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'godaddy online store export',
     ],
     headline: 'A bundle is not a system',
-    lede: 'Your products and your contact list, with subscription state intact — from the exports in Websites + Marketing.',
+    lede: 'Your products and your contact list, with subscription state intact: from the exports in Websites + Marketing.',
     painTitle: 'It came with the domain. That was the whole reasoning.',
     pains: [
       {
@@ -546,7 +546,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       },
       {
         title: 'There is no depth to grow into',
-        body: 'No variants worth the name, no stock across locations, no CRM, no trade pricing. When you need one of those, you are not upgrading — you are leaving.',
+        body: 'No variants worth the name, no stock across locations, no CRM, no trade pricing. When you need one of those, you are not upgrading. You are leaving.',
       },
       {
         title: 'The upsells never stop',
@@ -559,7 +559,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     consequences: [
       'Your contact list keeps its subscription state, so nobody gets emailed who should not be.',
       'Products become products with real variants when you need them.',
-      'The domain comes too — bring it, or buy a new one here.',
+      'The domain comes too: bring it, or buy a new one here.',
     ],
     limits: [
       'GoDaddy flattens variants into a single text field, so only the first option axis is recoverable. The rest are added once, here.',
@@ -574,7 +574,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     noun: 'site',
     seoTitle: 'Move from WordPress to sparx',
     seoDescription:
-      'Bring every post, page, category, image and old URL across from one WordPress export — including the SEO titles your plugin owns.',
+      'Bring every post, page, category, image and old URL across from one WordPress export, including the SEO titles your plugin owns.',
     keywords: [
       'wordpress alternative',
       'migrate from wordpress',
@@ -583,7 +583,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'leave wordpress',
     ],
     headline: 'Ten years of writing, moved in an hour',
-    lede: 'Every post, page, category, image and old URL — from the single export file under Tools → Export. Your SEO titles come too.',
+    lede: 'Every post, page, category, image and old URL: from the single export file under Tools → Export. Your SEO titles come too.',
     painTitle: 'The writing is the asset. The platform is the liability.',
     pains: [
       {
@@ -601,10 +601,10 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     ],
     turnTitle: 'Your writing is portable. The maintenance is not worth keeping.',
     turnBody:
-      'sparx is a publishing platform with commerce, CRM, email and stock already in it — built and updated together. The part of WordPress you actually value is the archive, and the archive moves in one file.',
+      'sparx is a publishing platform with commerce, CRM, email and stock already in it: built and updated together. The part of WordPress you actually value is the archive, and the archive moves in one file.',
     consequences: [
       'Every old URL is redirected to its new one automatically, so a decade of links and rankings survive.',
-      'Yoast and Rank Math titles and descriptions come across — most importers drop them, and you only notice in the traffic.',
+      'Yoast and Rank Math titles and descriptions come across. Most importers drop them, and you only notice in the traffic.',
       'Drafts stay drafts, published stays published, and the dates are the real dates.',
       'Nothing to update, ever.',
     ],
@@ -625,7 +625,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'Bring your Ghost posts, pages, tags and members across from the JSON backup and the members CSV.',
     keywords: ['ghost alternative', 'migrate from ghost', 'ghost export json', 'ghost members'],
     headline: 'Publishing is solved. The business around it is not.',
-    lede: 'Posts and pages with their tags intact, and your members list — from the JSON backup and the members export.',
+    lede: 'Posts and pages with their tags intact, and your members list: from the JSON backup and the members export.',
     painTitle: 'You write. Then everything else needs a different tool.',
     pains: [
       {
@@ -645,7 +645,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     turnBody:
       'sparx publishes as well as Ghost does and then keeps going: the shop, the customers, the email and the site are the same system. The subscriber who buys the book is one record, because there is only one place records live.',
     consequences: [
-      'Tags survive — most CMS migrations flatten taxonomy, and you find out later.',
+      'Tags survive. Most CMS migrations flatten taxonomy, and you find out later.',
       'Members become customers who can also buy things.',
       'Selling a course, a print or an hour is a switch, not a second platform.',
     ],
@@ -663,7 +663,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     noun: 'newsletter',
     seoTitle: 'Move from Substack to sparx',
     seoDescription:
-      'Bring your Substack posts and subscribers across, with paid and free clearly marked — and stop paying a tenth of your revenue.',
+      'Bring your Substack posts and subscribers across, with paid and free clearly marked, and stop paying a tenth of your revenue.',
     keywords: [
       'substack alternative',
       'migrate from substack',
@@ -671,13 +671,13 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'substack 10 percent',
       'own your newsletter',
     ],
-    headline: 'Ten per cent of everything, forever',
-    lede: 'Your posts and your subscriber list, with paid and free clearly marked — from the export under Settings.',
+    headline: 'Ten percent of everything, forever',
+    lede: 'Your posts and your subscriber list, with paid and free clearly marked: from the export under Settings.',
     painTitle: 'The maths gets worse exactly as it goes well.',
     pains: [
       {
         title: 'The cut is a percentage, so success costs more',
-        body: 'Ten per cent of subscription revenue, plus payment processing. At a hundred subscribers it is a rounding error. At three thousand it is a salary.',
+        body: 'Ten percent of subscription revenue, plus payment processing. At a hundred subscribers it is a rounding error. At three thousand it is a salary.',
       },
       {
         title: 'It is their site, with your name on it',
@@ -685,7 +685,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       },
       {
         title: 'You can only ever do one thing',
-        body: 'It is a newsletter. Not a shop, not a course, not a members area, not a business — and every one of those is where a newsletter that works eventually goes.',
+        body: 'It is a newsletter. Not a shop, not a course, not a members area, not a business, and every one of those is where a newsletter that works eventually goes.',
       },
     ],
     turnTitle: 'Keep the readers. Keep the money.',
@@ -693,16 +693,16 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'sparx sends the newsletter, hosts the site, takes the payments and runs the shop, for a flat monthly fee that does not care how well you are doing. The same list, on infrastructure you own.',
     consequences: [
       'Paid and free subscribers arrive tagged as such, so you can mail them differently from day one.',
-      'A flat fee instead of a percentage — at three thousand paid subscribers that is most of a salary back.',
+      'A flat fee instead of a percentage: at three thousand paid subscribers that is most of a salary back.',
       'Sell a book, a course or a workshop to the same list, without a second platform.',
     ],
     limits: [
-      "Substack's posts.csv is an index — the writing is in HTML files beside it. Drop the whole export folder so the bodies come too.",
+      "Substack's posts.csv is an index: the writing is in HTML files beside it. Drop the whole export folder so the bodies come too.",
       'Paid posts arrive as drafts rather than public, so migration day does not put your paywalled archive on the open web.',
       'Stripe billing is re-connected here; existing subscriptions do not transfer automatically.',
     ],
     effort:
-      'The subscriber list is minutes. The archive depends on how much you have written — usually under an hour.',
+      'The subscriber list is minutes. The archive depends on how much you have written, usually under an hour.',
   },
 
   {
@@ -714,7 +714,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'Bring your Framer CMS collections across with every custom field intact, from the per-collection CSV export.',
     keywords: ['framer alternative', 'migrate from framer', 'framer cms export'],
     headline: 'The prettiest site in the world still needs a business behind it',
-    lede: 'Your CMS collections with every custom field intact — one CSV per collection.',
+    lede: 'Your CMS collections with every custom field intact. One CSV per collection.',
     painTitle: 'You designed a site. You needed a system.',
     pains: [
       {
@@ -723,7 +723,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       },
       {
         title: 'Anything transactional lives elsewhere',
-        body: 'Payments, enquiries, email, invoices — four other tools, four other logins, four other bills.',
+        body: 'Payments, enquiries, email, invoices: four other tools, four other logins, four other bills.',
       },
       {
         title: 'Nothing joins up',
@@ -739,7 +739,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'One bill instead of five.',
     ],
     limits: [
-      "Framer's design and interactions do not transfer — the content and its structure do.",
+      "Framer's design and interactions do not transfer: the content and its structure do.",
       'One export per collection.',
     ],
     effort: 'A few minutes per collection.',
@@ -751,7 +751,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     noun: 'CRM',
     seoTitle: 'Move from HubSpot to sparx',
     seoDescription:
-      'Bring your HubSpot contacts, companies, deals and tickets across — with your pipeline stages rebuilt exactly as you had them.',
+      'Bring your HubSpot contacts, companies, deals and tickets across, with your pipeline stages rebuilt exactly as you had them.',
     keywords: [
       'hubspot alternative',
       'migrate from hubspot',
@@ -760,7 +760,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'hubspot contact tiers',
     ],
     headline: 'Your pipeline, rebuilt exactly as you had it',
-    lede: "Contacts, companies, deals and tickets — with your own stage names, in your own order, not mapped onto somebody else's idea of a sales process.",
+    lede: "Contacts, companies, deals and tickets, with your own stage names, in your own order, not mapped onto somebody else's idea of a sales process.",
     painTitle: 'The bill grew faster than the team did.',
     pains: [
       {
@@ -778,15 +778,15 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     ],
     turnTitle: 'A CRM that can see the orders.',
     turnBody:
-      "sparx's CRM sits on the same database as commerce, invoicing and email. A contact record shows the deal, the quote, the order, the invoice and the support ticket — not because five systems sync, but because there is one system. And it is priced per module, not per person and per contact.",
+      "sparx's CRM sits on the same database as commerce, invoicing and email. A contact record shows the deal, the quote, the order, the invoice and the support ticket, not because five systems sync, but because there is one system. And it is priced per module, not per person and per contact.",
     consequences: [
-      'Your stage names come across exactly — fourteen stages stay fourteen stages, in your order.',
+      'Your stage names come across exactly: fourteen stages stay fourteen stages, in your order.',
       'Closed Won and Closed Lost are typed as won and lost, so forecasting is right immediately.',
       'Contacts, companies, deals and tickets stay connected to each other.',
       'No per-seat charge, so everyone who should be in it is in it.',
     ],
     limits: [
-      'Workflows, sequences and marketing emails are rebuilt here — the export does not include them.',
+      'Workflows, sequences and marketing emails are rebuilt here: the export does not include them.',
       'Deal owners who do not have an account here yet land unassigned rather than being invited automatically.',
       'Meeting links, forms and landing pages are re-created.',
     ],
@@ -807,7 +807,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'salesforce too complex for small business',
     ],
     headline: 'Built for a company with a Salesforce administrator',
-    lede: 'Accounts, contacts, leads, opportunities and cases — from the list-view exports you already know how to make.',
+    lede: 'Accounts, contacts, leads, opportunities and cases: from the list-view exports you already know how to make.',
     painTitle: 'You are paying for capability you cannot reach.',
     pains: [
       {
@@ -825,7 +825,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     ],
     turnTitle: 'The parts you use, without the operating model.',
     turnBody:
-      'sparx does accounts, contacts, deals with real pipelines, and support tickets — and joins them to the orders, invoices and email, which Salesforce charges extra to approximate. The person who runs the sales process configures the sales process.',
+      'sparx does accounts, contacts, deals with real pipelines, and support tickets, and joins them to the orders, invoices and email, which Salesforce charges extra to approximate. The person who runs the sales process configures the sales process.',
     consequences: [
       'Leads and contacts arrive as one kind of record with a lifecycle, which is what they always were.',
       'Opportunities keep their stage, amount and close date, and won/lost is read correctly.',
@@ -834,7 +834,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     ],
     limits: [
       'Custom objects, Apex, flows and validation rules do not come across.',
-      'Reports and dashboards are rebuilt — the ones you actually look at, usually in an afternoon.',
+      'Reports and dashboards are rebuilt: the ones you actually look at, usually in an afternoon.',
       'Chatter and activity history stay behind.',
     ],
     effort: 'One export per object. Half a day for a CRM with years in it.',
@@ -846,7 +846,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     noun: 'CRM',
     seoTitle: 'Move from Pipedrive to sparx',
     seoDescription:
-      'Bring your Pipedrive people, organisations and deals across — with won and lost read correctly from the status column.',
+      'Bring your Pipedrive people, organisations and deals across, with won and lost read correctly from the status column.',
     keywords: ['pipedrive alternative', 'migrate from pipedrive', 'pipedrive export'],
     headline: 'Good at deals. Blind to everything else.',
     lede: 'People, organisations and deals, with pipelines and stages rebuilt as you had them and won/lost read exactly.',
@@ -867,10 +867,10 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     ],
     turnTitle: 'A pipeline that knows what happened next.',
     turnBody:
-      'sparx joins deals to invoices, orders and support in one database. Closing a deal produces the quote, the invoice and the order, and the customer record shows all of it — so "what is this account actually worth" is a fact rather than an estimate.',
+      'sparx joins deals to invoices, orders and support in one database. Closing a deal produces the quote, the invoice and the order, and the customer record shows all of it, so "what is this account actually worth" is a fact rather than an estimate.',
     consequences: [
       'Pipelines and stages arrive exactly as you had them.',
-      'Won and lost come across correctly — Pipedrive is the only CRM on this list with a real status column, and we use it.',
+      'Won and lost come across correctly: Pipedrive is the only CRM on this list with a real status column, and we use it.',
       'The deal, the invoice and the order become one story on one record.',
     ],
     limits: [
@@ -886,7 +886,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     noun: 'audience',
     seoTitle: 'Move from Mailchimp to sparx',
     seoDescription:
-      'Bring your Mailchimp audience across with consent preserved — only confirmed opt-ins are imported as permission to email.',
+      'Bring your Mailchimp audience across with consent preserved. Only confirmed opt-ins are imported as permission to email.',
     keywords: [
       'mailchimp alternative',
       'migrate from mailchimp',
@@ -894,7 +894,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'mailchimp pricing contacts',
     ],
     headline: 'You are paying for people who unsubscribed',
-    lede: 'Your audience, every merge field you added, and consent handled properly — from the audience export.',
+    lede: 'Your audience, every merge field you added, and consent handled properly: from the audience export.',
     painTitle: 'The pricing is per contact, and contacts only ever accumulate.',
     pains: [
       {
@@ -906,15 +906,15 @@ export const MIGRATE_STORIES: MigrateStory[] = [
         body: 'Mailchimp knows an email address. It does not know they have spent four hundred pounds with you, or that they have an open support ticket, unless you pay to connect something that half-tells it.',
       },
       {
-        title: 'Segmenting on behaviour means integrating on behaviour',
+        title: 'Segmenting on behavior means integrating on behavior',
         body: '"Everyone who bought this and not that in the last ninety days" is a connector project, not a query.',
       },
     ],
     turnTitle: 'A list that is the customer list.',
     turnBody:
-      'In sparx the mailing list and the customer database are the same records. Segmenting on what someone bought, what they spent or what they returned is a filter, not an integration — because the orders are in the same database as the addresses.',
+      'In sparx the mailing list and the customer database are the same records. Segmenting on what someone bought, what they spent or what they returned is a filter, not an integration, because the orders are in the same database as the addresses.',
     consequences: [
-      'Only confirmed double opt-ins are imported as permission to email. Anything else lands without it, which is recoverable — the reverse is a complaint.',
+      'Only confirmed double opt-ins are imported as permission to email. Anything else lands without it, which is recoverable: the reverse is a complaint.',
       'Every merge field you added comes across as a custom property.',
       'Segment on orders, spend and support history without connecting anything.',
     ],
@@ -932,7 +932,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     noun: 'audience',
     seoTitle: 'Move from Klaviyo to sparx',
     seoDescription:
-      'Bring your Klaviyo profiles across with email and SMS consent read exactly, plus lifetime value — from the profiles export.',
+      'Bring your Klaviyo profiles across with email and SMS consent read exactly, plus lifetime value: from the profiles export.',
     keywords: [
       'klaviyo alternative',
       'migrate from klaviyo',
@@ -940,7 +940,7 @@ export const MIGRATE_STORIES: MigrateStory[] = [
       'klaviyo pricing',
     ],
     headline: 'Excellent email. Priced like a platform.',
-    lede: 'Your profiles with email and SMS consent read exactly as Klaviyo recorded it, plus lifetime value — from the profiles export.',
+    lede: 'Your profiles with email and SMS consent read exactly as Klaviyo recorded it, plus lifetime value: from the profiles export.',
     painTitle: 'It is the best email tool you can buy, and it is only an email tool.',
     pains: [
       {
@@ -958,9 +958,9 @@ export const MIGRATE_STORIES: MigrateStory[] = [
     ],
     turnTitle: 'Stop keeping a second copy of your customers.',
     turnBody:
-      'sparx sends the email from the same records that hold the orders. There is no sync, no lag and no second copy to reconcile — a flow that fires on "bought twice, not in ninety days" is reading the orders themselves.',
+      'sparx sends the email from the same records that hold the orders. There is no sync, no lag and no second copy to reconcile: a flow that fires on "bought twice, not in ninety days" is reading the orders themselves.',
     consequences: [
-      'Email and SMS consent come across separately and exactly — Klaviyo is the cleanest consent export of any platform on this list, and none of it is guessed.',
+      'Email and SMS consent come across separately and exactly: Klaviyo is the cleanest consent export of any platform on this list, and none of it is guessed.',
       'Lifetime value arrives with the profile.',
       'One record per customer, everywhere, forever.',
     ],

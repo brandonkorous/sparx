@@ -125,7 +125,7 @@ export function MigrationHistorySurface({ ctx }: { ctx: SurfaceContext }) {
               icon: <PackagePlus className="size-6" aria-hidden />,
               title: 'Nothing has been moved in yet',
               description:
-                'When you bring a catalogue, a contact list or a blog over from another platform, each move is recorded here with exactly what landed.',
+                'When you bring a catalog, a contact list or a blog over from another platform, each move is recorded here with exactly what landed.',
               actions: (
                 <Button
                   color="module"

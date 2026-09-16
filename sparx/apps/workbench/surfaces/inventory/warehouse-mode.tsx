@@ -407,7 +407,7 @@ function PutAwayJob({ warehouseId }: { warehouseId: string }) {
             {shelves.map((bin) => (
               <option key={bin.id} value={bin.id}>
                 {bin.code}
-                {bin.name ? ` — ${bin.name}` : ''}
+                {bin.name ? ` (${bin.name})` : ''}
               </option>
             ))}
           </NativeSelect>
@@ -482,7 +482,7 @@ function OpenSomethingJob({
           job === 'count'
             ? `No stock count has the number ${found.scanned}.`
             : job === 'pack'
-              ? `Nothing in the catalogue matches ${found.scanned}.`
+              ? `Nothing in the catalog matches ${found.scanned}.`
               : `No purchase order has the number ${found.scanned}.`
         );
         playScanFeedback('not_found');
@@ -533,7 +533,7 @@ function OpenSomethingJob({
           <AlertContent>
             <AlertTitle>{message}</AlertTitle>
             <AlertDescription>
-              You can also type the number — {job === 'count' ? 'CNT-000012' : 'PO-000045'} — and
+              You can also type the number ({job === 'count' ? 'CNT-000012' : 'PO-000045'}) and
               press Enter.
             </AlertDescription>
           </AlertContent>

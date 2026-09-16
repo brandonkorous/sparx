@@ -40,7 +40,6 @@ import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   usePartnerProfile,
   useUpdateProfile,
@@ -104,7 +103,7 @@ function toInput(form: FormState): ProfileInput {
   };
 }
 
-export function ProfileSurface({ ctx }: { ctx: SurfaceContext }) {
+export function ProfileSurface() {
   const toast = useToast();
   const profile = usePartnerProfile();
   const update = useUpdateProfile();
@@ -119,10 +118,6 @@ export function ProfileSurface({ ctx }: { ctx: SurfaceContext }) {
       setBaseline(next);
     }
   }, [profile.data, form]);
-
-  useEffect(() => {
-    ctx.setTitle('Your listing');
-  }, [ctx]);
 
   const dirty = useMemo(
     () => (form && baseline ? JSON.stringify(form) !== JSON.stringify(baseline) : false),
@@ -447,7 +442,7 @@ export function ProfileSurface({ ctx }: { ctx: SurfaceContext }) {
                   List me in the partner directory
                 </Text>
                 <Text as="span" className="text-sm">
-                  When off, you stay an active partner and keep earning — you just won’t appear in
+                  When off, you stay an active partner and keep earning. You just won’t appear in
                   the public directory.
                 </Text>
               </span>

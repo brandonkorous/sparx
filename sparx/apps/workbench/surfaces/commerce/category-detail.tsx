@@ -141,7 +141,7 @@ function CategoryLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         error={error}
         noun="category"
         title="Could not load this category"
-        description="This is a problem reaching the server. The category itself is unaffected — nothing has been lost."
+        description="This is a problem reaching the server. The category itself is unaffected. Nothing has been lost."
         onRetry={() => {
           void refetch();
         }}
@@ -322,7 +322,7 @@ function CategoryEditor({
       title: `Delete ${category.name}?`,
       description:
         category.productCount > 0
-          ? `This category comes off your website menu. The ${String(category.productCount)} product${category.productCount === 1 ? '' : 's'} filed here ${category.productCount === 1 ? 'is' : 'are'} kept — ${category.productCount === 1 ? 'it' : 'they'} just stop appearing under this heading. This cannot be undone.`
+          ? `This category comes off your website menu. The ${String(category.productCount)} product${category.productCount === 1 ? '' : 's'} filed here ${category.productCount === 1 ? 'is' : 'are'} kept: ${category.productCount === 1 ? 'it' : 'they'} just stop appearing under this heading. This cannot be undone.`
           : 'This category comes off your website menu. This cannot be undone. Categories with sub-categories underneath them cannot be deleted until those are moved or removed first.',
       confirmLabel: 'Delete this category',
       cancelLabel: 'Keep it',
@@ -384,7 +384,7 @@ function CategoryEditor({
                 Add a category
               </Heading>
               <Text>
-                A category is a part of your website&apos;s menu — an aisle shoppers browse down.
+                A category is a part of your website&apos;s menu: an aisle shoppers browse down.
                 Categories can sit inside one another, so &ldquo;Cookware&rdquo; can live under
                 &ldquo;Camping&rdquo;.
               </Text>
@@ -433,7 +433,7 @@ function CategoryEditor({
                 }
               />
               <FieldDescription>
-                The end of this category&apos;s page address — yoursite.com/c/
+                The end of this category&apos;s page address: yoursite.com/c/
                 {effectiveHandle || '…'}.{' '}
                 {isNew ? '' : 'Changing it breaks any link already shared to this page.'}
               </FieldDescription>
@@ -484,7 +484,7 @@ function CategoryEditor({
                 }
               />
               <FieldDescription>
-                Marks it as one to highlight — themes can show featured categories on the home page
+                Marks it as one to highlight: themes can show featured categories on the home page
                 or in a promoted menu.
               </FieldDescription>
             </Field>
@@ -514,7 +514,7 @@ function CategoryEditor({
 
           <FormSection
             title="Pictures"
-            description="Optional images your theme can use — a small icon in the menu, and a banner across the top of the category's page."
+            description="Optional images your theme can use: a small icon in the menu, and a banner across the top of the category's page."
           >
             <MediaField
               label="Menu icon"
@@ -592,8 +592,8 @@ function CategoryEditor({
             <div className="border-base-300 flex flex-col gap-3 border-t pt-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Text className="text-sm">
-                  Deleting takes this category off your website menu. Products filed here are kept —
-                  they just stop appearing under this heading.
+                  Deleting takes this category off your website menu. Products filed here are kept.
+                  They just stop appearing under this heading.
                 </Text>
                 <Button
                   size="sm"

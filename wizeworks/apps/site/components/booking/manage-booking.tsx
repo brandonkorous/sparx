@@ -145,8 +145,8 @@ export function ManageBooking({ token }: { token: string }) {
         <div className="flex flex-col items-start gap-3">
           <Text>
             {booking.cancellationReason
-              ? `This appointment is cancelled: ${booking.cancellationReason}`
-              : 'This appointment is cancelled.'}
+              ? `This appointment is canceled: ${booking.cancellationReason}`
+              : 'This appointment is canceled.'}
           </Text>
           <Button color="primary" render={<Link href="/book" />}>
             Book another time

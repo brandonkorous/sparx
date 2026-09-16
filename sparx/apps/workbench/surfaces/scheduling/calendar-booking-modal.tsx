@@ -290,7 +290,7 @@ function LoadedModal({
   const onCancel = async () => {
     const ok = await confirmDialog({
       title: `Cancel this ${bookingTypeLabel(booking.bookingType).toLowerCase()}?`,
-      description: `${booking.service.name} at ${formatWhen(booking.startAt, booking.timezone)} will be cancelled and its slot freed for someone else. Any deposit is settled by your booking rules. This cannot be undone.`,
+      description: `${booking.service.name} at ${formatWhen(booking.startAt, booking.timezone)} will be canceled and its slot freed for someone else. Any deposit is settled by your booking rules. This cannot be undone.`,
       confirmLabel: 'Cancel the booking',
       cancelLabel: 'Keep it',
       color: 'error',

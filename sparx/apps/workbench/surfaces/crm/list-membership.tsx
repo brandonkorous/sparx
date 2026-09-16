@@ -72,7 +72,7 @@ function Members({ segmentId, segmentName }: { segmentId: string; segmentName: s
     const ok = await confirm({
       title: `Take ${name} off ${segmentName}?`,
       description:
-        'They stay a customer — this only removes them from this list. It is recorded, so you will still be able to see they were on it.',
+        'They stay a customer. This only removes them from this list. It is recorded, so you will still be able to see they were on it.',
       confirmLabel: 'Take them off',
       cancelLabel: 'Keep them on',
       color: 'danger',
@@ -105,7 +105,7 @@ function Members({ segmentId, segmentName }: { segmentId: string; segmentName: s
         color="module"
         aria-label="Add somebody to this list"
         placeholder="Search for somebody to add"
-        emptyMessage="Nobody matching — try a different spelling."
+        emptyMessage="Nobody matching. Try a different spelling."
         items={options}
         value={null}
         onValueChange={(next) => {
@@ -136,8 +136,8 @@ function Members({ segmentId, segmentName }: { segmentId: string; segmentName: s
         <div className="flex flex-col items-start gap-2 py-4">
           <UserPlus className="size-5" aria-hidden />
           <Text className="text-base">
-            Nobody is on this list yet. Search above to put somebody on it — or have an automation
-            do it, which is how most lists fill up.
+            Nobody is on this list yet. Search above to put somebody on it, or have an automation do
+            it, which is how most lists fill up.
           </Text>
         </div>
       ) : (
@@ -218,7 +218,7 @@ function History({ segmentId }: { segmentId: string }) {
 
       {rows.length === 0 ? (
         <Text className="text-base">
-          Nothing yet. Once people start joining and leaving, this is where you can see who — and
+          Nothing yet. Once people start joining and leaving, this is where you can see who, and
           when, which is the part a membership list on its own can never tell you.
         </Text>
       ) : (

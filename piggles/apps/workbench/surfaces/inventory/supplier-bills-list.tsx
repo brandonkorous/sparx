@@ -3,7 +3,7 @@
 // BILLS TO PAY — supplier invoices, and whether they are right.
 //
 // A business that checks nothing pays whatever arrives. A business that checks by
-// eye catches the £400 errors and never the £12 ones — which are the ones that
+// eye catches the $400 errors and never the $12 ones — which are the ones that
 // repeat every month and, over a year, cost more.
 //
 // So the list leads with what is owed and when, and every row carries whether
@@ -222,8 +222,8 @@ export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Card className="min-h-0 flex-1 overflow-auto">{body()}</Card>
 
       <Text className="text-sm">
-        Enter a bill from the purchase order it belongs to — the lines come across already filled
-        in, and the check runs straight away.
+        Enter a bill from the purchase order it belongs to: the lines come across already filled in,
+        and the check runs straight away.
       </Text>
     </div>
   );

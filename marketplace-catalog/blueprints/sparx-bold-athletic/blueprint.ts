@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-bold-athletic',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Bold Athletic',
   summary:
-    'A bold-athletic DTC storefront for a performance apparel label — a confident full-bleed hero over a drop-culture rhythm of shoppable carousels, a signature power-tiles grid and a ride-shot strip, in a dark mono `velodrome` theme with one hi-vis accent. Modelled on the bold-athletic DTC archetype; shipped as Threshold, an endurance cycling-apparel label.',
+    'A bold-athletic DTC storefront for a performance apparel label: a confident full-bleed hero over a drop-culture rhythm of shoppable carousels, a signature power-tiles grid and a ride-shot strip, in a dark mono `velodrome` theme with one hi-vis accent. Modelled on the bold-athletic DTC archetype; shipped as Threshold, an endurance cycling-apparel label.',
   vertical: 'retail',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

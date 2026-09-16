@@ -101,8 +101,7 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
           label: 'New type',
           icon: faPlus,
           onClick: create,
-          title:
-            'Define a new kind of content — hold Shift to open alongside, Alt for a new window',
+          title: 'Define a new kind of content. Hold Shift to open alongside, Alt for a new window',
         }}
         filters={[
           {
@@ -171,7 +170,7 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
               firstRun={{
                 title: 'No content types yet',
                 description:
-                  'Define your first kind of content — a recipe, a case study, a job listing — with exactly the fields it needs.',
+                  'Define your first kind of content (a recipe, a case study, a job listing) with exactly the fields it needs.',
                 actions: (
                   <Button
                     size="sm"

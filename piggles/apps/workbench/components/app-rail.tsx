@@ -22,7 +22,7 @@
 // Selecting an app BROWSES it — see ./app-panel.tsx. It never changes what is
 // open: in a workbench there is no single "current" place to switch away from.
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { faGrid2Plus, faLeft, faRight } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import {
@@ -81,6 +81,36 @@ export function AppRail({
 
   const [allAppsOpen, setAllAppsOpen] = useState(false);
 
+  // ── THE RAIL SCROLLS, AND WHAT IT MARKS CAN BE BELOW THE FOLD ─────────────
+  //
+  // Thirteen apps plus both shortcut lists is 848px of rail. On a 1280x800
+  // laptop, once the header, the plan card and the footer have taken their
+  // share, the list has 319px to show it in — 38%. Everything from Sell down is
+  // already clipped.
+  //
+  // That on its own is a scrolling list, which is fine. What is not fine is
+  // that the panel REOPENS where it was left (lib/console/use-shell-prefs:
+  // a pinned panel restores its module), and the rail marks that app with
+  // `aria-current` while the scroller starts at zero. Measured on this rail:
+  // panel open on My Team, the row marked, sitting at 925px with the viewport
+  // ending at 452 — 473px below the fold, scrollTop 0.
+  //
+  // So somebody comes back tomorrow to a panel full of their team and a rail
+  // with no selection anywhere they can see, which is exactly what a rail with
+  // NOTHING selected looks like.
+  //
+  // `block: 'nearest'` is deliberate: it moves the minimum distance and does
+  // nothing at all when the row is already in view, so this never yanks the
+  // rail under somebody who has scrolled it themselves.
+  const contentRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    // Also keyed on how many apps are in hand: `browsing` is restored from
+    // storage on mount, which can land BEFORE the rail has any rows to find.
+    contentRef.current
+      ?.querySelector('[aria-current="true"]')
+      ?.scrollIntoView({ block: 'nearest' });
+  }, [browsing, nav.length]);
+
   return (
     // The OUTER scope drives the ACTIVE item's accent: `.sidebar-module` declares
     // it on the <aside>, and a custom property resolves where it is DECLARED, so
@@ -104,7 +134,7 @@ export function AppRail({
             choose. Both of the person's lists lead, one row apiece; the apps are
             the whole product beneath them. Everything not on this rail is behind
             All apps in the footer. */}
-        <SidebarContent className={expanded ? 'pt-2' : 'px-1.5 pt-2'}>
+        <SidebarContent ref={contentRef} className={expanded ? 'pt-2' : 'px-1.5 pt-2'}>
           <Favourites
             expanded={expanded}
             browsing={browsing === FAVOURITES_LIST}

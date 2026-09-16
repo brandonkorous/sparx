@@ -140,14 +140,14 @@ export const apparelPack: SampleDataPack = {
       attributes: {
         fabric:
           '6.5oz combed ring-spun cotton with a structured shoulder seam and a double-needle ribbed collar that holds its shape. Pre-shrunk and garment-washed, so it arrives at its final dimensions.',
-        fit: 'A classic straight cut — not slim, not oversized — with a slightly longer body so it sits clean tucked or untucked. Take your normal size; size down for a trim fit.',
+        fit: 'A classic straight cut (not slim, not oversized) with a slightly longer body so it sits clean tucked or untucked. Take your normal size; size down for a trim fit.',
         care: 'Machine wash cold with like colors and tumble dry low. Wash inside out to keep the collar crisp; no bleach, no fabric softener.',
         materials: [{ name: 'Combed ring-spun cotton', percent: '100%' }],
         origin: 'Portugal',
       },
       vendor: 'Northloom',
       tags: ['tee', 'crewneck', 'cotton', 'everyday'],
-      seoTitle: 'Heritage Crewneck Tee — Combed Ring-Spun Cotton',
+      seoTitle: 'Heritage Crewneck Tee: Combed Ring-Spun Cotton',
       seoDescription:
         'A mid-weight 6.5oz crewneck tee in combed ring-spun cotton. Pre-shrunk, structured collar, sits clean tucked or untucked.',
       categoryKeys: ['tops'],
@@ -238,7 +238,7 @@ export const apparelPack: SampleDataPack = {
           title: 'My new default tee',
           body: 'Bought one in black, came back for sand the same week. The collar actually keeps its shape and it has not shrunk after a dozen washes.',
           authorPersona: 'avery',
-          response: 'So glad it earned a spot in the rotation, Avery — thanks for coming back!',
+          response: 'So glad it earned a spot in the rotation, Avery: thanks for coming back!',
           helpfulCount: 12,
           daysAgo: 18,
         },
@@ -273,7 +273,7 @@ export const apparelPack: SampleDataPack = {
           body: 'Is the fit slim or relaxed? Trying to decide between S and M.',
           authorPersona: 'noor',
           answer:
-            'It is a classic straight cut — not slim, not oversized. If you like a trim fit, size down; for a relaxed drape, take your normal size.',
+            'It is a classic straight cut, not slim, not oversized. If you like a trim fit, size down; for a relaxed drape, take your normal size.',
           daysAgo: 14,
         },
         {
@@ -305,7 +305,7 @@ export const apparelPack: SampleDataPack = {
       },
       vendor: 'Northloom',
       tags: ['hoodie', 'fleece', 'heavyweight', 'layering'],
-      seoTitle: 'Heavyweight Fleece Hoodie — 14oz Brushed-Back',
+      seoTitle: 'Heavyweight Fleece Hoodie: 14oz Brushed-Back',
       seoDescription:
         'A 14oz brushed-back fleece hoodie with a structured hood, deep kangaroo pocket, and ribbed cuffs. Pre-washed, built to layer.',
       categoryKeys: ['tops', 'outerwear'],
@@ -321,7 +321,7 @@ export const apparelPack: SampleDataPack = {
           displayType: 'swatch',
           values: [
             { value: 'Charcoal', swatchHex: '#3a3a3c' },
-            { value: 'Heather Grey', swatchHex: '#b7b7b7' },
+            { value: 'Heather Gray', swatchHex: '#b7b7b7' },
           ],
         },
       ],
@@ -370,10 +370,10 @@ export const apparelPack: SampleDataPack = {
         {
           key: 'hood-m-hgr',
           sku: 'HOOD-HVY-M-HGR',
-          title: 'M / Heather Grey',
+          title: 'M / Heather Gray',
           priceCents: 6800,
           costCents: 2600,
-          optionValues: ['M', 'Heather Grey'],
+          optionValues: ['M', 'Heather Gray'],
           stock: [
             {
               warehouseKey: 'FULFILL',
@@ -394,7 +394,7 @@ export const apparelPack: SampleDataPack = {
           title: 'Heavy in the best way',
           body: 'This is the weight every hoodie should be. The hood actually stands up and the pocket fits both hands plus a phone. Worth the price.',
           authorPersona: 'declan',
-          response: 'The 14oz fleece is our favorite thing we make — enjoy it, Declan!',
+          response: 'The 14oz fleece is our favorite thing we make: enjoy it, Declan!',
           helpfulCount: 14,
           daysAgo: 21,
         },
@@ -420,7 +420,7 @@ export const apparelPack: SampleDataPack = {
           body: 'Is this fleece brushed on the inside? Looking for something soft against the skin.',
           authorPersona: 'sloane',
           answer:
-            'Yes — it is brushed-back fleece, so the interior is soft and napped while the face stays smooth.',
+            'Yes. It is brushed-back fleece, so the interior is soft and napped while the face stays smooth.',
           daysAgo: 16,
         },
       ],
@@ -430,20 +430,20 @@ export const apparelPack: SampleDataPack = {
       title: 'Tapered Selvedge Jeans',
       handle: 'tapered-selvedge-jeans',
       description:
-        '<p>A 13.5oz raw selvedge denim cut with a mid-rise, a clean seat, and a gentle taper from the knee down. Woven on a vintage shuttle loom, so you get the tight, self-finished edge and the slow, personal fade that only raw denim gives you.</p><p>Sold rigid and unwashed — they will mold to you over the first few weeks. Cotton button fly, copper rivets, and a leather patch that breaks in with the rest of the jean.</p>',
+        '<p>A 13.5oz raw selvedge denim cut with a mid-rise, a clean seat, and a gentle taper from the knee down. Woven on a vintage shuttle loom, so you get the tight, self-finished edge and the slow, personal fade that only raw denim gives you.</p><p>Sold rigid and unwashed. They will mold to you over the first few weeks. Cotton button fly, copper rivets, and a leather patch that breaks in with the rest of the jean.</p>',
       productType: 'Jeans',
       productTypeKey: 'apparel',
       attributes: {
         fabric:
           '13.5oz raw selvedge denim woven on a vintage shuttle loom for a tight, self-finished edge. Sanforized to keep shrinkage minimal, with a cotton button fly, copper rivets, and a leather patch that breaks in with the jean.',
-        fit: 'A mid-rise with a clean seat and a gentle taper from the knee down — slim but still cut for boots. Take your true waist; they stretch about a half size with wear, then settle after a wash.',
+        fit: 'A mid-rise with a clean seat and a gentle taper from the knee down: slim but still cut for boots. Take your true waist; they stretch about a half size with wear, then settle after a wash.',
         care: 'Wear them raw as long as you can, then wash sparingly: turn inside out, wash cold and alone on a gentle cycle, and hang dry. Skip the dryer to preserve the fades.',
         materials: [{ name: 'Cotton denim', percent: '100%' }],
         origin: 'Japan',
       },
       vendor: 'Forge & Field',
       tags: ['jeans', 'denim', 'selvedge', 'raw', 'tapered'],
-      seoTitle: 'Tapered Selvedge Jeans — 13.5oz Raw Denim',
+      seoTitle: 'Tapered Selvedge Jeans: 13.5oz Raw Denim',
       seoDescription:
         'Mid-rise tapered jeans in 13.5oz raw selvedge denim woven on a shuttle loom. Button fly, copper rivets, made to fade.',
       categoryKeys: ['bottoms'],
@@ -507,9 +507,9 @@ export const apparelPack: SampleDataPack = {
         {
           rating: 5,
           title: 'Fades are starting',
-          body: 'Two months in and the honeycombs behind the knees are coming in beautifully. The taper is just right — slim but I can still wear boots.',
+          body: 'Two months in and the honeycombs behind the knees are coming in beautifully. The taper is just right: slim but I can still wear boots.',
           authorPersona: 'mateo',
-          response: 'Send us a fade photo at the six-month mark — we love seeing these break in!',
+          response: 'Send us a fade photo at the six-month mark. We love seeing these break in!',
           helpfulCount: 10,
           daysAgo: 24,
         },
@@ -536,7 +536,7 @@ export const apparelPack: SampleDataPack = {
           body: 'Should I size up since these are raw and unsanforized?',
           authorPersona: 'avery',
           answer:
-            'These are sanforized, so shrinkage is minimal — take your true waist. They will stretch about a half size with wear, then settle back after a wash.',
+            'These are sanforized, so shrinkage is minimal: take your true waist. They will stretch about a half size with wear, then settle back after a wash.',
           daysAgo: 17,
         },
         {
@@ -559,14 +559,14 @@ export const apparelPack: SampleDataPack = {
       attributes: {
         fabric:
           '12oz washed denim, broken in at the factory so it is soft on day one. Pointed flap chest pockets, a tapered waist with button side-adjusters, antiqued copper hardware, and chain-stitched hems.',
-        fit: 'A classic trucker cut — slightly boxy through the body with roomy shoulders, so it layers cleanly over a hoodie. Take your normal size; size up if you plan to layer heavily.',
+        fit: 'A classic trucker cut: slightly boxy through the body with roomy shoulders, so it layers cleanly over a hoodie. Take your normal size; size up if you plan to layer heavily.',
         care: 'Machine wash cold with like colors and hang or tumble dry low. Wash sparingly to protect the wash and the copper hardware.',
         materials: [{ name: 'Cotton denim', percent: '100%' }],
         origin: 'Mexico',
       },
       vendor: 'Forge & Field',
       tags: ['jacket', 'denim', 'trucker', 'outerwear'],
-      seoTitle: 'Trucker Denim Jacket — 12oz Washed Denim',
+      seoTitle: 'Trucker Denim Jacket: 12oz Washed Denim',
       seoDescription:
         'A broken-in trucker jacket in 12oz washed denim. Pointed chest pockets, waist adjusters, antiqued copper hardware.',
       categoryKeys: ['outerwear'],
@@ -652,7 +652,7 @@ export const apparelPack: SampleDataPack = {
           body: 'Can I fit a hoodie under the M?',
           authorPersona: 'declan',
           answer:
-            'Yes — the trucker is cut with a little room through the body, so a mid-weight hoodie layers comfortably under your normal size.',
+            'Yes: the trucker is cut with a little room through the body, so a mid-weight hoodie layers comfortably under your normal size.',
           daysAgo: 13,
         },
       ],
@@ -668,14 +668,14 @@ export const apparelPack: SampleDataPack = {
       attributes: {
         fabric:
           '100% European-flax linen, garment-washed for a soft, lived-in hand and a gentle crinkle. An open camp collar, a boxy body, and a single chest pocket, finished with fine buttonholes.',
-        fit: 'A relaxed, boxy cut meant to wear open over a tee or buttoned on its own. Not a fitted shirt — take your normal size for the intended drape, or size down for a trimmer look.',
+        fit: 'A relaxed, boxy cut meant to wear open over a tee or buttoned on its own. Not a fitted shirt: take your normal size for the intended drape, or size down for a trimmer look.',
         care: 'Machine wash cold on gentle and hang dry; press or steam if you want it crisp. The crinkle is part of the linen, and a few home washes only make it softer.',
         materials: [{ name: 'European flax linen', percent: '100%' }],
         origin: 'Portugal',
       },
       vendor: 'Atlas Standard',
       tags: ['shirt', 'linen', 'camp collar', 'summer'],
-      seoTitle: 'Washed Linen Camp Shirt — 100% European Flax',
+      seoTitle: 'Washed Linen Camp Shirt: 100% European Flax',
       seoDescription:
         'A garment-washed camp-collar shirt in 100% European-flax linen. Breathable, boxy, made for heat and travel.',
       categoryKeys: ['tops'],
@@ -746,14 +746,14 @@ export const apparelPack: SampleDataPack = {
           title: 'Perfect for Miami heat',
           body: 'Lightest shirt I own and it still looks put together. The crinkle reads intentional, not wrinkled. Bought the olive too.',
           authorPersona: 'mateo',
-          response: 'Linen earns its keep in that climate — thanks Mateo!',
+          response: 'Linen earns its keep in that climate: thanks Mateo!',
           helpfulCount: 8,
           daysAgo: 16,
         },
         {
           rating: 4,
           title: 'Boxy, as described',
-          body: 'Love it open over a tee. If you want a fitted look this is not it — it is meant to be relaxed.',
+          body: 'Love it open over a tee. If you want a fitted look this is not it. It is meant to be relaxed.',
           displayName: 'patioseason',
           helpfulCount: 3,
           daysAgo: 9,
@@ -772,7 +772,7 @@ export const apparelPack: SampleDataPack = {
           body: 'Does the linen soften more after washing?',
           authorPersona: 'noor',
           answer:
-            'It does — it is already garment-washed, but a few home washes (cold, hang dry) make it even softer and bring out the crinkle.',
+            'It does. It is already garment-washed, but a few home washes (cold, hang dry) make it even softer and bring out the crinkle.',
           daysAgo: 12,
         },
       ],
@@ -782,7 +782,7 @@ export const apparelPack: SampleDataPack = {
       title: 'Ribbed Merino Beanie',
       handle: 'ribbed-merino-beanie',
       description:
-        '<p>A fine-gauge ribbed beanie knit from 100% extra-fine merino wool — warm without the itch, with a folded cuff you can wear short or slouched. Merino regulates temperature and resists odor, so it works from a frosty commute to a cool campfire.</p><p>Holds its shape without sagging and packs flat into a jacket pocket. One size, with enough stretch to fit most comfortably.</p>',
+        '<p>A fine-gauge ribbed beanie knit from 100% extra-fine merino wool: warm without the itch, with a folded cuff you can wear short or slouched. Merino regulates temperature and resists odor, so it works from a frosty commute to a cool campfire.</p><p>Holds its shape without sagging and packs flat into a jacket pocket. One size, with enough stretch to fit most comfortably.</p>',
       productType: 'Hats',
       productTypeKey: 'apparel',
       attributes: {
@@ -795,7 +795,7 @@ export const apparelPack: SampleDataPack = {
       },
       vendor: 'Atlas Standard',
       tags: ['beanie', 'merino', 'wool', 'winter', 'accessory'],
-      seoTitle: 'Ribbed Merino Beanie — Extra-Fine Wool',
+      seoTitle: 'Ribbed Merino Beanie: Extra-Fine Wool',
       seoDescription:
         'A fine-gauge ribbed beanie in 100% extra-fine merino wool. Warm, itch-free, folded cuff, packs flat.',
       categoryKeys: ['accessories'],
@@ -904,7 +904,7 @@ export const apparelPack: SampleDataPack = {
       },
       vendor: 'Atlas Standard',
       tags: ['sneakers', 'canvas', 'low-top', 'footwear'],
-      seoTitle: 'Low-Top Canvas Sneakers — Vulcanized Sole',
+      seoTitle: 'Low-Top Canvas Sneakers: Vulcanized Sole',
       seoDescription:
         'A clean low-top canvas sneaker on a vulcanized rubber sole. Cushioned lining, removable insole, minimal branding.',
       categoryKeys: ['footwear'],
@@ -981,7 +981,7 @@ export const apparelPack: SampleDataPack = {
           title: 'Goes with everything',
           body: 'The navy is a great alternative to plain white. Insole is genuinely comfortable for walking all day.',
           authorPersona: 'avery',
-          response: 'Glad the insole holds up on long days — thanks Avery!',
+          response: 'Glad the insole holds up on long days: thanks Avery!',
           helpfulCount: 3,
           daysAgo: 7,
         },
@@ -1024,7 +1024,7 @@ export const apparelPack: SampleDataPack = {
       },
       vendor: 'Northloom',
       tags: ['socks', 'crew', 'cotton', 'accessory', '3-pack'],
-      seoTitle: 'Cushioned Crew Socks 3-Pack — Combed Cotton',
+      seoTitle: 'Cushioned Crew Socks 3-Pack: Combed Cotton',
       seoDescription:
         'A three-pack of cushioned crew socks in a combed-cotton blend. Terry footbed, arch support, seamless toe.',
       categoryKeys: ['accessories'],
@@ -1127,7 +1127,7 @@ export const apparelPack: SampleDataPack = {
       },
       vendor: 'Forge & Field',
       tags: ['overcoat', 'wool', 'topcoat', 'outerwear', 'tailored'],
-      seoTitle: 'Tailored Wool Overcoat — Italian Melton',
+      seoTitle: 'Tailored Wool Overcoat: Italian Melton',
       seoDescription:
         'A single-breasted wool-blend melton overcoat cut below the knee. Half-canvas front, notch lapel, fully lined.',
       categoryKeys: ['outerwear'],
@@ -1197,7 +1197,7 @@ export const apparelPack: SampleDataPack = {
           body: 'The camel is rich and the half-canvas front gives it real shape. Layers over a blazer with no pulling. Genuinely impressed for the price.',
           authorPersona: 'sloane',
           response:
-            'The half-canvas is the detail people feel before they see it — enjoy it, Sloane!',
+            'The half-canvas is the detail people feel before they see it: enjoy it, Sloane!',
           helpfulCount: 9,
           daysAgo: 20,
         },
@@ -1215,7 +1215,7 @@ export const apparelPack: SampleDataPack = {
           body: 'How warm is this for a real winter?',
           authorPersona: 'harper',
           answer:
-            'The melton is midweight — great for fall and mild winters, or over a sweater down to freezing. For deep cold, layer a quilted liner underneath.',
+            'The melton is midweight: great for fall and mild winters, or over a sweater down to freezing. For deep cold, layer a quilted liner underneath.',
           daysAgo: 15,
         },
       ],
@@ -1225,20 +1225,20 @@ export const apparelPack: SampleDataPack = {
       title: 'Tiered Poplin Midi Dress',
       handle: 'tiered-poplin-midi-dress',
       description:
-        '<p>A breezy midi in crisp cotton poplin with a smocked back for an adjustable fit, adjustable tie straps, and a three-tiered skirt that moves. Light, structured, and easy — the throw-on-and-go dress for warm days.</p><p>Side seam pockets, a fully lined bodice, and a hidden length that hits mid-calf on most. Machine washable and built to layer with a denim jacket when it cools off.</p>',
+        '<p>A breezy midi in crisp cotton poplin with a smocked back for an adjustable fit, adjustable tie straps, and a three-tiered skirt that moves. Light, structured, and easy: the throw-on-and-go dress for warm days.</p><p>Side seam pockets, a fully lined bodice, and a hidden length that hits mid-calf on most. Machine washable and built to layer with a denim jacket when it cools off.</p>',
       productType: 'Dresses',
       productTypeKey: 'apparel',
       attributes: {
         fabric:
           'Crisp cotton poplin with a smocked stretch back, adjustable tie straps, a fully lined bodice, and a three-tiered skirt with side-seam pockets. Structured enough to hold its shape and stay opaque.',
         fit: 'An adjustable, forgiving fit through the smocked bodice with a mid-calf length on most. Runs a touch long if you are petite; the back gives across sizes.',
-        care: 'Machine wash cold on gentle and hang to dry, then steam out creases. Poplin creases when you sit — a quick steam brings it back.',
+        care: 'Machine wash cold on gentle and hang to dry, then steam out creases. Poplin creases when you sit: a quick steam brings it back.',
         materials: [{ name: 'Cotton', percent: '100%' }],
         origin: 'India',
       },
       vendor: 'Atlas Standard',
       tags: ['dress', 'midi', 'poplin', 'summer', 'cotton'],
-      seoTitle: 'Tiered Poplin Midi Dress — Cotton',
+      seoTitle: 'Tiered Poplin Midi Dress: Cotton',
       seoDescription:
         'A tiered cotton-poplin midi with smocked back, tie straps, and side pockets. Light, structured, machine washable.',
       categoryKeys: ['tops'],
@@ -1315,7 +1315,7 @@ export const apparelPack: SampleDataPack = {
           title: 'Lovely, runs slightly long',
           body: 'The sky blue is so pretty. I am 5’3” and it hit lower than midi, but a quick hem fixed it. Smocked back is forgiving.',
           authorPersona: 'noor',
-          response: 'Thanks for the height note — we are adding a length guide to the listing!',
+          response: 'Thanks for the height note. We are adding a length guide to the listing!',
           helpfulCount: 6,
           daysAgo: 8,
         },
@@ -1344,12 +1344,12 @@ export const apparelPack: SampleDataPack = {
       title: 'Everyday Outfit Set',
       handle: 'everyday-outfit-set',
       description:
-        '<p>Our most-worn pieces in one go: the Heritage Crewneck Tee, the Tapered Selvedge Jeans, and the Trucker Denim Jacket — a complete, build-anywhere outfit at a set price. Pick your sizes and colors at checkout.</p><p>Buy the set and save versus picking the pieces individually. The easiest way to start a wardrobe that just works together.</p>',
+        '<p>Our most-worn pieces in one go: the Heritage Crewneck Tee, the Tapered Selvedge Jeans, and the Trucker Denim Jacket, a complete, build-anywhere outfit at a set price. Pick your sizes and colors at checkout.</p><p>Buy the set and save versus picking the pieces individually. The easiest way to start a wardrobe that just works together.</p>',
       productType: 'Sets',
       productTypeKey: 'apparel',
       attributes: {
         fabric:
-          'Three staples in one set: the 6.5oz combed-cotton Heritage Crewneck Tee, the 13.5oz raw selvedge Tapered Jeans, and the 12oz washed-denim Trucker Jacket — each made and finished to the same standard, chosen to wear together.',
+          'Three staples in one set: the 6.5oz combed-cotton Heritage Crewneck Tee, the 13.5oz raw selvedge Tapered Jeans, and the 12oz washed-denim Trucker Jacket. Each made and finished to the same standard, chosen to wear together.',
         fit: 'Pick your size and color for each piece independently at checkout. The tee runs true with a longer body, the jeans mid-rise and tapered, the jacket slightly boxy for layering.',
         care: 'Follow each garment’s own care: machine wash the tee cold, wash the jeans sparingly and hang dry, and wash the jacket cold with like colors.',
         materials: [{ name: 'Cotton', percent: '100%' }],
@@ -1357,7 +1357,7 @@ export const apparelPack: SampleDataPack = {
       },
       vendor: 'Boutique Set',
       tags: ['set', 'bundle', 'outfit', 'capsule'],
-      seoTitle: 'Everyday Outfit Set — Tee, Jeans & Jacket',
+      seoTitle: 'Everyday Outfit Set: Tee, Jeans & Jacket',
       seoDescription:
         'A build-anywhere outfit: the Heritage tee, tapered selvedge jeans, and trucker denim jacket at a set price.',
       categoryKeys: ['tops'],
@@ -1378,7 +1378,7 @@ export const apparelPack: SampleDataPack = {
           body: 'Can I pick different sizes for each piece?',
           displayName: 'mixandmatch',
           answer:
-            'Yes — you choose the size and color for the tee, jeans, and jacket independently when you add the set to your cart.',
+            'Yes. You choose the size and color for the tee, jeans, and jacket independently when you add the set to your cart.',
           daysAgo: 9,
         },
       ],
@@ -1449,24 +1449,24 @@ export const apparelPack: SampleDataPack = {
       daysAgo: 6,
       body: doc(
         p(
-          'A capsule wardrobe is a tight edit of clothes that mix and match into far more outfits than the number of pieces suggests. The goal is not minimalism for its own sake — it is getting dressed in thirty seconds and always looking put together.'
+          'A capsule wardrobe is a tight edit of clothes that mix and match into far more outfits than the number of pieces suggests. The goal is not minimalism for its own sake. It is getting dressed in thirty seconds and always looking put together.'
         ),
         h2('Start with a neutral foundation'),
         p(
-          'Build around a small palette — say, black, navy, ecru, and one denim. When every top works with every bottom, a dozen pieces quietly become dozens of outfits. Save the loud colors for one or two accents.'
+          'Build around a small palette: say, black, navy, ecru, and one denim. When every top works with every bottom, a dozen pieces quietly become dozens of outfits. Save the loud colors for one or two accents.'
         ),
         h2('The core ten'),
         ul(
           'Two well-fitting tees (one black, one neutral)',
           'A heavyweight hoodie or crewneck sweater',
           'One pair of dark, tapered jeans',
-          'A versatile jacket — a denim trucker or an overcoat',
+          'A versatile jacket: a denim trucker or an overcoat',
           'A pair of clean low-top sneakers',
           'A few pairs of cushioned socks that all match'
         ),
         h2('Buy fewer, better things'),
         p(
-          'A 14oz hoodie or a half-canvas coat costs more up front and outlasts three cheap ones. Spend where it shows and wears — outerwear, denim, shoes — and keep the basics simple. Then stop. The hardest part of a capsule is not adding to it.'
+          'A 14oz hoodie or a half-canvas coat costs more up front and outlasts three cheap ones. Spend where it shows and wears (outerwear, denim, shoes) and keep the basics simple. Then stop. The hardest part of a capsule is not adding to it.'
         )
       ),
     },
@@ -1478,7 +1478,7 @@ export const apparelPack: SampleDataPack = {
       daysAgo: 14,
       body: doc(
         p(
-          'Raw, or unwashed, denim starts rigid and dark and slowly molds to how you actually move — fading at the creases behind your knees, along your thighs, and where your wallet sits. Treated right, a pair becomes uniquely yours.'
+          'Raw, or unwashed, denim starts rigid and dark and slowly molds to how you actually move: fading at the creases behind your knees, along your thighs, and where your wallet sits. Treated right, a pair becomes uniquely yours.'
         ),
         h2('The first few weeks'),
         p(
@@ -1486,13 +1486,13 @@ export const apparelPack: SampleDataPack = {
         ),
         h2('Mind the crocking'),
         p(
-          'Dark indigo will rub off — onto light couches, sneakers, and car seats — until it settles. Be careful around pale furniture for the first couple of weeks, and do not be alarmed by blue on your hands.'
+          'Dark indigo will rub off (onto light couches, sneakers, and car seats) until it settles. Be careful around pale furniture for the first couple of weeks, and do not be alarmed by blue on your hands.'
         ),
         h2('When you finally wash'),
         ol(
           'Turn them inside out to protect the surface fades',
           'Wash cold, alone, on a gentle cycle with a little mild detergent',
-          'Skip the dryer — hang dry to limit shrinkage and preserve the fades',
+          'Skip the dryer: hang dry to limit shrinkage and preserve the fades',
           'Spot-clean small spills between washes instead of a full cycle'
         ),
         p(
@@ -1508,7 +1508,7 @@ export const apparelPack: SampleDataPack = {
       daysAgo: 21,
       body: doc(
         p(
-          'Fall weather refuses to commit. The answer is not one heavy coat but a few light layers you can build up and peel back as the day swings — so you are comfortable at the bus stop and at lunch on a sunny patio.'
+          'Fall weather refuses to commit. The answer is not one heavy coat but a few light layers you can build up and peel back as the day swings, so you are comfortable at the bus stop and at lunch on a sunny patio.'
         ),
         h2('Think in three layers'),
         ul(
@@ -1518,11 +1518,11 @@ export const apparelPack: SampleDataPack = {
         ),
         h2('Let textures do the work'),
         p(
-          'When colors stay in a tight neutral range, texture carries the outfit — smooth poplin under brushed fleece under structured wool reads richer than three flat cottons. A merino beanie is the cheapest layer that adds the most warmth.'
+          'When colors stay in a tight neutral range, texture carries the outfit: smooth poplin under brushed fleece under structured wool reads richer than three flat cottons. A merino beanie is the cheapest layer that adds the most warmth.'
         ),
         h2('Keep it easy to shed'),
         p(
-          'Layers only work if removing one still looks intentional. A trucker over a hoodie over a tee gives you three good-looking stopping points as the temperature climbs — no awkward in-between.'
+          'Layers only work if removing one still looks intentional. A trucker over a hoodie over a tee gives you three good-looking stopping points as the temperature climbs: no awkward in-between.'
         )
       ),
     },

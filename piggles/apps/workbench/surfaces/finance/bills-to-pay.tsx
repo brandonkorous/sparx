@@ -15,6 +15,14 @@
 // LATENESS IS COMPUTED FROM `dueAt` AND NOTHING ELSE. A cost with no due date is
 // not late, it is simply unpaid — showing "0 days late" for a receipt someone
 // typed in would invent a deadline nobody set.
+//
+// AND IT IS NOT OWED EITHER. That second half was missing, and it is the reason
+// this screen once told a shopkeeper she owed $2,090 to nobody: the guard above
+// kept a dateless cost out of the aging bands and then summed it into "Total
+// outstanding" anyway. A cost recorded through the Spending quick-add carries no
+// payment date because the quick-add never asks for one, so "not marked paid" is
+// an ABSENCE, not a debt. The headline counts what has a day to pay it by; the
+// rest is listed, and said, and left out of the figure (persona issue 465).
 
 import { useMemo, useState } from 'react';
 import { PaneEmpty } from '../../components/pane-empty';
@@ -54,7 +62,11 @@ const BUCKETS: { key: BucketKey; label: string; tone: 'error' | 'warning' | 'inf
   { key: 'overdue_30', label: '31–60 days late', tone: 'error' },
   { key: 'overdue_1', label: '1–30 days late', tone: 'warning' },
   { key: 'due_soon', label: 'Not yet due', tone: 'info' },
-  { key: 'no_date', label: 'No due date', tone: 'info' },
+  // `no_date` is deliberately absent from the BAR. The bar is a picture of how
+  // late money is, and a cost with no due date has no position on it — it was
+  // drawn there as a full-width band worth the whole total, which read as "all
+  // of this is owed" (persona issue 465). Those rows are counted, and said, in
+  // their own sentence below the bar.
 ];
 
 const FILTERS = [
@@ -191,22 +203,55 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
       });
   }, [data?.items, now]);
 
+  /**
+   * OWED IS NOT THE SAME AS "NOT MARKED PAID", AND ONLY ONE OF THEM IS A DEBT.
+   *
+   * A cost typed into the Spending quick-add carries no due date and no payment
+   * date, because the quick-add asks for neither — three fields and a button is
+   * the whole point of it. That is the honest record of what somebody said: a
+   * cost happened. It says nothing about whether the money has left.
+   *
+   * This screen used to sum every unpaid row into "Total outstanding", so a
+   * shopkeeper who recorded September's rent and a roll of linen — both already
+   * paid at the counter — was told she owed $2,090 to nobody. Asserting a debt
+   * from the ABSENCE of a payment record is exactly the thing that must never
+   * happen (persona issue 465).
+   *
+   * So the headline counts what has a DATE TO PAY IT BY, which is the only thing
+   * a person has actually said they owe. The rest is still listed, still
+   * markable as paid, and named for what it is.
+   */
   const totals = useMemo(() => {
     const byBucket = new Map<BucketKey, number>();
-    let outstanding = 0;
+    let owed = 0;
     let overdue = 0;
+    let unmarked = 0;
+    let unmarkedCount = 0;
     for (const { bill, late } of bills) {
+      if (late === null) {
+        unmarked += bill.amountCents;
+        unmarkedCount += 1;
+        continue;
+      }
       const key = bucketFor(late);
       byBucket.set(key, (byBucket.get(key) ?? 0) + bill.amountCents);
-      outstanding += bill.amountCents;
-      if (late !== null && late > 0) overdue += bill.amountCents;
+      owed += bill.amountCents;
+      if (late > 0) overdue += bill.amountCents;
     }
-    return { byBucket, outstanding, overdue };
+    return {
+      byBucket,
+      owed,
+      overdue,
+      unmarked,
+      unmarkedCount,
+      owedCount: bills.length - unmarkedCount,
+    };
   }, [bills]);
 
   const rows = useMemo(() => {
     if (band === 'overdue') return bills.filter((row) => row.late !== null && row.late > 0);
-    if (band === 'due_soon') return bills.filter((row) => row.late === null || row.late <= 0);
+    // A bill with no deadline is not "coming up" — nothing is coming.
+    if (band === 'due_soon') return bills.filter((row) => row.late !== null && row.late <= 0);
     return bills;
   }, [bills, band]);
 
@@ -287,18 +332,20 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
               module={MODULE}
               icon={<Icon glyph={faCircleCheck} className="size-6" aria-hidden />}
               title="Nothing outstanding"
-              description="Every cost you have recorded is marked as paid. When you record one that is not yet settled, it will appear here — sorted by how late it is."
+              description="Every cost you have recorded is marked as paid. When you record one that is not yet settled, it will appear here: sorted by how late it is."
             />
           </Card>
         ) : (
           <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
             <Card className="p-4">
-              <Text className="text-sm">Total outstanding</Text>
+              <Text className="text-sm">Total owed</Text>
               <Heading level={2} className="mt-1 text-3xl font-semibold tabular-nums">
-                {formatCents(totals.outstanding)}
+                {formatCents(totals.owed)}
               </Heading>
               <Text className="mt-1 text-sm">
-                across {bills.length === 1 ? '1 bill' : `${String(bills.length)} bills`}
+                {totals.owedCount === 0
+                  ? 'nothing with a day to pay it by'
+                  : `across ${totals.owedCount === 1 ? '1 bill' : `${String(totals.owedCount)} bills`}`}
                 {totals.overdue > 0 ? ` · ${formatCents(totals.overdue)} already late` : ''}
               </Text>
 
@@ -315,7 +362,7 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
                         <Progress
                           color={bucket.tone}
                           value={value}
-                          max={totals.outstanding}
+                          max={totals.owed}
                           aria-label={`${bucket.label}: ${formatCents(value)}`}
                         />
                         <span className="text-right font-medium tabular-nums">
@@ -326,6 +373,18 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
                   }
                 )}
               </div>
+
+              {/* Said, never summed into the figure above. Recording a cost does
+                  not tell us whether it has been paid, so counting these as a
+                  debt would be inventing one. */}
+              {totals.unmarked > 0 ? (
+                <Text className="border-base-300 mt-4 border-t pt-3 text-sm">
+                  Not counted above: {formatCents(totals.unmarked)} across{' '}
+                  {totals.unmarkedCount === 1 ? '1 cost' : `${String(totals.unmarkedCount)} costs`}{' '}
+                  with no due date. Recording a cost does not say whether you have paid it. Open one
+                  to give it a due date, or mark it paid.
+                </Text>
+              ) : null}
             </Card>
 
             {rows.length === 0 ? (

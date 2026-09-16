@@ -126,7 +126,7 @@ function WebhookFields({
             }
           />
           <FieldDescription>
-            A short name so you can tell your webhooks apart. Just for you — it is never sent
+            A short name so you can tell your webhooks apart. Just for you. It is never sent
             anywhere.
           </FieldDescription>
         </Field>
@@ -150,7 +150,7 @@ function WebhookFields({
           />
           <FieldDescription>
             The web address we send each notification to. Whoever is building on your content
-            provides this — it has to start with https://.
+            provides this. It has to start with https://.
           </FieldDescription>
         </Field>
       </FormSection>
@@ -211,7 +211,7 @@ function WebhookFields({
           />
           <FieldDescription>
             On, notifications are sent as events happen. Off, the webhook is paused and nothing is
-            sent — handy while whoever receives them is still setting things up.
+            sent: handy while whoever receives them is still setting things up.
           </FieldDescription>
         </Field>
       </FormSection>
@@ -317,7 +317,7 @@ function CreateWebhook({ ctx }: { ctx: SurfaceContext }) {
           label="New webhook actions"
           primary={
             <Button color="module" size="sm" className="ml-auto" onClick={goManage}>
-              Done — manage this webhook
+              Done: manage this webhook
             </Button>
           }
         />
@@ -328,9 +328,7 @@ function CreateWebhook({ ctx }: { ctx: SurfaceContext }) {
               <Heading level={1} className="text-2xl font-semibold">
                 {created.name} is set up
               </Heading>
-              <Text>
-                Copy its signing secret now — this is the only time we can show it to you.
-              </Text>
+              <Text>Copy its signing secret now. This is the only time we can show it to you.</Text>
             </div>
 
             <Alert color="success" variant="soft">
@@ -571,7 +569,7 @@ function ManageBody({
     const ok = await confirm({
       title: `Delete “${webhook.name}”?`,
       description:
-        'This removes the webhook for good and its signing secret with it. Notifications will stop being sent to its address immediately. This cannot be undone — to only stop notifications for now, turn Send notifications off instead.',
+        'This removes the webhook for good and its signing secret with it. Notifications will stop being sent to its address immediately. This cannot be undone: to only stop notifications for now, turn Send notifications off instead.',
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -641,8 +639,8 @@ function ManageBody({
           >
             <SecretBox value={webhook.signingSecret} />
             <Text className="text-sm">
-              For security the full secret is only shown once, at the moment a webhook is created —
-              this is a preview of it. If it has been lost, delete this webhook and set up a new one
+              For security the full secret is only shown once, at the moment a webhook is created.
+              This is a preview of it. If it has been lost, delete this webhook and set up a new one
               to get a fresh secret.
             </Text>
           </FormSection>

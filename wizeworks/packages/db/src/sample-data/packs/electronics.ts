@@ -134,29 +134,29 @@ export const electronicsPack: SampleDataPack = {
       title: 'Pulse Pro Wireless Earbuds',
       handle: 'pulse-pro-wireless-earbuds',
       description:
-        '<p>Active noise-cancelling true-wireless earbuds with dual-driver acoustics and adaptive transparency mode. Six microphones with a wind-reduction mesh keep your voice clear on calls, and the low-latency game mode drops audio lag to 60ms so the sound matches what is on screen.</p><p>Eight hours of playback per charge and 32 total with the pocketable case, plus USB-C and Qi wireless charging. IPX5 sweat resistance and three sizes of ear tips mean they stay put through a run or a commute.</p>',
+        '<p>Active noise-canceling true-wireless earbuds with dual-driver acoustics and adaptive transparency mode. Six microphones with a wind-reduction mesh keep your voice clear on calls, and the low-latency game mode drops audio lag to 60ms so the sound matches what is on screen.</p><p>Eight hours of playback per charge and 32 total with the pocketable case, plus USB-C and Qi wireless charging. IPX5 sweat resistance and three sizes of ear tips mean they stay put through a run or a commute.</p>',
       productType: 'Earbuds',
       productTypeKey: 'electronics',
       attributes: {
         specs: [
           { label: 'Drivers', value: 'Dual dynamic per bud' },
-          { label: 'Noise cancelling', value: 'Active ANC + adaptive transparency' },
+          { label: 'Noise canceling', value: 'Active ANC + adaptive transparency' },
           { label: 'Battery', value: '8 hr buds / 32 hr with case' },
           { label: 'Latency', value: '60 ms low-latency game mode' },
           { label: 'Microphones', value: '6 with wind-reduction mesh' },
           { label: 'Water resistance', value: 'IPX5 sweat + splash' },
         ],
         connectivity:
-          'Bluetooth 5.3 with multipoint — pair a laptop and phone at once and audio auto-switches to whichever starts playing. Case charges over USB-C or any Qi wireless pad.',
+          'Bluetooth 5.3 with multipoint: pair a laptop and phone at once and audio auto-switches to whichever starts playing. Case charges over USB-C or any Qi wireless pad.',
         inTheBox:
           'Pulse Pro earbuds, charging case, three ear-tip sizes (S/M/L), USB-C charging cable, quick-start guide.',
         warranty: '1-year limited warranty covering manufacturing defects.',
       },
       vendor: 'Soundwave',
-      tags: ['earbuds', 'wireless', 'noise cancelling', 'bluetooth'],
-      seoTitle: 'Pulse Pro Wireless Earbuds — ANC, 32hr Battery',
+      tags: ['earbuds', 'wireless', 'noise canceling', 'bluetooth'],
+      seoTitle: 'Pulse Pro Wireless Earbuds: ANC, 32hr Battery',
       seoDescription:
-        'Dual-driver true-wireless earbuds with active noise cancelling, transparency mode, and 32 hours total battery. IPX5, USB-C + Qi charging.',
+        'Dual-driver true-wireless earbuds with active noise canceling, transparency mode, and 32 hours total battery. IPX5, USB-C + Qi charging.',
       categoryKeys: ['audio'],
       collectionKeys: ['best-sellers', 'new-arrivals'],
       options: [
@@ -218,9 +218,9 @@ export const electronicsPack: SampleDataPack = {
         {
           rating: 5,
           title: 'ANC punches above the price',
-          body: 'Wore these on a five-hour flight and the engine roar just disappeared. Calls are clear too — my team stopped asking me to repeat myself.',
+          body: 'Wore these on a five-hour flight and the engine roar just disappeared. Calls are clear too: my team stopped asking me to repeat myself.',
           authorPersona: 'jordan',
-          response: 'Thanks Jordan — glad they earned a spot in the travel bag!',
+          response: 'Thanks Jordan: glad they earned a spot in the travel bag!',
           helpfulCount: 14,
           daysAgo: 19,
         },
@@ -235,7 +235,7 @@ export const electronicsPack: SampleDataPack = {
         {
           rating: 5,
           title: 'Game mode actually works',
-          body: 'The low-latency mode is real — no more lip-sync lag watching video or in mobile games. Battery easily gets me through the day.',
+          body: 'The low-latency mode is real: no more lip-sync lag watching video or in mobile games. Battery easily gets me through the day.',
           displayName: 'PixelPusher',
           helpfulCount: 3,
           daysAgo: 6,
@@ -252,7 +252,7 @@ export const electronicsPack: SampleDataPack = {
       ],
       questions: [
         {
-          body: 'Do these support multipoint — can I pair my laptop and phone at the same time?',
+          body: 'Do these support multipoint: can I pair my laptop and phone at the same time?',
           authorPersona: 'devin',
           answer:
             'Yes, Pulse Pro supports two simultaneous connections. Pair both from the app and audio auto-switches to whichever device starts playing.',
@@ -271,7 +271,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'Aero TKL Mechanical Keyboard',
       handle: 'aero-tkl-mechanical-keyboard',
       description:
-        '<p>A hot-swappable tenkeyless mechanical keyboard with a gasket-mounted plate and sound-dampening foam, tuned for a deep, muted typing feel right out of the box. Pre-lubed linear switches and PBT double-shot keycaps mean it sounds and feels finished — no aftermarket mods required.</p><p>Connect over 2.4GHz wireless, Bluetooth for up to three devices, or USB-C wired with full N-key rollover. Per-key RGB and onboard memory let you carry your layout and lighting between machines without software.</p>',
+        '<p>A hot-swappable tenkeyless mechanical keyboard with a gasket-mounted plate and sound-dampening foam, tuned for a deep, muted typing feel right out of the box. Pre-lubed linear switches and PBT double-shot keycaps mean it sounds and feels finished: no aftermarket mods required.</p><p>Connect over 2.4GHz wireless, Bluetooth for up to three devices, or USB-C wired with full N-key rollover. Per-key RGB and onboard memory let you carry your layout and lighting between machines without software.</p>',
       productType: 'Keyboard',
       productTypeKey: 'electronics',
       attributes: {
@@ -324,7 +324,7 @@ export const electronicsPack: SampleDataPack = {
           body: 'I expected to mod it but it is already thocky and quiet. The gasket mount has just enough flex. Hot-swap meant I tried tactiles later without a soldering iron.',
           authorPersona: 'devin',
           response:
-            'Appreciate the writeup, Devin — that pre-lubed feel is exactly what we tuned for.',
+            'Appreciate the writeup, Devin. That pre-lubed feel is exactly what we tuned for.',
           helpfulCount: 11,
           daysAgo: 17,
         },
@@ -351,7 +351,7 @@ export const electronicsPack: SampleDataPack = {
           body: 'Will it work with a Mac, including the command and option keys?',
           authorPersona: 'mei',
           answer:
-            'Yes — there is a Mac/Windows toggle switch on the back and Mac keycaps are included in the box. Modifiers map correctly in Mac mode.',
+            'Yes. There is a Mac/Windows toggle switch on the back and Mac keycaps are included in the box. Modifiers map correctly in Mac mode.',
           daysAgo: 14,
         },
         {
@@ -386,7 +386,7 @@ export const electronicsPack: SampleDataPack = {
       },
       vendor: 'Anker Nexus',
       tags: ['usb-c', 'hub', 'dock', '4k hdmi', 'ethernet'],
-      seoTitle: 'PortHub 8-in-1 USB-C Hub — 4K HDMI, Ethernet, 100W PD',
+      seoTitle: 'PortHub 8-in-1 USB-C Hub: 4K HDMI, Ethernet, 100W PD',
       seoDescription:
         'Aluminum 8-in-1 USB-C hub with 4K60 HDMI, gigabit Ethernet, USB-A/C, SD readers, and 100W pass-through charging. Driverless plug-and-play.',
       categoryKeys: ['peripherals'],
@@ -446,7 +446,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'ClearView 4K Webcam',
       handle: 'clearview-4k-webcam',
       description:
-        '<p>A 4K Ultra HD webcam with a Sony sensor, autofocus, and HDR that holds your face evenly lit even with a bright window behind you. AI auto-framing keeps you centered as you move, and the dual noise-cancelling microphones cut keyboard clatter on calls.</p><p>Streams 4K at 30fps or smooth 1080p at 60fps, with a privacy shutter that physically covers the lens. The universal clip grips laptops and monitors, and a tripod thread underneath lets you mount it however you like.</p>',
+        '<p>A 4K Ultra HD webcam with a Sony sensor, autofocus, and HDR that holds your face evenly lit even with a bright window behind you. AI auto-framing keeps you centered as you move, and the dual noise-canceling microphones cut keyboard clatter on calls.</p><p>Streams 4K at 30fps or smooth 1080p at 60fps, with a privacy shutter that physically covers the lens. The universal clip grips laptops and monitors, and a tripod thread underneath lets you mount it however you like.</p>',
       productType: 'Webcam',
       productTypeKey: 'electronics',
       attributes: {
@@ -454,21 +454,21 @@ export const electronicsPack: SampleDataPack = {
           { label: 'Resolution', value: '4K UHD @ 30fps or 1080p @ 60fps' },
           { label: 'Sensor', value: 'Sony CMOS' },
           { label: 'Focus', value: 'Continuous autofocus' },
-          { label: 'HDR', value: 'Yes — backlight compensation' },
+          { label: 'HDR', value: 'Yes: backlight compensation' },
           { label: 'Framing', value: 'AI auto-framing' },
-          { label: 'Microphones', value: 'Dual noise-cancelling' },
+          { label: 'Microphones', value: 'Dual noise-canceling' },
         ],
         connectivity:
-          'USB plug-and-play, UVC-compatible on Windows, macOS, and ChromeOS — no drivers. Note that Zoom caps webcam input at 1080p; full 4K shows in OBS, recorders, and Google Meet.',
+          'USB plug-and-play, UVC-compatible on Windows, macOS, and ChromeOS: no drivers. Note that Zoom caps webcam input at 1080p; full 4K shows in OBS, recorders, and Google Meet.',
         inTheBox:
           'ClearView 4K webcam with universal monitor/laptop clip and built-in privacy shutter, USB cable, quick-start guide. Tripod thread on the base.',
         warranty: '2-year limited warranty.',
       },
       vendor: 'Logitek Vision',
       tags: ['webcam', '4k', 'autofocus', 'streaming', 'work from home'],
-      seoTitle: 'ClearView 4K Webcam — HDR, Autofocus, Privacy Shutter',
+      seoTitle: 'ClearView 4K Webcam: HDR, Autofocus, Privacy Shutter',
       seoDescription:
-        '4K Ultra HD webcam with Sony sensor, HDR, AI auto-framing, dual noise-cancelling mics, and a physical privacy shutter. 4K30 or 1080p60.',
+        '4K Ultra HD webcam with Sony sensor, HDR, AI auto-framing, dual noise-canceling mics, and a physical privacy shutter. 4K30 or 1080p60.',
       categoryKeys: ['peripherals'],
       collectionKeys: ['new-arrivals'],
       variants: [
@@ -496,10 +496,10 @@ export const electronicsPack: SampleDataPack = {
         {
           rating: 5,
           title: 'Finally look good on video calls',
-          body: 'The HDR handles my backlit window perfectly — no more silhouette. Auto-framing keeps me centered when I lean back. Huge upgrade from the laptop cam.',
+          body: 'The HDR handles my backlit window perfectly: no more silhouette. Auto-framing keeps me centered when I lean back. Huge upgrade from the laptop cam.',
           authorPersona: 'aisha',
           response:
-            'Love hearing it, Aisha — that backlight handling is the feature we are proudest of.',
+            'Love hearing it, Aisha. That backlight handling is the feature we are proudest of.',
           helpfulCount: 8,
           daysAgo: 13,
         },
@@ -527,7 +527,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'Vault Portable SSD',
       handle: 'vault-portable-ssd',
       description:
-        '<p>A pocket-sized portable SSD that sustains up to 1,050 MB/s read and 1,000 MB/s write over USB 3.2 Gen 2 — fast enough to edit 4K video straight off the drive. The shock-resistant silicone bumper and IP55 dust-and-water rating let it survive a drop or a rainy commute.</p><p>Hardware AES-256 encryption keeps your files locked if it goes missing, and it ships pre-formatted to work with both Mac and Windows out of the box. Both USB-C and USB-A cables are in the box.</p>',
+        '<p>A pocket-sized portable SSD that sustains up to 1,050 MB/s read and 1,000 MB/s write over USB 3.2 Gen 2: fast enough to edit 4K video straight off the drive. The shock-resistant silicone bumper and IP55 dust-and-water rating let it survive a drop or a rainy commute.</p><p>Hardware AES-256 encryption keeps your files locked if it goes missing, and it ships pre-formatted to work with both Mac and Windows out of the box. Both USB-C and USB-A cables are in the box.</p>',
       productType: 'External Drive',
       productTypeKey: 'electronics',
       attributes: {
@@ -547,7 +547,7 @@ export const electronicsPack: SampleDataPack = {
       },
       vendor: 'Crucial Edge',
       tags: ['ssd', 'storage', 'portable', 'usb-c', 'encrypted'],
-      seoTitle: 'Vault Portable SSD — 1,050 MB/s, IP55, Hardware Encrypted',
+      seoTitle: 'Vault Portable SSD: 1,050 MB/s, IP55, Hardware Encrypted',
       seoDescription:
         'Pocket portable SSD up to 1,050 MB/s over USB 3.2 Gen 2, IP55 rated with AES-256 hardware encryption. Available in 1TB and 2TB.',
       categoryKeys: ['storage'],
@@ -643,7 +643,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'Luma Smart LED Bulb',
       handle: 'luma-smart-led-bulb',
       description:
-        '<p>A Wi-Fi smart LED bulb with 16 million colors and tunable white from a warm 2700K to a crisp 6500K, dimmable down to 1% for movie nights. No hub required — it connects straight to your 2.4GHz network and pairs with the major voice assistants for hands-free control.</p><p>Standard A19 shape and E26 base drop into any lamp or fixture. Schedules, scenes, and sunrise wake-up routines run on the bulb itself, so they fire even if your phone is off the network.</p>',
+        '<p>A Wi-Fi smart LED bulb with 16 million colors and tunable white from a warm 2700K to a crisp 6500K, dimmable down to 1% for movie nights. No hub required. It connects straight to your 2.4GHz network and pairs with the major voice assistants for hands-free control.</p><p>Standard A19 shape and E26 base drop into any lamp or fixture. Schedules, scenes, and sunrise wake-up routines run on the bulb itself, so they fire even if your phone is off the network.</p>',
       productType: 'Smart Lighting',
       productTypeKey: 'electronics',
       attributes: {
@@ -656,13 +656,13 @@ export const electronicsPack: SampleDataPack = {
           { label: 'Hub', value: 'None required' },
         ],
         connectivity:
-          '2.4GHz Wi-Fi direct — no hub or bridge. Pairs with the major voice assistants for hands-free control. Schedules, scenes, and sunrise routines run on the bulb, so they fire even if your phone is off the network.',
+          '2.4GHz Wi-Fi direct: no hub or bridge. Pairs with the major voice assistants for hands-free control. Schedules, scenes, and sunrise routines run on the bulb, so they fire even if your phone is off the network.',
         inTheBox: 'Luma smart LED bulb, quick-start guide.',
         warranty: '2-year limited warranty.',
       },
       vendor: 'Glowtide',
       tags: ['smart home', 'led', 'bulb', 'wifi', 'color'],
-      seoTitle: 'Luma Smart LED Bulb — 16M Colors, Tunable White, No Hub',
+      seoTitle: 'Luma Smart LED Bulb: 16M Colors, Tunable White, No Hub',
       seoDescription:
         'Wi-Fi A19 smart bulb with 16 million colors, tunable white 2700K–6500K, 1% dimming, and voice control. No hub required.',
       categoryKeys: ['smart-home'],
@@ -696,7 +696,7 @@ export const electronicsPack: SampleDataPack = {
           title: 'Sunrise alarm changed my mornings',
           body: 'Set it to fade up over 20 minutes before my alarm and waking up is so much gentler. Colors are vivid and the warm white is genuinely cozy.',
           authorPersona: 'noah',
-          response: 'That sunrise routine is a favorite of ours too — thanks Noah!',
+          response: 'That sunrise routine is a favorite of ours too: thanks Noah!',
           helpfulCount: 6,
           daysAgo: 14,
         },
@@ -730,14 +730,14 @@ export const electronicsPack: SampleDataPack = {
       title: 'ChargeCore 20K Power Bank',
       handle: 'chargecore-20k-power-bank',
       description:
-        '<p>A 20,000mAh power bank that pushes 65W out of its USB-C port — enough to fast-charge most laptops, not just phones. Two extra ports let you top up three devices at once, and the built-in digital display shows exactly how much charge is left so you are never guessing.</p><p>It recharges itself at 45W, going from empty to full in about an hour and a half. The grippy matte shell and rounded edges make it easy to slip in a bag, and pass-through charging means you can power a device while the bank itself is plugged in.</p>',
+        '<p>A 20,000mAh power bank that pushes 65W out of its USB-C port: enough to fast-charge most laptops, not just phones. Two extra ports let you top up three devices at once, and the built-in digital display shows exactly how much charge is left so you are never guessing.</p><p>It recharges itself at 45W, going from empty to full in about an hour and a half. The grippy matte shell and rounded edges make it easy to slip in a bag, and pass-through charging means you can power a device while the bank itself is plugged in.</p>',
       productType: 'Power Bank',
       productTypeKey: 'electronics',
       attributes: {
         specs: [
           { label: 'Capacity', value: '20,000mAh (≈74Wh)' },
           { label: 'Output', value: '65W USB-C PD' },
-          { label: 'Ports', value: '3 — charge three devices at once' },
+          { label: 'Ports', value: '3: charge three devices at once' },
           { label: 'Recharge', value: '45W in, empty to full in ~90 min' },
           { label: 'Display', value: 'Digital charge readout' },
           { label: 'Pass-through', value: 'Yes' },
@@ -751,7 +751,7 @@ export const electronicsPack: SampleDataPack = {
       vendor: 'Anker Nexus',
       tags: ['power bank', 'charging', 'usb-c', '65w', 'portable'],
       hazmatClass: 'class9',
-      seoTitle: 'ChargeCore 20K Power Bank — 65W USB-C, Digital Display',
+      seoTitle: 'ChargeCore 20K Power Bank: 65W USB-C, Digital Display',
       seoDescription:
         '20,000mAh power bank with 65W USB-C output to fast-charge laptops, three-device charging, a digital readout, and 45W recharge.',
       categoryKeys: ['power'],
@@ -789,7 +789,7 @@ export const electronicsPack: SampleDataPack = {
         {
           rating: 4,
           title: 'Heavy but worth it',
-          body: 'It has real heft — this is a laptop bank, not a slim phone topper. For the capacity and speed I am happy to carry it.',
+          body: 'It has real heft. This is a laptop bank, not a slim phone topper. For the capacity and speed I am happy to carry it.',
           authorPersona: 'aisha',
           helpfulCount: 5,
           daysAgo: 9,
@@ -822,13 +822,13 @@ export const electronicsPack: SampleDataPack = {
           { label: 'Grip', value: 'Silicone pads top and bottom' },
           { label: 'Portability', value: 'Folds flat to paperback size' },
         ],
-        connectivity: 'None — a passive aluminum stand with no cables or power.',
+        connectivity: 'None: a passive aluminum stand with no cables or power.',
         inTheBox: 'RiseDesk aluminum laptop stand, travel pouch, quick-start guide.',
         warranty: '2-year limited warranty.',
       },
       vendor: 'ElevateGear',
       tags: ['laptop stand', 'ergonomic', 'aluminum', 'work from home'],
-      seoTitle: 'RiseDesk Aluminum Laptop Stand — Folding, Adjustable',
+      seoTitle: 'RiseDesk Aluminum Laptop Stand: Folding, Adjustable',
       seoDescription:
         'Folding aluminum laptop stand that raises your screen to eye level with airflow cooling. Adjustable height, holds laptops up to 17 inches.',
       categoryKeys: ['peripherals'],
@@ -888,7 +888,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'BoomMini Bluetooth Speaker',
       handle: 'boommini-bluetooth-speaker',
       description:
-        '<p>A palm-sized Bluetooth speaker that punches well above its size thanks to a passive bass radiator and an upward-firing driver. IP67 dust and waterproofing means it survives the pool, the shower, and the trail — it even floats if it goes overboard.</p><p>Twelve hours of playback per charge over Bluetooth 5.3, with a built-in mic for speakerphone calls. Pair two together for true stereo, and clip it to a bag with the included carabiner loop.</p>',
+        '<p>A palm-sized Bluetooth speaker that punches well above its size thanks to a passive bass radiator and an upward-firing driver. IP67 dust and waterproofing means it survives the pool, the shower, and the trail. It even floats if it goes overboard.</p><p>Twelve hours of playback per charge over Bluetooth 5.3, with a built-in mic for speakerphone calls. Pair two together for true stereo, and clip it to a bag with the included carabiner loop.</p>',
       productType: 'Speaker',
       productTypeKey: 'electronics',
       attributes: {
@@ -907,7 +907,7 @@ export const electronicsPack: SampleDataPack = {
       },
       vendor: 'Soundwave',
       tags: ['speaker', 'bluetooth', 'waterproof', 'portable', 'audio'],
-      seoTitle: 'BoomMini Bluetooth Speaker — IP67 Waterproof, 12hr',
+      seoTitle: 'BoomMini Bluetooth Speaker: IP67 Waterproof, 12hr',
       seoDescription:
         'Palm-sized Bluetooth 5.3 speaker with passive bass radiator, IP67 waterproofing, 12-hour battery, and true wireless stereo pairing.',
       categoryKeys: ['audio'],
@@ -957,7 +957,7 @@ export const electronicsPack: SampleDataPack = {
           body: 'Can I pair two of them for stereo sound?',
           displayName: 'BeachDayBrian',
           answer:
-            'Yes — hold the pairing button on both and they link as a left/right stereo pair. They need to be the same model.',
+            'Yes. Hold the pairing button on both and they link as a left/right stereo pair. They need to be the same model.',
           daysAgo: 7,
         },
       ],
@@ -967,7 +967,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'Work-From-Home Starter Kit',
       handle: 'work-from-home-starter-kit',
       description:
-        '<p>Everything you need to turn any room into a real home office, bundled and discounted: the ClearView 4K webcam so you look sharp on every call, the Aero TKL mechanical keyboard for all-day typing comfort, and the PortHub 8-in-1 USB-C hub to wire it all into a single laptop port.</p><p>Buy the kit and save versus picking each piece on its own — one box, one click, a finished desk.</p>',
+        '<p>Everything you need to turn any room into a real home office, bundled and discounted: the ClearView 4K webcam so you look sharp on every call, the Aero TKL mechanical keyboard for all-day typing comfort, and the PortHub 8-in-1 USB-C hub to wire it all into a single laptop port.</p><p>Buy the kit and save versus picking each piece on its own. One box, one click, a finished desk.</p>',
       productType: 'Kits',
       productTypeKey: 'electronics',
       attributes: {
@@ -978,7 +978,7 @@ export const electronicsPack: SampleDataPack = {
           { label: 'Docking', value: 'Single USB-C laptop port' },
         ],
         connectivity:
-          'The webcam and keyboard connect through the included USB-C hub, so the whole setup wires into one laptop port — 4K HDMI, gigabit Ethernet, USB-A/C, and pass-through charging all from that one cable.',
+          'The webcam and keyboard connect through the included USB-C hub, so the whole setup wires into one laptop port: 4K HDMI, gigabit Ethernet, USB-A/C, and pass-through charging all from that one cable.',
         inTheBox:
           'ClearView 4K webcam, Aero TKL mechanical keyboard, PortHub 8-in-1 USB-C hub, plus each item’s own cables, dongle, and guides.',
         warranty:
@@ -1006,7 +1006,7 @@ export const electronicsPack: SampleDataPack = {
       title: 'Raptor Wireless Gaming Mouse',
       handle: 'raptor-wireless-gaming-mouse',
       description:
-        '<p>A lightweight 58-gram wireless gaming mouse with a 26,000 DPI optical sensor and a 1,000Hz polling rate over its low-latency 2.4GHz dongle — wired-fast response with none of the cable drag. Optical switches rated for 70 million clicks remove the double-click failures that kill mechanical switches.</p><p>PTFE feet glide effortlessly, six programmable buttons map to whatever you need, and a single charge lasts up to 90 hours. Top up over USB-C or play wired while it charges.</p>',
+        '<p>A lightweight 58-gram wireless gaming mouse with a 26,000 DPI optical sensor and a 1,000Hz polling rate over its low-latency 2.4GHz dongle: wired-fast response with none of the cable drag. Optical switches rated for 70 million clicks remove the double-click failures that kill mechanical switches.</p><p>PTFE feet glide effortlessly, six programmable buttons map to whatever you need, and a single charge lasts up to 90 hours. Top up over USB-C or play wired while it charges.</p>',
       productType: 'Mouse',
       productTypeKey: 'electronics',
       attributes: {
@@ -1019,14 +1019,14 @@ export const electronicsPack: SampleDataPack = {
           { label: 'Buttons', value: '6 programmable' },
         ],
         connectivity:
-          'Low-latency 2.4GHz wireless via the included dongle, or plug in the USB-C cable to play wired while it charges — switches modes instantly with no interruption.',
+          'Low-latency 2.4GHz wireless via the included dongle, or plug in the USB-C cable to play wired while it charges: switches modes instantly with no interruption.',
         inTheBox:
           'Raptor wireless mouse, 2.4GHz USB dongle, USB-C charging/data cable, quick-start guide.',
         warranty: '2-year limited warranty.',
       },
       vendor: 'Razer Apex',
       tags: ['mouse', 'gaming', 'wireless', 'lightweight', 'peripherals'],
-      seoTitle: 'Raptor Wireless Gaming Mouse — 58g, 26K DPI, 90hr',
+      seoTitle: 'Raptor Wireless Gaming Mouse: 58g, 26K DPI, 90hr',
       seoDescription:
         '58-gram wireless gaming mouse with a 26,000 DPI sensor, 1,000Hz polling, optical switches, and up to 90 hours of battery. USB-C charging.',
       categoryKeys: ['peripherals'],
@@ -1064,7 +1064,7 @@ export const electronicsPack: SampleDataPack = {
         {
           rating: 4,
           title: 'Excellent for FPS, a touch small',
-          body: 'Tracking is perfect and the battery lasts forever. If you have large hands and palm-grip, try it first — it suits a claw grip best.',
+          body: 'Tracking is perfect and the battery lasts forever. If you have large hands and palm-grip, try it first. It suits a claw grip best.',
           displayName: 'HeadshotHenry',
           helpfulCount: 3,
           daysAgo: 6,
@@ -1075,7 +1075,7 @@ export const electronicsPack: SampleDataPack = {
           body: 'Can I use it wired if the battery dies mid-game?',
           authorPersona: 'noah',
           answer:
-            'Yes — plug in the USB-C cable and it switches to wired mode instantly while it charges. No interruption to your session.',
+            'Yes: plug in the USB-C cable and it switches to wired mode instantly while it charges. No interruption to your session.',
           daysAgo: 9,
         },
       ],
@@ -1137,11 +1137,11 @@ export const electronicsPack: SampleDataPack = {
       slug: 'mechanical-vs-membrane-keyboards',
       title: 'Mechanical vs. membrane keyboards: which should you buy?',
       excerpt:
-        'They look similar and one costs three times as much. Here is what you actually get for the money — and who should skip it.',
+        'They look similar and one costs three times as much. Here is what you actually get for the money, and who should skip it.',
       daysAgo: 6,
       body: doc(
         p(
-          'A membrane keyboard came with your computer; a mechanical keyboard is the one enthusiasts swear by. The difference is real, but it is not magic — it comes down to how each key registers a press.'
+          'A membrane keyboard came with your computer; a mechanical keyboard is the one enthusiasts swear by. The difference is real, but it is not magic. It comes down to how each key registers a press.'
         ),
         h2('How they differ'),
         p(
@@ -1162,7 +1162,7 @@ export const electronicsPack: SampleDataPack = {
         ),
         h2('Picking a switch'),
         p(
-          'If you go mechanical, the switch decides the feel. Linear switches (often red) are smooth and quiet — great for gaming and shared offices. Tactile switches (brown) give a small bump when the key registers, a nice middle ground for typing. Clicky switches (blue) add an audible click that typists love and officemates do not.'
+          'If you go mechanical, the switch decides the feel. Linear switches (often red) are smooth and quiet: great for gaming and shared offices. Tactile switches (brown) give a small bump when the key registers, a nice middle ground for typing. Clicky switches (blue) add an audible click that typists love and officemates do not.'
         )
       ),
     },
@@ -1170,7 +1170,7 @@ export const electronicsPack: SampleDataPack = {
       slug: 'how-to-choose-an-ssd',
       title: 'How to choose an SSD: capacity, speed, and the specs that matter',
       excerpt:
-        'Internal or portable, SATA or NVMe, 1TB or 2TB — a plain-language guide to buying the right drive without overpaying.',
+        'Internal or portable, SATA or NVMe, 1TB or 2TB: a plain-language guide to buying the right drive without overpaying.',
       daysAgo: 13,
       body: doc(
         p(
@@ -1184,11 +1184,11 @@ export const electronicsPack: SampleDataPack = {
         ol(
           'For documents, a few games, and photos: 1TB is comfortable for most people',
           'For 4K video editing, large game libraries, or a working archive: 2TB or more',
-          'Buy one size up from what you think you need — files only grow, and a drive runs best with some free space'
+          'Buy one size up from what you think you need: files only grow, and a drive runs best with some free space'
         ),
         h2('Reading the speed numbers'),
         p(
-          'Speeds are quoted in MB/s for sequential reads and writes — how fast big files move. For a portable drive over USB 3.2 Gen 2, around 1,000 MB/s is excellent and saturates the connection. Headline speeds higher than that need a faster port (USB4 or Thunderbolt) to actually deliver.'
+          'Speeds are quoted in MB/s for sequential reads and writes: how fast big files move. For a portable drive over USB 3.2 Gen 2, around 1,000 MB/s is excellent and saturates the connection. Headline speeds higher than that need a faster port (USB4 or Thunderbolt) to actually deliver.'
         ),
         h2('Do not forget durability and encryption'),
         ul(
@@ -1206,7 +1206,7 @@ export const electronicsPack: SampleDataPack = {
       daysAgo: 21,
       body: doc(
         p(
-          'A good desk setup is not about expensive furniture — it is about getting a few things right so you are comfortable for eight hours and your space stays uncluttered. Work through it in this order.'
+          'A good desk setup is not about expensive furniture. It is about getting a few things right so you are comfortable for eight hours and your space stays uncluttered. Work through it in this order.'
         ),
         h2('Get the screen to eye level'),
         p(

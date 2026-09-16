@@ -4,6 +4,7 @@
 // 5 min (same as api-rest's own Cache-Control on the underlying endpoint).
 
 import { resolveSite, resolveActivePropertySlug } from '@/lib/site-context';
+import { suspendedSitemapXml } from '@/lib/suspended';
 
 // NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
 // forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
@@ -19,6 +20,8 @@ export async function GET(request: Request) {
   if (!site) {
     return new Response('Not found', { status: 404 });
   }
+  // Every URL this would list serves the overlay while the site is dark (503).
+  if (site.billingPhase === 'suspended') return suspendedSitemapXml();
   const propertySlug = await resolveActivePropertySlug();
 
   const upstream = new URL(`${BASE_URL}/v1/sitemap.xml`);

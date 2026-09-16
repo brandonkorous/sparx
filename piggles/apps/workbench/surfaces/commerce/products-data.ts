@@ -603,7 +603,8 @@ export function useProductOptions(productId: string) {
   return useQuery({
     queryKey: productKeys.facet(productId, 'options'),
     queryFn: () => api.get<ProductOption[]>(`/v1/commerce/products/${productId}/variants/options`),
-    enabled: productId !== 'new',
+    // '' is what a screen passes when it has no product in hand yet.
+    enabled: productId !== 'new' && productId !== '',
   });
 }
 
@@ -654,13 +655,93 @@ export function useProductMedia(productId: string) {
  * so the true limit is ~66 variants); beyond that the answer is a paged facet
  * pane, never a loop.
  */
+/**
+ * How many a shopper could actually buy right now.
+ *
+ * NOT `level.available`, and the difference is the whole reason this function
+ * exists. The API's `available` is `onHand − allocated` and stops there, but the
+ * sell path also withholds the safety buffer — so on a buffered level `available`
+ * is a number nobody can ever reach. Showing it beside a sentence saying units
+ * are held back produced exactly the contradiction that sentence was written to
+ * prevent: "3 units are held back" over two identical figures.
+ *
+ * Derived here rather than fixed in the API on purpose: `available` is a
+ * documented public-API field that integrators already read, and quietly
+ * changing what it means is not a call to make from a UI pane.
+ *
+ * It lives beside the TYPE rather than in one pane because a second screen now
+ * asks the same question — the replacement picker on a swap, where the number is
+ * what stops somebody promising a customer a size they do not have.
+ */
+export function sellable(level: ProductStockLevel): number {
+  return Math.max(0, level.onHand - level.allocated - level.safetyBuffer);
+}
+
+/**
+ * What to say about how many there are, when the number is part of a decision.
+ *
+ * THREE states, not two, and the third is the one that keeps being got wrong.
+ * `undefined` means nobody has ever counted this version — the shop sells it
+ * without limit and there is no figure to show, so rendering "0 left" would be
+ * inventing a measurement nobody took (issues 444, 446). Zero itself is a real
+ * answer and the only one that must stop somebody promising it to a customer.
+ */
+export type StockNoteKind = 'uncounted' | 'none' | 'some';
+
+export function stockNoteKind(count: number | undefined): StockNoteKind {
+  if (count === undefined) return 'uncounted';
+  return count <= 0 ? 'none' : 'some';
+}
+
 export function useProductStock(productId: string) {
   return useQuery({
     queryKey: productKeys.facet(productId, 'inventory'),
     queryFn: () =>
       api.list<ProductStockLevel>('/v1/inventory', { product_id: productId, take: 200 }),
-    enabled: productId !== 'new',
+    // '' is what a screen passes when it has no product in hand. The endpoint
+    // types `product_id` as a uuid, so an empty one is a 400 and every row then
+    // reads as uncounted (issue 451).
+    enabled: productId !== 'new' && productId !== '',
   });
+}
+/**
+ * How many there are of each version of ONE product.
+ *
+ * The product id is not decoration. These counts come from a single
+ * `product_id`-filtered read, so they answer for that product and NOTHING else
+ * — and a picker that lists the whole catalog will draw rows this cannot speak
+ * for. Carrying the id with the map is what lets a screen stay quiet about
+ * those rows instead of reporting them as uncounted (issue 451).
+ */
+export interface VariantStock {
+  /** The one product these counts cover. */
+  productId: string;
+  /** variantId to how many there are to sell. Absent for a variant OF THAT
+   *  PRODUCT means never counted, which is not zero. */
+  counts: Map<string, number>;
+}
+
+/** What a stock note should say about one row, or NULL for say nothing. */
+export type VariantStockNote =
+  { kind: 'uncounted' } | { kind: 'none' } | { kind: 'some'; count: number };
+
+/**
+ * What to say beside one version in a picker.
+ *
+ * Null for a row these counts do not cover. "Not counted" is a claim about the
+ * shop's records, and making it about a product nobody asked about is inventing
+ * a measurement exactly the way "0 left" over an untracked version would be
+ * (issue 451, and the rule it broke is the same one as issues 444 and 446).
+ */
+export function stockNoteFor(
+  variant: { id: string; productId: string },
+  stock: VariantStock | undefined
+): VariantStockNote | null {
+  if (!stock) return null;
+  if (stock.productId !== variant.productId) return null;
+  const count = stock.counts.get(variant.id);
+  if (count === undefined) return { kind: 'uncounted' };
+  return stockNoteKind(count) === 'none' ? { kind: 'none' } : { kind: 'some', count };
 }
 
 /**
@@ -1546,7 +1627,7 @@ export function productState(product: {
     label: 'Not on sale',
     tone: 'info',
     detail:
-      'This is saved but hidden — nobody can see it on your website yet. Put it on sale when you are ready.',
+      'This is saved but hidden. Nobody can see it on your website yet. Put it on sale when you are ready.',
   };
 }
 

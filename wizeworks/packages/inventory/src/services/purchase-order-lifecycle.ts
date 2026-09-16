@@ -17,6 +17,7 @@ import { withTenant } from '@wizeworks/db';
 import { z } from 'zod';
 
 import { writeAuditLog } from '../audit';
+import { indexInventoryEntityOnCommit } from '../events';
 import { InventoryNotFoundError, InventoryValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 
@@ -226,4 +227,7 @@ async function audit(
     entityId: id,
     diff: { after: diff },
   });
+  // Every transition in this file changes what the order's search document
+  // says, and this helper is the one line all five share.
+  await indexInventoryEntityOnCommit(ctx, 'purchase_order', id);
 }

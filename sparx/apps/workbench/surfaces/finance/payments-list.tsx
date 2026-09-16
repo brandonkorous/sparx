@@ -57,7 +57,7 @@ function PaymentRow({
   payment: Payment;
   onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
-  const state = paymentState(payment.status);
+  const state = paymentState(payment.status, payment.refundedAmount, payment.amount);
   const clickable = Boolean(payment.orderId);
   return (
     <tr
@@ -243,7 +243,7 @@ export function PaymentsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Wallet className="size-6" aria-hidden />}
             title="Could not load payments"
-            description="Something went wrong reaching the server. Your payments are unaffected — try again in a moment."
+            description="Something went wrong reaching the server. Your payments are unaffected. Try again in a moment."
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -258,7 +258,7 @@ export function PaymentsListSurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               search || status !== 'all'
                 ? 'Try a different search, or switch the status back to All.'
-                : 'When a customer pays — on your website, a marketplace, or in person — it will show up here.'
+                : 'When a customer pays (on your website, a marketplace, or in person), it will show up here.'
             }
           />
         ) : (

@@ -66,7 +66,7 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
       <EmptyState
         icon={<PackageX className="size-6" aria-hidden />}
         title="Could not work out what is not selling"
-        description="This is a problem reaching the server, not a finding about your stock. Nothing here is a real answer until it loads — try again in a moment."
+        description="This is a problem reaching the server, not a finding about your stock. Nothing here is a real answer until it loads. Try again in a moment."
       />
     );
   }
@@ -80,23 +80,54 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
 
   return (
     <div className="flex flex-col gap-3">
+      {/* Sums over rows the pass produces, so before a pass has run all three are
+          unknown and none of them is zero. Same reason as the headlines on At
+          risk: the empty state below already says nothing has been checked, and
+          a $0.00 above it says the opposite louder. */}
       <Stats className="w-full">
         <Stat>
           <StatTitle>Cash tied up</StatTitle>
-          <StatValue className="text-warning">
-            {formatCents(totals?.excessValueCents ?? 0)}
-          </StatValue>
-          <StatDesc>In stock beyond what the demand can absorb</StatDesc>
+          {measured ? (
+            <>
+              <StatValue className="text-warning">
+                {formatCents(totals?.excessValueCents ?? 0)}
+              </StatValue>
+              <StatDesc>In stock beyond what the demand can absorb</StatDesc>
+            </>
+          ) : (
+            <>
+              <StatValue>Not yet</StatValue>
+              <StatDesc>Unknown rather than zero, until a pass has run</StatDesc>
+            </>
+          )}
         </Stat>
         <Stat>
           <StatTitle>Costing you a year</StatTitle>
-          <StatValue>{formatCents(totals?.annualHoldingCostCents ?? 0)}</StatValue>
-          <StatDesc>At {report.data?.holdingCostRatePct ?? 25}% a year to keep it</StatDesc>
+          {measured ? (
+            <>
+              <StatValue>{formatCents(totals?.annualHoldingCostCents ?? 0)}</StatValue>
+              <StatDesc>At {report.data?.holdingCostRatePct ?? 25}% a year to keep it</StatDesc>
+            </>
+          ) : (
+            <>
+              <StatValue>Not yet</StatValue>
+              <StatDesc>Follows from the figure beside it</StatDesc>
+            </>
+          )}
         </Stat>
         <Stat>
           <StatTitle>Not selling at all</StatTitle>
-          <StatValue className="text-danger">{totals?.deadItems ?? 0}</StatValue>
-          <StatDesc>{formatCents(totals?.deadValueCents ?? 0)} of it</StatDesc>
+          {measured ? (
+            <>
+              <StatValue className="text-danger">{totals?.deadItems ?? 0}</StatValue>
+              <StatDesc>{formatCents(totals?.deadValueCents ?? 0)} of it</StatDesc>
+            </>
+          ) : (
+            <>
+              <StatValue>Not yet</StatValue>
+              <StatDesc>Nothing has been looked at, so nothing can be counted</StatDesc>
+            </>
+          )}
         </Stat>
       </Stats>
 
@@ -130,7 +161,7 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
           <EmptyState
             icon={<Gauge className="size-6" aria-hidden />}
             title="Nothing has been checked yet"
-            description="This list is empty because no pass has been made over your sales — not because everything is moving. Press “Work it out now” above to find out which it is."
+            description="This list is empty because no pass has been made over your sales, not because everything is moving. Press “Work it out now” above to find out which it is."
           />
         )
       ) : (

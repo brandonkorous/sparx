@@ -41,6 +41,8 @@ import { ReturnDispositionPanel } from './return-disposition-panel';
 import { deferTick } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatDate, formatDateTime, formatMoney, useOrder } from './data';
+import { ReturnParcels } from './return-parcels';
+import { needsShipmentRecord } from './return-shipment';
 import {
   conditionLabel,
   outcomeLabel,
@@ -55,7 +57,9 @@ import {
 import {
   ApproveReturnModal,
   DenyReturnModal,
+  ExchangeReturnModal,
   InspectReturnModal,
+  RecordReplacementShipmentModal,
   RefundReturnModal,
 } from './return-actions';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -121,7 +125,7 @@ export function ReturnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         error={error}
         noun="return"
         title="Could not load this return"
-        description="This is a problem reaching the server. The return itself is unaffected — nothing has been changed or lost."
+        description="This is a problem reaching the server. The return itself is unaffected. Nothing has been changed or lost."
         onRetry={() => {
           void refetch();
         }}
@@ -158,8 +162,13 @@ function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
   const [denyOpen, setDenyOpen] = useState(false);
   const [inspectOpen, setInspectOpen] = useState(false);
   const [refundOpen, setRefundOpen] = useState(false);
+  const [exchangeOpen, setExchangeOpen] = useState(false);
+  const [shippedOpen, setShippedOpen] = useState(false);
 
-  const state = returnState(detail.status);
+  // What the customer ASKED for changes what "finish this" means, so the status
+  // line takes it too. Without it every ready-to-settle return read "give the
+  // customer their money back", including the even swaps (issue 220).
+  const state = returnState(detail.status, detail.preferredOutcome);
   const currency = order?.currency ?? 'USD';
 
   // orderItemId → unit price in dollars, from the order lines. Absent when the
@@ -183,15 +192,34 @@ function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
     detail.status === 'approved' ||
     detail.status === 'awaiting_shipment' ||
     detail.status === 'in_transit';
-  const canInspect = detail.status === 'received' || detail.status === 'inspecting';
-  const canRefund = detail.status === 'inspected' || detail.status === 'received';
-  const hasAction = canApprove || canDeny || canReceive || canInspect || canRefund;
+  // Settled, and nobody ever wrote down what came back. The goods are real and
+  // on a shelf, but the returns bench lists inspections, so without this row
+  // they appear on no screen in the product ever again (issue 452).
+  const goodsUnaccounted =
+    (detail.status === 'refunded' || detail.status === 'exchanged') &&
+    detail.inspections.length === 0;
+  const canInspect =
+    detail.status === 'received' || detail.status === 'inspecting' || goodsUnaccounted;
+  // Ready to settle — but HOW depends on what the customer asked for. An even
+  // swap moves no money, so offering only a refund there offers the one move
+  // that is wrong (issue 220).
+  const settling = detail.status === 'inspected' || detail.status === 'received';
+  const swapping = detail.preferredOutcome === 'exchange';
+  const canRefund = settling && !swapping;
+  const canExchange = settling && swapping;
+  // The swap is settled and nobody has said how the replacement is travelling.
+  // The ordinary state rather than an unusual one: she settles it while the
+  // customer waits and walks to the post office afterwards, so without a route
+  // back in the tracking number has nowhere to go.
+  const canSayShipped = needsShipmentRecord(detail);
+  const hasAction =
+    canApprove || canDeny || canReceive || canInspect || canRefund || canExchange || canSayShipped;
 
   const onReceive = async () => {
     const ok = await confirm({
       title: 'Mark the goods as received?',
       description:
-        'This records that the returned items are back with you, so you can check their condition and settle the refund. Only do this once they have actually arrived.',
+        'This records that the returned items are back with you, so you can check their condition and finish the return. Only do this once they have actually arrived.',
       confirmLabel: 'Yes, they have arrived',
       cancelLabel: 'Not yet',
       color: 'module',
@@ -301,6 +329,22 @@ function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
               the shelf. */}
           {detail.inspections.length > 0 ? <ReturnDispositionPanel returnId={detail.id} /> : null}
 
+          {/* A swap settles with no money at all, and saying so out loud is the
+              point — "nothing was given back" is the ANSWER on an even
+              exchange, not a missing figure (issue 220). */}
+          {detail.status === 'exchanged' ? (
+            <FormSection title="How it was settled">
+              <div className="flex items-baseline justify-between gap-4 text-lg font-semibold">
+                <span>Money moved</span>
+                <span className="tabular-nums">{money(0, currency)}</span>
+              </div>
+              <Text className="text-base">
+                They were sent a replacement instead of being given anything back
+                {detail.refundedAt ? ` · ${formatDateTime(detail.refundedAt)}` : ''}
+              </Text>
+            </FormSection>
+          ) : null}
+
           {/* The settlement only exists once the money has gone back, so the card
               only appears then — no empty "Refund: none" on every open return. */}
           {detail.status === 'refunded' && detail.refundedAmountCents !== null ? (
@@ -338,8 +382,27 @@ function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
             </FormSection>
           ) : null}
 
+          <ReturnParcels labels={detail.labels} />
+
           {hasAction ? (
             <div className="flex flex-col">
+              {canSayShipped ? (
+                <ActionRow
+                  title="Say how it went out"
+                  description="They are waiting to hear how to follow their replacement. Putting the tracking number in emails it to them."
+                >
+                  <Button
+                    size="sm"
+                    color="module"
+                    onClick={() => {
+                      setShippedOpen(true);
+                    }}
+                  >
+                    Add tracking…
+                  </Button>
+                </ActionRow>
+              ) : null}
+
               {canApprove ? (
                 <ActionRow
                   title="Approve this return"
@@ -379,8 +442,12 @@ function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
 
               {canInspect ? (
                 <ActionRow
-                  title="Record what came back"
-                  description="Note the condition of each item and whether it can go back on the shelf."
+                  title={goodsUnaccounted ? 'Say what came back' : 'Record what came back'}
+                  description={
+                    goodsUnaccounted
+                      ? 'This return is finished, but nothing was written down about the goods themselves. Note their condition so they show up on your returns bench.'
+                      : 'Note the condition of each item and whether it can go back on the shelf.'
+                  }
                 >
                   <Button
                     size="sm"
@@ -413,10 +480,27 @@ function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
                 </ActionRow>
               ) : null}
 
+              {canExchange ? (
+                <ActionRow
+                  title="Send the replacement"
+                  description="Finish the return by sending the version they asked for. No money moves in either direction."
+                >
+                  <Button
+                    size="sm"
+                    color="module"
+                    onClick={() => {
+                      setExchangeOpen(true);
+                    }}
+                  >
+                    Send replacement…
+                  </Button>
+                </ActionRow>
+              ) : null}
+
               {canDeny ? (
                 <ActionRow
                   title="Turn this return down"
-                  description="Decline it — the customer keeps the item and no money changes hands. You give a reason they are told."
+                  description="Decline it: the customer keeps the item and no money changes hands. You give a reason they are told."
                 >
                   <Button
                     size="sm"
@@ -463,6 +547,20 @@ function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
         open={refundOpen}
         onClose={() => {
           setRefundOpen(false);
+        }}
+      />
+      <ExchangeReturnModal
+        detail={detail}
+        open={exchangeOpen}
+        onClose={() => {
+          setExchangeOpen(false);
+        }}
+      />
+      <RecordReplacementShipmentModal
+        detail={detail}
+        open={shippedOpen}
+        onClose={() => {
+          setShippedOpen(false);
         }}
       />
     </div>

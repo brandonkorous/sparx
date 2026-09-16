@@ -233,7 +233,12 @@ export async function prepareTestSend(
   );
 
   return {
-    from: await buildTenantFrom(ctx.tenantId, settings.fromName, settings.fromAddress),
+    from: await buildTenantFrom(
+      ctx.tenantId,
+      settings.fromName,
+      settings.fromAddress,
+      settings.propertyId
+    ),
     to,
     replyTo: settings.replyTo ?? undefined,
     subject: rendered.subject,

@@ -180,7 +180,7 @@ export const woocommerce: VendorAdapter = {
       format: 'csv',
       filePattern: /wc-product-export/i,
       required: ['Type', 'Regular price'],
-      hints: ['Is featured?', 'Visibility in catalogue', 'In stock?', 'Backorders allowed?'],
+      hints: ['Is featured?', 'Visibility in catalog', 'In stock?', 'Backorders allowed?'],
       map: mapProducts,
     },
     {

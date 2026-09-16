@@ -87,6 +87,15 @@ export interface StockLevel {
   /** Seconds since `asOf`, worked out on the server so a browser with a wrong
    *  clock cannot paint a whole list as stale. */
   ageSeconds: number;
+  /** When somebody last CHECKED this against the shelf, or null if nobody ever
+   *  has. Not the same as `asOf`: a sale re-establishes the quantity without
+   *  anybody looking at the shelf, which is why the two disagree and why only
+   *  this one can answer "might this number have drifted". */
+  lastCountedAt: string | null;
+  /** How often this is meant to be counted, in days, from the business's own
+   *  counting schedule. Null when they have not set one — and with no schedule
+   *  there is no such thing as a count being late. */
+  countIntervalDays: number | null;
 }
 
 /** A place stock is kept — a warehouse, a shop floor, a van. */
@@ -567,7 +576,7 @@ export function movementReason(reason: string): string {
     case 'return':
       return 'Came back from a customer';
     case 'cancel':
-      return 'Put back after a cancelled order';
+      return 'Put back after a canceled order';
     case 'recount':
       return 'Counted';
     case 'loss':

@@ -61,28 +61,28 @@ const SHAPES: { module: MarketingModule; name: string; blurb: string; runs: stri
     module: 'scheduling',
     name: 'You book time',
     blurb:
-      'Your day is a calendar, not a catalog. Appointments, classes, tables, rooms or vans — booked by the customer, held with a deposit if you want one, and never double-booked.',
+      'Your day is a calendar, not a catalog. Appointments, classes, tables, rooms or vans: booked by the customer, held with a deposit if you want one, and never double-booked.',
     runs: ['Builder', 'Scheduling', 'CRM'],
   },
   {
     module: 'b2b',
     name: 'You supply the trade',
     blurb:
-      'Agreed prices per account, purchase orders, payment on terms and requests for quote — wholesale the way it actually works, built into the platform rather than sold as a five-figure upgrade.',
+      'Agreed prices per account, purchase orders, payment on terms and requests for quote: wholesale the way it actually works, built into the platform rather than sold as a five-figure upgrade.',
     runs: ['Commerce', 'B2B', 'CRM', 'Invoicing'],
   },
   {
     module: 'builder',
     name: 'You run several businesses',
     blurb:
-      'More than one site, brand or client, each with its own name, look, domain and content — managed from one place and billed on one invoice, without a separate account per site.',
+      'More than one site, brand or client, each with its own name, look, domain and content: managed from one place and billed on one invoice, without a separate account per site.',
     runs: ['Builder', 'CMS', 'multiple sites'],
   },
   {
     module: 'ai',
     name: 'You want to build on it',
     blurb:
-      'Everything is an interface first, so you can drive the whole platform from your own code — or point your own AI assistant at your live business data with a key you issue and can revoke.',
+      'Everything is an interface first, so you can drive the whole platform from your own code, or point your own AI assistant at your live business data with a key you issue and can revoke.',
     runs: ['AI', 'the API', 'headless Builder'],
   },
 ];
@@ -112,25 +112,25 @@ const FAQ = [
     id: 'customers-not-a-shop',
     question: 'I don’t sell anything. Is this still for me?',
     answer:
-      'Yes, and it is not an afterthought. Selling is one capability out of fourteen, and plenty of businesses here never turn it on — a publisher runs the site, the writing and the newsletter; a consultant runs the site, the calendar and the invoices. You pay for the parts you switch on and nothing else, so a business that does not sell is never subsidising a checkout it does not use.',
+      'Yes, and it is not an afterthought. Selling is one capability out of fourteen, and plenty of businesses here never turn it on: a publisher runs the site, the writing and the newsletter; a consultant runs the site, the calendar and the invoices. You pay for the parts you switch on and nothing else, so a business that does not sell is never subsidising a checkout it does not use.',
   },
   {
     id: 'customers-not-listed',
     question: 'My trade isn’t one of the six. What then?',
     answer:
-      'The six pages exist because those trades ask the most specific questions, not because the platform only fits them. The blueprint catalog already covers twenty industries with a complete starting site each, and the modules underneath are the same whatever you do — a calendar is a calendar whether it holds appointments, deliveries or fittings. If you tell us what you run, we will map it out with you.',
+      'The six pages exist because those trades ask the most specific questions, not because the platform only fits them. The blueprint catalog already covers twenty industries with a complete starting site each, and the modules underneath are the same whatever you do: a calendar is a calendar whether it holds appointments, deliveries or fittings. If you tell us what you run, we will map it out with you.',
   },
   {
     id: 'customers-more-than-one',
     question: 'Can I run more than one business on one account?',
     answer:
-      'Yes. One account can hold several sites, each with its own name, domain, look, content and customers — which is how agencies run client work and how one owner runs two unrelated shops. They stay properly separate from each other; only the bill is shared.',
+      'Yes. One account can hold several sites, each with its own name, domain, look, content and customers, which is how agencies run client work and how one owner runs two unrelated shops. They stay properly separate from each other; only the bill is shared.',
   },
   {
     id: 'customers-outgrow',
     question: 'What if I start small and grow?',
     answer:
-      'You switch modules on as you need them and the data you already have stays where it is. A salon that adds retail, a shop that starts supplying the trade, a publisher that starts selling a course — none of those are migrations, they are a switch. Nothing has to be rebuilt and nothing has to be exported and re-imported.',
+      'You switch modules on as you need them and the data you already have stays where it is. A salon that adds retail, a shop that starts supplying the trade, a publisher that starts selling a course: none of those are migrations, they are a switch. Nothing has to be rebuilt and nothing has to be exported and re-imported.',
   },
 ];
 
@@ -151,7 +151,7 @@ export function CustomersPage() {
             </Heading>
             <Text variant="lead" className="text-base-content max-w-3xl text-xl">
               A salon, a garage, a bakery, a bookstore, a magazine, a plumbing round. sparx is not a
-              shop with extras bolted on — it is fourteen separate parts, and you switch on the ones
+              shop with extras bolted on. It is fourteen separate parts, and you switch on the ones
               your week actually needs. Here is what that looks like for a business like yours.
             </Text>
             <div className="flex flex-wrap items-center gap-3">
@@ -202,7 +202,7 @@ export function CustomersPage() {
               <span className="text-primary">.</span>
             </Heading>
             <Text variant="lead" className="text-xl">
-              Six pages, each one about a single kind of business — what it needs done, what that
+              Six pages, each one about a single kind of business: what it needs done, what that
               adds up to every month, and what the same tools cost bought separately. No jargon and
               no starting-from figures.
             </Text>
@@ -294,10 +294,10 @@ export function CustomersPage() {
               Twenty more, already built
             </Heading>
             <Text variant="lead" className="max-w-2xl text-xl">
-              A blueprint is a finished site for a particular kind of business — the pages, a
-              starter catalog, a few articles, a welcome email sequence and a matching look — and
-              installing one takes a click. These do not have a page of their own yet; they have
-              something better, which is a working site waiting for your words.
+              A blueprint is a finished site for a particular kind of business (the pages, a starter
+              catalog, a few articles, a welcome email sequence and a matching look) and installing
+              one takes a click. These do not have a page of their own yet; they have something
+              better, which is a working site waiting for your words.
             </Text>
             <div className="flex flex-wrap items-center gap-3">
               <a
@@ -334,7 +334,7 @@ export function CustomersPage() {
           <Text variant="lead" className="text-xl">
             Open an account and try it on the business you actually run. Nothing is charged until
             you decide to keep it, no card is needed to find out, and if what you do does not fit
-            any of the shapes above, that is the interesting conversation — tell us about it.
+            any of the shapes above, that is the interesting conversation. Tell us about it.
           </Text>
           <div className="flex flex-wrap items-center gap-3">
             <a

@@ -144,7 +144,7 @@ export function CategoryEditor({
         <div className={COLUMN}>
           {isNew ? (
             <Text>
-              A category is a part of your website&apos;s menu — an aisle shoppers browse down.
+              A category is a part of your website&apos;s menu: an aisle shoppers browse down.
               Categories can sit inside one another, so &ldquo;Cookware&rdquo; can live under
               &ldquo;Camping&rdquo;.
             </Text>
@@ -170,8 +170,8 @@ export function CategoryEditor({
             <div className="border-base-300 flex flex-col gap-3 border-t pt-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Text className="text-sm">
-                  Deleting takes this category off your website menu. Products filed here are kept —
-                  they just stop appearing under this heading.
+                  Deleting takes this category off your website menu. Products filed here are kept.
+                  They just stop appearing under this heading.
                 </Text>
                 <Button
                   size="sm"

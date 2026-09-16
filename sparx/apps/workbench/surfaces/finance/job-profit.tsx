@@ -36,7 +36,13 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useJobProfit, type JobProfit } from './spend-data';
 import { PERIOD_OPTIONS, rangeFor, type PeriodKey } from './period';
-import { formatCents, formatCentsSigned, formatDate, formatRate } from './format';
+import {
+  formatCents,
+  formatCentsSigned,
+  formatCentsUnsigned,
+  formatDate,
+  formatRate,
+} from './format';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 const SORTS = [
@@ -248,7 +254,7 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : (
           <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
             {/* The headline is the BAD news, because that is the actionable half.
-                A screen that led with "your best job made £400" would be a
+                A screen that led with "your best job made $400" would be a
                 congratulation; this is a tool. */}
             <Card className="p-4">
               {summary.losing > 0 ? (
@@ -258,11 +264,12 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
                     level={2}
                     className="text-error mt-1 text-3xl font-semibold tabular-nums"
                   >
-                    {formatCentsSigned(summary.losingCents)}
+                    {/* "cost more than it made" is the direction; this is the size. */}
+                    {formatCentsUnsigned(summary.losingCents)}
                   </Heading>
                   <Text className="mt-1 text-sm">
                     across {summary.losing === 1 ? '1 job' : `${String(summary.losing)} jobs`} in
-                    this period — they are at the top of the list.
+                    this period. They are at the top of the list.
                   </Text>
                 </>
               ) : (
@@ -328,7 +335,7 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
               <RowOpenHint what="a job to open it" />
               <Text className="text-sm">
                 &ldquo;Cost&rdquo; is the goods consumed, what a marketplace kept, and any spending
-                you charged to that job. Wages and running costs are not divided up here — they sit
+                you charged to that job. Wages and running costs are not divided up here. They sit
                 on the business as a whole until staff time is tracked against jobs.
               </Text>
             </div>

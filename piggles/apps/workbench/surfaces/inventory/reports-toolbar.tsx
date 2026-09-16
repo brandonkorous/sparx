@@ -46,7 +46,7 @@ function LocationPicker({
     <NativeSelect
       size="sm"
       className="max-w-40 shrink"
-      aria-label="Location for the ageing breakdown"
+      aria-label="Location for the aging breakdown"
       value={locationId}
       onChange={(event) => {
         onLocation(event.target.value);

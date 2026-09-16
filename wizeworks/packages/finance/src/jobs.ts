@@ -160,13 +160,34 @@ export async function jobProfitability(
             id: true,
             propertyId: true,
             startAt: true,
+            // A booking's customer is a bare `customerId` with NO Prisma
+            // relation — 78-scheduling.prisma keeps scheduling unaware that CRM
+            // exists, the same way it does for `meetingLinkId`. Selecting
+            // `customer` here compiled (a generated `Select` is a mapped type
+            // over a type parameter, so tsc never checks its keys) and threw at
+            // run time, which is why every request that included bookings —
+            // this screen's DEFAULT filter — answered 500. The names are read
+            // separately below.
+            customerId: true,
             service: { select: { name: true, priceCents: true } },
-            customer: { select: { firstName: true, lastName: true, email: true } },
           },
           orderBy: [{ startAt: 'desc' }, { id: 'desc' }],
           take: limit * 4,
         })
       : [];
+
+    /* The people those bookings were for, in one read rather than per row. */
+    const bookingCustomerIds = [
+      ...new Set(bookings.map((b) => b.customerId).filter((id) => id !== null)),
+    ];
+    const bookingCustomers =
+      bookingCustomerIds.length > 0
+        ? await tx.customer.findMany({
+            where: { id: { in: bookingCustomerIds } },
+            select: { id: true, firstName: true, lastName: true, email: true },
+          })
+        : [];
+    const customerById = new Map(bookingCustomers.map((c) => [c.id, c]));
 
     const orderIds = orders.map((o) => o.id);
     const bookingIds = bookings.map((b) => b.id);
@@ -253,7 +274,9 @@ export async function jobProfitability(
         type: 'booking',
         id: booking.id,
         label: booking.service.name,
-        customerName: personName(booking.customer),
+        customerName: personName(
+          booking.customerId === null ? null : (customerById.get(booking.customerId) ?? null)
+        ),
         propertyId: booking.propertyId,
         occurredAt: booking.startAt,
         // Scheduling prices are tenant-currency; there is no per-booking currency

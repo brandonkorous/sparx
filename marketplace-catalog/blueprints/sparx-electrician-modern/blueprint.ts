@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-electrician-modern',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Electrician (Modern)',
   summary:
-    'A sleek, high-tech electrical-contractor site — a near-black graphite palette with an electric-blue accent and a bold type-first hero, built for the modern home and business: EV chargers, smart-home wiring, solar and battery hookups, and panel upgrades. Installs a working booking flow: real visit types (site assessment, EV-charger consult, free estimate), three electricians you book by skill with their own hours, and a priority policy for commercial jobs. Ships as "Voltline Electric".',
+    'A sleek, high-tech electrical-contractor site: a near-black graphite palette with an electric-blue accent and a bold type-first hero, built for the modern home and business: EV chargers, smart-home wiring, solar and battery hookups, and panel upgrades. Installs a working booking flow: real visit types (site assessment, EV-charger consult, free estimate), three electricians you book by skill with their own hours, and a priority policy for commercial jobs. Ships as "Voltline Electric".',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

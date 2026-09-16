@@ -29,17 +29,7 @@ import {
   type Order,
   type OrderItem,
 } from './data';
-
-/** The API's `Carrier` enum, in the words a business would use. `digital` and
- *  `dropship` are absent on purpose: neither is a thing somebody hands to a
- *  courier at a counter, and both are set by the systems that perform them. */
-const CARRIERS = [
-  { value: 'usps', label: 'USPS' },
-  { value: 'ups', label: 'UPS' },
-  { value: 'fedex', label: 'FedEx' },
-  { value: 'dhl', label: 'DHL' },
-  { value: 'other', label: 'Someone else' },
-] as const;
+import { CARRIERS } from './carriers';
 
 /** Everything still owed on the order, at the quantity still owed. A partial
  *  handover is a real thing, but it is not what this control is for — the

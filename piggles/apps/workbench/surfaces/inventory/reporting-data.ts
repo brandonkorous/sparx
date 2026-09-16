@@ -660,7 +660,7 @@ export function sellThroughTone(pct: number | null): Tone {
 export function sellThroughVerdict(pct: number | null): string {
   if (pct === null) return 'Nothing to measure';
   if (pct < 20) return 'Too much on the shelf';
-  if (pct > 80) return 'Selling out — buy more';
+  if (pct > 80) return 'Selling out: buy more';
   return 'Healthy';
 }
 
@@ -732,7 +732,7 @@ export function movementReasonLabel(reason: string): string {
   const labels: Record<string, string> = {
     receive: 'Deliveries booked in',
     return: 'Customer returns',
-    cancel: 'Cancelled orders',
+    cancel: 'Canceled orders',
     sale: 'Sold',
     loss: 'Lost',
     damage: 'Damaged',

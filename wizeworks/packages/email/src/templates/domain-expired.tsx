@@ -29,7 +29,7 @@ export function DomainExpiredEmail({
   const platform = usePlatformName();
   return (
     <PlatformEmailLayout
-      preview={`${domainName} has expired — renew to keep your address`}
+      preview={`${domainName} has expired: renew to keep your address`}
       footerLinks={[{ label: 'Domain settings', href: renewUrl }]}
       footerReason={`You're receiving this because ${domainName} is registered through ${platform}.`}
     >
@@ -41,15 +41,14 @@ export function DomainExpiredEmail({
       </EmailAlert>
 
       <EmailParagraph>
-        There&apos;s still a short window to renew {domainName} and keep it — after the grace
-        period, it&apos;s released and anyone can register it. Renew now to avoid losing your
-        address.
+        There&apos;s still a short window to renew {domainName} and keep it: after the grace period,
+        it&apos;s released and anyone can register it. Renew now to avoid losing your address.
       </EmailParagraph>
 
       <EmailActionButton href={renewUrl}>Renew domain</EmailActionButton>
 
       <EmailFinePrint>
-        Your site and content are safe either way — only the custom web address is affected.
+        Your site and content are safe either way. Only the custom web address is affected.
       </EmailFinePrint>
     </PlatformEmailLayout>
   );

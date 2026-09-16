@@ -260,7 +260,7 @@ function AddGroupPrice({
       <FormSection title="Set a price for a customer group">
         <Text className="text-sm">
           You have not created any customer groups yet. A group is a set of businesses you charge
-          the same way — &ldquo;Wholesale&rdquo;, &ldquo;Trade&rdquo;, &ldquo;Fleet&rdquo;. Create
+          the same way: &ldquo;Wholesale&rdquo;, &ldquo;Trade&rdquo;, &ldquo;Fleet&rdquo;. Create
           one under your trade customers, then come back and set what this product costs them.
         </Text>
       </FormSection>
@@ -270,8 +270,8 @@ function AddGroupPrice({
     return (
       <FormSection title="Set a price for a customer group">
         <Text className="text-sm">
-          {product.title} has no versions to price yet. Add one on the product itself first — a
-          trade price is set against a specific version, not the product as a whole.
+          {product.title} has no versions to price yet. Add one on the product itself first: a trade
+          price is set against a specific version, not the product as a whole.
         </Text>
       </FormSection>
     );
@@ -548,7 +548,7 @@ function TradePricingBody({
                     void (async () => {
                       const ok = await confirmRemove(
                         `${rule.accountName} (signed agreement)`,
-                        `The agreed price of ${formatCents(rule.priceCents)} stops applying and ${rule.accountName} falls back to their group's price. This does not cancel anything you signed on paper — it only stops the system charging it.`
+                        `The agreed price of ${formatCents(rule.priceCents)} stops applying and ${rule.accountName} falls back to their group's price. This does not cancel anything you signed on paper. It only stops the system charging it.`
                       );
                       if (!ok) return;
                       removeContract.mutate(rule.id, {
@@ -583,7 +583,7 @@ function TradePricingBody({
                     void (async () => {
                       const ok = await confirmRemove(
                         `everyone in ${rule.tierName}`,
-                        `Every business in ${rule.tierName} goes back to paying that group's usual discount on ${product.title} — or the normal price if the group has none.`
+                        `Every business in ${rule.tierName} goes back to paying that group's usual discount on ${product.title}, or the normal price if the group has none.`
                       );
                       if (!ok) return;
                       removeTier.mutate(

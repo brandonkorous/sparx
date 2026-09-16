@@ -44,6 +44,7 @@ import { withTenant } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { indexInventoryEntityOnCommit } from '../events';
 import {
   InventoryConflictError,
   InventoryNotFoundError,
@@ -83,7 +84,7 @@ export interface SupplierBillRow {
   dueAt: string | null;
   subtotalCents: number;
   taxCents: number;
-  shippingCents: number;
+  freightCents: number;
   totalCents: number;
   /** Null until paid — not 0. An unpaid bill and one settled by a zero credit
    *  note are different facts and only one should keep being chased. */
@@ -104,6 +105,15 @@ export interface MatchedBillLine extends SupplierBillLineRow {
   orderedQuantity: number | null;
   orderedUnitCostCents: number | null;
   receivedQuantity: number | null;
+  /** Units of this order line already charged for on every OTHER live invoice.
+   *
+   *  Without it the screen cannot explain itself. On an order that arrived in
+   *  two drops and was invoiced twice, the second invoice charges for 2 of the
+   *  40 that arrived and is entirely correct - and a row reading "arrived 40,
+   *  billed 2, agrees" is only sensible once it can also say that the other 38
+   *  are on somebody else's paper. Null when there is no order line to count
+   *  against. */
+  alreadyBilledQuantity: number | null;
   match: MatchLineResult;
 }
 
@@ -113,6 +123,11 @@ export interface BillMatch {
   ok: boolean | null;
   linesMatched: number;
   linesFlagged: number;
+  /** What the goods that arrived and are on NO invoice yet are worth, at the
+   *  agreed price. Always zero or positive. Not part of `totalVarianceCents`:
+   *  that figure is the money riding on THIS invoice, and an invoice nobody has
+   *  sent yet is not riding on anything. Null when the match could not run. */
+  uninvoicedCents: number | null;
   /** Sum of the per-line money variances, positive = the bill is higher than the
    *  goods justify. Null when the match could not run. */
   totalVarianceCents: number | null;
@@ -258,8 +273,8 @@ export async function createSupplierBill(
         dueAt: input.dueAt ? new Date(input.dueAt) : null,
         subtotalCents: subtotal,
         taxCents: input.taxCents,
-        shippingCents: input.shippingCents,
-        totalCents: subtotal + input.taxCents + input.shippingCents,
+        freightCents: input.freightCents,
+        totalCents: subtotal + input.taxCents + input.freightCents,
         notes: input.notes ?? null,
         lines: {
           create: lines.map((line) => ({
@@ -310,11 +325,11 @@ export async function updateSupplierBill(
         ...(input.billedAt !== undefined ? { billedAt: new Date(input.billedAt) } : {}),
         ...(input.dueAt !== undefined ? { dueAt: input.dueAt ? new Date(input.dueAt) : null } : {}),
         ...(input.taxCents !== undefined ? { taxCents: input.taxCents } : {}),
-        ...(input.shippingCents !== undefined ? { shippingCents: input.shippingCents } : {}),
+        ...(input.freightCents !== undefined ? { freightCents: input.freightCents } : {}),
         ...(input.notes !== undefined ? { notes: input.notes } : {}),
       },
     });
-    if (input.taxCents !== undefined || input.shippingCents !== undefined) {
+    if (input.taxCents !== undefined || input.freightCents !== undefined) {
       await recomputeTotals(tx, id);
     }
     return loadDetail(tx, id);
@@ -343,7 +358,7 @@ export async function approveSupplierBill(
     }
     if (detail.match.ok === false && detail.varianceAcceptedAt === null) {
       throw new InventoryConflictError(
-        `Bill ${detail.number} does not agree with what was ordered and received — ` +
+        `Bill ${detail.number} does not agree with what was ordered and received: ` +
           `${detail.match.linesFlagged} line(s) differ. Accept the difference with a reason, or dispute it.`,
         'match'
       );
@@ -372,6 +387,17 @@ export async function acceptBillVariance(
     const bill = await loadHeader(tx, id);
     if (bill.status === 'paid' || bill.status === 'cancelled') {
       throw new InventoryConflictError(`Bill ${bill.number} is ${bill.status}`, 'status');
+    }
+    // Not while it is out with the supplier. Accepting writes the reason over
+    // the query's reason, stamps the variance as accepted, and leaves the
+    // status on `disputed` - after which approve and pay both refuse and the
+    // bill is stranded with no record of why it was ever queried. Settling the
+    // query first is the only order that makes sense (issue 511).
+    if (bill.status === 'disputed') {
+      throw new InventoryConflictError(
+        `Bill ${bill.number} is out with the supplier. Settle the query before accepting a difference.`,
+        'status'
+      );
     }
     await tx.supplierBill.update({
       where: { id },
@@ -410,6 +436,44 @@ export async function disputeSupplierBill(
   });
 }
 
+/**
+ * The query is over, whichever way it went.
+ *
+ * `disputed` used to be a one-way door: approve refuses on it, pay refuses on
+ * it, and the only other transition in the whole service is `cancelled`. So the
+ * ordinary ending - the supplier agrees, sends a credit note or a corrected
+ * invoice, and the bill gets paid - had nowhere to go, and the only way out was
+ * to cancel an invoice that still exists (issue 511).
+ *
+ * It goes back to `draft`, which is where an invoice sits before anybody has
+ * committed to paying it, so the normal decision is offered fresh: accept the
+ * difference and approve, or cancel it and enter whatever the supplier sent
+ * instead. The LINES are deliberately not editable, here or anywhere: a
+ * supplier's invoice is a copy of a piece of paper, and a corrected invoice is
+ * a different piece of paper with a different number on it.
+ *
+ * No note is asked for. The reason it was QUERIED is the thing worth keeping on
+ * screen, and asking for a second sentence here would overwrite it. What
+ * happened is in the audit log either way.
+ */
+export async function settleBillQuery(
+  ctx: ServiceContext,
+  id: string
+): Promise<SupplierBillDetail> {
+  return withTenant(ctx, async (tx) => {
+    const bill = await loadHeader(tx, id);
+    if (bill.status !== 'disputed') {
+      throw new InventoryConflictError(
+        `Bill ${bill.number} is not out with the supplier`,
+        'status'
+      );
+    }
+    await tx.supplierBill.update({ where: { id }, data: { status: 'draft' } });
+    await audit(tx, ctx, id, 'query_settled', { number: bill.number });
+    return loadDetail(tx, id);
+  });
+}
+
 export async function recordBillPayment(
   ctx: ServiceContext,
   id: string,
@@ -420,11 +484,11 @@ export async function recordBillPayment(
   return withTenant(ctx, async (tx) => {
     const bill = await loadHeader(tx, id);
     if (bill.status === 'cancelled') {
-      throw new InventoryConflictError(`Bill ${bill.number} was cancelled`, 'status');
+      throw new InventoryConflictError(`Bill ${bill.number} was canceled`, 'status');
     }
     if (bill.status === 'disputed') {
       throw new InventoryConflictError(
-        `Bill ${bill.number} is disputed — settle the dispute before paying it`,
+        `Bill ${bill.number} is disputed: settle the dispute before paying it`,
         'status'
       );
     }
@@ -450,7 +514,7 @@ export async function cancelSupplierBill(
     const bill = await loadHeader(tx, id);
     if (bill.status === 'paid') {
       throw new InventoryConflictError(
-        `Bill ${bill.number} has been paid and cannot be cancelled`,
+        `Bill ${bill.number} has been paid and cannot be canceled`,
         'status'
       );
     }
@@ -554,12 +618,24 @@ export async function draftBillFromReceipt(
     const po = receipt.purchaseOrder;
 
     const lines: BillDraftLine[] = receipt.lines.map((line) => {
-      // Landed cost first: it is what the goods actually cost us once freight
-      // and duty were spread over them, and it is the figure the match should
-      // argue with. Falling back to the base then the raw receipt cost keeps a
-      // draft possible before charges have been allocated.
-      const unitCostCents =
-        line.landedUnitCostCents ?? line.baseUnitCostCents ?? line.unitCostCents;
+      // THE SUPPLIER'S PRICE, in the supplier's currency. This is a copy of a
+      // piece of paper they sent; it is not a place for a figure we worked out.
+      //
+      // It used to seed the LANDED cost, on the reasoning that landed cost is
+      // "the figure the match should argue with". The match does not argue with
+      // landed cost — `matchBillLine` compares this against the ORDER's agreed
+      // unit price, and the order is the supplier's price too. Seeding it with
+      // our own freight spread over the units therefore accused the supplier, on
+      // every order carrying any freight, of overcharging by exactly the amount
+      // WE spent getting the goods here.
+      //
+      // Devi's sixty brass buckles: agreed $3.60, billed $3.60, $14.00 paid to a
+      // courier. The draft said $3.84 and the bill came back "Charged more than
+      // agreed · $13.92", offering her a choice between accepting an overcharge
+      // that never happened and querying a correct invoice with the supplier
+      // (issue 509). The freight already has its own box on that panel, so the
+      // old behaviour also double-counted it the moment she used it.
+      const unitCostCents = line.unitCostCents;
       return {
         purchaseOrderLineId: line.purchaseOrderLineId,
         variantId: line.variantId,
@@ -609,7 +685,7 @@ export interface CreateBillFromReceiptInput {
   billedAt?: string;
   dueAt?: string;
   taxCents?: number;
-  shippingCents?: number;
+  freightCents?: number;
   notes?: string;
   /** Corrected lines, when the operator has changed something. Omitted means
    *  "the delivery as recorded", which is the common case. */
@@ -650,7 +726,7 @@ export async function createSupplierBillFromReceipt(
       : {}),
     currency: draft.currency,
     taxCents: input.taxCents ?? 0,
-    shippingCents: input.shippingCents ?? 0,
+    freightCents: input.freightCents ?? 0,
     ...(input.notes ? { notes: input.notes } : {}),
     lines,
   });
@@ -757,13 +833,13 @@ async function resolveLines(
 async function recomputeTotals(tx: TxClient, id: string): Promise<void> {
   const bill = await tx.supplierBill.findFirst({
     where: { id },
-    select: { taxCents: true, shippingCents: true, lines: { select: { amountCents: true } } },
+    select: { taxCents: true, freightCents: true, lines: { select: { amountCents: true } } },
   });
   if (!bill) return;
   const subtotal = bill.lines.reduce((sum, l) => sum + l.amountCents, 0);
   await tx.supplierBill.update({
     where: { id },
-    data: { subtotalCents: subtotal, totalCents: subtotal + bill.taxCents + bill.shippingCents },
+    data: { subtotalCents: subtotal, totalCents: subtotal + bill.taxCents + bill.freightCents },
   });
 }
 
@@ -815,10 +891,53 @@ async function loadDetail(tx: TxClient, id: string): Promise<SupplierBillDetail>
   });
   if (!bill) throw new InventoryNotFoundError('SupplierBill', id);
 
+  // How much of each order line every OTHER live invoice has already charged
+  // for.
+  //
+  // Without this the check compares ONE invoice against the WHOLE order, and
+  // gets two things wrong in opposite directions. A delivery that arrived in
+  // two drops and is invoiced per drop makes every invoice but the last read
+  // short, so a correct partial invoice is blocked as a disagreement. And a
+  // supplier who invoices the SAME drop twice matches perfectly both times,
+  // because neither invoice on its own exceeds what arrived - which is the
+  // failure that actually costs money (issue 510).
+  //
+  // Cancelled and QUERIED bills are excluded, for the same reason: neither is
+  // going to be paid as it stands, so neither consumes any of what the other
+  // invoices may legitimately charge for. Missing the queried case made the one
+  // correct invoice on this order read as over-billed the moment its duplicate
+  // was disputed, which is the opposite of what disputing it is for.
+  const poLineIds = [
+    ...new Set(
+      bill.lines.map((line) => line.purchaseOrderLineId).filter((v): v is string => v !== null)
+    ),
+  ];
+  const alreadyBilled = new Map<string, number>();
+  if (poLineIds.length > 0) {
+    const elsewhere = await tx.supplierBillLine.findMany({
+      where: {
+        purchaseOrderLineId: { in: poLineIds },
+        supplierBillId: { not: bill.id },
+        supplierBill: { status: { notIn: ['cancelled', 'disputed'] } },
+      },
+      select: { purchaseOrderLineId: true, quantity: true },
+    });
+    for (const other of elsewhere) {
+      if (other.purchaseOrderLineId === null) continue;
+      alreadyBilled.set(
+        other.purchaseOrderLineId,
+        (alreadyBilled.get(other.purchaseOrderLineId) ?? 0) + other.quantity
+      );
+    }
+  }
+
   const lines: MatchedBillLine[] = bill.lines.map((line) => {
     const poLine = line.purchaseOrderLine;
     const received = poLine
       ? poLine.receiptLines.reduce((sum, r) => sum + r.quantityReceived, 0)
+      : null;
+    const billedElsewhere = line.purchaseOrderLineId
+      ? (alreadyBilled.get(line.purchaseOrderLineId) ?? 0)
       : null;
 
     const match = matchBillLine({
@@ -828,6 +947,7 @@ async function loadDetail(tx: TxClient, id: string): Promise<SupplierBillDetail>
       orderedQuantity: poLine?.quantityOrdered ?? null,
       orderedUnitCostCents: poLine?.unitCostCents ?? null,
       receivedQuantity: received,
+      alreadyBilledQuantity: billedElsewhere,
     });
 
     return {
@@ -845,6 +965,7 @@ async function loadDetail(tx: TxClient, id: string): Promise<SupplierBillDetail>
       orderedQuantity: poLine?.quantityOrdered ?? null,
       orderedUnitCostCents: poLine?.unitCostCents ?? null,
       receivedQuantity: received,
+      alreadyBilledQuantity: billedElsewhere,
       match,
     };
   });
@@ -868,8 +989,14 @@ async function loadDetail(tx: TxClient, id: string): Promise<SupplierBillDetail>
       ok: canMatch ? flagged.length === 0 : null,
       linesMatched: matchable.length,
       linesFlagged: flagged.length,
+      // The FLAGGED lines only. This number sits under the verdict as the money
+      // at stake, so folding in a remainder that nobody has invoiced yet made a
+      // bill that agrees announce a figure "in your favour" (issue 510).
       totalVarianceCents: canMatch
-        ? lines.reduce((sum, l) => sum + (l.match.amountVarianceCents ?? 0), 0)
+        ? flagged.reduce((sum, l) => sum + (l.match.amountVarianceCents ?? 0), 0)
+        : null,
+      uninvoicedCents: canMatch
+        ? lines.reduce((sum, l) => sum + (l.match.uninvoicedCents ?? 0), 0)
         : null,
       unorderedLines: unordered.length,
     },
@@ -890,7 +1017,7 @@ interface BillRecord {
   dueAt: Date | null;
   subtotalCents: number;
   taxCents: number;
-  shippingCents: number;
+  freightCents: number;
   totalCents: number;
   paidCents: number | null;
   paidAt: Date | null;
@@ -919,7 +1046,7 @@ function serializeRow(row: BillRecord): SupplierBillRow {
     dueAt: row.dueAt?.toISOString() ?? null,
     subtotalCents: row.subtotalCents,
     taxCents: row.taxCents,
-    shippingCents: row.shippingCents,
+    freightCents: row.freightCents,
     totalCents: row.totalCents,
     paidCents: row.paidCents,
     paidAt: row.paidAt?.toISOString() ?? null,
@@ -955,4 +1082,5 @@ async function audit(
     entityId,
     diff: { after: diff },
   });
+  await indexInventoryEntityOnCommit(ctx, 'supplier_bill', entityId);
 }

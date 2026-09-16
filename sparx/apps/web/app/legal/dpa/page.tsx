@@ -3,7 +3,7 @@ import { LEGAL_DOC_VERSIONS } from '@/lib/legal-versions';
 import { LegalDoc, LegalSection, LegalP, LegalList } from '@/components/marketing/legal-doc';
 
 export const metadata: Metadata = {
-  title: 'Data processing addendum — sparx',
+  title: 'Data processing addendum: sparx',
   description:
     'The GDPR/CCPA data processing addendum governing how sparx processes personal data on your behalf.',
   alternates: { canonical: '/legal/dpa' },
@@ -37,7 +37,7 @@ export default function DpaPage() {
 
       <LegalSection heading="2. Scope of processing">
         <LegalP>
-          We process personal data to provide the Service — for example storing customer records in
+          We process personal data to provide the Service, for example storing customer records in
           the CRM, processing orders and payments in commerce, delivering the email and text
           messages you send, taking bookings, running your live chat, publishing to the social
           accounts you connect, and rendering the content and stores you publish. The subject matter
@@ -58,16 +58,16 @@ export default function DpaPage() {
         </LegalP>
         <LegalList
           items={[
-            'Identifiers and contact details — name, email, phone, addresses.',
-            'Commercial records — orders, quotes, invoices, payment metadata, returns, and subscription history.',
-            'Communication records — the email and text messages you send, whether they were delivered, opened, or clicked, unsubscribe and suppression state, and live-chat transcripts.',
-            'Consent records — the cookie and marketing choices your visitors make on your sites, kept so you can evidence them.',
-            'Scheduling records — appointments, attendees, and the details a booking captures.',
-            'Form submissions — whatever your own forms ask for.',
-            'Shopper accounts — where you let customers sign in to your site, their account credentials and sessions. Passwords are stored hashed and are not readable by us or by you.',
-            'Push notification subscriptions — the browser tokens needed to send a notification, where a visitor has opted in.',
-            'Social engagement data — the comments, mentions, reviews, and messages your connected social accounts receive, including the commenter’s public name, handle, and profile picture. See section 4.',
-            'Site analytics — a count of visits to your sites, the pages hit, coarse country, and how each visit arrived. Visitors are counted with a salted identifier that rotates daily; we do not store visitor IP addresses in this data.',
+            'Identifiers and contact details. Name, email, phone, addresses.',
+            'Commercial records: orders, quotes, invoices, payment metadata, returns, and subscription history.',
+            'Communication records: the email and text messages you send, whether they were delivered, opened, or clicked, unsubscribe and suppression state, and live-chat transcripts.',
+            'Consent records: the cookie and marketing choices your visitors make on your sites, kept so you can evidence them.',
+            'Scheduling records: appointments, attendees, and the details a booking captures.',
+            'Form submissions: whatever your own forms ask for.',
+            'Shopper accounts: where you let customers sign in to your site, their account credentials and sessions. Passwords are stored hashed and are not readable by us or by you.',
+            'Push notification subscriptions: the browser tokens needed to send a notification, where a visitor has opted in.',
+            'Social engagement data: the comments, mentions, reviews, and messages your connected social accounts receive, including the commenter’s public name, handle, and profile picture. See section 4.',
+            'Site analytics: a count of visits to your sites, the pages hit, coarse country, and how each visit arrived. Visitors are counted with a salted identifier that rotates daily; we do not store visitor IP addresses in this data.',
           ]}
         />
         <LegalP>
@@ -78,7 +78,7 @@ export default function DpaPage() {
 
       <LegalSection heading="4. Data from social platforms">
         <LegalP>
-          When you connect a social account, sparx receives data from that platform on your behalf —
+          When you connect a social account, sparx receives data from that platform on your behalf:
           the posts you publish through it, how they performed, and the comments, mentions, reviews,
           and messages they attract. Some of that is personal data about members of the public who
           have no relationship with sparx and did not choose it.
@@ -87,7 +87,7 @@ export default function DpaPage() {
           We handle it narrowly. It is used only to show you your own engagement and to send the
           replies you write, never for any purpose of our own; it is stored under the same tenant
           isolation as the rest of your data; and it is subject to the platform&rsquo;s own terms as
-          well as this addendum, which means we honour a platform&rsquo;s instruction to delete it.
+          well as this addendum, which means we honor a platform&rsquo;s instruction to delete it.
           The access tokens for a connected account are encrypted at rest with a key reserved for
           that purpose, and disconnecting an account removes them.
         </LegalP>
@@ -116,8 +116,8 @@ export default function DpaPage() {
           so you can object on reasonable grounds.
         </LegalP>
         <LegalP>
-          Services <em>you</em> connect with your own credentials — shipping, tax, payment gateways
-          other than our own, AI providers, and social platforms — are not our subprocessors. We
+          Services <em>you</em> connect with your own credentials (shipping, tax, payment gateways
+          other than our own, AI providers, and social platforms) are not our subprocessors. We
           transmit to them at your instruction, on your relationship with them. The subprocessor
           list explains the distinction.
         </LegalP>
@@ -131,18 +131,18 @@ export default function DpaPage() {
           </strong>{' '}
           sparx holds no AI credential of its own. Where you enable an AI feature, it runs on a
           provider key you supply or through an AI tool you connect yourself, and that
-          provider&rsquo;s terms — not ours — govern what it does with what it receives. If you do
-          not configure one, no personal data in your tenant is sent to any AI provider at all.
+          provider&rsquo;s terms (not ours) govern what it does with what it receives. If you do not
+          configure one, no personal data in your tenant is sent to any AI provider at all.
         </LegalP>
       </LegalSection>
 
       <LegalSection heading="8. Security & breach notification">
         <LegalP>
           We maintain encryption in transit and at rest, database-level tenant isolation, and access
-          controls — described in our <a href="/security">security overview</a>. If we become aware
-          of a personal-data breach affecting your data, we will notify you without undue delay —
-          and within 72 hours of confirming a reportable breach — with the information you
-          reasonably need to meet your own notification duties.
+          controls: described in our <a href="/security">security overview</a>. If we become aware
+          of a personal-data breach affecting your data, we will notify you without undue delay (and
+          within 72 hours of confirming a reportable breach), with the information you reasonably
+          need to meet your own notification duties.
         </LegalP>
       </LegalSection>
 
@@ -153,8 +153,8 @@ export default function DpaPage() {
         </LegalP>
         <LegalList
           items={[
-            'We review the request for legal validity first — that it is a genuine legal instrument, that it is directed at us in a jurisdiction with authority over us, and that it actually compels what it appears to. An informal request from an investigator is not a legal instrument and is refused in writing.',
-            'We challenge requests that are unlawful, defective, or broader than the law allows — by objecting to the issuing body, negotiating the scope down, or moving to quash with counsel.',
+            'We review the request for legal validity first. That it is a genuine legal instrument, that it is directed at us in a jurisdiction with authority over us, and that it actually compels what it appears to. An informal request from an investigator is not a legal instrument and is refused in writing.',
+            'We challenge requests that are unlawful, defective, or broader than the law allows: by objecting to the issuing body, negotiating the scope down, or moving to quash with counsel.',
             'We disclose the minimum the instrument compels. Production is scoped to the named accounts and dates, fields outside the request are redacted, and no other customer’s data is ever included.',
             'We tell you a request has arrived, so you can object yourself, unless a non-disclosure order or statute prohibits it. Where a gag is time-limited, we notify you when it lapses.',
             'We log every request, including the ones we refuse, with the reasoning and the outcome, and retain the log for at least seven years.',
@@ -170,9 +170,8 @@ export default function DpaPage() {
         <LegalP>
           The Service runs in Google Cloud&rsquo;s central United States region, so personal data
           you process through sparx is stored in the United States. Where that is a cross-border
-          transfer requiring safeguards, we rely on appropriate ones — including the European
-          Commission&rsquo;s standard contractual clauses — to the extent required by applicable
-          law.
+          transfer requiring safeguards, we rely on appropriate ones (including the European
+          Commission&rsquo;s standard contractual clauses) to the extent required by applicable law.
         </LegalP>
       </LegalSection>
 
@@ -188,7 +187,7 @@ export default function DpaPage() {
       <LegalSection heading="12. Acceptance">
         <LegalP>
           This addendum is incorporated into the <a href="/legal/terms">Terms of Service</a>. A
-          countersigned copy is available for organizations that require one — email{' '}
+          countersigned copy is available for organizations that require one: email{' '}
           <a href="mailto:legal@sparx.works">legal@sparx.works</a>. A signed DPA is required for
           tenants processing the personal data of individuals in the EU/EEA and UK.
         </LegalP>

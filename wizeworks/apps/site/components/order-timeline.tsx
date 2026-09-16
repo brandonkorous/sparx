@@ -214,7 +214,7 @@ function buildTimeline(order: OrderDetail): { steps: TimelineStep[]; color: Sili
   if (cancelled) {
     steps.push({
       key: 'cancelled',
-      label: 'Order cancelled',
+      label: 'Order canceled',
       at: order.cancelledAt,
       complete: true,
       terminal: true,

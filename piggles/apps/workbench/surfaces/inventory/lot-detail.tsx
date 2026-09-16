@@ -225,7 +225,7 @@ function SerialRoster({ lot }: { lot: LotDetail }) {
           Individual units
         </Heading>
         <Text className="text-base">
-          This batch is traced as a whole — no unit inside it carries its own serial number. Units
+          This batch is traced as a whole: no unit inside it carries its own serial number. Units
           get their own numbers when they are booked in individually.
         </Text>
       </section>
@@ -247,8 +247,8 @@ function SerialRoster({ lot }: { lot: LotDetail }) {
             Individual units
           </Heading>
           <Text className="text-sm">
-            {summary || `${plural(lot.serialCount, 'unit', 'units')} in this batch`} — where each
-            one is now, and which have left.
+            {summary || `${plural(lot.serialCount, 'unit', 'units')} in this batch`}: where each one
+            is now, and which have left.
           </Text>
         </div>
         <NativeSelect
@@ -272,7 +272,7 @@ function SerialRoster({ lot }: { lot: LotDetail }) {
 
       {isError ? (
         <Text className="text-base">
-          The units could not be read just now. The batch itself is unaffected — try refreshing.
+          The units could not be read just now. The batch itself is unaffected. Try refreshing.
         </Text>
       ) : isLoading ? (
         <PaneWaiting label="Loading units…" />
@@ -369,7 +369,7 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               gone
                 ? 'It has been removed. Any orders and stock history that referenced it are unaffected.'
-                : 'This is a problem reaching the server. The batch record is unaffected — it just could not be read just now.'
+                : 'This is a problem reaching the server. The batch record is unaffected. It just could not be read just now.'
             }
             onRetry={() => {
               void lot.refetch();

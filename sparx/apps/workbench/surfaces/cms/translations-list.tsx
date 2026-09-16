@@ -160,7 +160,7 @@ export function TranslationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Languages className="size-6" aria-hidden />}
             title="Could not load your products"
-            description="This is a problem reaching the server. Nothing you have written or translated is affected — none of it has been lost."
+            description="This is a problem reaching the server. Nothing you have written or translated is affected: none of it has been lost."
             actions={
               <Button
                 size="sm"
@@ -183,7 +183,7 @@ export function TranslationsListSurface({ ctx }: { ctx: SurfaceContext }) {
             title={narrowed ? 'Nothing matches that' : 'No products to translate yet'}
             description={
               narrowed
-                ? 'Try part of the product name, or widen the filter to see the rest of your catalogue.'
+                ? 'Try part of the product name, or widen the filter to see the rest of your catalog.'
                 : 'Once you add a product, this is where you translate its name and description into the other languages your customers read.'
             }
           />

@@ -50,9 +50,9 @@ export function FinanceFalseFix() {
           headline={<>So you buy accounting software, and it answers a different question</>}
           lede={
             <>
-              Not a worse one — a different one. Your books exist to be filed: they sort every
-              dollar into the categories a tax form recognises, and they get it right. Then you ask
-              the question you actually had, and the categories have already thrown the answer away.
+              Not a worse one: a different one. Your books exist to be filed: they sort every dollar
+              into the categories a tax form recognises, and they get it right. Then you ask the
+              question you actually had, and the categories have already thrown the answer away.
             </>
           }
         />
@@ -79,7 +79,7 @@ export function FinanceFalseFix() {
               <MoneyRow label="Kept" value="$8,090" emphasis tone={netTone(false)} />
             </div>
             <Text>
-              Every line is accurate and the total is right — it is the same $8,090 this page uses
+              Every line is accurate and the total is right. It is the same $8,090 this page uses
               everywhere else. Filing this is exactly what an accounting package is for, and sparx
               will never try to take that job from it.
             </Text>
@@ -97,7 +97,7 @@ export function FinanceFalseFix() {
             </Heading>
             <Text>
               Your books never saw a van wrap. They saw a $412 vinyl purchase on the 4th, a $180
-              laminate purchase on the 9th, and a payroll run on the 15th — three entries in three
+              laminate purchase on the 9th, and a payroll run on the 15th: three entries in three
               categories, in a month that also contained ten other jobs. Nothing in that file knows
               those three belong together, because nothing ever told it.
             </Text>
@@ -143,7 +143,7 @@ export function FinanceTurn() {
   const beats: { title: string; body: string }[] = [
     {
       title: 'Half the sum is already here',
-      body: 'What you sold is recorded. What each part cost coming off the shelf is recorded, at the price you actually paid for it. What the marketplace or the card processor took is recorded. None of that is re-typed, re-imported, or estimated — the profit figure reads it where it already lives.',
+      body: 'What you sold is recorded. What each part cost coming off the shelf is recorded, at the price you actually paid for it. What the marketplace or the card processor took is recorded. None of that is re-typed, re-imported, or estimated: the profit figure reads it where it already lives.',
     },
     {
       title: 'You type what nothing else knows',
@@ -151,7 +151,7 @@ export function FinanceTurn() {
     },
     {
       title: 'So we don’t charge you twice for it',
-      body: 'If you sell through sparx — Commerce or B2B — Finance is included at no extra cost. You already bought the revenue half of this sum. Charging you again for the part we subtract from it would be selling you one number twice.',
+      body: 'If you sell through sparx (Commerce or B2B), Finance is included at no extra cost. You already bought the revenue half of this sum. Charging you again for the part we subtract from it would be selling you one number twice.',
     },
   ];
   return (
@@ -162,7 +162,7 @@ export function FinanceTurn() {
       <p className="mt-7 max-w-[880px] text-2xl leading-[1.45]">
         A spend tracker starts from zero and asks you for everything, because it has never seen your
         sales. sparx has. Every order, every invoice, every part that left the shelf and what it
-        cost you is already sitting in the same database — so switching Finance on doesn’t start a
+        cost you is already sitting in the same database, so switching Finance on doesn’t start a
         second set of records. It finishes the one you already have.
       </p>
       <div className="mt-16 grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-3">
@@ -203,14 +203,14 @@ export function FinanceTurn() {
 const RECORDED: { amount: string; what: string; kind: CostKind; when: string; note?: string }[] = [
   {
     amount: '$412.00',
-    what: 'Vinyl and laminate — Sutter Supply',
+    what: 'Vinyl and laminate: Sutter Supply',
     kind: 'work',
     when: 'Mar 4',
     note: 'van wrap',
   },
   {
     amount: '$2,900.00',
-    what: 'Unit 4 rent — Harbourgate',
+    what: 'Unit 4 rent: Harbourgate',
     kind: 'running',
     when: 'Mar 1',
     note: 'repeats monthly',
@@ -224,7 +224,7 @@ const RECORDED: { amount: string; what: string; kind: CostKind; when: string; no
   },
   {
     amount: '$1,240.00',
-    what: 'Aluminium sheet — Sutter Supply',
+    what: 'Aluminium sheet: Sutter Supply',
     kind: 'work',
     when: 'Mar 6',
     note: 'unpaid · due Mar 20',
@@ -259,7 +259,7 @@ export function FinanceSpending() {
             <div className="border-base-300 bg-base-200 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-xl border p-4">
               <span className="text-2xl font-medium tabular-nums">$84.60</span>
               <span className="border-base-300 min-w-[14ch] flex-1 border-b pb-1">
-                <Text as="span">Matte white vinyl — one roll</Text>
+                <Text as="span">Matte white vinyl. One roll</Text>
               </span>
               <Badge color="warning" size="sm">
                 Cost of the work
@@ -299,7 +299,7 @@ export function FinanceSpending() {
               </Heading>
               <Text>
                 Rent, insurance, the software subscriptions, the lease on the van. Set each one up
-                once — how much, how often, which kind — and it records itself on the day it falls
+                once (how much, how often, which kind) and it records itself on the day it falls
                 due, every month, without you remembering. The two lines above with “repeats
                 monthly” on them were never typed in March.
               </Text>
@@ -326,7 +326,7 @@ export function FinanceSpending() {
               </Heading>
               <Text>
                 Finance starts with nineteen sensible categories and expects you to change them. Add
-                “bay consumables”, rename anything, delete what you will never use — each one just
+                “bay consumables”, rename anything, delete what you will never use. Each one just
                 says which of the three kinds it rolls up under, so the profit figure keeps working
                 however you name things.
               </Text>
@@ -379,7 +379,7 @@ export function FinanceBills() {
           lede={
             <>
               You know to the dollar who owes you, because chasing it is how you get paid. What you
-              owe tends to live in an inbox, a drawer, and a rough sense that rent is due soon —
+              owe tends to live in an inbox, a drawer, and a rough sense that rent is due soon:
               until a supplier puts you on hold. These are the same screen twice, pointed opposite
               ways, and both are sorted by how late something is rather than when it arrived.
             </>
@@ -392,7 +392,7 @@ export function FinanceBills() {
           title="Owed to you"
           total="$8,360.00"
           rows={OWED_TO_YOU}
-          note="Comes free with Commerce, B2B or Invoicing — this half you already have."
+          note="Comes free with Commerce, B2B or Invoicing. This half you already have."
         />
         <DueColumn
           title="Bills to pay"

@@ -208,6 +208,18 @@ export type EventType =
   | 'return.received'
   | 'return.refunded'
   | 'return.exchanged'
+  // The answer is no. A return has three endings and this is one of them: the
+  // shopper asked to send something back and is keeping it. Without this event
+  // the only ending that reached them was the money one (persona issue 448).
+  | 'return.denied'
+  // The replacement is in the post, and here is how to follow it.
+  //
+  // Separate from `return.exchanged` because they answer different questions and
+  // usually happen on different days: a shop settles the swap while the customer
+  // is waiting, then walks to the post office. Only then does a tracking number
+  // exist. Settled WITH one, this never fires and the swap's own email carries
+  // the number instead — one email either way, never two.
+  | 'return.replacement_shipped'
   // Reviews + Q&A
   | 'review.submitted'
   | 'review.published'

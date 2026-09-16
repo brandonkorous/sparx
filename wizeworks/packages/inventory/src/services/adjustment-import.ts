@@ -417,7 +417,7 @@ function planRow(args: PlanRowArgs): ImportRowPlan {
   });
 
   if (!sku && !explicitVariantId) return fail('This row does not say which item it is about');
-  if (!variantId) return fail(`Nothing in your catalogue has the code ${sku ?? ''}`.trim());
+  if (!variantId) return fail(`Nothing in your catalog has the code ${sku ?? ''}`.trim());
 
   const warehouseCode = read(record, 'warehouse', COLUMNS.warehouseCode);
   const explicitWarehouseId = read(record, 'warehouseId', COLUMNS.warehouseId);
@@ -469,7 +469,7 @@ function planRow(args: PlanRowArgs): ImportRowPlan {
     return fail('This row has neither a counted quantity nor a change');
   }
   if (onHand !== undefined && delta !== undefined) {
-    return fail('This row has both a counted quantity and a change — it can only have one');
+    return fail('This row has both a counted quantity and a change. It can only have one');
   }
   if (onHand !== undefined && onHand < 0) {
     return fail('A counted quantity cannot be negative');

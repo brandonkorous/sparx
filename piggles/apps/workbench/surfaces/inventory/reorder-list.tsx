@@ -27,8 +27,8 @@
 // have nowhere to come from before a replacement could land, priced at the
 // selling price. "Least in stock first" ranks by how empty a shelf looks, and a
 // buyer with forty rows and an hour does not need the emptiest shelf — they need
-// the one whose emptiness costs the most. A fast £40 line four days out beats a
-// dormant £2 one down to its last unit, every time.
+// the one whose emptiness costs the most. A fast $40 line four days out beats a
+// dormant $2 one down to its last unit, every time.
 //
 // Every row carries the sentence explaining its own figure, and the supplier's
 // delivery time says whether it was MEASURED from real deliveries or is just
@@ -63,6 +63,7 @@ import { targetFor } from './reorder-shared';
 import { useReorderPane } from './reorder-window';
 import { ReorderDraftBar } from './reorder-draft-bar';
 import { ReorderBody } from './reorder-list-body';
+import { PartialCoverNote } from './reorder-list-empty';
 import { ReorderFooter } from './reorder-list-footer';
 import { ReorderListToolbar } from './reorder-list-toolbar';
 
@@ -102,6 +103,13 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
           />
         }
       />
+
+      {/* A list that only watches the lines somebody has set a level for, on a
+          screen called What to reorder. With one level set out of seventy-two,
+          it showed a single row and nothing said the other seventy-one were not
+          being looked at — while the At risk screen beside it was naming two of
+          them as $558 of orders about to have nothing to come from. */}
+      <PartialCoverNote ctx={ctx} policyCount={p.policyCount} levelCount={p.levelCount} />
 
       {/* Full width — matches the house list convention: the table fills the pane. */}
       <Card className="min-h-0 flex-1 overflow-y-auto">

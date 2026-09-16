@@ -19,7 +19,7 @@
 // a consolidated statement). It simply cannot be checked, and the detail screen
 // says so rather than showing a green tick.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   AlertContent,
@@ -38,13 +38,14 @@ import {
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { FormSection } from '../../components/form-section';
-import { PANE_SHELL } from '../../components/pane-toolbar';
+import { PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
 import { afterCommit } from '../../lib/defer';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { formatCents, stockErrorMessage } from './data';
+import { formatCents, plural, stockErrorMessage } from './data';
 import { usePurchaseOrder, usePurchaseOrders } from './purchase-orders-data';
 import { useCreateSupplierBill } from './supplier-bills-data';
+import { MoneyTextInput, moneyCents } from '../../components/money-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
@@ -86,10 +87,15 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
   const [number, setNumber] = useState('');
   const [billedAt, setBilledAt] = useState(() => todayIso().slice(0, 10));
   const [dueAt, setDueAt] = useState('');
-  const [shipping, setShipping] = useState('0');
+  const [freight, setFreight] = useState('0');
   const [tax, setTax] = useState('0');
   const [lines, setLines] = useState<BillDraftLine[]>([]);
-  const [dirty, setDirty] = useState(false);
+  // What the console filled in, so "unsaved" can mean what is on screen differs
+  // from it. The flag used to be sticky: any keystroke set it and only a save
+  // cleared it, so clearing a box again still left the pane claiming unsaved
+  // work and still confirmed on close (issue 507).
+  const seededLinesRef = useRef('[]');
+  const seededBilledAt = useRef(billedAt).current;
 
   // Pre-fill from the order the moment it lands. Received quantity, agreed
   // price: what the invoice SHOULD say, so that anything the person changes is
@@ -97,35 +103,53 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
   useEffect(() => {
     if (!order.data) {
       setLines([]);
+      seededLinesRef.current = '[]';
       return;
     }
-    setLines(
-      order.data.lines.map((line) => ({
-        purchaseOrderLineId: line.id,
-        variantId: line.variantId,
-        sku: line.variantSku,
-        title: line.productTitle ?? line.description,
-        quantity: String(line.quantityReceived > 0 ? line.quantityReceived : line.quantityOrdered),
-        unitCost: (line.unitCostCents / 100).toString(),
-        agreedUnitCostCents: line.unitCostCents,
-        receivedQuantity: line.quantityReceived,
-      }))
-    );
+    const seeded = order.data.lines.map((line) => ({
+      purchaseOrderLineId: line.id,
+      variantId: line.variantId,
+      sku: line.variantSku,
+      title: line.productTitle ?? line.description,
+      quantity: String(line.quantityReceived > 0 ? line.quantityReceived : line.quantityOrdered),
+      unitCost: (line.unitCostCents / 100).toString(),
+      agreedUnitCostCents: line.unitCostCents,
+      receivedQuantity: line.quantityReceived,
+    }));
+    setLines(seeded);
+    // Filling these in from the order is the console's work, not hers, so the
+    // baseline moves with it.
+    seededLinesRef.current = JSON.stringify(seeded);
   }, [order.data]);
 
+  // `!create.isSuccess` because this pane replaces itself with the saved invoice
+  // the instant it succeeds, and a flag still reading dirty at that moment asks
+  // her to confirm discarding the invoice she just entered.
+  const dirty =
+    !create.isSuccess &&
+    (purchaseOrderId !== seededOrderId ||
+      number.trim() !== '' ||
+      dueAt !== '' ||
+      billedAt !== seededBilledAt ||
+      freight !== '0' ||
+      tax !== '0' ||
+      JSON.stringify(lines) !== seededLinesRef.current);
   useDirtySource(dirty, 'This bill has not been saved. Close it anyway?');
 
   const supplierId = order.data?.supplierId ?? '';
   const currency = order.data?.currency ?? 'USD';
 
+  // Amounts are read the way a person writes them — "1,250.00", "$8.00",
+  // "8,50" — rather than the one spelling `Number.parseFloat` knows (issue 486).
+  // A quantity is a count, not money, so it keeps its own parse.
   const goodsCents = lines.reduce((sum, line) => {
     const qty = Number.parseFloat(line.quantity);
-    const cost = Number.parseFloat(line.unitCost);
-    if (!Number.isFinite(qty) || !Number.isFinite(cost)) return sum;
-    return sum + Math.round(qty * cost * 100);
+    const cost = moneyCents(line.unitCost);
+    if (!Number.isFinite(qty) || cost === null) return sum;
+    return sum + Math.round(qty * cost);
   }, 0);
-  const shippingCents = Math.round((Number.parseFloat(shipping) || 0) * 100);
-  const taxCents = Math.round((Number.parseFloat(tax) || 0) * 100);
+  const freightCents = moneyCents(freight) ?? 0;
+  const taxCents = moneyCents(tax) ?? 0;
 
   const canSave =
     supplierId !== '' &&
@@ -143,23 +167,22 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
         ...(dueAt ? { dueAt: new Date(dueAt).toISOString() } : {}),
         currency,
         taxCents,
-        shippingCents,
+        freightCents,
         lines: lines.map((line) => ({
           purchaseOrderLineId: line.purchaseOrderLineId,
           variantId: line.variantId,
           quantity: Math.round(Number.parseFloat(line.quantity)),
-          unitCostCents: Math.round(Number.parseFloat(line.unitCost) * 100),
+          unitCostCents: moneyCents(line.unitCost) ?? 0,
         })),
       },
       {
         onSuccess: (saved) => {
-          setDirty(false);
           afterCommit(() => {
             toast.add({
               title: `Invoice ${saved.number} entered`,
               description:
                 saved.match.ok === false
-                  ? `${saved.match.linesFlagged} line(s) do not agree with the delivery — have a look before it is paid.`
+                  ? `${plural(saved.match.linesFlagged, 'line', 'lines')} ${saved.match.linesFlagged === 1 ? 'does' : 'do'} not agree with the delivery: have a look before it is paid.`
                   : 'It agrees with what was ordered and received.',
               type: saved.match.ok === false ? 'warning' : 'success',
             });
@@ -180,7 +203,7 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
   };
 
   return (
-    <div className={`${PANE_SHELL} overflow-y-auto`}>
+    <div className={PANE_SHELL_SCROLL}>
       <div className={COLUMN}>
         <Heading level={2} className="text-lg">
           Enter a supplier&apos;s invoice
@@ -199,7 +222,6 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                   value={purchaseOrderId}
                   onChange={(event) => {
                     setPurchaseOrderId(event.target.value);
-                    setDirty(true);
                   }}
                 >
                   <option value="">Choose an order…</option>
@@ -224,7 +246,7 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
               <AlertTitle>Choose an order to start</AlertTitle>
               <AlertDescription>
                 Every line, the agreed price and what actually arrived all come from the order. That
-                is what makes the check possible — and it is far quicker than typing the invoice out
+                is what makes the check possible, and it is far quicker than typing the invoice out
                 again.
               </AlertDescription>
             </AlertContent>
@@ -244,13 +266,12 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                       placeholder="INV-88214"
                       onChange={(event) => {
                         setNumber(event.target.value);
-                        setDirty(true);
                       }}
                     />
                   }
                 />
                 <FieldDescription>
-                  Theirs, not ours — it is how a query to their accounts department is phrased. The
+                  Theirs, not ours. It is how a query to their accounts department is phrased. The
                   same number cannot be entered twice for one supplier.
                 </FieldDescription>
               </Field>
@@ -264,7 +285,6 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                       value={billedAt}
                       onChange={(event) => {
                         setBilledAt(event.target.value);
-                        setDirty(true);
                       }}
                     />
                   }
@@ -280,7 +300,6 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                       value={dueAt}
                       onChange={(event) => {
                         setDueAt(event.target.value);
-                        setDirty(true);
                       }}
                     />
                   }
@@ -307,7 +326,7 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                 </thead>
                 <tbody>
                   {lines.map((line, index) => {
-                    const typedCost = Math.round((Number.parseFloat(line.unitCost) || 0) * 100);
+                    const typedCost = moneyCents(line.unitCost) ?? 0;
                     const priceMoved = typedCost !== line.agreedUnitCostCents;
                     return (
                       <tr key={line.purchaseOrderLineId}>
@@ -335,7 +354,6 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                             value={line.quantity}
                             onChange={(event) => {
                               const quantity = event.target.value;
-                              setDirty(true);
                               setLines((current) =>
                                 current.map((l, i) => (i === index ? { ...l, quantity } : l))
                               );
@@ -343,17 +361,12 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                           />
                         </td>
                         <td>
-                          <Input
+                          <MoneyTextInput
                             size="sm"
                             color="module"
-                            type="number"
-                            min={0}
-                            step="0.01"
                             aria-label={`Price each billed for ${line.sku ?? 'this line'}`}
-                            value={line.unitCost}
-                            onChange={(event) => {
-                              const unitCost = event.target.value;
-                              setDirty(true);
+                            text={line.unitCost}
+                            onTextChange={(unitCost) => {
                               setLines((current) =>
                                 current.map((l, i) => (i === index ? { ...l, unitCost } : l))
                               );
@@ -368,18 +381,15 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
 
               <div className="flex flex-wrap gap-3">
                 <Field className="max-w-40">
-                  <FieldLabel>Carriage</FieldLabel>
+                  <FieldLabel>Freight</FieldLabel>
                   <FieldControl
                     render={
-                      <Input
+                      <MoneyTextInput
                         color="module"
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        value={shipping}
-                        onChange={(event) => {
-                          setShipping(event.target.value);
-                          setDirty(true);
+                        aria-label="Freight"
+                        text={freight}
+                        onTextChange={(value) => {
+                          setFreight(value);
                         }}
                       />
                     }
@@ -389,15 +399,12 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                   <FieldLabel>Tax</FieldLabel>
                   <FieldControl
                     render={
-                      <Input
+                      <MoneyTextInput
                         color="module"
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        value={tax}
-                        onChange={(event) => {
-                          setTax(event.target.value);
-                          setDirty(true);
+                        aria-label="Tax"
+                        text={tax}
+                        onTextChange={(value) => {
+                          setTax(value);
                         }}
                       />
                     }
@@ -407,7 +414,7 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
 
               <Text>
                 Total on this invoice:{' '}
-                <strong>{formatCents(goodsCents + shippingCents + taxCents, currency)}</strong>
+                <strong>{formatCents(goodsCents + freightCents + taxCents, currency)}</strong>
               </Text>
             </FormSection>
 

@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-dental-family',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Dental (Family)',
   summary:
-    'A warm, family-friendly dental site — a soft teal-blue palette, a coral accent and rounded type, with gentle, low-anxiety copy for every age. Installs a working booking flow: real appointment types (new-patient exams, cleanings, kids’ checkups, whitening, fillings and same-day emergencies), a dentist and two hygienists booked by name with their own hours, operatories as rooms, and a reserved-chair hold policy. Ships as "Maple Grove Dental", a family dentist.',
+    'A warm, family-friendly dental site: a soft teal-blue palette, a coral accent and rounded type, with gentle, low-anxiety copy for every age. Installs a working booking flow: real appointment types (new-patient exams, cleanings, kids’ checkups, whitening, fillings and same-day emergencies), a dentist and two hygienists booked by name with their own hours, operatories as rooms, and a reserved-chair hold policy. Ships as "Maple Grove Dental", a family dentist.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

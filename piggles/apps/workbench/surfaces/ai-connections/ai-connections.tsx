@@ -28,7 +28,7 @@
 // just-minted secret irrecoverably. Inline, the reveal is dirty-tracked and the
 // pane guards it like any other unsaved work.
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { productCopy } from '../../lib/product';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -289,7 +289,7 @@ function KeyForm({
           }
         />
         <FieldDescription>
-          A long secret code from your AI account — find it at {help.where}. We check it works, then
+          A long secret code from your AI account: find it at {help.where}. We check it works, then
           store it encrypted. It is never shown again, only its last few characters.{' '}
           <a href={help.url} target="_blank" rel="noreferrer" className="link">
             Open {providerLabel(provider)}
@@ -390,7 +390,7 @@ function AiAccountSection({
     const ok = await confirm({
       title: 'Disconnect your AI account?',
       description:
-        'The AI features will stop working until you connect an account again. Your stored key is deleted — you will need to paste it again to reconnect. This does not touch your account with the AI provider itself.',
+        'The AI features will stop working until you connect an account again. Your stored key is deleted. You will need to paste it again to reconnect. This does not touch your account with the AI provider itself.',
       confirmLabel: 'Disconnect it',
       cancelLabel: 'Keep it connected',
       color: 'danger',
@@ -431,7 +431,7 @@ function AiAccountSection({
       title="Your AI account"
       description={productCopy(
         'ai.account.description',
-        'Piggles uses this account to write and answer for you — it is the AI service you already pay for. Piggles never uses AI on your behalf without it, and the work is billed to your provider, never to us.'
+        'Piggles uses this account to write and answer for you. It is the AI service you already pay for. Piggles never uses AI on your behalf without it, and the work is billed to your provider, never to us.'
       )}
     >
       {credential && state ? (
@@ -469,7 +469,7 @@ function AiAccountSection({
                 <AlertDescription>
                   {productCopy(
                     'ai.moduleOff.connected',
-                    'Your account is connected, but nothing will use it until you add the Connections app — it is in All apps, at the foot of the rail.'
+                    'Your account is connected, but nothing will use it until you add the Connections app. It is in All apps, at the foot of the rail.'
                   )}
                 </AlertDescription>
               </AlertContent>
@@ -524,7 +524,7 @@ function AiAccountSection({
       ) : canManage ? (
         <>
           <Text className="text-sm">
-            No AI account is connected yet. The AI features need one to work — add the service you
+            No AI account is connected yet. The AI features need one to work. Add the service you
             pay for and paste its key below.
           </Text>
           {aiOn === false ? (
@@ -534,7 +534,7 @@ function AiAccountSection({
                 <AlertDescription>
                   {productCopy(
                     'ai.moduleOff.notConnected',
-                    'You can connect your account now, but nothing will use it until you add the Connections app — it is in All apps, at the foot of the rail.'
+                    'You can connect your account now, but nothing will use it until you add the Connections app. It is in All apps, at the foot of the rail.'
                   )}
                 </AlertDescription>
               </AlertContent>
@@ -659,14 +659,14 @@ function ConnectedAssistantsSection({
   return (
     <FormSection
       title="Connected assistants"
-      description="The other direction: an outside AI app you point at your business — Claude, ChatGPT, Copilot — so it can look things up and make changes for you. These connect by signing in and approving access."
+      description="The other direction: an outside AI app you point at your business (Claude, ChatGPT, Copilot) so it can look things up and make changes for you. These connect by signing in and approving access."
     >
       <div className="flex flex-col gap-1">
         <Text className="text-sm font-semibold">The address to give your AI app</Text>
         <CopyValue value={endpoint} label="connection address" />
         <Text className="text-sm">
           Paste this into your AI app when it asks where to connect (some apps call this an “MCP
-          server”). It will send you here to sign in and approve access — nothing reaches your
+          server”). It will send you here to sign in and approve access. Nothing reaches your
           business until you do.
         </Text>
       </div>
@@ -703,7 +703,7 @@ function ConnectedAssistantsSection({
           <Text className="text-sm">
             {productCopy(
               'ai.mcp.empty',
-              'No AI apps are connected yet. Add Piggles as a connector inside your AI app using the address above and approve access — it will appear here once you do.'
+              'No AI apps are connected yet. Add Piggles as a connector inside your AI app using the address above and approve access. It will appear here once you do.'
             )}
           </Text>
         </div>
@@ -810,8 +810,8 @@ function KeyReveal({ issued, onDone }: { issued: IssuedKey; onDone: () => void }
         <AlertContent>
           <AlertTitle>Your new key is ready</AlertTitle>
           <AlertDescription>
-            Copy it now and store it somewhere safe. For your security it is shown only this once —
-            we cannot show it again, and if you lose it you will simply make a new one.
+            Copy it now and store it somewhere safe. For your security it is shown only this once.
+            We cannot show it again, and if you lose it you will simply make a new one.
           </AlertDescription>
         </AlertContent>
       </Alert>
@@ -896,7 +896,7 @@ function ApiKeysSection({
   // copy of a secret that can never be shown again.
   useDirtySource(
     issued !== null,
-    "You haven't saved your new key yet — it can't be shown again. Close anyway?"
+    "You haven't saved your new key yet. It can't be shown again. Close anyway?"
   );
   useDirtySource(drafting, 'You have started a new key but not created it yet. Close anyway?');
 
@@ -930,7 +930,7 @@ function ApiKeysSection({
     const ok = await confirm({
       title: `Revoke “${apiKey.name}”?`,
       description:
-        'Any AI app using this key stops reaching your business immediately. This cannot be undone — if you need access again you will make a new key. Nothing in your business is changed or deleted.',
+        'Any AI app using this key stops reaching your business immediately. This cannot be undone: if you need access again you will make a new key. Nothing in your business is changed or deleted.',
       confirmLabel: 'Revoke it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -980,7 +980,7 @@ function ApiKeysSection({
   return (
     <FormSection
       title="API keys"
-      description="For an AI app that can't sign in the usual way, a key does the same job — it lets one specific app reach into your business with only the permissions you choose. Treat a key like a password."
+      description="For an AI app that can't sign in the usual way, a key does the same job. It lets one specific app reach into your business with only the permissions you choose. Treat a key like a password."
       action={headerAction}
     >
       {!canManage ? (
@@ -1116,7 +1116,7 @@ function ApiKeysSection({
       ) : data.length === 0 ? (
         <div className="border-base-300 flex flex-col items-start gap-3 rounded-lg border border-dashed p-4">
           <Text className="text-sm">
-            No API keys yet. Create one for an AI app that can&apos;t sign in the usual way — you
+            No API keys yet. Create one for an AI app that can&apos;t sign in the usual way. You
             choose exactly what it may reach.
           </Text>
           <Button
@@ -1164,10 +1164,6 @@ export function AiConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
   // the keys section (for the picker) and the connections/keys rows (to name
   // scopes in plain words) can share one copy.
   const scopeCatalog = useScopeCatalog(true);
-
-  useEffect(() => {
-    ctx.setTitle('AI connections');
-  }, [ctx]);
 
   if (isError) {
     return (

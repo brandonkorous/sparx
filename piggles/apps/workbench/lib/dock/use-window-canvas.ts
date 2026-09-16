@@ -96,18 +96,34 @@ export function useWindowCanvas({
     if (!frame || !clip || !canvas) return;
 
     const extent = extentOf(canvas);
-    // `clientWidth` already excludes a scrollbar that has appeared, so a
-    // vertical one cannot conjure a horizontal one.
-    let width = Math.max(frame.clientWidth, Math.ceil(extent.width));
-    let height = Math.max(frame.clientHeight, Math.ceil(extent.height));
+    let width = Math.ceil(extent.width);
+    let height = Math.ceil(extent.height);
     if (!mayShrink) {
       // Mid-drag the extent only ever leads the window. Shrinking then would
       // claw back scroll the browser has to clamp, which reads as a jolt.
-      width = Math.max(width, clip.clientWidth);
-      height = Math.max(height, clip.clientHeight);
+      width = Math.max(width, clip.offsetWidth);
+      height = Math.max(height, clip.offsetHeight);
     }
 
-    const next = { width: `${width}px`, height: `${height}px` };
+    // A PIXEL size only while a window genuinely reaches past the frame.
+    // Otherwise the inline size is cleared and `w-full h-full` holds the clip —
+    // a percentage of the frame's content box, which can never be the cause of
+    // its own scrollbar.
+    //
+    // Flooring at `frame.clientWidth` instead, as this did, parks the clip on
+    // the exact width at which a scrollbar starts. `clientWidth` is a ROUNDED
+    // integer, so on a fractional layout (any display with scaling) the pixel
+    // written back is a fraction WIDER than the box it was read from, and the
+    // scrollbar it conjures shrinks the box the resize observer then re-reads.
+    // Each scrollbar goes on creating the need for the other, which is a
+    // workspace whose scrollbars flicker and then sit there over content that
+    // fits (issue 491). The old comment here argued the loop was impossible
+    // because `clientWidth` excludes a scrollbar already showing; that is true
+    // and beside the point, since the fraction is what starts it.
+    const next = {
+      width: width > frame.clientWidth ? `${width}px` : '',
+      height: height > frame.clientHeight ? `${height}px` : '',
+    };
     // Only on a real change — a resize observer watches the frame, and
     // re-asserting the same pixel value is a cheap way to make it chatter.
     if (clip.style.width !== next.width) clip.style.width = next.width;

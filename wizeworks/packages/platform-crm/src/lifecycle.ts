@@ -84,7 +84,7 @@ export function subscriptionActivityDescription(
   switch (status) {
     case 'active':
       return monthlyLabel
-        ? `Subscription active — ${monthlyLabel} per month.`
+        ? `Subscription active: ${monthlyLabel} per month.`
         : 'Subscription active.';
     case 'trialing':
       return 'Free trial started.';
@@ -93,9 +93,9 @@ export function subscriptionActivityDescription(
     case 'unpaid':
       return 'Payments are still failing. The account is unpaid.';
     case 'paused':
-      return 'The subscription paused — the trial ended without a card on file.';
+      return 'The subscription paused: the trial ended without a card on file.';
     case 'canceled':
-      return 'The subscription was cancelled.';
+      return 'The subscription was canceled.';
     case 'incomplete':
       return 'Signed up but the first payment has not completed.';
     case 'incomplete_expired':

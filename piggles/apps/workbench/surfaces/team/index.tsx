@@ -438,7 +438,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
         onError: () => {
           toast.add({
             title: `Could not remove ${name}`,
-            description: 'Nothing changed — they still have access. Try again in a moment.',
+            description: 'Nothing changed. They still have access. Try again in a moment.',
             type: 'error',
           });
         },
@@ -450,7 +450,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
     void confirm({
       title: `Cancel the invitation to ${person.email}?`,
       description:
-        'The link in their email stops working straight away. If they have not seen it yet, nothing has been lost — you can invite them again whenever you like.',
+        'The link in their email stops working straight away. If they have not seen it yet, nothing has been lost. You can invite them again whenever you like.',
       confirmLabel: 'Cancel it',
       cancelLabel: 'Leave it open',
       color: 'danger',
@@ -458,7 +458,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
       if (!ok) return;
       revoke.mutate(person.id, {
         onSuccess: () => {
-          toast.add({ title: `Invitation to ${person.email} cancelled`, type: 'success' });
+          toast.add({ title: `Invitation to ${person.email} canceled`, type: 'success' });
         },
         onError: () => {
           toast.add({ title: 'Could not cancel that invitation', type: 'error' });
@@ -472,7 +472,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
       onSuccess: () => {
         toast.add({
           title: `Invitation sent to ${person.email} again`,
-          description: 'The previous link still works — this is the same invitation, resent.',
+          description: 'The previous link still works. This is the same invitation, resent.',
           type: 'success',
         });
       },
@@ -493,7 +493,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
           <AlertContent>
             <AlertTitle>Could not load your team</AlertTitle>
             <AlertDescription>
-              Nobody has been removed and no invitation has been lost — this is a problem reaching
+              Nobody has been removed and no invitation has been lost. This is a problem reaching
               the server, not with your team.
             </AlertDescription>
           </AlertContent>
@@ -634,7 +634,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<Icon glyph={faUsers} className="size-6" aria-hidden />}
               title={`Nobody here matches "${search.trim()}"`}
-              description="Try part of their name, their email address, or the job they do here — like Editor."
+              description="Try part of their name, their email address, or the job they do here, like Editor."
               actions={
                 <Button
                   color="neutral"
@@ -840,7 +840,7 @@ export function TeamSurface({ ctx }: { ctx: SurfaceContext }) {
         {canManage ? (
           <Text className="shrink-0 px-1 text-sm">
             Open anyone to change their role or limit what they can reach. The owner cannot be
-            changed, and you cannot change your own role or remove yourself — that is what stops an
+            changed, and you cannot change your own role or remove yourself. That is what stops an
             account locking everybody out.
           </Text>
         ) : (

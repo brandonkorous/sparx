@@ -34,10 +34,10 @@ import { signupHref } from './cta';
 
 /** What a stock system tells you, correctly, every fifteen minutes. */
 const DASHBOARD: { label: string; value: string }[] = [
-  { label: 'Guji Natural — 1kg', value: '41' },
-  { label: 'Kenya Peaberry — 1kg', value: '18' },
-  { label: 'House Espresso — 1kg', value: '206' },
-  { label: 'Decaf Colombia — 250g', value: '64' },
+  { label: 'Guji Natural: 1kg', value: '41' },
+  { label: 'Kenya Peaberry: 1kg', value: '18' },
+  { label: 'House Espresso: 1kg', value: '206' },
+  { label: 'Decaf Colombia: 250g', value: '64' },
 ];
 
 export function InventoryFalseFix() {
@@ -86,7 +86,7 @@ export function InventoryFalseFix() {
             <Text>
               Every one of those is a single stored number, overwritten by whichever system spoke
               last. It is right far more often than it is wrong, which is exactly what makes the
-              wrong ones expensive — you have no reason to doubt any particular one of them.
+              wrong ones expensive. You have no reason to doubt any particular one of them.
             </Text>
           </CardBody>
         </Card>
@@ -104,7 +104,7 @@ export function InventoryFalseFix() {
               And there is no screen for that. There is a number, an audit log that records that the
               number changed from 49 to 41 at 06:12 by “System”, and a support article suggesting a
               full recount. So you shut the aisle, count four hundred lines to find eight bags, and
-              write the new figure over the old one — which puts you back exactly where you started,
+              write the new figure over the old one, which puts you back exactly where you started,
               with a number you have no way to check.
             </Text>
             <Text>
@@ -145,15 +145,15 @@ export function InventoryTurn() {
   const beats: { title: string; body: string }[] = [
     {
       title: 'Nothing overwrites the total',
-      body: 'A delivery, a sale, a count, a breakage, a transfer between your own places — each one is written down as its own line and none of them edits a running figure. There is exactly one way stock is allowed to move, so there is exactly one place it can have gone.',
+      body: 'A delivery, a sale, a count, a breakage, a transfer between your own places. Each one is written down as its own line and none of them edits a running figure. There is exactly one way stock is allowed to move, so there is exactly one place it can have gone.',
     },
     {
       title: 'So the total can always be redone',
-      body: 'Which means no quantity on any screen is ever just an assertion. Ask it why and it adds itself up again in front of you, back to the morning somebody last walked to the shelf and counted — with a name against every line that moved it.',
+      body: 'Which means no quantity on any screen is ever just an assertion. Ask it why and it adds itself up again in front of you, back to the morning somebody last walked to the shelf and counted, with a name against every line that moved it.',
     },
     {
       title: 'And we redo it every night, without being asked',
-      body: 'The sum is worth nothing if nobody ever checks it against the number on the screen. So sparx checks all of them, every night, and tells you the morning they stop agreeing — rather than leaving you to discover it from a customer four weeks later.',
+      body: 'The sum is worth nothing if nobody ever checks it against the number on the screen. So sparx checks all of them, every night, and tells you the morning they stop agreeing: rather than leaving you to discover it from a customer four weeks later.',
     },
   ];
   return (
@@ -165,8 +165,8 @@ export function InventoryTurn() {
         Almost every stock system in the world stores one figure per item per place and edits it as
         things happen. That is why none of them can tell you where eight bags went: the moment the
         number changed, the thing it used to be stopped existing. sparx never stores that figure at
-        all. It stores what happened, and works the figure out — which is a slower thing to build
-        and the only thing that makes an answer possible.
+        all. It stores what happened, and works the figure out, which is a slower thing to build and
+        the only thing that makes an answer possible.
       </p>
       <div className="mt-16 grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-3">
         {beats.map((b) => (
@@ -278,7 +278,7 @@ export function InventoryProvenance() {
           lede={
             <>
               Click a quantity on the stock list, on a product, on a purchase order, on the shelf
-              card, or in your storefront’s own availability check — the same drawer opens, with the
+              card, or in your storefront’s own availability check: the same drawer opens, with the
               same rows in it. Each one names what happened, when, and who or what caused it, and
               carries the balance it left behind, so you can follow the number down the page and
               watch it arrive at what the screen is showing you.
@@ -292,7 +292,7 @@ export function InventoryProvenance() {
           <CardBody className="gap-4">
             <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
               <Heading level={3} size={4}>
-                Guji Natural — 1kg · Warehouse
+                Guji Natural: 1kg · Warehouse
               </Heading>
               <Text as="span" className="font-mono">
                 last 6 of 1,290
@@ -330,8 +330,8 @@ export function InventoryProvenance() {
 
             <Text className="border-base-300 border-t pt-4">
               The third row up is worth a second look. A picker could not find one bag, said so on
-              her phone, and the bag went <span className="font-medium">back on hand</span> —
-              because a unit nobody could find was never picked, so the sale that removed it has not
+              her phone, and the bag went <span className="font-medium">back on hand</span>: because
+              a unit nobody could find was never picked, so the sale that removed it has not
               happened yet. It is also now reserved for the order still waiting on it, and that
               shelf has been put on a count.
             </Text>
@@ -346,9 +346,9 @@ export function InventoryProvenance() {
               </Heading>
               <Text>
                 Every line records whether it was a person, a scheduled job, another system, or an
-                AI assistant that caused it, and what it was acting on — an order number, a
-                delivery, a count sheet. “It changed at 06:12 by System” is not an answer, and it is
-                the answer most audit logs give.
+                AI assistant that caused it, and what it was acting on: an order number, a delivery,
+                a count sheet. “It changed at 06:12 by System” is not an answer, and it is the
+                answer most audit logs give.
               </Text>
             </CardBody>
           </Card>
@@ -465,7 +465,7 @@ export function InventoryIntegrity() {
               </Heading>
               <Text>
                 A drifted number is evidence. sparx names the items, says what the difference is
-                worth, and leaves both figures exactly where they are for you to look at — because a
+                worth, and leaves both figures exactly where they are for you to look at, because a
                 system that silently writes the “correct” value over the top has destroyed the only
                 trace of whatever caused it, and handed you a screen that looks healthy for the
                 second time.
@@ -481,7 +481,7 @@ export function InventoryIntegrity() {
                 Three different things get muddled into “we oversold”: an order sparx refused, an
                 order it let through against a cushion you set, and stock that actually went below
                 zero. Each is recorded separately, with what the system believed at the moment it
-                decided — so “are we overselling?” has an answer with a count on it.
+                decided, so “are we overselling?” has an answer with a count on it.
               </Text>
             </CardBody>
           </Card>
@@ -491,11 +491,10 @@ export function InventoryIntegrity() {
                 Numbers carry their age
               </Heading>
               <Text>
-                If a figure comes from another system — a warehouse you don’t run, a shop floor
-                till, an ERP — you tell sparx how often it should hear from it. When it goes quiet
-                the number is flagged as old on every screen it appears on, and you choose what
-                happens: warn you, hold a bit more back, or stop selling that stock until it speaks
-                again.
+                If a figure comes from another system (a warehouse you don’t run, a shop floor till,
+                an ERP), you tell sparx how often it should hear from it. When it goes quiet the
+                number is flagged as old on every screen it appears on, and you choose what happens:
+                warn you, hold a bit more back, or stop selling that stock until it speaks again.
               </Text>
             </CardBody>
           </Card>

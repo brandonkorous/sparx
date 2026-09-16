@@ -100,7 +100,7 @@ export async function cancelPickList(
   await withTenant(ctx, async (tx) => {
     const list = await loadList(tx, ctx.tenantId, pickListId);
     if (list.status === 'cancelled') {
-      throw new InventoryConflictError('That walk is already cancelled.', 'status');
+      throw new InventoryConflictError('That walk is already canceled.', 'status');
     }
 
     // Lines already picked STAY picked. The units are off the shelf and in a
@@ -171,7 +171,7 @@ export async function confirmPick(
     }
     if (taken <= 0) {
       throw new InventoryValidationError(
-        'Confirming zero picked is a short pick — say why, so the shelf gets counted.'
+        'Confirming zero picked is a short pick: say why, so the shelf gets counted.'
       );
     }
 
@@ -556,7 +556,7 @@ async function correctPickBin(
     binId: target,
     delta: input.quantity,
     idempotencyKey: `pick-correct-in:${input.lineId}`,
-    note: `Picked from ${actual.code} instead — the sale had taken it from here.`,
+    note: `Picked from ${actual.code} instead: the sale had taken it from here.`,
   });
 
   // …and off the one it really came from. Allowed negative: if the picker took
@@ -782,7 +782,7 @@ export async function ensureShortCounts(
       type: 'cycle',
       isBlind: true,
       ...(row.binId ? { scope: 'bin', binId: row.binId } : { scope: 'location' }),
-      note: 'Raised by a short pick — settle what is actually on this shelf.',
+      note: 'Raised by a short pick: settle what is actually on this shelf.',
     });
     await withTenant(ctx, (tx) =>
       tx.pickListLine.update({ where: { id: row.lineId }, data: { shortCountId: count.id } })

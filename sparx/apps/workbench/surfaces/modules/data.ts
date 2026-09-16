@@ -100,7 +100,7 @@ export const MODULE_META: ModuleMeta[] = [
     hue: 'builder',
     icon: LayoutTemplate,
     blurb:
-      'Build and host your website with sparx — its pages, layout and your own look, all served for you.',
+      'Build and host your website with sparx. Its pages, layout and your own look, all served for you.',
     price: 10,
     requires: [],
   },
@@ -109,7 +109,7 @@ export const MODULE_META: ModuleMeta[] = [
     name: 'Online store',
     hue: 'commerce',
     icon: ShoppingBag,
-    blurb: 'Sell products online, with a catalogue, a shopping cart, checkout and card payments.',
+    blurb: 'Sell products online, with a catalog, a shopping cart, checkout and card payments.',
     price: 49,
     requires: [],
   },
@@ -150,7 +150,7 @@ export const MODULE_META: ModuleMeta[] = [
     // switch on here and the thing that appears there read as one module.
     icon: Waypoints,
     blurb:
-      'Give a promotion a name, and see how many people got from the first click to the sale — and where the rest stopped.',
+      'Give a promotion a name, and see how many people got from the first click to the sale, and where the rest stopped.',
     // Genuinely free, which is why it shows "Free" rather than a price: every
     // part a campaign measures is already paid for, and charging again to find
     // out whether it worked prices the answer away from the businesses that
@@ -192,7 +192,7 @@ export const MODULE_META: ModuleMeta[] = [
     hue: 'finance',
     icon: CreditCard,
     blurb:
-      'Track what you spend — parts, wages, rent, subscriptions — against what came in, and see which jobs actually made money.',
+      'Track what you spend (parts, wages, rent, subscriptions) against what came in, and see which jobs actually made money.',
     price: 29,
     // Free alongside the Online store or Wholesale (BUNDLED_FREE), which the
     // server reports as `source: 'bundled'` — the badge says so on its own.
@@ -206,7 +206,7 @@ export const MODULE_META: ModuleMeta[] = [
     // Says what it is NOT, because someone reading "team" and "pay rates" will
     // otherwise buy this expecting payroll and find out after they have paid.
     blurb:
-      'Keep hours, pay rates, shifts, time off and licence renewals, so you know what an hour of work really costs. Not payroll — sparx hands the hours to whoever runs yours.',
+      'Keep hours, pay rates, shifts, time off and license renewals, so you know what an hour of work really costs. Not payroll: sparx hands the hours to whoever runs yours.',
     price: 29,
     requires: [],
   },
@@ -256,7 +256,7 @@ export const MODULE_META: ModuleMeta[] = [
     hue: 'social',
     icon: Share2,
     blurb:
-      'Connect your Facebook, Instagram, Google and other social accounts and post to all of them from one place — on a schedule, or automatically.',
+      'Connect your Facebook, Instagram, Google and other social accounts and post to all of them from one place: on a schedule, or automatically.',
     price: 0,
     requires: [],
   },

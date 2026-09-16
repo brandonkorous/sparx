@@ -100,7 +100,7 @@ export function PreordersSurface(_props: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Icon glyph={faCalendarPlus} className="size-6" aria-hidden />}
           title="No preorders running"
-          description="Open one from a product's stock screen when you want to take orders for something before it arrives — a production run, a seasonal line, a restock you have already paid for."
+          description="Open one from a product's stock screen when you want to take orders for something before it arrives: a production run, a seasonal line, a restock you have already paid for."
         />
       );
     }
@@ -247,7 +247,7 @@ export function PreordersSurface(_props: { ctx: SurfaceContext }) {
             afterCommit(() => {
               toast.add({
                 title: 'Preorder closed',
-                description: 'Existing commitments are unaffected — they are still owed.',
+                description: 'Existing commitments are unaffected. They are still owed.',
                 type: 'info',
               });
             });
@@ -297,8 +297,8 @@ function PreorderEditor({
         <DialogTitle>{row.variantName ?? row.variantSku ?? 'Preorder'}</DialogTitle>
         <DialogDescription>
           Leave the shipping date blank if the maker has not committed to one. The product page then
-          says “date to be confirmed”, which sells honestly — a guess in this field becomes a
-          promise the moment somebody reads it.
+          says “date to be confirmed”, which sells honestly: a guess in this field becomes a promise
+          the moment somebody reads it.
         </DialogDescription>
 
         <div className="flex flex-col gap-3 py-2">
@@ -359,7 +359,7 @@ function PreorderEditor({
             <Text className="text-sm">
               {capped
                 ? 'Once the limit is reached the product page says sold out.'
-                : 'No limit — sensible for made-to-order, risky for anything else.'}
+                : 'No limit: sensible for made-to-order, risky for anything else.'}
             </Text>
           </Field>
 
@@ -376,7 +376,7 @@ function PreorderEditor({
               />
               {row.soldQuantity > 0 ? (
                 <Text className="text-sm">
-                  {row.soldQuantity} already committed — the limit cannot go below that.
+                  {row.soldQuantity} already committed: the limit cannot go below that.
                 </Text>
               ) : null}
             </Field>
@@ -402,7 +402,7 @@ function PreorderEditor({
               onClick={() => {
                 void confirm({
                   title: 'Stop taking preorders?',
-                  description: `${plural(row.soldQuantity, 'order', 'orders')} already committed stay owed — closing only stops new ones. The window and its history are kept.`,
+                  description: `${plural(row.soldQuantity, 'order', 'orders')} already committed stay owed: closing only stops new ones. The window and its history are kept.`,
                   confirmLabel: 'Stop taking them',
                   cancelLabel: 'Keep it open',
                   color: 'danger',

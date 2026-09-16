@@ -47,10 +47,6 @@ export function InvoicePreviewSurface({ ctx }: { ctx: SurfaceContext }) {
   const draft = useDraft(draftKey('invoice', id));
   const debouncedDraft = useDebounced(draft, RENDER_DEBOUNCE_MS);
 
-  useEffect(() => {
-    ctx.setTitle('Preview');
-  }, [ctx]);
-
   const { data: html, isFetching } = useQuery({
     // The draft is part of the key so an edit produces a new render, and
     // identical drafts are served from cache rather than re-rendered.

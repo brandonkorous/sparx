@@ -82,7 +82,7 @@ export function OgTool() {
           >
             <TextField
               label="Headline"
-              hint="Five or six words. It sizes itself to fill the card, so a shorter one comes out bigger — which is usually better."
+              hint="Five or six words. It sizes itself to fill the card, so a shorter one comes out bigger, which is usually better."
               value={title}
               onChange={setTitle}
               placeholder="Wood-fired pizza in Ancoats"
@@ -114,9 +114,8 @@ export function OgTool() {
             <ColorField label="Background" value={background} onChange={setBackground} />
             <ColorField label="Accent" value={accent} onChange={setAccent} />
             <Aside>
-              The text color is worked out from your background rather than chosen — a pale card
-              gets dark text, a dark card gets light. That is why it stays readable whatever you
-              pick.
+              The text color is worked out from your background rather than chosen: a pale card gets
+              dark text, a dark card gets light. That is why it stays readable whatever you pick.
             </Aside>
           </Panel>
 
@@ -162,7 +161,7 @@ export function OgTool() {
                 aria-label="Your share image"
               />
               <p className="mt-3 text-base">
-                1200 × 630 — the shape nearly every messaging app and social network crops to.
+                1200 × 630: the shape nearly every messaging app and social network crops to.
               </p>
 
               <Button
@@ -192,7 +191,7 @@ export function OgTool() {
               </div>
               <p className="mt-3 text-base">
                 <strong>Still showing the old one?</strong> The platform cached it, sometimes for
-                days. Search for the platform&rsquo;s name plus &ldquo;sharing debugger&rdquo; — it
+                days. Search for the platform&rsquo;s name plus &ldquo;sharing debugger&rdquo;: it
                 re-reads your page on demand.
               </p>
             </CardBody>
@@ -209,7 +208,7 @@ export function OgTool() {
                 </div>
               </div>
               <p className="mt-3 text-base">
-                Roughly this size on a phone, which is the size to judge it at — not the large
+                Roughly this size on a phone, which is the size to judge it at, not the large
                 version above.
               </p>
             </CardBody>

@@ -20,7 +20,7 @@ import {
 export const metadata: Metadata = {
   title: 'Importing from another platform',
   description:
-    'Move a business onto sparx over the API. Read the vendor catalogue, validate rows, start a migration run, and poll it — plus the canonical row contract and the live-connection endpoints.',
+    'Move a business onto sparx over the API. Read the vendor catalog, validate rows, start a migration run, and poll it: plus the canonical row contract and the live-connection endpoints.',
   alternates: { canonical: '/docs/guides/migrating' },
 };
 
@@ -255,7 +255,7 @@ export default function MigrationGuidePage() {
         { label: 'Importing from another platform' },
       ]}
       title="Importing from another platform"
-      lede="Move a business onto sparx from Shopify, WooCommerce, HubSpot and seventeen others — over the API, in the same four steps the app takes: read what a vendor can give you, check the rows, practice, then run it."
+      lede="Move a business onto sparx from Shopify, WooCommerce, HubSpot and seventeen others: over the API, in the same four steps the app takes: read what a vendor can give you, check the rows, practice, then run it."
       meta={
         <>
           <span>Updated 2026-08-13</span>
@@ -280,7 +280,7 @@ export default function MigrationGuidePage() {
       <DocSection id="shape" title="How a migration works">
         <p>
           A migration is <strong>rows in, jobs out</strong>. You send arrays of{' '}
-          <InlineCode>Record&lt;string, string&gt;</InlineCode> — one shape for all twenty vendors —
+          <InlineCode>Record&lt;string, string&gt;</InlineCode> (one shape for all twenty vendors)
           and sparx creates a background <InlineCode>ImportJob</InlineCode> per entity, processes
           them in dependency order, and reports what happened row by row.
         </p>
@@ -288,7 +288,7 @@ export default function MigrationGuidePage() {
           Nothing about the vendor survives past your request. Reading a{' '}
           <InlineCode>products_export.csv</InlineCode> into canonical rows happens in{' '}
           <InlineCode>@wizeworks/migration</InlineCode>, which runs in a browser, in a worker, or in
-          your own script — the API only ever sees rows. That is why one endpoint serves every
+          your own script: the API only ever sees rows. That is why one endpoint serves every
           platform and why your own spreadsheet works exactly as well as a competitor&rsquo;s
           export.
         </p>
@@ -296,8 +296,7 @@ export default function MigrationGuidePage() {
         <Callout type="note" title="A run is a group of jobs, not a table">
           <p>
             <InlineCode>runId</InlineCode> is an id shared by every job in one migration. There is
-            no migration table — which is why a run can be reported on and cancelled, but not
-            edited.
+            no migration table, which is why a run can be reported on and canceled, but not edited.
           </p>
         </Callout>
 
@@ -337,20 +336,20 @@ export default function MigrationGuidePage() {
           </tbody>
         </DocTable>
         <p>
-          Two more exist for live connections —{' '}
+          Two more exist for live connections (
           <DocLink href="#live">
             <InlineCode>connect</InlineCode> and <InlineCode>pull</InlineCode>
-          </DocLink>{' '}
-          — and <EndpointChip method="POST" path="/v1/migration/runs/{runId}/cancel" /> stops
+          </DocLink>
+          ), and <EndpointChip method="POST" path="/v1/migration/runs/{runId}/cancel" /> stops
           anything that has not started.
         </p>
       </DocSection>
 
       <DocSection id="vendors" title="What a vendor can give you">
         <p>
-          The catalogue is computed from the adapters, so it can never advertise something the
+          The catalog is computed from the adapters, so it can never advertise something the
           importer does not do. Each entity is marked <InlineCode>available</InlineCode> against{' '}
-          <em>this</em> tenant&rsquo;s modules — a locked entity is reported with the module that
+          <em>this</em> tenant&rsquo;s modules: a locked entity is reported with the module that
           would unlock it rather than hidden.
         </p>
         <CodeBlock caption="Request" tabs={[{ label: 'cURL', code: VENDORS_CURL }]} />
@@ -362,7 +361,7 @@ export default function MigrationGuidePage() {
         />
         <p>
           <InlineCode>sources</InlineCode> names the vendor&rsquo;s own file and the menu it is
-          under, verbatim — use it in your own UI rather than writing your own copy of it.{' '}
+          under, verbatim. Use it in your own UI rather than writing your own copy of it.{' '}
           <InlineCode>connectorOnly</InlineCode> marks entities that platform has no export for at
           all; those only arrive through a <DocLink href="#live">live connection</DocLink>.
         </p>
@@ -371,7 +370,7 @@ export default function MigrationGuidePage() {
       <DocSection id="rows" title="The canonical row">
         <p>
           Every entity is a flat <InlineCode>Record&lt;string, string&gt;</InlineCode>. Strings
-          throughout — numbers, booleans and dates are coerced on the way in, so{' '}
+          throughout: numbers, booleans and dates are coerced on the way in, so{' '}
           <InlineCode>&quot;24.00&quot;</InlineCode>, <InlineCode>&quot;1,200&quot;</InlineCode> and{' '}
           <InlineCode>&quot;true&quot;</InlineCode> are all fine.
         </p>
@@ -394,10 +393,10 @@ export default function MigrationGuidePage() {
           </p>
         </Callout>
         <p>
-          A product spread across several rows — one per variant, which is how every commerce
-          platform exports — is grouped by <InlineCode>handle</InlineCode>. Send the option matrix
-          on each row (<InlineCode>option1_name</InlineCode> /{' '}
-          <InlineCode>option1_value</InlineCode>) and the product&rsquo;s own fields on the first.
+          A product spread across several rows (one per variant, which is how every commerce
+          platform exports) is grouped by <InlineCode>handle</InlineCode>. Send the option matrix on
+          each row (<InlineCode>option1_name</InlineCode> / <InlineCode>option1_value</InlineCode>)
+          and the product&rsquo;s own fields on the first.
         </p>
       </DocSection>
 
@@ -422,8 +421,8 @@ export default function MigrationGuidePage() {
         </p>
         <Callout type="note" title="severity has a precise meaning">
           <p>
-            <InlineCode>error</InlineCode> — this row cannot be written and will be skipped.{' '}
-            <InlineCode>warning</InlineCode> — the row will be written, but something was changed or
+            <InlineCode>error</InlineCode>: this row cannot be written and will be skipped.{' '}
+            <InlineCode>warning</InlineCode>: the row will be written, but something was changed or
             dropped to make that possible.
           </p>
         </Callout>
@@ -444,14 +443,14 @@ export default function MigrationGuidePage() {
         />
         <p>
           <strong>Send everything in one call.</strong> Entities are reordered into dependency order
-          — categories before products, products before stock, customers before orders — so stock
+          (categories before products, products before stock, customers before orders) so stock
           resolves a SKU that products created. Splitting them across calls hands you that ordering
           problem instead.
         </p>
         <p>
           Rows that fail validation are dropped here rather than becoming error rows later, so the
           count you are given is the count that happens. Entities whose module is off are reported
-          in <InlineCode>skipped</InlineCode> and the rest of the run proceeds — a WordPress export
+          in <InlineCode>skipped</InlineCode> and the rest of the run proceeds: a WordPress export
           carrying products for a tenant who only wants the blog imports the blog.
         </p>
         <Callout type="warn" title="Practice first">
@@ -487,8 +486,8 @@ export default function MigrationGuidePage() {
 
       <DocSection id="live" title="Live connections">
         <p>
-          Three platforms — Shopify, WordPress/WooCommerce and HubSpot — can be read directly
-          instead of exported. A connector <em>fetches</em>; it does not import. It returns the same
+          Three platforms (Shopify, WordPress/WooCommerce and HubSpot) can be read directly instead
+          of exported. A connector <em>fetches</em>; it does not import. It returns the same
           canonical rows a file produces, and you hand them to <InlineCode>/runs</InlineCode>{' '}
           exactly as you would rows you parsed yourself.
         </p>
@@ -496,8 +495,8 @@ export default function MigrationGuidePage() {
         <Callout type="danger" title="Credentials are yours, and are never stored">
           <p>
             sparx holds no platform-level Shopify or HubSpot credential and never will. The tenant
-            supplies their own read-only key, it is sent with each call, used, and forgotten —
-            nothing is written to the database. Ask for read scopes only.
+            supplies their own read-only key, it is sent with each call, used, and forgotten.
+            Nothing is written to the database. Ask for read scopes only.
           </p>
         </Callout>
 
@@ -535,7 +534,7 @@ export default function MigrationGuidePage() {
           <CodeBlock caption="Node" tabs={[{ label: 'Node', code: LOOP_NODE }]} />
           <p>
             Pull entities one at a time rather than in parallel. All three platforms rate limit per
-            account, and four concurrent pulls against one store means four pulls all backing off —
+            account, and four concurrent pulls against one store means four pulls all backing off:
             slower than doing them in order, and far more likely to fail.
           </p>
         </DocSubsection>
@@ -578,13 +577,13 @@ export default function MigrationGuidePage() {
           </tbody>
         </DocTable>
         <p>
-          The full field list per entity — every optional column, its type and its limit — is{' '}
+          The full field list per entity (every optional column, its type and its limit) is{' '}
           <InlineCode>ENTITY_FIELDS</InlineCode> in <InlineCode>@wizeworks/migration</InlineCode>,
           which is what this table is generated from and what the validator checks against.
         </p>
         <p>
-          For the platform-by-platform view — the exact file, the exact menu, and what does not come
-          across — see <DocLink href="/migrate">the switching pages</DocLink>.
+          For the platform-by-platform view (the exact file, the exact menu, and what does not come
+          across) see <DocLink href="/migrate">the switching pages</DocLink>.
         </p>
       </DocSection>
     </DocArticle>

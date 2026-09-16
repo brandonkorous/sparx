@@ -44,6 +44,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useConfirm } from '../../lib/confirm';
+import { todayIso } from '../../lib/today';
 import { afterPaneChange } from '../../lib/defer';
 import {
   centsToInput,
@@ -83,7 +84,7 @@ function emptyForm(): FormState {
     amount: '',
     cadence: 'monthly',
     dayOfMonth: '',
-    startsOn: new Date().toISOString().slice(0, 10),
+    startsOn: todayIso(),
     endsOn: '',
     autoGenerate: true,
     isActive: true,
@@ -341,7 +342,7 @@ function TemplateEditor({
           {!datesOk ? (
             <FieldStatus status="error">The end date cannot be before the start.</FieldStatus>
           ) : (
-            <FieldDescription>Leave blank for something with no end — like rent.</FieldDescription>
+            <FieldDescription>Leave blank for something with no end, like rent.</FieldDescription>
           )}
         </Field>
 
@@ -365,7 +366,7 @@ function TemplateEditor({
               }
             />
             <FieldDescription>
-              Pick 31 and a short month lands on its last day — the following month goes back to the
+              Pick 31 and a short month lands on its last day: the following month goes back to the
               31st.
             </FieldDescription>
           </Field>
@@ -517,7 +518,7 @@ export function RecurringCostsSurface() {
     const ok = await confirm({
       title: `Delete the ${template.name} schedule?`,
       description:
-        'This stops it repeating. Every cost it has already recorded stays exactly as it is — your history and past profit figures do not change.',
+        'This stops it repeating. Every cost it has already recorded stays exactly as it is. Your history and past profit figures do not change.',
       confirmLabel: 'Delete the schedule',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -634,7 +635,7 @@ export function RecurringCostsSurface() {
                 <EmptyState
                   icon={<CalendarClock className="size-6" aria-hidden />}
                   title="No repeating costs yet"
-                  description="Rent, insurance, subscriptions, a lease — set each one up once and it is counted every month without anyone typing it in. This is usually the biggest chunk of spending a business forgets to record."
+                  description="Rent, insurance, subscriptions, a lease. Set each one up once and it is counted every month without anyone typing it in. This is usually the biggest chunk of spending a business forgets to record."
                   actions={
                     <Button
                       size="sm"

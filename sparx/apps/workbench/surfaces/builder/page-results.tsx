@@ -69,8 +69,8 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 function subtitleOf(row: PageResultRow): string {
   if (row.pathPrefix) {
     return row.pathsCovered === 0
-      ? `Every page under ${row.pathPrefix} — none of them visited yet`
-      : `Every page under ${row.pathPrefix} — ${formatCount(row.pathsCovered)} of them visited`;
+      ? `Every page under ${row.pathPrefix}: none of them visited yet`
+      : `Every page under ${row.pathPrefix} (${formatCount(row.pathsCovered)} of them visited)`;
   }
   return row.path;
 }
@@ -173,7 +173,7 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<BarChart3 className="size-6" aria-hidden />}
             title="No pages yet"
-            description="Once you have built a page and someone has visited it, this is where you find out how it did — how many people saw it, how many of them bought something, and how quickly it appeared for them."
+            description="Once you have built a page and someone has visited it, this is where you find out how it did: how many people saw it, how many of them bought something, and how quickly it appeared for them."
           />
         ) : (
           <>
@@ -299,16 +299,16 @@ function ReportFootnotes({ report }: { report: ReturnType<typeof usePageResults>
       ) : null}
       {report.commerce ? (
         <p className="text-base">
-          Sales are credited to the page that brought the buyer to your site that day — not the page
+          Sales are credited to the page that brought the buyer to your site that day, not the page
           they bought from. So your home page can earn credit for a sale that happened three clicks
           later, which is the point: that is the page that did the work.
         </p>
       ) : null}
       {otherViews > 0 ? (
         <p className="text-base">
-          Another {formatCount(otherViews)} visits landed on addresses no page here owns — your
-          cart, checkout, sign-in and legal pages, which sparx builds for you. They are counted in
-          your traffic figures but have no row above.
+          Another {formatCount(otherViews)} visits landed on addresses no page here owns. Your cart,
+          checkout, sign-in and legal pages, which sparx builds for you. They are counted in your
+          traffic figures but have no row above.
         </p>
       ) : null}
       <p className="text-base">

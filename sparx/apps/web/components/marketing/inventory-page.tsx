@@ -82,7 +82,7 @@ export function InventoryPage() {
         src="/scenes/counter-handover.jpg"
         alt="A shopkeeper handing a paper bag across the counter to a customer."
         headline="You don’t quite trust the number enough to promise it"
-        lede="Somebody asks if you have four of something and you say “let me go and look” — because you have been caught before, and the walk to the back is cheaper than the phone call afterwards. Nothing about that is disorganised. It is what anyone sensible does with a number they cannot check, and it quietly costs you an hour a day and the occasional order."
+        lede="Somebody asks if you have four of something and you say “let me go and look”, because you have been caught before, and the walk to the back is cheaper than the phone call afterwards. Nothing about that is disorganised. It is what anyone sensible does with a number they cannot check, and it quietly costs you an hour a day and the occasional order."
       />
       <InventoryEvidence />
       {/* BEAT 3 — THE FALSE FIX. Concedes that the sync works, then attacks the
@@ -116,7 +116,7 @@ export function InventoryPage() {
             <Spark color={M.ink} />
           </>
         }
-        lede="What it does, what it deliberately doesn’t, what it costs, and what happens to the spreadsheet you have been keeping — answered straight. Still deciding? Start the 14-day trial, or turn Commerce on and get this for nothing."
+        lede="What it does, what it deliberately doesn’t, what it costs, and what happens to the spreadsheet you have been keeping: answered straight. Still deciding? Start the 14-day trial, or turn Commerce on and get this for nothing."
       />
       <InventoryCta />
     </>
@@ -157,8 +157,8 @@ function InventoryHero() {
             </span>
           </Display>
           <Text variant="lead" className="mt-7 max-w-[620px]">
-            Every stock figure in sparx is worked out from what actually happened — every delivery,
-            sale, count, breakage and transfer — rather than stored and overwritten. So any quantity
+            Every stock figure in sparx is worked out from what actually happened (every delivery,
+            sale, count, breakage and transfer) rather than stored and overwritten. So any quantity
             on any screen comes apart in front of you, back to the day somebody last walked out and
             counted the shelf. And it is re-added every night, so you hear about a problem from us
             at breakfast instead of from a customer in six weeks.
@@ -184,7 +184,7 @@ function InventoryHero() {
             <CardBody className="gap-5">
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                 <Heading level={3} size={4}>
-                  Guji Natural — 1kg
+                  Guji Natural: 1kg
                 </Heading>
                 <Text as="span" className="font-mono">
                   Warehouse
@@ -243,13 +243,13 @@ function InventoryPricing() {
             <span className="text-[clamp(56px,7vw,80px)] leading-none font-medium tracking-[-0.03em]">
               $29
             </span>
-            <span className="text-2xl">/mo — everyone included</span>
+            <span className="text-2xl">/mo. Everyone included</span>
           </div>
           <p className="max-w-[680px] text-2xl leading-[1.4]">
             Flat, whatever size your warehouse is, with every picker, receiver and counter on it at
-            no extra charge. Free entirely if you sell through sparx with Commerce or B2B — the
-            stock behind what you sell is not a second product. Fourteen days free regardless, and
-            we don’t ask for a card.
+            no extra charge. Free entirely if you sell through sparx with Commerce or B2B: the stock
+            behind what you sell is not a second product. Fourteen days free regardless, and we
+            don’t ask for a card.
           </p>
         </div>
         <a
@@ -272,7 +272,7 @@ function InventoryCta() {
     },
     { n: '0', l: 'people who can edit the history · not you, not us, not an integration' },
     { n: '04:31', l: 'when every number in the building gets added up again, every night' },
-    { n: '∞', l: 'users at the same price — the warehouse does not cost you per head' },
+    { n: '∞', l: 'users at the same price: the warehouse does not cost you per head' },
   ];
   return (
     <Section surface="dark" padding="xl">
@@ -283,7 +283,7 @@ function InventoryCta() {
         </Display>
         <Text variant="lead" className="m-0 max-w-[680px]">
           Fourteen days free, no card, no contract at the end of it. Bring the spreadsheet you
-          already keep and you can be counting real stock this afternoon — and if you ever leave,
+          already keep and you can be counting real stock this afternoon, and if you ever leave,
           every movement, report and figure downloads in full from a button, without asking anyone.
         </Text>
         <div className="flex flex-wrap items-center gap-3">
@@ -322,36 +322,36 @@ const INVENTORY_FAQ: FaqItem[] = [
     id: 'inventory-standalone',
     question: 'Can I use this if I don’t sell anything online?',
     answer:
-      'Yes, and it is a first-class case rather than a technicality. A workshop, a hire company, a lab, a charity warehouse, a distributor who takes every order by phone — anyone who has stock in more than one place can run locations, shelves, scanning, counts, purchase orders, suppliers, costing and every report, with no storefront, no website and no orders anywhere in sparx. That is what the $29 standalone price is for. Add Commerce or B2B later and the charge simply stops.',
+      'Yes, and it is a first-class case rather than a technicality. A workshop, a hire company, a lab, a charity warehouse, a distributor who takes every order by phone. Anyone who has stock in more than one place can run locations, shelves, scanning, counts, purchase orders, suppliers, costing and every report, with no storefront, no website and no orders anywhere in sparx. That is what the $29 standalone price is for. Add Commerce or B2B later and the charge simply stops.',
   },
   {
     id: 'inventory-spreadsheet',
     question: 'What happens to the spreadsheet I have been keeping?',
     answer:
-      'You upload it as it is. sparx reads your column headings and matches them to its own — it knows that “Qty”, “QTY on hand” and “stock” are the same idea — and asks about anything it is unsure of instead of guessing. Then it shows you exactly what it is about to do before it does anything: how many items it will create, how many it will update, and every row it could not read with the reason why. Nothing is written until you agree, and the setup finishes with a real opening count so day one is a verified number rather than an imported one. It is built against a thirty-minute target and measured against it.',
+      'You upload it as it is. sparx reads your column headings and matches them to its own (it knows that “Qty”, “QTY on hand” and “stock” are the same idea) and asks about anything it is unsure of instead of guessing. Then it shows you exactly what it is about to do before it does anything: how many items it will create, how many it will update, and every row it could not read with the reason why. Nothing is written until you agree, and the setup finishes with a real opening count so day one is a verified number rather than an imported one. It is built against a thirty-minute target and measured against it.',
   },
   {
     id: 'inventory-price',
     question: 'How much is it, and do I pay per user?',
     answer:
-      'A flat $29 a month, and no — nobody is priced per seat. Every person who touches stock gets an account, and there is a role built for exactly them: it can receive deliveries, enter counts, move stock and look items up, and it cannot see a single cost price. Charging per head would mean the accuracy of your stock depended on how few people you could afford to let near it. If you sell through sparx with Commerce or B2B, Inventory is included at no extra cost.',
+      'A flat $29 a month, and no: nobody is priced per seat. Every person who touches stock gets an account, and there is a role built for exactly them: it can receive deliveries, enter counts, move stock and look items up, and it cannot see a single cost price. Charging per head would mean the accuracy of your stock depended on how few people you could afford to let near it. If you sell through sparx with Commerce or B2B, Inventory is included at no extra cost.',
   },
   {
     id: 'inventory-accuracy',
     question: 'What actually stops the number going wrong?',
     answer:
-      'Two different things, deliberately. First, nothing overwrites a total: every delivery, sale, count, breakage and transfer is recorded as its own line and the quantity is worked out from them, so a wrong number always has a findable cause rather than being a mystery someone has to recount their way out of. Second, every night sparx re-adds the entire history for every item in every location and compares the answer to the figure it has been showing you. If those two ever disagree it names the items and what the difference is worth, and it does not quietly write the “correct” value over the top — because that would destroy the only evidence of whatever caused it.',
+      'Two different things, deliberately. First, nothing overwrites a total: every delivery, sale, count, breakage and transfer is recorded as its own line and the quantity is worked out from them, so a wrong number always has a findable cause rather than being a mystery someone has to recount their way out of. Second, every night sparx re-adds the entire history for every item in every location and compares the answer to the figure it has been showing you. If those two ever disagree it names the items and what the difference is worth, and it does not quietly write the “correct” value over the top, because that would destroy the only evidence of whatever caused it.',
   },
   {
     id: 'inventory-accounting',
     question: 'Does it work with my accounting software?',
     answer:
-      'It produces the journals for stock and cost of sale, and a reconciliation that lists each ordinary timing difference — goods received but not yet invoiced, invoiced but not received, stock in the building you do not own, stock in transit — instead of netting them into one unexplained figure. Today the way that reaches your accounting package is an export in the layout it expects, which any of them import. Direct connections to QuickBooks Online and Xero are built but not switched on for this installation yet, and the screen says exactly that rather than offering a button that fails. What sparx will never do is keep your books: there is no general ledger and no chart of accounts here, and that stays your accountant’s job.',
+      'It produces the journals for stock and cost of sale, and a reconciliation that lists each ordinary timing difference (goods received but not yet invoiced, invoiced but not received, stock in the building you do not own, stock in transit) instead of netting them into one unexplained figure. Today the way that reaches your accounting package is an export in the layout it expects, which any of them import. Direct connections to QuickBooks Online and Xero are built but not switched on for this installation yet, and the screen says exactly that rather than offering a button that fails. What sparx will never do is keep your books: there is no general ledger and no chart of accounts here, and that stays your accountant’s job.',
   },
   {
     id: 'inventory-ai',
     question: 'Can I point my own AI assistant at my stock?',
     answer:
-      'Yes, and it is your assistant and your model — sparx never runs an AI on your behalf or on a credential of ours. Connect the client you already use and it can read your stock the way a person would: what should I reorder, why did this number drop, which supplier is slipping, what expires next month. It deliberately cannot spend your money. Approving a purchase order, agreeing a price with a supplier, sending stock back, or writing off a batch are all left out of what an assistant can reach, because every one of them points money at somebody else or breaks a promise to them.',
+      'Yes, and it is your assistant and your model: sparx never runs an AI on your behalf or on a credential of ours. Connect the client you already use and it can read your stock the way a person would: what should I reorder, why did this number drop, which supplier is slipping, what expires next month. It deliberately cannot spend your money. Approving a purchase order, agreeing a price with a supplier, sending stock back, or writing off a batch are all left out of what an assistant can reach, because every one of them points money at somebody else or breaks a promise to them.',
   },
 ];

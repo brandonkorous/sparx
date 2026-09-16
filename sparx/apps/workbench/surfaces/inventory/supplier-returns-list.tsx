@@ -6,11 +6,11 @@
 // ── Why this is a screen and not a note ───────────────────────────────────
 //
 // Writing off six broken pumps tells your stock figures the truth and says
-// nothing at all about the £900 the supplier owes you. In most businesses that
+// nothing at all about the $900 the supplier owes you. In most businesses that
 // credit is remembered by one person, in their head, until they leave — and the
 // money is simply lost. This list is the memory.
 //
-// So the headline is a pound figure, not a count: "you are owed £4,310 by
+// So the headline is a pound figure, not a count: "you are owed $4,310 by
 // suppliers right now" is the sentence that makes anybody open this screen. It
 // survives filtering, because it is the state of the business rather than the
 // state of the page.
@@ -93,7 +93,7 @@ export function SupplierReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
           description={
             view === 'awaiting'
               ? 'Every return you have sent has been credited or written off. Nothing is outstanding.'
-              : 'When something arrives broken, wrong, or simply too much, record it going back here — with what you paid for it — and the credit you are owed stops being something one person remembers.'
+              : 'When something arrives broken, wrong, or simply too much, record it going back here (with what you paid for it), and the credit you are owed stops being something one person remembers.'
           }
           actions={
             <Button

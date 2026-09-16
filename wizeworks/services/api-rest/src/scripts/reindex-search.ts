@@ -102,8 +102,8 @@ async function main(): Promise<void> {
   // Said plainly, because the number above is a count of REQUESTS and reads like
   // a count of results.
   if (apply) {
-    console.log('The rebuilds run on the worker. This says what was asked, not what landed —');
-    console.log('read GET /v1/search/status per tenant, or the worker logs, for that.');
+    console.log('The rebuilds run on the worker. This says what was asked, not what landed.');
+    console.log('Read GET /v1/search/status per tenant, or the worker logs, for that.');
   } else if (asked > 0) {
     console.log('Re-run with --apply to publish.');
   }

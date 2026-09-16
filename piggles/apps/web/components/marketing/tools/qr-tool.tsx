@@ -195,7 +195,7 @@ export function QrTool() {
           note:
             kind === 'wifi'
               ? 'Your Wi-Fi password is deliberately not in this email. Open the tool again with the details above, type the password back in, and download the code. Print it big enough to scan from where people will actually be standing.'
-              : 'Open the tool again with these to download the code. Scan a printed one, at the size you are going to print it, before you order a batch — a code that is slightly too small looks perfectly fine and simply will not read.',
+              : 'Open the tool again with these to download the code. Scan a printed one, at the size you are going to print it, before you order a batch: a code that is slightly too small looks perfectly fine and simply will not read.',
         }
       : null
   );
@@ -269,8 +269,8 @@ export function QrTool() {
                   value={wifiSecurity}
                   onChange={setWifiSecurity}
                   options={[
-                    { value: 'WPA', label: 'WPA / WPA2 / WPA3 — nearly always this' },
-                    { value: 'WEP', label: 'WEP — very old equipment' },
+                    { value: 'WPA', label: 'WPA / WPA2 / WPA3: nearly always this' },
+                    { value: 'WEP', label: 'WEP: very old equipment' },
                     { value: 'nopass', label: 'No password' },
                   ]}
                 />
@@ -281,8 +281,8 @@ export function QrTool() {
                   onChange={setWifiHidden}
                 />
                 <Aside>
-                  Printing this puts your Wi-Fi password on the wall. That is usually the point —
-                  but put it on the guest network rather than the one the till is on.
+                  Printing this puts your Wi-Fi password on the wall. That is usually the point, but
+                  put it on the guest network rather than the one the till is on.
                 </Aside>
               </>
             ) : null}
@@ -315,7 +315,7 @@ export function QrTool() {
                 />
                 <TextField
                   label="Subject (optional)"
-                  hint="Filled in for them. Useful for sorting — “Table booking”, “Quote request”."
+                  hint="Filled in for them. Useful for sorting: “Table booking”, “Quote request”."
                   value={emailSubject}
                   onChange={setEmailSubject}
                 />
@@ -351,7 +351,7 @@ export function QrTool() {
             {contrast < 4 ? (
               <Problem>
                 These two colors are too close together for a scanner to tell apart. A phone camera
-                needs a strong difference — dark pattern, light background. Black on white always
+                needs a strong difference: dark pattern, light background. Black on white always
                 works.
               </Problem>
             ) : null}
@@ -382,7 +382,7 @@ export function QrTool() {
         !result && !error ? (
           <Blank
             title="Your code appears here"
-            body="Put a web address in on the left — or pick Wi-Fi, a menu, your phone number. The pattern is worked out on this page and never sent anywhere."
+            body="Put a web address in on the left, or pick Wi-Fi, a menu, your phone number. The pattern is worked out on this page and never sent anywhere."
             intent="tip"
           />
         ) : (
@@ -400,7 +400,7 @@ export function QrTool() {
 
                   <p className="mt-4 text-center text-base">
                     {result.size} × {result.size} pattern. Scan it with your phone before you print
-                    anything — that advice is worth taking literally.
+                    anything. That advice is worth taking literally.
                   </p>
 
                   <div className="mt-6 flex flex-col gap-3">
@@ -430,13 +430,13 @@ export function QrTool() {
                         downloadBlob(new Blob([svg], { type: 'image/svg+xml' }), `${filename}.svg`);
                       }}
                     >
-                      Download SVG — for printing
+                      Download SVG, for printing
                     </Button>
                   </div>
 
                   <p className="mt-4 text-base">
                     Use the SVG for anything printed. It is drawn from instructions rather than
-                    pixels, so it stays perfectly sharp at any size — a business card or a shop
+                    pixels, so it stays perfectly sharp at any size: a business card or a shop
                     window.
                   </p>
                 </>

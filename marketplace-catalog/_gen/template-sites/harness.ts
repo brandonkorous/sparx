@@ -67,7 +67,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
  *  1.5.0 carries the chrome the composite has been emitting since issue 291 — the
  *  account link in the bar and the phone panel, and the legal links in the footer —
  *  which the committed bundles had been a release behind on (issue 313). */
-const BUNDLE_VERSION = '1.5.0';
+const BUNDLE_VERSION = '1.5.1';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -242,47 +242,47 @@ function standardSeo(
     const tag = spec.brand.tagline;
     const ind = spec.industry;
     const composed: Record<PageKey, { title: string; description: string }> = {
-        home: { title: bn, description: `${tag} ${bn} — ${ind.toLowerCase()}, online.` },
+        home: { title: bn, description: `${tag} ${bn}: ${ind.toLowerCase()}, online.` },
         shop: {
-            title: `Shop — ${bn}`,
+            title: `Shop: ${bn}`,
             description: `Browse everything ${bn} makes, with prices and options at a glance. ${ind}.`,
         },
         collections: {
-            title: `Collections — ${bn}`,
+            title: `Collections: ${bn}`,
             description: `Explore the collections at ${bn}, grouped to help you find what you are after.`,
         },
         cart: {
-            title: `Your cart — ${bn}`,
+            title: `Your cart: ${bn}`,
             description: `Review what is in your cart and check out securely at ${bn}.`,
         },
         search: {
-            title: `Search — ${bn}`,
+            title: `Search: ${bn}`,
             description: `Search ${bn} for a product, a collection or a page.`,
         },
         journal: {
-            title: `Journal — ${bn}`,
+            title: `Journal: ${bn}`,
             description: `Stories, guides and notes from ${bn}.`,
         },
         about: {
-            title: `About — ${bn}`,
-            description: `Who ${bn} is, what we make and why — the people behind the work.`,
+            title: `About: ${bn}`,
+            description: `Who ${bn} is, what we make and why: the people behind the work.`,
         },
         contact: {
-            title: `Contact — ${bn}`,
-            description: `Get in touch with ${bn} — questions, orders and anything else you need.`,
+            title: `Contact: ${bn}`,
+            description: `Get in touch with ${bn}: questions, orders and anything else you need.`,
         },
         // The PDP is a record template: its title/description are per-PRODUCT at runtime (the
         // product's own `seoTitle`/`seoDescription`). This page-level pair is only the fallback
         // the studio shows for the template itself, so it names the business, not one product.
         product: {
-            title: `Product — ${bn}`,
-            description: `Product details at ${bn} — ${ind.toLowerCase()}, with options and pricing.`,
+            title: `Product: ${bn}`,
+            description: `Product details at ${bn}: ${ind.toLowerCase()}, with options and pricing.`,
         },
         // The article template is likewise a record template — per-POST title/description at
         // runtime. This page-level pair is only the studio fallback for the template itself.
         article: {
-            title: `Article — ${bn}`,
-            description: `A story from ${bn} — the writing, the reporting and the notes behind it.`,
+            title: `Article: ${bn}`,
+            description: `A story from ${bn}: the writing, the reporting and the notes behind it.`,
         },
     };
     // The template's own real copy wins per page; the composed default fills the rest.
@@ -525,7 +525,7 @@ function manifestJson(opts: {
         requires: { modules: ['builder', 'commerce', 'cms', 'crm', 'email'] },
         media: [
             { file: 'media/icon.png', kind: 'icon', alt: `${opts.name} icon` },
-            { file: 'media/preview.png', kind: 'preview', alt: `${opts.name} — home page preview` },
+            { file: 'media/preview.png', kind: 'preview', alt: `${opts.name}: home page preview` },
         ],
         author: { displayName: 'WizeWorks' },
         accent: opts.accent,
@@ -638,7 +638,7 @@ function aboutBand(businessName: string): Node {
                         text: `About ${businessName}`,
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'This is your story — who you are, what you make, and why it matters. Replace this with a few honest sentences about your work; the people who find you here want to know the human behind it.',
+                        text: 'This is your story, who you are, what you make, and why it matters. Replace this with a few honest sentences about your work; the people who find you here want to know the human behind it.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'Add sections, images, and links from the builder. This page grows with you.',
@@ -687,7 +687,7 @@ function commerceEmails(_spec: TemplateSiteSpec): Record<string, unknown>[] {
             publish: false,
             doc: blueprintEmailDoc({
                 subject: 'Welcome to {{site.name}}',
-                preheader: 'So glad you found us — here’s where to start.',
+                preheader: 'So glad you found us: here’s where to start.',
                 heading: 'Welcome, {{customer.firstName}}',
                 paragraphs: [
                     'Thanks for joining {{site.name}}. We put a lot of care into what we make and sell, and we’re glad you’re here to see it.',
@@ -695,11 +695,11 @@ function commerceEmails(_spec: TemplateSiteSpec): Record<string, unknown>[] {
                 features: [
                     {
                         title: 'Everything in one place',
-                        body: 'Your cart, orders, and favourites live in your account — sign in any time to pick up where you left off.',
+                        body: 'Your cart, orders, and favourites live in your account. Sign in any time to pick up where you left off.',
                     },
                     {
                         title: 'Here to help',
-                        body: 'Reply to any email from us and you’ll reach a real person — not a bot.',
+                        body: 'Reply to any email from us and you’ll reach a real person, not a bot.',
                     },
                 ],
                 button: { label: 'Shop now', href: '{{site.url}}/shop' },
@@ -717,7 +717,7 @@ function commerceEmails(_spec: TemplateSiteSpec): Record<string, unknown>[] {
                 ],
                 highlight: {
                     title: 'New since your last visit',
-                    body: 'A few fresh arrivals and returning favourites have landed — come take a look and see what’s caught our eye lately.',
+                    body: 'A few fresh arrivals and returning favourites have landed: come take a look and see what’s caught our eye lately.',
                 },
                 button: { label: 'See what’s new', href: '{{site.url}}/shop' },
             }),
@@ -738,19 +738,19 @@ function contentEmails(_spec: TemplateSiteSpec): Record<string, unknown>[] {
             publish: false,
             doc: blueprintEmailDoc({
                 subject: 'Welcome to {{site.name}}',
-                preheader: 'Thanks for subscribing — here’s where to begin.',
+                preheader: 'Thanks for subscribing: here’s where to begin.',
                 heading: 'Welcome, {{customer.firstName}}',
                 paragraphs: [
-                    'Thanks for subscribing to {{site.name}}. You’ll be first to read what we publish — the stories, the reporting, and the ideas we think are worth your time.',
+                    'Thanks for subscribing to {{site.name}}. You’ll be first to read what we publish: the stories, the reporting, and the ideas we think are worth your time.',
                 ],
                 features: [
                     {
                         title: 'Straight to your inbox',
-                        body: 'New pieces land here first — no noise, just the work we think is worth your time.',
+                        body: 'New pieces land here first: no noise, just the work we think is worth your time.',
                     },
                     {
                         title: 'Start with the latest',
-                        body: 'Catch up on what we’ve been working on — our newest stories are waiting in the journal.',
+                        body: 'Catch up on what we’ve been working on. Our newest stories are waiting in the journal.',
                     },
                 ],
                 button: { label: 'Read the latest', href: '{{site.url}}/journal' },

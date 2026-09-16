@@ -219,7 +219,7 @@ function toFollowTable(data: PackingSlipData): string {
     )
     .join('');
   return `<section class="follow">
-    <h2>Also in this order — sent separately</h2>
+    <h2>Also in this order: sent separately</h2>
     <table class="lines"><tbody>${rows}</tbody></table>
   </section>`;
 }
@@ -361,7 +361,7 @@ async function loadPackingSlipData(
           FROM inventory_shipment_package_lines x
           JOIN inventory_shipment_packages xp ON xp.id = x.package_id
          WHERE x.order_item_id = oi.id
-           AND xp.status <> 'cancelled'
+           AND xp.status <> 'canceled'
            AND xp.id <> ${packageId}::uuid
       ) other ON TRUE
      WHERE oi.tenant_id = ${tenantId}::uuid

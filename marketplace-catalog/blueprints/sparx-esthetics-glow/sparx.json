@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "sparx-esthetics-glow",
   "name": "Esthetics (Glow Bar)",
-  "version": "1.4.0",
-  "tagline": "A playful, dewy template for express facial bars — book a glow from day one.",
-  "description": "A playful, dewy express-facial glow bar — a bright peach-coral palette, aqua accent and rounded, friendly type. Installs a working booking flow: express facials, hydration and brightening treatments, and fun add-ons (LED, gua sha), with three estheticians and two treatment rooms as bookable resources so every glow pairs a face and a room. Ships as \"Dewy Skin Bar\", a fun, feel-good glow on your lunch break.",
+  "version": "1.4.1",
+  "tagline": "A playful, dewy template for express facial bars. Book a glow from day one.",
+  "description": "A playful, dewy express-facial glow bar: a bright peach-coral palette, aqua accent and rounded, friendly type. Installs a working booking flow: express facials, hydration and brightening treatments, and fun add-ons (LED, gua sha), with three estheticians and two treatment rooms as bookable resources so every glow pairs a face and a room. Ships as \"Dewy Skin Bar\", a fun, feel-good glow on your lunch break.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
@@ -28,7 +28,7 @@
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "Esthetics (Glow Bar) — home page preview"
+      "alt": "Esthetics (Glow Bar): home page preview"
     }
   ],
   "author": {

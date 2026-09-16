@@ -185,7 +185,7 @@ function FeeRow({
                 min={0}
                 step={0.01}
                 className="max-w-32 tabular-nums"
-                aria-label={`${label} — amount`}
+                aria-label={`${label}: amount`}
                 value={fee.amount}
                 placeholder="0.00"
                 onChange={(event) => {
@@ -202,7 +202,7 @@ function FeeRow({
                   min={0}
                   max={100}
                   className="max-w-24 tabular-nums"
-                  aria-label={`${label} — percentage`}
+                  aria-label={`${label}: percentage`}
                   value={fee.percent}
                   placeholder="50"
                   onChange={(event) => {
@@ -408,7 +408,7 @@ function PolicyEditor({
                   />
                 }
               />
-              <FieldDescription>Just for you — customers never see this name.</FieldDescription>
+              <FieldDescription>Just for you: customers never see this name.</FieldDescription>
             </Field>
           </FormSection>
 
@@ -499,7 +499,7 @@ function PolicyEditor({
           </FormSection>
 
           <FormSection
-            title="Cancelling & missed bookings"
+            title="Canceling & missed bookings"
             description="How much notice you ask for, and what happens if a customer cancels late or does not turn up."
           >
             <Field>
@@ -535,7 +535,7 @@ function PolicyEditor({
 
             <FeeRow
               label="If they do not turn up"
-              description="Charged when a customer misses the booking without cancelling."
+              description="Charged when a customer misses the booking without canceling."
               fee={draft.noShow}
               onChange={(next) => {
                 set('noShow', next);

@@ -14,7 +14,7 @@
 // nobody has said yet, which is a different answer from free — and it is
 // required, because "every product needs a price" is what this form promises.
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   AlertContent,
@@ -59,6 +59,14 @@ export function AddProduct({ ctx }: { ctx: SurfaceContext }) {
   const [price, setPrice] = useState('');
   const [onSale, setOnSale] = useState(false);
 
+  // The pane's own name. Without it the surface title ("Product") stands in on
+  // the tab and the unsaved chip falls back to "a panel", so a person with
+  // several panes open is told something is unsaved without being told what
+  // (issue 482). Every other create pane in the console names itself this way.
+  useEffect(() => {
+    ctx.setTitle('New product');
+  }, [ctx]);
+
   // The web address and the code follow the name until someone edits one
   // themselves, at which point it is theirs and typing more of the name must not
   // overwrite it.
@@ -95,10 +103,17 @@ export function AddProduct({ ctx }: { ctx: SurfaceContext }) {
    * true. The first product form a new business ever opens used to greet them
    * with a red field and "Give the product a code." before they had typed a
    * character, in place of the description explaining what a code even is.
+   *
+   * The PRICE used to be held to a different rule — shown only once it was
+   * non-empty — which made its required-ness unsayable: `priceError`'s "Give
+   * the product a price." could never render, so a filled-in name and code sat
+   * beside a greyed-out Add product with nothing anywhere saying why (issue
+   * 481). One rule for both: silent until the form has been started, then say
+   * what is still missing.
    */
-  const started = trimmed !== '' || touchedSku;
+  const started = trimmed !== '' || touchedSku || price.trim() !== '';
   const shownSkuError = started ? skuError : null;
-  const shownPriceError = price.trim() === '' ? null : priceError;
+  const shownPriceError = started ? priceError : null;
 
   // A half-created product is a real outcome, not a hypothetical: the product and
   // its price are two writes. If the second fails, the product EXISTS, so the only
@@ -139,7 +154,7 @@ export function AddProduct({ ctx }: { ctx: SurfaceContext }) {
             title: `${trimmed} added`,
             description: onSale
               ? 'It is on your website now.'
-              : 'It is saved but not on sale yet — put it on sale when you are ready.',
+              : 'It is saved but not on sale yet. Put it on sale when you are ready.',
             type: 'success',
           });
         },
@@ -172,8 +187,8 @@ export function AddProduct({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           <Text>
-            A product is one thing you sell. Give it a name and a price now — the description,
-            photos and everything else can follow once it exists.
+            A product is one thing you sell. Give it a name and a price now: the description, photos
+            and everything else can follow once it exists.
           </Text>
 
           {/* ONE message, the most specific one. When the product itself was

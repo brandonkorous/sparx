@@ -19,11 +19,10 @@
 // question — how you prove it is you — and reads as the answer to the weakness
 // the card above it has.
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Heading, Text } from '@wizeworks/silicaui-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PasswordCard } from './password-card';
 import { TwoFactorCard } from './two-factor-card';
 import { AnalyticsCard } from './analytics-card';
@@ -33,7 +32,7 @@ import { ACTIVITY_PAGE, useActivity, useSessions, useSignInMethods } from './sec
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
-export function SecuritySurface({ ctx }: { ctx: SurfaceContext }) {
+export function SecuritySurface() {
   const [activityLimit, setActivityLimit] = useState(ACTIVITY_PAGE);
 
   const sessions = useSessions();
@@ -47,10 +46,6 @@ export function SecuritySurface({ ctx }: { ctx: SurfaceContext }) {
   // that had it switched on. See app/api/account/shared.ts.
   const signIn = useSignInMethods();
   const twoFactorEnabled = signIn.data?.twoFactorEnabled === true;
-
-  useEffect(() => {
-    ctx.setTitle('Security');
-  }, [ctx]);
 
   const refreshAll = () => {
     void sessions.refetch();

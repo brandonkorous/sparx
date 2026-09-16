@@ -76,8 +76,8 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
         ? {
             description:
               left === 1
-                ? 'One line was left out — see the summary.'
-                : `${left} lines were left out — see the summary.`,
+                ? 'One line was left out: see the summary.'
+                : `${left} lines were left out: see the summary.`,
           }
         : {}),
       type: left > 0 ? 'warning' : 'success',
@@ -102,7 +102,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
         onError: (err) => {
           toast.add({
             title: 'Could not import those redirects',
-            description: redirectErrorMessage(err, 'Nothing was changed — try again in a moment.'),
+            description: redirectErrorMessage(err, 'Nothing was changed. Try again in a moment.'),
             type: 'error',
           });
         },
@@ -140,8 +140,8 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           <Text>
-            Bringing over a lot of moved pages at once — after a site rebuild, say. Paste them all
-            in below and add them in one go, instead of one at a time.
+            Bringing over a lot of moved pages at once: after a site rebuild, say. Paste them all in
+            below and add them in one go, instead of one at a time.
           </Text>
 
           {result ? (
@@ -157,7 +157,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="Your list"
-            description="One redirect per line: the old address, then where it should go. Separate the two with a comma. Add a third word — permanent or temporary — to say whether the move is for good; leave it off and it counts as permanent."
+            description="One redirect per line: the old address, then where it should go. Separate the two with a comma. Add a third word (permanent or temporary) to say whether the move is for good; leave it off and it counts as permanent."
           >
             <Textarea
               color="module"
@@ -172,7 +172,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
               }}
             />
             <Text className="text-sm">
-              Copied straight from a spreadsheet works too — the columns come across as tabs. Full
+              Copied straight from a spreadsheet works too: the columns come across as tabs. Full
               web addresses work as well, as long as they are on one of your own; only the part
               after the address is kept.
             </Text>

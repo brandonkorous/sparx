@@ -82,7 +82,7 @@ export function useCollectionWrites({
       if (!result.ok) {
         setRuleError(
           draft.ruleSet.predicates.length === 0
-            ? 'Add at least one condition so the collection knows which products to include.'
+            ? 'Add at least one condition so the group knows which products to include.'
             : result.error
         );
         return;
@@ -178,7 +178,7 @@ export function useCollectionWrites({
       title: `Delete ${collection.name}?`,
       description:
         count > 0
-          ? `This group is removed from your website. The ${String(count)} product${count === 1 ? '' : 's'} in it ${count === 1 ? 'is' : 'are'} kept — only the grouping goes. This cannot be undone.`
+          ? `This group is removed from your website. The ${String(count)} product${count === 1 ? '' : 's'} in it ${count === 1 ? 'is' : 'are'} kept. Only the grouping goes. This cannot be undone.`
           : 'This group is removed from your website. The products themselves are kept. This cannot be undone.',
       confirmLabel: 'Delete this group',
       cancelLabel: 'Keep it',

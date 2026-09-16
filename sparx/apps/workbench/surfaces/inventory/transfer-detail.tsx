@@ -319,7 +319,7 @@ function LineEditorModal({
                       }}
                     />
                     <FieldDescription>
-                      This product is kept as more than one — a size, a color — each counted
+                      This product is kept as more than one (a size, a color) each counted
                       separately. Pick the one you are moving.
                     </FieldDescription>
                   </Field>
@@ -435,7 +435,7 @@ function ReceiveModal({
               <span className="font-medium">
                 {warehouseLabel(transfer.toWarehouseName, transfer.toWarehouseCode)}
               </span>
-              . Each shows how many were sent — change it only if fewer turned up.
+              . Each shows how many were sent. Change it only if fewer turned up.
             </Text>
 
             <ul className="flex flex-col gap-2">
@@ -481,7 +481,7 @@ function ReceiveModal({
                 <AlertContent>
                   <AlertTitle>Some of this did not arrive</AlertTitle>
                   <AlertDescription>
-                    The missing units are written off as lost in transit — they leave your total
+                    The missing units are written off as lost in transit. They leave your total
                     stock, since they left the source but never reached the destination.
                   </AlertDescription>
                 </AlertContent>
@@ -748,8 +748,8 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         ? `Anything still in transit is returned to ${warehouseLabel(
             detail.fromWarehouseName,
             detail.fromWarehouseCode
-          )}. The transfer stays on your records as cancelled.`
-        : 'This draft is marked cancelled and kept on your records. Nothing has moved, so no stock changes.',
+          )}. The transfer stays on your records as canceled.`
+        : 'This draft is marked canceled and kept on your records. Nothing has moved, so no stock changes.',
       confirmLabel: 'Call it off',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -757,7 +757,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     if (!ok) return;
     cancel.mutate(detail.id, {
       onSuccess: () => {
-        toast.add({ title: `${detail.number} cancelled`, type: 'success' });
+        toast.add({ title: `${detail.number} canceled`, type: 'success' });
       },
       onError: (error) => {
         toast.add({
@@ -809,7 +809,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           description={
             gone
               ? 'It has been removed. Any stock it moved is recorded in your movement history.'
-              : 'This is a problem reaching the server. Your transfer is unaffected — it just could not be read just now.'
+              : 'This is a problem reaching the server. Your transfer is unaffected. It just could not be read just now.'
           }
           onRetry={() => {
             void detailQuery.refetch();

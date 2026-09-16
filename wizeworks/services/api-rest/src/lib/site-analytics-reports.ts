@@ -356,7 +356,7 @@ export async function pageMetrics(
       FROM orders
       WHERE property_id = ${propertyId}::uuid
         AND attribution_landing_path IS NOT NULL
-        AND status <> 'cancelled'
+        AND status <> 'canceled'
         AND placed_at >= ${from} AND placed_at < ${toExclusive}
       GROUP BY attribution_landing_path
     `,

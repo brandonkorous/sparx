@@ -15,7 +15,7 @@
 // Saving is genuinely two-phase (header, then lines); the mechanics and the
 // reasons live in ./save.ts.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import {
   Alert,
@@ -53,6 +53,8 @@ interface DraftShape {
   billTo: { name: string; email: string; address: string };
   taxRate: number;
   notes: string;
+  /** `YYYY-MM-DD`, or '' for no due date. */
+  dueAt: string;
   lines: DraftLine[];
 }
 
@@ -61,6 +63,7 @@ const EMPTY_DRAFT: DraftShape = {
   billTo: { name: '', email: '', address: '' },
   taxRate: 0,
   notes: '',
+  dueAt: '',
   // No starter row: lines are added through the modal, so a fresh invoice shows
   // the empty state + Add button rather than a stray blank line.
   lines: [],
@@ -143,7 +146,12 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const [draft, setDraft] = useState<DraftShape>(EMPTY_DRAFT);
   const [original, setOriginal] = useState<DraftLine[]>([]);
-  const [dirty, setDirty] = useState(false);
+  // The form as it was last loaded or saved, serialized alongside the workflow
+  // it belonged to. Dirty is the comparison against it: a sticky boolean meant
+  // "somebody touched something" rather than "this differs from what is
+  // stored", so undoing an edit still left the pane claiming unsaved work,
+  // still confirmed on close, and still lit the Save button (issue 507).
+  const baselineRef = useRef<string>(JSON.stringify({ draft: EMPTY_DRAFT, workflowId: null }));
   // null until the operator chooses; falls back to the first workflow so a
   // single-workflow tenant never sees a decision it doesn't have.
   const [workflowId, setWorkflowId] = useState<string | null>(null);
@@ -153,7 +161,7 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   useEffect(() => {
     if (!doc) return;
     const lines = toDraftLines(doc);
-    setDraft({
+    const seeded: DraftShape = {
       customerId: doc.customerId ?? null,
       billTo: {
         name: doc.billTo?.name ?? '',
@@ -161,11 +169,21 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
         address: doc.billTo?.address ?? '',
       },
       taxRate: doc.taxRate,
-      notes: '',
+      // The note the customer reads, as stored. It used to be hardcoded to `''`,
+      // which made the box look empty on every load AND wiped the stored note on
+      // the next save (`headerBody` sends `notes || null`). So a note could be
+      // written, saved, and was gone the moment the pane reloaded, with the save
+      // reporting success both times (issue 512).
+      notes: doc.notes ?? '',
+      // Seeded from the document for the same reason `notes` is: a field the
+      // editor does not read is a field the next save WIPES, and the save
+      // reports success while doing it.
+      dueAt: doc.dueAt ? doc.dueAt.slice(0, 10) : '',
       lines,
-    });
+    };
+    setDraft(seeded);
     setOriginal(lines.filter((line) => line.id));
-    setDirty(false);
+    baselineRef.current = JSON.stringify({ draft: seeded, workflowId: doc.workflowId ?? null });
   }, [doc]);
 
   // The document's own workflow — stage names, entry effects, and whether the
@@ -194,6 +212,11 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   // This covers the HEADER form only. The line composer holds its own
   // uncommitted state and registers separately (line-editor-modal.tsx), which
   // is why a pane can be dirty while everything on this screen looks saved.
+  // The same fallback the save uses, so choosing the workflow the document
+  // already had reads clean rather than as a change.
+  const dirty =
+    JSON.stringify({ draft, workflowId: workflowId ?? doc?.workflowId ?? null }) !==
+    baselineRef.current;
   useDirtySource(dirty, 'This invoice has unsaved changes. Close it anyway?');
 
   useEffect(() => {
@@ -210,7 +233,12 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
         original,
       }),
     onSuccess: (saved) => {
-      setDirty(false);
+      // The refetch that follows re-seeds the form and moves the baseline with
+      // it; this covers the moment in between.
+      baselineRef.current = JSON.stringify({
+        draft,
+        workflowId: workflowId ?? doc?.workflowId ?? null,
+      });
       void queryClient.invalidateQueries({ queryKey: ['invoicing'] });
       // A new document has a real id now — retarget this pane at it so the
       // preview and any subsequent save address the saved document.
@@ -220,7 +248,6 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const update = (patch: Partial<DraftShape>) => {
     setDraft((current) => ({ ...current, ...patch }));
-    setDirty(true);
   };
 
   // A validation error is the operator's to fix and says so in their words; any
@@ -228,7 +255,7 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const failure = save.error
     ? save.error instanceof InvoiceValidationError
       ? save.error.message
-      : 'This invoice could not be saved. It may be a temporary problem — try again in a moment.'
+      : 'This invoice could not be saved. It may be a temporary problem. Try again in a moment.'
     : null;
 
   return (
@@ -321,7 +348,6 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
                       className="max-w-sm"
                       onValueChange={(next) => {
                         setWorkflowId(next as string);
-                        setDirty(true);
                       }}
                     />
                   </FormSection>
@@ -331,6 +357,7 @@ export function InvoiceEditorSurface({ ctx }: { ctx: SurfaceContext }) {
                   <BillTo
                     customerId={draft.customerId}
                     value={draft.billTo}
+                    dueAt={draft.dueAt}
                     readOnly={readOnly}
                     onChange={update}
                   />

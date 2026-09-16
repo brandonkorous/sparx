@@ -229,7 +229,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       onError: () => {
         toast.add({
           title: 'No item with that code',
-          description: `Nothing in your catalogue is coded "${sku}". Check the code and try again.`,
+          description: `Nothing in your catalog is coded "${sku}". Check the code and try again.`,
           type: 'error',
         });
       },
@@ -260,7 +260,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       onError: () => {
         toast.add({
           title: 'No item with that code',
-          description: `Nothing in your catalogue is coded "${sku}".`,
+          description: `Nothing in your catalog is coded "${sku}".`,
           type: 'error',
         });
       },
@@ -293,7 +293,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               toast.add({
                 title: `${saved.name} saved`,
                 description:
-                  'Mark it as in use when you are ready to build to it — a draft cannot be built from, so everyone builds to the same recipe.',
+                  'Mark it as in use when you are ready to build to it: a draft cannot be built from, so everyone builds to the same recipe.',
                 type: 'success',
               });
             });
@@ -343,7 +343,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Delete ${draft.name || 'this recipe'}?`,
       description:
-        'Anything already made stays exactly as it is. Only the recipe itself goes. If runs have been built to it, retire it instead — they point at it to say what they were made of.',
+        'Anything already made stays exactly as it is. Only the recipe itself goes. If runs have been built to it, retire it instead. They point at it to say what they were made of.',
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -373,7 +373,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           description={
             gone
               ? 'It may have been deleted. Anything already built from it is unaffected.'
-              : 'This is a problem reaching the server. The recipe is unaffected — it just could not be read just now.'
+              : 'This is a problem reaching the server. The recipe is unaffected. It just could not be read just now.'
           }
           onRetry={() => {
             void bom.refetch();
@@ -516,8 +516,8 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     {formatCents(bom.data?.estimatedUnitCostCents ?? 0)}
                   </StatValue>
                   <StatDesc>
-                    each, at today&apos;s part prices — what a batch really costs is settled when
-                    you make one
+                    each, at today&apos;s part prices: what a batch really costs is settled when you
+                    make one
                   </StatDesc>
                 </Stat>
               </Stats>
@@ -647,7 +647,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="What goes into it"
-            description="Quantities are for ONE RUN of the batch size above — not per finished item."
+            description="Quantities are for ONE RUN of the batch size above, not per finished item."
           >
             {editable ? (
               <div className="flex gap-2">
@@ -681,7 +681,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
             {draft.components.length === 0 ? (
               <Text className="text-sm">
-                Nothing yet. Add the parts this is made of — a recipe with no ingredients cannot be
+                Nothing yet. Add the parts this is made of: a recipe with no ingredients cannot be
                 built from.
               </Text>
             ) : (
@@ -813,7 +813,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     What the shelves allow
                   </Heading>
                   <Text className="text-sm">
-                    Counted against what is genuinely free — parts already promised to a customer
+                    Counted against what is genuinely free: parts already promised to a customer
                     order are not counted twice.
                   </Text>
                 </div>
@@ -872,7 +872,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                           size="sm"
                         >
                           {component.isLimiting
-                            ? `${String(component.supports)} — runs out first`
+                            ? `${String(component.supports)}: runs out first`
                             : component.supports}
                         </Badge>
                       </td>

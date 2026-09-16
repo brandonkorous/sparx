@@ -7,7 +7,7 @@
 // for flexibility; tightening to typed sub-objects can land later.
 
 export const crmSdl = /* GraphQL */ `
-  "Relationship type — how a contact transacts (docs/137). Only b2b carries pricing."
+  "Relationship type: how a contact transacts (docs/137). Only b2b carries pricing."
   enum CustomerType {
     retail
     b2b
@@ -50,7 +50,7 @@ export const crmSdl = /* GraphQL */ `
   enum TaskStatus {
     open
     completed
-    cancelled
+    canceled
   }
   enum TaskPriority {
     low

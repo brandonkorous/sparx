@@ -109,7 +109,7 @@ async function call<T>(
   });
 
   if (res.status === 401) {
-    throw new AccountingAuthError('QuickBooks no longer accepts this connection — reconnect it.');
+    throw new AccountingAuthError('QuickBooks no longer accepts this connection: reconnect it.');
   }
   if (res.status >= 400 && res.status < 500) {
     const text = await res.text().catch(() => '');
@@ -150,8 +150,13 @@ export const quickbooksAdapter: AccountingAdapter = {
     return Boolean(clientId() && clientSecret());
   },
 
+  // NO DIRECTION WORD. These sentences are written in the finance package and
+  // rendered by a console that decides where the export card sits, so "below"
+  // was a guess — and a wrong one: both consoles put the export ABOVE this list,
+  // and the section's own heading already says "the export above". Six rows sent
+  // a reader the other way. "On this screen" stays true wherever it is placed.
   unavailableReason() {
-    return 'Direct QuickBooks sync is not switched on for this installation. You can still export a spreadsheet below and import it into QuickBooks today.';
+    return 'Direct QuickBooks sync is not switched on for this installation. The spreadsheet export on this screen already imports into QuickBooks today.';
   },
 
   authorizeUrl({ state, redirectUri }) {

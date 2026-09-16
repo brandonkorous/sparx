@@ -118,6 +118,13 @@ const supplierBillRoutes: FastifyPluginAsync = async (app) => {
     );
   });
 
+  app.post('/v1/inventory/supplier-bills/:id/settle-query', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'editor');
+    const { id } = IdPath.parse(request.params);
+    return reply.send(ok(await inventoryService.settleBillQuery(toInventoryContext(request), id)));
+  });
+
   app.post('/v1/inventory/supplier-bills/:id/pay', async (request, reply) => {
     await requireInventoryModule(request);
     requireRole(request, 'admin');

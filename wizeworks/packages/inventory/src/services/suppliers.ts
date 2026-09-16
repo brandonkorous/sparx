@@ -10,6 +10,7 @@ import { withTenant } from '@wizeworks/db';
 import type { Supplier } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { indexInventoryEntity } from '../events';
 import { InventoryConflictError, InventoryNotFoundError } from '../errors';
 import type { ServiceContext } from '../errors';
 
@@ -80,7 +81,7 @@ export async function createSupplier(
 ): Promise<{ id: string }> {
   const input = CreateSupplierInput.parse(rawInput);
 
-  return withTenant(ctx, async (tx) => {
+  const created = await withTenant(ctx, async (tx) => {
     const existing = await tx.supplier.findFirst({
       where: { code: input.code, deletedAt: null },
       select: { id: true },
@@ -104,6 +105,9 @@ export async function createSupplier(
 
     return { id: supplier.id };
   });
+
+  await indexInventoryEntity(ctx, 'supplier', created.id);
+  return created;
 }
 
 export async function updateSupplier(
@@ -113,7 +117,7 @@ export async function updateSupplier(
 ): Promise<SupplierRow> {
   const input = UpdateSupplierInput.parse(rawInput);
 
-  return withTenant(ctx, async (tx) => {
+  const updatedRow = await withTenant(ctx, async (tx) => {
     const before = await tx.supplier.findFirst({ where: { id: supplierId, deletedAt: null } });
     if (!before) throw new InventoryNotFoundError('Supplier', supplierId);
 
@@ -148,6 +152,9 @@ export async function updateSupplier(
 
     return serializeSupplier(updated);
   });
+
+  await indexInventoryEntity(ctx, 'supplier', supplierId);
+  return updatedRow;
 }
 
 export async function archiveSupplier(ctx: ServiceContext, supplierId: string): Promise<void> {
@@ -161,7 +168,7 @@ export async function archiveSupplier(ctx: ServiceContext, supplierId: string): 
     });
     if (openPo) {
       throw new InventoryConflictError(
-        `Cannot archive a supplier with an open purchase order (${openPo.number}) — close or cancel it first`,
+        `Cannot archive a supplier with an open purchase order (${openPo.number}): close or cancel it first`,
         'supplier'
       );
     }
@@ -182,6 +189,8 @@ export async function archiveSupplier(ctx: ServiceContext, supplierId: string): 
       diff: { before: serializeSupplier(before) as unknown as Record<string, unknown> },
     });
   });
+
+  await indexInventoryEntity(ctx, 'supplier', supplierId, 'delete');
 }
 
 /** Build the create payload from validated input (shared column mapping). */

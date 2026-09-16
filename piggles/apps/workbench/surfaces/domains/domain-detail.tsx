@@ -221,7 +221,7 @@ function ConnectDomain({ ctx }: { ctx: SurfaceContext }) {
                 }
               />
               <FieldDescription>
-                Just the address itself — no https:// and no trailing slash. A sub-address like
+                Just the address itself: no https:// and no trailing slash. A sub-address like
                 shop.yourbusiness.com works too.
               </FieldDescription>
             </Field>
@@ -243,9 +243,9 @@ function ConnectDomain({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection title="What happens after this">
             <Text className="text-sm">
-              We give you a short record — sometimes two — to add at your domain provider, meaning
-              the company you bought the domain from. Once they are in, press Check now and the
-              address goes live, secure padlock and all.
+              We give you a short record (sometimes two) to add at your domain provider, meaning the
+              company you bought the domain from. Once they are in, press Check now and the address
+              goes live, secure padlock and all.
             </Text>
           </FormSection>
         </div>
@@ -352,8 +352,8 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     const ok = await confirm({
       title: `Disconnect ${domain.host}?`,
       description: domain.isCanonical
-        ? `This is your site's main address. Disconnecting it means anyone typing ${domain.host} will no longer reach you, and your site falls back to its piggles.site address. You keep the domain itself — this only stops it pointing here.`
-        : `Anyone typing ${domain.host} will no longer reach your site. You keep the domain itself — this only stops it pointing here, and you can connect it again later.`,
+        ? `This is your site's main address. Disconnecting it means anyone typing ${domain.host} will no longer reach you, and your site falls back to its piggles.site address. You keep the domain itself. This only stops it pointing here.`
+        : `Anyone typing ${domain.host} will no longer reach your site. You keep the domain itself. This only stops it pointing here, and you can connect it again later.`,
       confirmLabel: 'Disconnect it',
       cancelLabel: 'Keep it connected',
       color: 'danger',
@@ -501,7 +501,7 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             <>
               <FormSection
                 title="Records to add at your domain provider"
-                description="Your domain provider is whoever you bought the domain from — GoDaddy, Namecheap, Cloudflare and so on. Find the DNS or Records screen there and add these exactly as shown."
+                description="Your domain provider is whoever you bought the domain from: GoDaddy, Namecheap, Cloudflare and so on. Find the DNS or Records screen there and add these exactly as shown."
               >
                 <RecordBlock
                   kind="CNAME"
@@ -528,7 +528,7 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                 ) : null}
 
                 <Text className="text-sm">
-                  Changes at a domain provider take a few minutes to spread across the internet —
+                  Changes at a domain provider take a few minutes to spread across the internet:
                   occasionally up to a few hours. If Check now does not find them straight away, it
                   is worth waiting and trying again before changing anything.
                 </Text>
@@ -572,7 +572,7 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                 >
                   <Text className="text-sm">
                     You only need this if you are asked to prove ownership again. Issuing a new
-                    record does not interrupt anything — the address keeps working throughout.
+                    record does not interrupt anything: the address keeps working throughout.
                   </Text>
                 </FormSection>
               ) : null}
@@ -582,7 +582,7 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               <Text className="text-sm">
                 {productCopy(
                   'domains.managedAddress',
-                  "This address is managed by Piggles, so there are no records for you to add and nothing that can break. Every site comes with a free piggles.site address that works immediately and stays available even after you connect your own domain — it cannot be removed, because it is your site's permanent fallback address."
+                  "This address is managed by Piggles, so there are no records for you to add and nothing that can break. Every site comes with a free piggles.site address that works immediately and stays available even after you connect your own domain. It cannot be removed, because it is your site's permanent fallback address."
                 )}
               </Text>
             </FormSection>

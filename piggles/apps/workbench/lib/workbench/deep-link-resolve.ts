@@ -18,7 +18,8 @@ import { switchAlreadyAttempted } from './deep-link-switch';
 
 /** A module's activation state, as the shell already knows it. */
 export interface ModuleGate {
-  /** `null` while the module list is still loading — treated as "allow". */
+  /** `null` while the module list is still loading. The resolver WAITS on it
+   *  rather than allowing — see `gateSurface`. */
   readonly states: readonly { slug: string; enabled: boolean; reachable?: boolean }[] | null;
 }
 
@@ -38,14 +39,22 @@ export interface SiteGate {
  * a slug the activation list has never heard of has no flag to be disabled by,
  * which is the same rule `moduleIsVisible` uses.
  */
-function gateSurface(surface: string, modules: ModuleGate): 'ok' | 'module-disabled' | 'no-access' {
+function gateSurface(
+  surface: string,
+  modules: ModuleGate
+): 'ok' | 'not-yet' | 'module-disabled' | 'no-access' {
   const definition = getSurface(surface);
   if (!definition) return 'ok'; // handled as unknown-path upstream
   // The workbench itself can never be switched off — settings and the team
   // screen are how a wrong restriction gets fixed.
   if (definition.module === 'platform') return 'ok';
   const states = modules.states;
-  if (!states) return 'ok';
+  // NOT 'ok'. The caller waits and asks again — the arrival effect depends on
+  // the module list, so it re-runs the moment it lands. Letting a link through
+  // on facts we do not have yet is how a pane for a switched-off module came to
+  // be opened, and then reported the server as unreachable over a Try again
+  // that could never work.
+  if (!states) return 'not-yet';
   const state = states.find((candidate) => candidate.slug === definition.module);
   if (!state) return 'ok';
   if (!state.enabled) return 'module-disabled';
@@ -108,6 +117,10 @@ export function resolveDeepLink(
       return { kind: 'unresolved', reason: 'unknown-path', detail: target.surface };
     }
     const verdict = gateSurface(target.surface, modules);
+    // Decide nothing yet rather than deciding wrongly. `nothing` is what this
+    // function already returns for a link it cannot answer, and the caller
+    // treats it as "try again on the next attach".
+    if (verdict === 'not-yet') return { kind: 'nothing' };
     if (verdict !== 'ok') {
       return { kind: 'unresolved', reason: verdict, detail: target.surface };
     }

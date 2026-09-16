@@ -26,7 +26,7 @@ export const APPAREL_SCALE_COLLECTION: SampleCollection = {
   name: 'The Full Line',
   handle: 'full-line',
   description:
-    'Every piece we make, in one place — tops, bottoms, outerwear, and accessories across the season’s fabrics. Browse the whole range.',
+    'Every piece we make, in one place: tops, bottoms, outerwear, and accessories across the season’s fabrics. Browse the whole range.',
 };
 
 /** How many products to generate. 90 spans four pages at the storefront's 24/page
@@ -55,7 +55,7 @@ const GARMENTS = [
     base: 3400,
     tag: 'henley',
     emoji: '👕',
-    blurb: 'A three-button placket and a ribbed cuff — the tee’s slightly-dressed cousin.',
+    blurb: 'A three-button placket and a ribbed cuff: the tee’s slightly-dressed cousin.',
   },
   {
     name: 'Crew Sweater',
@@ -174,7 +174,7 @@ const COLORS = [
   'Ecru',
   'Navy',
   'Rust',
-  'Heather Grey',
+  'Heather Gray',
   'Forest',
   'Clay',
 ] as const;
@@ -191,7 +191,7 @@ const SWATCH: Record<string, string> = {
   Ecru: '#efe7d3',
   Navy: '#1f2a44',
   Rust: '#9c4a2f',
-  'Heather Grey': '#9aa0a6',
+  'Heather Gray': '#9aa0a6',
   Forest: '#2f4a3a',
   Clay: '#b0664a',
 };
@@ -244,7 +244,7 @@ const ORIGINS = ['Portugal', 'Vietnam', 'Peru', 'Turkey', 'Mexico', 'India'] as 
 const CATEGORY_FIT: Record<string, string> = {
   tops: 'A regular, true-to-size cut with a touch of room to layer. Take your normal size; size down one for a trimmer fit.',
   bottoms:
-    'A straight, mid-rise cut with a clean break and a little give through the day. True to waist — take your normal size.',
+    'A straight, mid-rise cut with a clean break and a little give through the day. True to waist: take your normal size.',
   outerwear:
     'Cut with room to layer a tee or knit underneath without pulling across the shoulders. Take your normal size; size up to layer heavily.',
   accessories: 'One size, knit and cut to fit most comfortably with a little natural stretch.',
@@ -347,13 +347,13 @@ export function apparelScaleProducts(): SampleProduct[] {
       handle,
       description:
         `<p>A ${fabric.name.toLowerCase()} ${garment.name.toLowerCase()} cut for everyday wear, shown in ${color.toLowerCase()}. ${garment.blurb}</p>` +
-        `<p>Pre-washed for a stable fit and finished to layer through the season. Part of the full line — the same make and hand across every piece.</p>`,
+        `<p>Pre-washed for a stable fit and finished to layer through the season. Part of the full line: the same make and hand across every piece.</p>`,
       productType: garment.type,
       productTypeKey: 'apparel',
       attributes,
       vendor,
       tags: [garment.tag, slug(fabric.name), 'full-line'],
-      seoTitle: `${title} — ${fabric.name}`,
+      seoTitle: `${title}: ${fabric.name}`,
       seoDescription: `A ${fabric.name.toLowerCase()} ${garment.name.toLowerCase()} in ${color.toLowerCase()}, cut for everyday wear and built to layer.`,
       categoryKeys: [garment.category],
       collectionKeys,

@@ -17,6 +17,7 @@ import {
   createExpense,
   createRecurring,
   createVendor,
+  archiveCategory,
   deleteCategory,
   deleteExpense,
   expensesForTarget,
@@ -31,10 +32,16 @@ import {
   recomputeRange,
   SEED_CATEGORIES,
   setExpensePaid,
+  updateCategory,
   updateExpense,
   vendorSpendCents,
 } from '../../src/index';
-import { CategoryInUseError, OverAllocatedError, SystemCategoryError } from '../../src/errors';
+import {
+  CategoryInUseError,
+  DuplicateCategoryNameError,
+  OverAllocatedError,
+  SystemCategoryError,
+} from '../../src/errors';
 import { createTestTenant, day, dropTestTenant, type TestTenant } from '../helpers';
 
 let t: TestTenant;
@@ -353,6 +360,31 @@ describe('expenses', () => {
     // someone scrolls.
     expect(firstPage.totalCents).toBe(all.totalCents);
     expect(firstPage.nextCursor).not.toBeNull();
+
+    // And so does the COUNT. The accounting export asks for one row purely to
+    // read this, so a page-shaped count would tell somebody a period holds a
+    // single cost when it holds fifty.
+    expect(all.totalCount).toBe(all.items.length);
+    expect(firstPage.totalCount).toBe(all.totalCount);
+    expect(firstPage.totalCount).toBeGreaterThan(firstPage.items.length);
+  });
+
+  it('counts a period with nothing in it as zero, not as the whole ledger', async () => {
+    const empty = await listExpenses(t.tenantId, {
+      propertyId: null,
+      categoryId: null,
+      vendorId: null,
+      source: null,
+      from: day('2019-01-01'),
+      to: day('2019-01-31'),
+      unpaidOnly: null,
+      search: null,
+      limit: 1,
+      cursor: null,
+    });
+    expect(empty.items).toHaveLength(0);
+    expect(empty.totalCount).toBe(0);
+    expect(empty.totalCents).toBe(0);
   });
 
   it('drops soft-deleted spend out of lists and totals', async () => {
@@ -513,6 +545,67 @@ describe('categories', () => {
     });
     expect(invented.slug).toBeNull();
     await expect(deleteCategory(t.tenantId, invented.id)).resolves.toBeUndefined();
+  });
+
+  // NAME UNIQUENESS. The unique index is on `(tenantId, slug)` and an invented
+  // category has no slug, so nothing in the database says a name may not repeat.
+  // These cover the guard that says it instead.
+  const invent = (name: string, kind: 'cost_of_sale' | 'labor' | 'operating' = 'operating') =>
+    createCategory(t.tenantId, { name, kind, color: null, exportCode: null, sortOrder: 60 });
+
+  it('refuses a second category with a name the tenant already uses', async () => {
+    await invent('Packaging and gift wrap', 'cost_of_sale');
+    await expect(invent('Packaging and gift wrap')).rejects.toThrow(DuplicateCategoryNameError);
+  });
+
+  it('treats a different case and stray spaces as the same name', async () => {
+    await invent('Window dressing');
+    await expect(invent('  window DRESSING ')).rejects.toThrow(DuplicateCategoryNameError);
+  });
+
+  it('refuses a name a SEEDED category already holds', async () => {
+    await expect(invent('Rent')).rejects.toThrow(DuplicateCategoryNameError);
+  });
+
+  it('points at the archived row rather than just refusing', async () => {
+    const gone = await invent('Trade fair stand');
+    await archiveCategory(t.tenantId, gone.id);
+    await expect(invent('Trade fair stand')).rejects.toThrow(/archived/);
+  });
+
+  it('refuses a RENAME onto an existing name', async () => {
+    const mine = await invent('Alterations');
+    await expect(updateCategory(t.tenantId, { id: mine.id, name: 'Rent' })).rejects.toThrow(
+      DuplicateCategoryNameError
+    );
+  });
+
+  it('lets a category keep its own name through an unrelated edit', async () => {
+    const mine = await invent('Dry cleaning');
+    const saved = await updateCategory(t.tenantId, {
+      id: mine.id,
+      name: 'Dry cleaning',
+      kind: 'cost_of_sale',
+    });
+    expect(saved.kind).toBe('cost_of_sale');
+  });
+
+  it('scopes the name check to one tenant', async () => {
+    await invent('Sample making');
+    await expect(
+      createCategory(other.tenantId, {
+        name: 'Sample making',
+        kind: 'operating',
+        color: null,
+        exportCode: null,
+        sortOrder: 60,
+      })
+    ).resolves.toMatchObject({ name: 'Sample making' });
+  });
+
+  it('stores the trimmed name, so the list cannot show two rows that read alike', async () => {
+    const padded = await invent('   Stall fees   ');
+    expect(padded.name).toBe('Stall fees');
   });
 });
 

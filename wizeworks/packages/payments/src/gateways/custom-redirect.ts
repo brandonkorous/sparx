@@ -117,9 +117,7 @@ export class CustomRedirectGateway implements PaymentGateway {
     return false;
   }
   parseWebhook(): Promise<ParsedWebhookEvent> {
-    return Promise.reject(
-      new Error('custom gateway parses per-tenant — use parseWebhookForTenant')
-    );
+    return Promise.reject(new Error('custom gateway parses per-tenant: use parseWebhookForTenant'));
   }
 
   async parseWebhookForTenant(tenantId: string, event: WebhookEvent): Promise<ParsedWebhookEvent> {

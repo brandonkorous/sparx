@@ -98,7 +98,7 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
   { eventType: 'order.paid', label: 'An order is paid', module: 'commerce' },
   { eventType: 'order.fulfilled', label: 'An order is fulfilled', module: 'commerce' },
   { eventType: 'order.delivered', label: 'An order is delivered', module: 'commerce' },
-  { eventType: 'order.cancelled', label: 'An order is cancelled', module: 'commerce' },
+  { eventType: 'order.cancelled', label: 'An order is canceled', module: 'commerce' },
   { eventType: 'order.refunded', label: 'An order is refunded', module: 'commerce' },
   { eventType: 'order.payment_failed', label: 'An order payment fails', module: 'commerce' },
   // ── Selling — subscriptions ──
@@ -111,11 +111,27 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
   },
   { eventType: 'subscription.paused', label: 'A subscription is paused', module: 'commerce' },
   { eventType: 'subscription.resumed', label: 'A subscription resumes', module: 'commerce' },
-  { eventType: 'subscription.cancelled', label: 'A subscription is cancelled', module: 'commerce' },
+  { eventType: 'subscription.cancelled', label: 'A subscription is canceled', module: 'commerce' },
   // ── Selling — returns ──
+  // All six, because a return has three ENDINGS and only the money one used to be
+  // offered here. A shop cannot build what it cannot see in this list, so leaving
+  // the swap and the refusal out meant a shopper who asked for a different size,
+  // or who was told no, could not be written to at all (persona issue 448).
+  {
+    eventType: 'return.requested',
+    label: 'Someone asks to send something back',
+    module: 'commerce',
+  },
   { eventType: 'return.approved', label: 'A return is approved', module: 'commerce' },
   { eventType: 'return.received', label: 'A return is received', module: 'commerce' },
   { eventType: 'return.refunded', label: 'A return is refunded', module: 'commerce' },
+  { eventType: 'return.exchanged', label: 'A replacement is sent', module: 'commerce' },
+  {
+    eventType: 'return.replacement_shipped',
+    label: 'A replacement is posted',
+    module: 'commerce',
+  },
+  { eventType: 'return.denied', label: 'A return is turned down', module: 'commerce' },
   // ── Selling — inventory ──
   { eventType: 'inventory.low', label: 'A product runs low on stock', module: 'commerce' },
   { eventType: 'inventory.depleted', label: 'A product sells out', module: 'commerce' },
@@ -154,7 +170,7 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
     module: 'crm',
   },
   { eventType: 'booking.created', label: 'Somebody books an appointment', module: 'crm' },
-  { eventType: 'booking.cancelled', label: 'An appointment is cancelled', module: 'crm' },
+  { eventType: 'booking.cancelled', label: 'An appointment is canceled', module: 'crm' },
   { eventType: 'booking.completed', label: 'An appointment is completed', module: 'crm' },
   { eventType: 'booking.no_show', label: 'Somebody misses their appointment', module: 'crm' },
   // ── Support requests (docs/144 §7) ──
@@ -523,7 +539,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     type: 'platform.wait',
     label: 'Wait a while',
     module: 'platform',
-    description: 'Pause before the next step — for example, wait a day before following up.',
+    description: 'Pause before the next step, for example, wait a day before following up.',
     mode: 'fields',
     available: true,
     configFields: [
@@ -580,13 +596,13 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         key: 'headers',
         label: 'Extra headers',
         type: 'json',
-        help: 'Advanced — a set of header name → value pairs, as JSON.',
+        help: 'Advanced: a set of header name → value pairs, as JSON.',
       },
       {
         key: 'payload',
         label: 'Extra data',
         type: 'json',
-        help: 'Advanced — any extra data to include, as JSON.',
+        help: 'Advanced: any extra data to include, as JSON.',
       },
     ],
   },
@@ -693,7 +709,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     label: 'Open a support request',
     module: 'crm',
     description:
-      'Turn whatever started this rule — a live chat, a form, an email someone sent you — into a support request in your queue, with a response time attached. Runs once per conversation, so a rule that fires twice will not open two requests.',
+      'Turn whatever started this rule (a live chat, a form, an email someone sent you) into a support request in your queue, with a response time attached. Runs once per conversation, so a rule that fires twice will not open two requests.',
     mode: 'fields',
     available: true,
     configFields: [
@@ -701,7 +717,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         key: 'subject',
         label: 'Subject',
         type: 'text',
-        help: 'Leave blank and we will name it from where it came in — the form name, the email subject, or the customer’s name.',
+        help: 'Leave blank and we will name it from where it came in: the form name, the email subject, or the customer’s name.',
       },
       {
         key: 'description',
@@ -740,14 +756,14 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         key: 'title',
         label: 'Name it',
         type: 'text',
-        placeholder: 'Renewal — {{customer.company}}',
-        help: 'You can pull details in with {{ }} — they get filled in when the rule runs.',
+        placeholder: 'Renewal: {{customer.company}}',
+        help: 'You can pull details in with {{ }}. They get filled in when the rule runs.',
       },
       {
         key: 'values',
         label: 'Fill in these details',
         type: 'json',
-        help: 'Advanced — the fields to set, as JSON. For example {"value": 500}.',
+        help: 'Advanced: the fields to set, as JSON. For example {"value": 500}.',
       },
     ],
   },
@@ -756,7 +772,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     label: 'Set a detail on the record',
     module: 'crm',
     description:
-      'Change one thing about whoever (or whatever) started this rule — including the details you set up yourself, like a renewal date or a warranty expiry.',
+      'Change one thing about whoever (or whatever) started this rule, including the details you set up yourself, like a renewal date or a warranty expiry.',
     mode: 'fields',
     available: true,
     configFields: [
@@ -777,8 +793,8 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         label: 'This is a detail I set up myself',
         type: 'select',
         options: [
-          { value: 'true', label: 'Yes — one of my own' },
-          { value: 'false', label: 'No — a built-in field' },
+          { value: 'true', label: 'Yes: one of my own' },
+          { value: 'false', label: 'No: a built-in field' },
         ],
         help: productCopy(
           'automations.field.ownHint',
@@ -818,7 +834,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     label: 'Put them on a list',
     module: 'crm',
     description:
-      'Add the customer to one of your hand-picked lists — or take them off it. Only works on hand-picked lists; a list that decides its own members from rules will not accept it.',
+      'Add the customer to one of your hand-picked lists, or take them off it. Only works on hand-picked lists; a list that decides its own members from rules will not accept it.',
     mode: 'fields',
     available: true,
     configFields: [
@@ -849,7 +865,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         label: 'Message',
         type: 'textarea',
         required: true,
-        help: 'You can pull in details with {{ }} — for example Hi {{customer.firstName}}.',
+        help: 'You can pull in details with {{ }}, for example Hi {{customer.firstName}}.',
       },
     ],
   },
@@ -879,7 +895,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     label: 'Save the form contact as a customer',
     module: 'crm',
     description:
-      'Save whoever submitted a form as a customer and log their message — and, if the form is set to, open a sales deal. Follows the form’s own settings.',
+      'Save whoever submitted a form as a customer and log their message, and, if the form is set to, open a sales deal. Follows the form’s own settings.',
     mode: 'none',
     available: true,
   },
@@ -931,7 +947,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     label: 'Add to an email sequence',
     module: 'email',
     description:
-      'Start the customer on a multi-touch email sequence — a welcome series, a follow-up, a nurture. The sequence sends each email on its own schedule.',
+      'Start the customer on a multi-touch email sequence: a welcome series, a follow-up, a nurture. The sequence sends each email on its own schedule.',
     mode: 'fields',
     available: true,
     configFields: [
@@ -942,7 +958,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         required: true,
         optionSource: 'email-sequences',
         help: 'Which sequence to start them on.',
-        emptyHint: 'No sequences yet — create one under Email → Sequences.',
+        emptyHint: 'No sequences yet: create one under Email → Sequences.',
       },
     ],
   },
@@ -962,7 +978,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         required: true,
         optionSource: 'email-sequences',
         help: 'Which sequence to take them out of.',
-        emptyHint: 'No sequences yet — create one under Email → Sequences.',
+        emptyHint: 'No sequences yet: create one under Email → Sequences.',
       },
     ],
   },
@@ -1023,7 +1039,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         label: 'Message',
         type: 'textarea',
         required: true,
-        placeholder: 'New arrival — {{announce.title}}',
+        placeholder: 'New arrival: {{announce.title}}',
         help: 'The post text. Use {{announce.title}} for the product or article name; the link and image are attached for you.',
       },
       {
@@ -1033,7 +1049,7 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         optionSource: 'social-targets',
         help: 'Leave everything unticked to post to all your connected accounts. Tick some to narrow this automation to just those.',
         emptyHint:
-          'No connected accounts yet — connect one under Social → Connections and they will appear here.',
+          'No connected accounts yet. Connect one under Social → Connections and they will appear here.',
       },
       {
         key: 'autoApprove',

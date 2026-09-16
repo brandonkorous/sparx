@@ -61,18 +61,40 @@ function normalize(text: string): string {
  * Exponent form is refused on purpose: `1e9` is a slip on a keyboard, never a
  * price, and the alternative is a billion dollars going in silently.
  */
+/**
+ * Digits with at most one `.` → whole cents, by STRING arithmetic.
+ *
+ * Not `Math.round(Number(x) * 100)`. That shortcut is wrong for three-decimal
+ * input — `Number('0.145') * 100` is 14.499999999999998, so it rounds DOWN to
+ * 14¢ — and a form is exactly where somebody types one. The spending form did
+ * this arithmetic correctly in a parser of its own while reading "46,80" as
+ * four thousand six hundred and eighty dollars (issue 488); the two halves
+ * belong in one place, which is here.
+ */
+function exactCents(text: string): number | null {
+  const negative = text.startsWith('-');
+  const unsigned = negative ? text.slice(1) : text;
+  if (!/^\d*\.?\d*$/.test(unsigned) || !/\d/.test(unsigned)) return null;
+  const [whole = '', fraction = ''] = unsigned.split('.');
+  const wholeCents = (whole === '' ? 0 : Number(whole)) * 100;
+  if (!Number.isSafeInteger(wholeCents)) return null;
+  const cents = Number(`${fraction}00`.slice(0, 2));
+  const roundUp = Number(fraction[2] ?? '0') >= 5 ? 1 : 0;
+  const total = wholeCents + cents + roundUp;
+  return negative ? -total : total;
+}
+
 export function readMoney(text: string, options?: ReadMoneyOptions): MoneyReading {
   const cleaned = text.replace(CURRENCY_MARKS, '');
   if (cleaned === '') return { amount: null, problem: null };
   if (!/^-?[\d.,]+$/.test(cleaned)) {
     return { amount: null, problem: 'That does not look like an amount. Try something like 8.50.' };
   }
-  const value = Number(normalize(cleaned));
-  if (!Number.isFinite(value)) {
+  const cents = exactCents(normalize(cleaned));
+  if (cents === null) {
     return { amount: null, problem: 'That does not look like an amount. Try something like 8.50.' };
   }
-  if (value < 0) return { amount: null, problem: 'An amount cannot be less than nothing.' };
-  const cents = Math.round(value * 100);
+  if (cents < 0) return { amount: null, problem: 'An amount cannot be less than nothing.' };
   if (cents === 0 && options?.allowZero !== true) {
     return { amount: null, problem: 'That comes to nothing, so there is nothing to write down.' };
   }

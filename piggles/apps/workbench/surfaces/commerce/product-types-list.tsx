@@ -114,8 +114,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
           label: 'New type',
           icon: faPlus,
           onClick: create,
-          title:
-            'Define a new kind of product — hold Shift to open alongside, Alt for a new window',
+          title: 'Define a new kind of product. Hold Shift to open alongside, Alt for a new window',
         }}
         filters={[
           {
@@ -185,7 +184,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
               firstRun={{
                 title: 'No product types yet',
                 description:
-                  'Define the extra details a kind of product carries — fabric and care for clothing, ingredients for food, specs for electronics — so every product of that kind is described the same way.',
+                  'Define the extra details a kind of product carries (fabric and care for clothing, ingredients for food, specs for electronics) so every product of that kind is described the same way.',
                 actions: (
                   <Button
                     size="sm"

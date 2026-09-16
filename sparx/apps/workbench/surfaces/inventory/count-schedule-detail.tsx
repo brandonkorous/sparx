@@ -40,7 +40,7 @@ import {
 import { CalendarClock, Save, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import { PANE_SHELL } from '../../components/pane-toolbar';
+import { PANE_SHELL, PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, stockErrorMessage, useStockLocations } from './data';
 import {
@@ -49,6 +49,7 @@ import {
   cadenceLabel,
   scheduleState,
   useCountSchedule,
+  useCountScheduleCoverage,
   useDeleteCountSchedule,
   useSaveCountSchedule,
   type AbcClass,
@@ -121,7 +122,13 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
 
   const [draft, setDraft] = useState<Draft>(NEW_DRAFT);
-  const [dirty, setDirty] = useState(false);
+  // What was last SEEDED or SAVED, serialized. Dirty is the comparison against
+  // it, which is the pattern 72 other panes in this console already use, and it
+  // is the only shape that lets an undone edit undo the warning too: a sticky
+  // boolean says "somebody touched something", not "this differs from what is
+  // stored", so putting both controls back exactly as they were still left the
+  // status bar claiming unsaved work and still confirmed on close (issue 507).
+  const initialRef = useRef<string>(JSON.stringify(NEW_DRAFT));
 
   // Seed from the server ONCE PER RECORD, and default a new schedule's location
   // to the only one there is — a single-warehouse business should never have to
@@ -149,7 +156,7 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     if (server) {
       if (seededFor.current === id) return;
       seededFor.current = id;
-      setDraft({
+      const seeded: Draft = {
         warehouseId: server.warehouseId,
         name: server.name,
         abcClass: server.abcClass ?? '',
@@ -159,28 +166,56 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         maxItemsPerRun: server.maxItemsPerRun,
         isBlind: server.isBlind,
         isActive: server.isActive,
-      });
-      setDirty(false);
+      };
+      setDraft(seeded);
+      initialRef.current = JSON.stringify(seeded);
       return;
     }
     if (isNew && activeLocations.length > 0) {
       // Returning `current` unchanged when there is nothing to do lets React bail
       // out of the re-render entirely, so this branch cannot feed itself either.
-      setDraft((current) =>
-        current.warehouseId === ''
-          ? { ...current, warehouseId: activeLocations[0]?.id ?? '' }
-          : current
-      );
+      setDraft((current) => {
+        if (current.warehouseId !== '') return current;
+        const withLocation = { ...current, warehouseId: activeLocations[0]?.id ?? '' };
+        // The baseline moves with it. Filling in the only possible answer is the
+        // console being helpful, not the operator starting work, and a brand new
+        // form must not ask them to confirm discarding a choice they never made.
+        initialRef.current = JSON.stringify(withLocation);
+        return withLocation;
+      });
     }
   }, [existing.data, id, isNew, activeLocations]);
 
+  const dirty = JSON.stringify(draft) !== initialRef.current;
   useDirtySource(dirty, 'This counting schedule has unsaved changes. Close it anyway?');
 
   const patch = (next: Partial<Draft>) => {
     setDraft((current) => ({ ...current, ...next }));
-    setDirty(true);
   };
 
+  // Asked as the setup is typed, so "this covers nothing" arrives before Set it
+  // up rather than after.
+  const coverage = useCountScheduleCoverage(draft.warehouseId, draft.abcClass, draft.zoneName);
+
+  // WHY nothing is covered, in the words of the controls that caused it. The
+  // warning used to name the group and the location every time, so a zone
+  // holding nothing sent her to widen two things that were not narrowing it,
+  // and the warning stayed up when she did (issue 506).
+  const zoneNarrows = draft.zoneName.trim() !== '';
+  const classNarrows = draft.abcClass !== '';
+  const narrowedBy = [
+    zoneNarrows ? 'the zone you named' : null,
+    classNarrows ? 'the group you picked' : null,
+  ].filter((s): s is string => s !== null);
+  const widenBy = [
+    zoneNarrows ? 'clear the zone box' : null,
+    classNarrows ? 'choose \u201cEverything at this location\u201d' : null,
+  ].filter((s): s is string => s !== null);
+  // Whichever remedy comes first starts the sentence, so it is capitalized here
+  // rather than baked into the list. With 'Clear' baked in, a schedule narrowed
+  // only by its group read "...would never raise a count. choose ...".
+  const widen = widenBy.join(', or ');
+  const widenSentence = widen.charAt(0).toUpperCase() + widen.slice(1);
   const canSave = draft.name.trim().length > 0 && draft.warehouseId !== '';
 
   const onSave = () => {
@@ -198,14 +233,16 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       },
       {
         onSuccess: (saved) => {
-          setDirty(false);
+          // Nothing to protect any more, and the re-seed below will set the
+          // baseline properly from what the server actually stored.
+          initialRef.current = JSON.stringify(draft);
           // Let the refetch that follows re-seed the form from what the server
           // actually stored — the one moment where server data SHOULD win, since
           // there are no unsaved edits left to protect.
           seededFor.current = null;
           toast.add({
             title: isNew ? 'Schedule set up' : 'Schedule saved',
-            description: `${saved.name} — next count ${new Date(saved.nextRunAt).toLocaleDateString()}.`,
+            description: `${saved.name}: next count ${new Date(saved.nextRunAt).toLocaleDateString()}.`,
             type: 'success',
           });
           if (isNew) ctx.open('inventory.count-schedules.detail', { id: saved.id });
@@ -225,7 +262,7 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Delete “${draft.name}”?`,
       description:
-        'The counts it has already created are kept — they are the record that counting happened. What stops is the counting itself: nothing will create the next one.',
+        'The counts it has already created are kept. They are the record that counting happened. What stops is the counting itself: nothing will create the next one.',
       confirmLabel: 'Delete the schedule',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -233,7 +270,9 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     if (!ok) return;
     remove.mutate(id, {
       onSuccess: () => {
-        setDirty(false);
+        // No baseline update needed: a surface closing ITSELF goes through
+        // controller.close, which drops the guards before closing. Only an
+        // interactive close holds the unsaved-work conversation.
         toast.add({ title: 'Schedule deleted', type: 'success' });
         ctx.close();
       },
@@ -260,7 +299,7 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const state = existing.data ? scheduleState(existing.data) : null;
 
   return (
-    <div className={`${PANE_SHELL} overflow-y-auto`}>
+    <div className={PANE_SHELL_SCROLL}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Heading level={2} className="text-lg">
           {isNew ? 'Set up a counting schedule' : 'Counting schedule'}
@@ -316,7 +355,7 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           </NativeSelect>
           {!isNew ? (
             <span className="text-sm">
-              A schedule belongs to its location — set up another one to cover somewhere else.
+              A schedule belongs to its location. Set up another one to cover somewhere else.
             </span>
           ) : null}
         </label>
@@ -327,8 +366,8 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           What it covers
         </Heading>
         <Text className="text-sm">
-          Counting where the money is often, and the long tail rarely, covers a whole catalogue for
-          a fraction of the effort of a full stocktake.
+          Counting where the money is often, and the long tail rarely, covers a whole catalog for a
+          fraction of the effort of a full stocktake.
         </Text>
 
         <label className="flex flex-col gap-1">
@@ -350,7 +389,7 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 {abcLabel(draft.abcClass)}
               </Badge>{' '}
               is worked out from what you actually use in a year, and it is kept up to date
-              overnight — so this schedule follows the stock, not a list you have to maintain.
+              overnight, so this schedule follows the stock, not a list you have to maintain.
             </span>
           ) : null}
         </label>
@@ -368,6 +407,32 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             Leave blank for the whole location. A zone is whatever you named it on your shelves.
           </span>
         </label>
+
+        {/* What this actually adds up to, said HERE rather than on the saved
+            schedule. Nought is the answer that matters and it is easy to reach
+            by accident: the location list is alphabetical and the class list
+            starts at top value, so a small catalogue gets offered a place
+            holding nothing crossed with a class nothing is in. A schedule
+            covering nothing is indistinguishable from one covering everything
+            until the counts fail to appear (issue 499). */}
+        {coverage.data ? (
+          coverage.data.coveredLevels === 0 ? (
+            <Alert color="warning" variant="soft">
+              <AlertContent>
+                <AlertTitle>Nothing is covered by this</AlertTitle>
+                <AlertDescription>
+                  {narrowedBy.length === 0
+                    ? 'There is no stock at this location at all, so this schedule would never raise a count. Pick the place your stock actually sits.'
+                    : `Nothing at this location matches ${narrowedBy.join(' and ')}, so this schedule would never raise a count. ${widenSentence}, or pick the place your stock actually sits.`}
+                </AlertDescription>
+              </AlertContent>
+            </Alert>
+          ) : (
+            <Text className="text-sm">
+              {plural(coverage.data.coveredLevels, 'item', 'items')} would be covered by this.
+            </Text>
+          )
+        ) : null}
       </Card>
 
       <Card className="flex flex-col gap-3 p-4">
@@ -422,7 +487,7 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           <span className="text-sm">
             A count of four hundred lines does not get done. Each run takes the{' '}
             {plural(draft.maxItemsPerRun, 'item', 'items')} that have gone longest without being
-            counted — anything never counted comes first of all — and the rest waits for next time.
+            counted (anything never counted comes first of all) and the rest waits for next time.
           </span>
         </label>
 
@@ -490,7 +555,7 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 — a freshly created schedule is due immediately and announced
                 itself as "7 seconds ago". Overdue is a state, not a timestamp. */}
             {isDue(existing.data.nextRunAt) ? (
-              <>Next run: due now — it will be picked up on the next nightly pass.</>
+              <>Next run: due now. It will be picked up on the next nightly pass.</>
             ) : (
               <>
                 Next run: <Timestamp value={existing.data.nextRunAt} format="relative" />

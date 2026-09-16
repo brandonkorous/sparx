@@ -37,7 +37,7 @@ const MODIFIABLE = ['requested', 'confirmed'];
  *  reason. It is a placeholder for the absence of one, not a reason — right in
  *  the owner's diary, and nothing to show the person who pressed the button, who
  *  would read "Reason: cancelled by customer" as being told what she just did. */
-const NO_REASON_GIVEN = 'Cancelled by customer';
+const NO_REASON_GIVEN = 'Canceled by customer';
 
 /**
  * A customer-facing projection of a booking — only their-eyes copy (no staff

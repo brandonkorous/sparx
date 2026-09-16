@@ -12,6 +12,8 @@
 // filters `incurredAt` — the day a cost belongs to — so a range that carried a
 // local clock time would move the boundary for anyone east of UTC.
 
+import { todayIso } from '../../lib/today';
+
 export type PeriodKey =
   'this_month' | 'last_month' | 'this_quarter' | 'this_year' | 'last_12' | 'all';
 
@@ -42,8 +44,10 @@ function utcDay(year: number, month: number, day: number): Date {
 export function rangeFor(period: PeriodKey, now = new Date()): DateRange {
   const year = now.getFullYear();
   const month = now.getMonth();
-  const day = now.getDate();
-  const today = utcDay(year, month, day);
+  // The SAME "today" every date field in the console defaults to. Two ends of
+  // one query read off one clock, or a cost recorded this evening is outside the
+  // range that was supposed to contain it.
+  const today = todayIso(now);
 
   switch (period) {
     case 'last_month': {
@@ -53,20 +57,20 @@ export function rangeFor(period: PeriodKey, now = new Date()): DateRange {
     }
     case 'this_quarter': {
       const quarterStart = Math.floor(month / 3) * 3;
-      return { from: iso(utcDay(year, quarterStart, 1)), to: iso(today) };
+      return { from: iso(utcDay(year, quarterStart, 1)), to: today };
     }
     case 'this_year':
-      return { from: iso(utcDay(year, 0, 1)), to: iso(today) };
+      return { from: iso(utcDay(year, 0, 1)), to: today };
     case 'last_12':
-      return { from: iso(utcDay(year - 1, month, 1)), to: iso(today) };
+      return { from: iso(utcDay(year - 1, month, 1)), to: today };
     case 'all':
       // Not an empty range: the API requires both ends on the profit route, and
       // a fixed floor keeps the query planner on an index. Nothing in this
       // platform has data before it.
-      return { from: '2000-01-01', to: iso(today) };
+      return { from: '2000-01-01', to: today };
     case 'this_month':
     default:
-      return { from: iso(utcDay(year, month, 1)), to: iso(today) };
+      return { from: iso(utcDay(year, month, 1)), to: today };
   }
 }
 

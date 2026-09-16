@@ -13,3 +13,4 @@ export { DenyReturnModal } from './return-deny-modal';
 export { InspectReturnModal } from './return-inspect-modal';
 export { RefundReturnModal } from './return-refund-modal';
 export { ExchangeReturnModal } from './return-exchange-modal';
+export { RecordReplacementShipmentModal } from './record-replacement-shipment';

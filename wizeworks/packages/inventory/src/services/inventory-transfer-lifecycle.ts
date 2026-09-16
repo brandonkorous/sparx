@@ -17,7 +17,7 @@ import {
   InventoryValidationError,
 } from '../errors';
 import type { ServiceContext } from '../errors';
-import { publishInventoryEvent } from '../events';
+import { indexInventoryEntityOnCommit, publishInventoryEvent } from '../events';
 
 import {
   allocateBackordersOnTx,
@@ -427,14 +427,14 @@ async function emitLegEvents(ctx: ServiceContext, legs: LegEvent[]): Promise<voi
   }
 }
 
-function audit(
+async function audit(
   tx: TxClient,
   ctx: ServiceContext,
   transferId: string,
   action: string,
   after: Record<string, unknown>
 ): Promise<void> {
-  return writeAuditLog({
+  await writeAuditLog({
     tx,
     tenantId: ctx.tenantId,
     actorId: ctx.userId ?? null,
@@ -444,6 +444,9 @@ function audit(
     entityId: transferId,
     diff: { after },
   });
+  // Shipping and receiving both change what the transfer's search document
+  // says, and this helper is the one line all three lifecycle writes share.
+  await indexInventoryEntityOnCommit(ctx, 'inventory_transfer', transferId);
 }
 
 function getDetail(ctx: ServiceContext, transferId: string): Promise<InventoryTransferDetail> {

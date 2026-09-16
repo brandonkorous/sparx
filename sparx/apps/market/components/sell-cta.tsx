@@ -23,8 +23,8 @@ export function SellCta() {
             </h2>
             <p className="text-primary-content/90 mt-5 text-[1.0625rem] leading-relaxed">
               Already running a store on sparx? List your products on the marketplace in a click and
-              reach shoppers across the whole network — sparx handles payment and payout, so you
-              just make and ship.
+              reach shoppers across the whole network: sparx handles payment and payout, so you just
+              make and ship.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3">
               <Button render={<Link href="/sell" />} color="neutral" variant="solid" size="lg">

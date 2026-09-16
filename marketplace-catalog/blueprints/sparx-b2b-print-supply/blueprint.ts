@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-print-supply',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Print & Sign Supply (B2B / Wholesale)',
   summary:
-    'A complete, working wholesale shop for a print, signage & sublimation trade supplier: a real catalogue sold by the roll, box and case — cast vinyl & HTV, banner & board, eco-solvent & dye-sub ink, and sublimation blanks — with pack quantities, MOQs, categories, collections, a bespoke trade PDP (per-unit pricing, bulk breaks, net-30), and a full merchandised home page. Clean CMYK-adjacent theme — cool paper, press-ink primary, a magenta signal accent. Shipped as Inkyard Trade Supply.',
+    'A complete, working wholesale shop for a print, signage & sublimation trade supplier: a real catalogue sold by the roll, box and case, cast vinyl & HTV, banner & board, eco-solvent & dye-sub ink, and sublimation blanks, with pack quantities, MOQs, categories, collections, a bespoke trade PDP (per-unit pricing, bulk breaks, net-30), and a full merchandised home page. Clean CMYK-adjacent theme, cool paper, press-ink primary, a magenta signal accent. Shipped as Inkyard Trade Supply.',
   vertical: 'b2b',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

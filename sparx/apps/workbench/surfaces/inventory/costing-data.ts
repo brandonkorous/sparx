@@ -42,7 +42,7 @@ export type CostingMethod = 'moving_average' | 'fifo' | 'standard';
 
 /** What the money was spent on, in the words a business would use. */
 export const CHARGE_KINDS: { value: ChargeKind; label: string; hint: string }[] = [
-  { value: 'freight', label: 'Shipping', hint: 'What it cost to get the goods to you' },
+  { value: 'freight', label: 'Freight', hint: 'What it cost to get the goods to you' },
   { value: 'duty', label: 'Import duty', hint: 'Paid at the border, usually on value' },
   { value: 'insurance', label: 'Insurance', hint: 'Cover on the shipment itself' },
   { value: 'broker', label: 'Customs broker', hint: 'The fee for clearing it through customs' },
@@ -58,14 +58,14 @@ export function chargeKindLabel(kind: string): string {
  * How a cost is spread over the things it arrived with, said plainly.
  *
  * The choice matters more than it looks: a per-pallet handling fee spread by
- * value puts most of itself on the expensive small thing, and shipping spread by
+ * value puts most of itself on the expensive small thing, and freight spread by
  * value undercharges the heavy cheap thing that actually filled the lorry.
  */
 export const ALLOCATION_BASES: { value: AllocationBasis; label: string; hint: string }[] = [
   {
     value: 'value',
     label: 'By what each item is worth',
-    hint: 'The usual choice, and the right one for duty and insurance — both go up with value.',
+    hint: 'The usual choice, and the right one for duty and insurance. Both go up with value.',
   },
   {
     value: 'quantity',
@@ -80,7 +80,7 @@ export const ALLOCATION_BASES: { value: AllocationBasis; label: string; hint: st
   {
     value: 'manual',
     label: 'I will say how much goes where',
-    hint: 'For the cost that exists because of one item — a crate built for a single machine.',
+    hint: 'For the cost that exists because of one item: a crate built for a single machine.',
   },
 ];
 
@@ -370,8 +370,8 @@ export interface ChargeInput {
  *
  * That is not belt and braces. Recording a freight bill changes what the units
  * still on the shelf are worth — the cost layers and the running average both
- * move — so a valuation figure left on screen beside a freshly-entered £212 of
- * shipping would be wrong in exactly the way the whole feature exists to fix.
+ * move — so a valuation figure left on screen beside a freshly-entered $212 of
+ * freight would be wrong in exactly the way the whole feature exists to fix.
  */
 function useChargeMutation<TInput>(
   run: (input: TInput) => Promise<unknown>,
@@ -461,7 +461,7 @@ export function chargeSharePercent(line: {
  * How worrying a share of extra cost is.
  *
  * Under 5% is noise. Up to 20% is normal for anything imported and worth being
- * aware of. Above that, the shipping is a bigger lever on margin than the
+ * aware of. Above that, the freight is a bigger lever on margin than the
  * supplier's price is, which changes what you should be negotiating.
  */
 export function chargeShareTone(percent: number | null): Tone {
@@ -523,7 +523,7 @@ export function cogsReasonLabel(reason: string): string {
     case 'recount':
       return 'Adjusted at a count';
     case 'cancel':
-      return 'Came back from a cancelled order';
+      return 'Came back from a canceled order';
     case 'return':
       return 'Returned by a customer';
     case 'transfer_out':

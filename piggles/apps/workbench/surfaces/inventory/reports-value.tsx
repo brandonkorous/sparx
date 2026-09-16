@@ -19,6 +19,7 @@ import {
   type AgingReport,
   type InventorySummary,
   type TurnoverReport,
+  stillCaption,
 } from './reports-data';
 import { NUMBER, barWidthClass, costCoverage } from './reports-shared';
 import { Figure, ReportCard } from './reports-card';
@@ -78,13 +79,7 @@ function StillStat({
       <StatValue className={value && value > 0 ? `text-warning ${FIGURE}` : FIGURE}>
         {figure()}
       </StatValue>
-      <StatDesc>
-        {value === null
-          ? 'Working it out…'
-          : levels === 0
-            ? 'Nothing has gone unsold for three months'
-            : `${plural(levels, 'line', 'lines')} not sold in over 3 months`}
-      </StatDesc>
+      <StatDesc>{aging === undefined ? 'Working it out…' : stillCaption(aging)}</StatDesc>
     </Stat>
   );
 }
@@ -128,7 +123,7 @@ export function HealthCard({ summary }: { summary: InventorySummary }) {
   return (
     <ReportCard
       title="How your stock is looking"
-      blurb="Counted across every product and place — measured by what a shopper could actually buy."
+      blurb="Counted across every product and place: measured by what a shopper could actually buy."
     >
       <div className="grid grid-cols-3 gap-2">
         <Figure tone="success" value={NUMBER.format(healthy)} label="Healthy" />

@@ -50,8 +50,8 @@ export function Capacity({ report }: { report: CapacityReport }) {
       <CardBody>
         <h2 className="text-xl font-bold">What you are using</h2>
         <p className="mt-1 text-base">
-          Piggles includes every app at one price. What changes your bill is scale — how many
-          people, how much you store, how much you send.
+          Piggles includes every app at one price. What changes your bill is scale: how many people,
+          how much you store, how much you send.
         </p>
 
         <div className="mt-6 grid gap-6 sm:grid-cols-2">

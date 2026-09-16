@@ -7,6 +7,7 @@
 // and page). Tenant resolved from the Host header, same as robots.txt/sitemap.xml.
 
 import { resolveSite } from '@/lib/site-context';
+import { suspendedLlmsTxt } from '@/lib/suspended';
 
 // NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
 // forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
@@ -34,6 +35,9 @@ export async function GET(request: Request) {
       headers: { 'content-type': 'text/plain; charset=utf-8' },
     });
   }
+  // An answer engine handed the shop's identity and entry points while the shop
+  // is dark will answer questions about it with a blank page (issue 503).
+  if (site.billingPhase === 'suspended') return suspendedLlmsTxt();
 
   const settings = site.settings ?? {};
   const description =

@@ -26,17 +26,35 @@
 // under the wrong brand no matter what this function returned. It now delegates
 // here. If you are about to write a third "who is this from", don't.
 //
-// ── WHAT THIS DELIBERATELY DOES NOT DECIDE ─────────────────────────────────
+// ── A NAME SHE TYPED WAS THROWN AWAY ───────────────────────────────────────
 //
-// Whether an unconfigured tenant send should name the PLATFORM at all, rather
-// than the tenant's own shop ("Bob's Parts <noreply@sparx.email>"). That is
-// arguably better and it is a product decision, not a leak — it changes what
-// every sparx tenant's broadcast has always said. Fixing "names the wrong
-// company" and changing "names the platform instead of the shop" are two
-// different changes, and bundling the second into the first is how a product
-// decision gets made by nobody.
+// The clause below used to read the sender name ONLY inside the branch that
+// had an address, so a shop with no verified domain — most of them — could type
+// her business name into a field captioned "This is what your customers see in
+// their inbox", save it, and have it silently discarded. Juniper Row did, and
+// the send screen went on saying `Piggles <noreply@sparx.email>` after a
+// refresh. That is not a fallback, it is a setting that does nothing.
+//
+// The name and the ADDRESS are separate questions. The address must be one the
+// provider is authorized for; the name in front of it is only ever a label, and
+// hers is the honest one — it is already the letterhead inside the very same
+// email. So a typed name now rides the shared address.
+//
+// ── AND A BLANK ONE NAMES THE SHOP, NOT THE SOFTWARE ───────────────────────
+//
+// A blank sender name used to name the PLATFORM. That was parked here as a
+// product decision, and Brandon answered it: the SITE's name, on both brands.
+// It is the right answer for the same reason the typed name is — a recipient
+// bought from Juniper Row, the letterhead inside says Juniper Row, and the
+// software the shop happens to rent is not a party to that conversation. The
+// platform's own name survives only where there is no site name to use at all.
+//
+// The name is read per SITE, never per tenant: one owner may run a bookshop and
+// a bakery, and a newsletter from one must not go out under the other's name.
+// That is why `propertyId` is a parameter rather than something looked up from
+// the tenant — see [[feedback_site_is_the_business]].
 
-import { prisma } from '@wizeworks/db';
+import { prisma, withTenant } from '@wizeworks/db';
 import { platformBrandIdentity, platformFrom } from '@wizeworks/brand-core';
 
 const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
@@ -46,19 +64,56 @@ function platformRawFrom(): string {
   return process.env.SPARX_EMAIL_FROM ?? FALLBACK_FROM;
 }
 
-/**
- * The `From` header for a tenant send.
- *
- * `tenantId` is only read when the tenant has configured no address of their
- * own — a tenant with a verified domain costs no query.
- */
-export async function buildTenantFrom(
-  tenantId: string,
-  fromName: string | null,
-  fromAddress: string | null
-): Promise<string> {
-  if (fromAddress) return fromName ? `${fromName} <${fromAddress}>` : fromAddress;
+/** Just the address out of a `Name <addr>` header, or the whole string when it
+ *  carries no name. */
+function addressOf(from: string): string {
+  return /<([^>]+)>/.exec(from)?.[1] ?? from.trim();
+}
 
+/**
+ * A display name as a mail header may actually carry it.
+ *
+ * A bare name may hold letters, digits and a short list of marks; anything else
+ * has to be quoted or the header parses as something other than a name.
+ * `Bob's Parts, Inc. <a@b.c>` unquoted is a name, then a comma, then a second
+ * recipient that does not exist — so a shop whose name has a comma in it is the
+ * one whose mail breaks.
+ */
+function headerName(name: string): string {
+  const trimmed = name.trim();
+  if (/^[A-Za-z0-9!#$%&'*+\-/=?^_`{|}~ ]+$/.test(trimmed)) return trimmed;
+  return `"${trimmed.replace(/(["\\])/g, '\\$1')}"`;
+}
+
+/** `Name <address>`, or the bare address when there is no name to show. */
+function headerFrom(name: string | null, address: string): string {
+  const shown = name?.trim() ?? '';
+  return shown === '' ? address : `${headerName(shown)} <${address}>`;
+}
+
+/**
+ * The name this SITE trades under — what a customer knows the business as.
+ *
+ * `propertyId` is null only on call paths that predate per-site sends; those
+ * mean the tenant's primary site, which is the same business the old per-tenant
+ * row described. Best-effort: '' rather than throwing, because a name is a
+ * label and mail that does not go out is worse than mail with a plainer one.
+ */
+async function siteName(tenantId: string, propertyId: string | null): Promise<string> {
+  try {
+    const row = await withTenant({ tenantId }, (tx) =>
+      propertyId
+        ? tx.property.findUnique({ where: { id: propertyId }, select: { name: true } })
+        : tx.property.findFirst({ where: { isPrimary: true }, select: { name: true } })
+    );
+    return row?.name.trim() ?? '';
+  } catch {
+    return '';
+  }
+}
+
+/** The platform's own name and address, for a tenant that has neither. */
+async function platformSender(tenantId: string): Promise<string> {
   // `tenants` is the non-RLS dispatch row, so this reads on the plain client
   // with no tenant context. Best-effort: a failed lookup sends under the
   // platform default rather than dropping the mail, because a broadcast that
@@ -72,4 +127,29 @@ export async function buildTenantFrom(
   } catch {
     return platformRawFrom();
   }
+}
+
+/**
+ * The `From` header for a send from one SITE.
+ *
+ * Three answers in order, and only the first two are the business's: the name
+ * she typed, the name her site trades under, then — with nothing else to go on
+ * — the platform. A verified address costs one query; the shared address costs
+ * two.
+ */
+export async function buildTenantFrom(
+  tenantId: string,
+  fromName: string | null,
+  fromAddress: string | null,
+  propertyId?: string | null
+): Promise<string> {
+  const typed = fromName?.trim() ?? '';
+  const shown = typed === '' ? await siteName(tenantId, propertyId ?? null) : typed;
+
+  // Her own domain. The name is a label on it either way, so the same ladder
+  // applies — a bare address is only what is left when the site has no name.
+  if (fromAddress) return headerFrom(shown, fromAddress);
+
+  const platform = await platformSender(tenantId);
+  return shown === '' ? platform : headerFrom(shown, addressOf(platform));
 }

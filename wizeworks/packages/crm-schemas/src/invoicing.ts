@@ -265,6 +265,30 @@ export const ListBillingDocumentsInput = z.object({
    * exact opposite of what was asked for.
    */
   sent: z.preprocess((v) => (typeof v === 'string' ? v === 'true' : v), z.boolean()).optional(),
+  /**
+   * Whether the money is actually late, asked of the CLOCK rather than of the
+   * status column.
+   *
+   * Separate from `status` for exactly the reason `sent` is, one field up:
+   * status is about the MONEY (unpaid, partial, paid, void) and this is about
+   * the date. The two are independent, and the column collapses them — it can
+   * only hold one word, so a part-paid invoice three weeks past its due date is
+   * stored as `partial` and nothing anywhere says it is late.
+   *
+   * That column is also written only when something HAPPENS to the document —
+   * a line, a payment, a void — and a due date passing is not something
+   * happening. Nothing writes it, so `status = 'overdue'` finds only the
+   * documents that were touched after they went late. Measured on the dev
+   * database: 54 invoices and $51,456.69 are genuinely past due; that filter
+   * found 30 of them and $26,983.76. One shop was owed $986.50 across eight
+   * late invoices and its Overdue list was empty.
+   *
+   * `true` is the only useful value; `false` would ask for "not late yet",
+   * which no screen asks.
+   *
+   * `preprocess`, never `z.coerce.boolean()` — same trap as `sent`.
+   */
+  pastDue: z.preprocess((v) => (typeof v === 'string' ? v === 'true' : v), z.boolean()).optional(),
   includeDeleted: z.boolean().optional(),
   // `z.coerce.number()` (not `z.number()`) so HTTP query strings — the dashboard
   // hits `/v1/invoicing/documents?limit=100`, and the route pipes `request.query`

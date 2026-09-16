@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "sparx-dogtraining-behavior",
   "name": "Dog Training (Behavior)",
-  "version": "1.4.0",
-  "tagline": "A bold, results-driven template for private dog trainers — book assessments from day one.",
-  "description": "A bold, professional dog-training & behavior site — a deep charcoal-navy palette, a confident amber accent and sturdy condensed type. Installs a working booking flow: online booking for assessments and private sessions, specialist trainers you choose by name with their own hours, and a program-deposit policy for board-and-train. Covers reactivity, aggression, puppy foundations and service-dog work. Ships as \"K9 Method\".",
+  "version": "1.4.1",
+  "tagline": "A bold, results-driven template for private dog trainers. Book assessments from day one.",
+  "description": "A bold, professional dog-training & behavior site: a deep charcoal-navy palette, a confident amber accent and sturdy condensed type. Installs a working booking flow: online booking for assessments and private sessions, specialist trainers you choose by name with their own hours, and a program-deposit policy for board-and-train. Covers reactivity, aggression, puppy foundations and service-dog work. Ships as \"K9 Method\".",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
@@ -28,7 +28,7 @@
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "Dog Training (Behavior) — home page preview"
+      "alt": "Dog Training (Behavior): home page preview"
     }
   ],
   "author": {

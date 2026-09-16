@@ -338,7 +338,12 @@ async function enqueueAndMark(
   }
 
   const campaignTag = `bcast_${id}`;
-  const from = await buildTenantFrom(ctx.tenantId, settings.fromName, settings.fromAddress);
+  const from = await buildTenantFrom(
+    ctx.tenantId,
+    settings.fromName,
+    settings.fromAddress,
+    settings.propertyId
+  );
   const variables = { broadcast_id: id, campaign: campaignTag };
 
   const buildPayload = () =>
@@ -448,7 +453,7 @@ export async function schedule(
 export async function cancel(ctx: ServiceContext, id: string): Promise<Broadcast> {
   const broadcast = await get(ctx, id);
   if (broadcast.status !== 'scheduled') {
-    throw new EmailValidationError('Only scheduled broadcasts can be cancelled.');
+    throw new EmailValidationError('Only scheduled broadcasts can be canceled.');
   }
   return withTenant(ctx, async (tx) => {
     await tx.scheduledSend.deleteMany({ where: { broadcastId: id, status: 'pending' } });

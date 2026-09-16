@@ -19,7 +19,7 @@
 // writes the money off, which is the exact failure this screen exists to stop —
 // so the server refuses a line it cannot cost, and asks.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   AlertContent,
@@ -49,7 +49,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { Ban, Banknote, PackageX, PlusCircle, Send, Trash2 } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
-import { PANE_SHELL } from '../../components/pane-toolbar';
+import { PANE_SHELL, PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
 import { useConfirm } from '../../lib/confirm';
 import { afterCommit } from '../../lib/defer';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -71,6 +71,7 @@ import {
   useSupplierReturn,
   useUpdateSupplierReturn,
 } from './supplier-returns-data';
+import { MoneyTextInput, moneyCents } from '../../components/money-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -135,14 +136,33 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
   const [notes, setNotes] = useState('');
   const [lines, setLines] = useState<DraftLine[]>([]);
   const [skuInput, setSkuInput] = useState('');
-  const [dirty, setDirty] = useState(false);
+  // The location the console filled in, when there was only one to fill in.
+  // Choosing a different one is her work; accepting the only answer there is is
+  // not, and a form she never touched must close without a question.
+  const defaultWarehouseRef = useRef('');
 
   useEffect(() => {
     if (warehouseId === '' && activeLocations.length > 0) {
-      setWarehouseId(activeLocations[0]?.id ?? '');
+      const only = activeLocations[0]?.id ?? '';
+      setWarehouseId(only);
+      defaultWarehouseRef.current = only;
     }
   }, [activeLocations, warehouseId]);
 
+  // What is on screen, against what was put there. The flag used to be sticky:
+  // any keystroke set it and only a save cleared it, so emptying a box again
+  // still left the pane claiming unsaved work (issue 507). `!create.isSuccess`
+  // because this pane replaces itself with the saved return the moment it
+  // succeeds.
+  const dirty =
+    !create.isSuccess &&
+    (supplierId !== '' ||
+      warehouseId !== defaultWarehouseRef.current ||
+      reason !== 'damaged' ||
+      rmaNumber.trim() !== '' ||
+      notes.trim() !== '' ||
+      skuInput.trim() !== '' ||
+      lines.length > 0);
   useDirtySource(dirty, 'This return has not been saved. Close it anyway?');
 
   const addLine = () => {
@@ -151,7 +171,6 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
     lookup.mutate(sku, {
       onSuccess: (found) => {
         setSkuInput('');
-        setDirty(true);
         setLines((current) => [
           ...current,
           {
@@ -167,7 +186,7 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
         afterCommit(() => {
           toast.add({
             title: 'No item with that code',
-            description: `Nothing in your catalogue is coded “${sku}”. Check the code and try again.`,
+            description: `Nothing in your catalog is coded “${sku}”. Check the code and try again.`,
             type: 'error',
           });
         });
@@ -199,7 +218,6 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
       },
       {
         onSuccess: (saved) => {
-          setDirty(false);
           afterCommit(() => {
             toast.add({
               title: `${saved.number} put together`,
@@ -223,7 +241,7 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
   };
 
   return (
-    <div className={`${PANE_SHELL} overflow-y-auto`}>
+    <div className={PANE_SHELL_SCROLL}>
       <div className={COLUMN}>
         <Heading level={2} className="text-lg">
           Send something back to a supplier
@@ -242,7 +260,6 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                   value={supplierId}
                   onChange={(event) => {
                     setSupplierId(event.target.value);
-                    setDirty(true);
                   }}
                 >
                   <option value="">Choose a supplier…</option>
@@ -264,7 +281,6 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                   value={warehouseId}
                   onChange={(event) => {
                     setWarehouseId(event.target.value);
-                    setDirty(true);
                   }}
                 >
                   {activeLocations.map((location) => (
@@ -291,7 +307,6 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                   value={reason}
                   onChange={(event) => {
                     setReason(event.target.value);
-                    setDirty(true);
                   }}
                 >
                   {RETURN_REASONS.map((option) => (
@@ -313,14 +328,13 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                   placeholder="RMA-4471"
                   onChange={(event) => {
                     setRmaNumber(event.target.value);
-                    setDirty(true);
                   }}
                 />
               }
             />
             <FieldDescription>
               Most distributors will not accept a pallet back without one. Leave it blank if they
-              have not given you one yet — you can add it later.
+              have not given you one yet. You can add it later.
             </FieldDescription>
           </Field>
           <Field>
@@ -333,7 +347,6 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                   value={notes}
                   onChange={(event) => {
                     setNotes(event.target.value);
-                    setDirty(true);
                   }}
                 />
               }
@@ -403,7 +416,6 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                         value={line.quantity}
                         onChange={(event) => {
                           const quantity = Number.parseInt(event.target.value, 10);
-                          setDirty(true);
                           setLines((current) =>
                             current.map((l, i) =>
                               i === index
@@ -415,18 +427,13 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                       />
                     </td>
                     <td>
-                      <Input
+                      <MoneyTextInput
                         size="sm"
                         color="module"
-                        type="number"
-                        min={0}
-                        step="0.01"
                         placeholder="What you paid"
                         aria-label={`What you paid for each ${line.sku}`}
-                        value={line.unitCost}
-                        onChange={(event) => {
-                          const unitCost = event.target.value;
-                          setDirty(true);
+                        text={line.unitCost}
+                        onTextChange={(unitCost) => {
                           setLines((current) =>
                             current.map((l, i) => (i === index ? { ...l, unitCost } : l))
                           );
@@ -440,7 +447,6 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                         color="danger"
                         aria-label={`Remove ${line.sku}`}
                         onClick={() => {
-                          setDirty(true);
                           setLines((current) => current.filter((_, i) => i !== index));
                         }}
                       >
@@ -459,7 +465,7 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
             Put the return together
           </Button>
           <Text className="text-sm">
-            Nothing leaves the shelf yet — you send it on the next screen.
+            Nothing leaves the shelf yet. You send it on the next screen.
           </Text>
         </div>
       </div>
@@ -506,7 +512,7 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const onSend = async () => {
     const ok = await confirm({
       title: `Send ${data.number} back?`,
-      description: `${plural(data.lines.length, 'item', 'items')} will come off the shelf at ${data.warehouseName ?? 'this location'}, and ${formatCents(data.creditExpectedCents, data.currency)} goes on the list of what this supplier owes you. This cannot be undone from here — a mistake is corrected with a count.`,
+      description: `${plural(data.lines.length, 'item', 'items')} will come off the shelf at ${data.warehouseName ?? 'this location'}, and ${formatCents(data.creditExpectedCents, data.currency)} goes on the list of what this supplier owes you. This cannot be undone from here: a mistake is corrected with a count.`,
       confirmLabel: 'It has gone back',
       cancelLabel: 'Not yet',
       color: 'warning',
@@ -527,10 +533,11 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   };
 
   const onCredit = () => {
-    const parsed = Number.parseFloat(creditAmount);
-    if (!Number.isFinite(parsed) || parsed < 0) return;
+    // Read the way a person writes money — "1,250.00", "$8.00" (issue 486).
+    const creditReceivedCents = creditAmount.trim() === '' ? null : moneyCents(creditAmount);
+    if (creditReceivedCents === null) return;
     credit.mutate(
-      { creditReceivedCents: Math.round(parsed * 100) },
+      { creditReceivedCents },
       {
         onSuccess: (saved) => {
           afterCommit(() => {
@@ -538,7 +545,7 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               title: 'Credit recorded',
               description:
                 (saved.creditShortfallCents ?? 0) > 0
-                  ? `${formatCents(saved.creditShortfallCents ?? 0, saved.currency)} less than expected — worth querying.`
+                  ? `${formatCents(saved.creditShortfallCents ?? 0, saved.currency)} less than expected: worth querying.`
                   : 'Settled in full.',
               type: (saved.creditShortfallCents ?? 0) > 0 ? 'warning' : 'success',
             });
@@ -559,7 +566,7 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       color: 'danger',
     });
     if (!ok) return;
-    close.mutate('No credit expected — written off.', {
+    close.mutate('No credit expected: written off.', {
       onSuccess: () => {
         afterCommit(() => {
           toast.add({ title: `${data.number} written off`, type: 'info' });
@@ -605,7 +612,7 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   };
 
   return (
-    <div className={`${PANE_SHELL} overflow-y-auto`}>
+    <div className={PANE_SHELL_SCROLL}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Heading level={2} className="text-lg">
           <span className="font-mono">{data.number}</span> · {data.supplierName ?? 'Supplier'}
@@ -746,15 +753,11 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               <FieldLabel>They credited</FieldLabel>
               <FieldControl
                 render={
-                  <Input
+                  <MoneyTextInput
                     color="module"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    value={creditAmount}
-                    onChange={(event) => {
-                      setCreditAmount(event.target.value);
-                    }}
+                    aria-label="What they credited you"
+                    text={creditAmount}
+                    onTextChange={setCreditAmount}
                   />
                 }
               />

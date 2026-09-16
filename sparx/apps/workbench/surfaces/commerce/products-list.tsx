@@ -45,7 +45,10 @@ import {
   formatDate,
   priceLabel,
   productState,
+  unfindableProductCount,
   useProducts,
+  useReindexSearch,
+  useSearchStatus,
   type ProductRow,
   type ProductSortKey,
   type ProductStatus,
@@ -90,9 +93,7 @@ function emptyAdvice(search: string, filterLabel: string | null): string {
   const parts: string[] = [];
   if (search) parts.push('Try part of the product name, its web address, or the brand.');
   if (filterLabel) {
-    parts.push(
-      `You are only seeing products marked “${filterLabel}” — switch to All for the rest.`
-    );
+    parts.push(`You are only seeing products marked “${filterLabel}”. Switch to All for the rest.`);
   }
   return parts.join(' ');
 }
@@ -182,6 +183,15 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
     </th>
   );
 
+  // Whether searching can actually find this catalog. A COUNT of documents is
+  // not the answer: twelve documents look exactly like sixteen until something
+  // knows there should be sixteen. `productsMissing` is that something, and
+  // null from it means nothing measured — which must render as silence, never
+  // as "none missing".
+  const searchStatus = useSearchStatus();
+  const unfindable = unfindableProductCount(searchStatus.data);
+  const reindex = useReindexSearch();
+
   const open = (product: ProductRow, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.product.detail', { id: product.id }, { target: targetFor(event) });
   };
@@ -237,7 +247,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 color="module"
                 size="sm"
                 className="ml-auto shrink-0 whitespace-nowrap"
-                title="Add a product — hold Shift to open alongside, Alt for a new window"
+                title="Add a product: hold Shift to open alongside, Alt for a new window"
                 onClick={create}
               >
                 <Plus className="size-4" aria-hidden />
@@ -286,6 +296,41 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
           </Alert>
         ) : null}
 
+        {unfindable !== null && unfindable > 0 ? (
+          // INFO, not warning. The storefront falls back to the catalog when
+          // this list is empty, so what is broken is the search box and the
+          // facets beside it rather than the whole shop.
+          <Alert color="info" className="m-2">
+            <AlertContent>
+              {/* The NUMBER goes in the heading. "Some of your products" is a
+                  sentence nobody can act on; four is checkable against a
+                  catalog the operator knows. */}
+              <AlertTitle>
+                {unfindable === 1
+                  ? 'Search cannot find one of your products'
+                  : `Search cannot find ${String(unfindable)} of your products`}
+              </AlertTitle>
+              <AlertDescription>
+                They are on the storefront and customers can buy them. What is not working is the
+                search box and the facets beside it, which look products up in a separate index that
+                these are missing from. A customer searching for one by name is told it does not
+                exist.
+              </AlertDescription>
+            </AlertContent>
+            <Button
+              size="sm"
+              color="info"
+              variant="soft"
+              loading={reindex.isPending}
+              onClick={() => {
+                reindex.mutate();
+              }}
+            >
+              Rebuild the index
+            </Button>
+          </Alert>
+        ) : null}
+
         {error && !staleAfterFailure ? (
           // A failed load REPLACES the table rather than rendering an empty one:
           // "No products yet" over a connection failure is a lie about the
@@ -293,7 +338,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Package className="size-6" aria-hidden />}
             title="Could not load your products"
-            description="This is a problem reaching the server. Your catalog is unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your catalog is unaffected. Nothing has been lost."
             actions={
               <Button
                 size="sm"

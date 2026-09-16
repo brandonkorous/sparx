@@ -57,6 +57,11 @@ const ListDocumentsQuery = z.object({
   // invoice nobody sent and an unpaid one sent three weeks ago read the same on
   // the list and are different problems.
   sent: queryBool.optional(),
+  // Whether the money is actually late, asked of the due DATE. Orthogonal to
+  // status for the same reason `sent` is: the status column holds one word and
+  // cannot say both "part paid" and "three weeks late", and nothing rewrites it
+  // when a date passes. The shipped "Overdue" saved view points here.
+  pastDue: queryBool.optional(),
   includeDeleted: queryBool.optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
@@ -147,6 +152,7 @@ const documentRoutes: FastifyPluginAsync = (app) => {
       propertyIds: reachableSiteIds(auth),
       status: q.status,
       sent: q.sent,
+      pastDue: q.pastDue,
       includeDeleted: q.includeDeleted,
       // The service speaks limit/offset; `default(50)`/`default(0)` apply when omitted.
       ...(q.take !== undefined ? { limit: q.take } : {}),

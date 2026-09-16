@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-music-school',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Music School',
   summary:
-    'A warm, all-ages music-school site — a cream palette, a burgundy primary and a friendly serif display — with online booking for free trial lessons from day one. Installs a working booking flow: a real menu of private lessons (piano, guitar, voice, violin) and a group class, three teachers you book by name matched with a lesson room, and a no-show policy. Ships as "Crescendo Music School", an encouraging community school for every age and level.',
+    'A warm, all-ages music-school site (a cream palette, a burgundy primary and a friendly serif display) with online booking for free trial lessons from day one. Installs a working booking flow: a real menu of private lessons (piano, guitar, voice, violin) and a group class, three teachers you book by name matched with a lesson room, and a no-show policy. Ships as "Crescendo Music School", an encouraging community school for every age and level.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

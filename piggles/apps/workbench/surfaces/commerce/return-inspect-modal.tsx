@@ -72,15 +72,22 @@ export function InspectReturnModal({
     );
   };
 
+  // Already settled, so the sentence about settling cannot be true here.
+  const settled = detail.status === 'refunded' || detail.status === 'exchanged';
+
   return (
     <ActionDialog
       open={open}
       onClose={onClose}
-      title="Record what came back"
+      title={settled ? 'Say what came back' : 'Record what came back'}
       // "…when you settle the refund" was wrong on an exchange, where no refund
       // is ever settled and the restock would then have had no trigger at all
       // (issue 220). What actually puts it back is the decision below.
-      description="Note the condition of each item. Anything you mark fit to resell goes back into your stock once you say what happens to it."
+      description={
+        settled
+          ? 'Note the condition of each item. This return is already finished, so no money moves. What you record puts the goods on your returns bench, where you decide whether they go back on sale.'
+          : 'Note the condition of each item. Anything you mark fit to resell goes back into your stock once you say what happens to it.'
+      }
       submitLabel="Save the check"
       busy={inspect.isPending}
       onSubmit={submit}
@@ -116,7 +123,7 @@ export function InspectReturnModal({
                   <Checkbox
                     color="module"
                     checked={row.restockable}
-                    aria-label={`Fit to resell — ${it.orderItemName ?? 'item'}`}
+                    aria-label={`Fit to resell: ${it.orderItemName ?? 'item'}`}
                     onChange={(event) => {
                       setRows((current) => ({
                         ...current,

@@ -94,7 +94,7 @@ export function CancelRow({
       <div className="flex min-w-0 flex-col gap-0.5">
         <Text className="text-base font-medium">Cancel this order</Text>
         <Text className="text-sm">
-          Marks it as cancelled so nothing more is sent. Any money already taken stays until you
+          Marks it as canceled so nothing more is sent. Any money already taken stays until you
           refund it, and the order cannot be reopened afterwards.
         </Text>
       </div>

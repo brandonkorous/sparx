@@ -93,7 +93,7 @@ export const Timezone = z
         return false;
       }
     },
-    { message: 'Not a recognised timezone name (for example: America/Denver).' }
+    { message: 'Not a recognized timezone name (for example: America/Denver).' }
   );
 
 // ─────────────────────────────────────────────────────────────────────────

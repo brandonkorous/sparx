@@ -317,16 +317,14 @@ async function repairThemeUnits(): Promise<void> {
 
 async function main() {
   if (REPAIR_THEMES) {
-    console.log(APPLY ? 'APPLYING theme repair.\n' : 'DRY RUN — nothing written.\n');
+    console.log(APPLY ? 'APPLYING theme repair.\n' : 'DRY RUN. Nothing written.\n');
     await repairThemeUnits();
     return;
   }
 
   const targets = await findTargets();
 
-  console.log(
-    APPLY ? 'APPLYING — this deletes authored content.\n' : 'DRY RUN — nothing written.\n'
-  );
+  console.log(APPLY ? 'APPLYING. This deletes authored content.\n' : 'DRY RUN. Nothing written.\n');
   if (ONLY_TENANT) console.log(`filtered to tenant: ${ONLY_TENANT}\n`);
 
   if (targets.length === 0) {

@@ -210,7 +210,7 @@ async function createOnce(
     const outputVariantId = bom?.outputVariantId ?? input.outputVariantId;
     if (!outputVariantId) {
       throw new InventoryValidationError(
-        'Say what is being made — either pick a recipe or name the item.',
+        'Say what is being made. Either pick a recipe or name the item.',
         [{ field: 'outputVariantId', message: 'no output' }]
       );
     }
@@ -219,7 +219,7 @@ async function createOnce(
     // un-archiving a recipe to disassemble one unit.
     if (kind === 'assemble' && !bom) {
       throw new InventoryValidationError(
-        'Building something needs a recipe — pick the bill of materials to build to.',
+        'Building something needs a recipe. Pick the bill of materials to build to.',
         [{ field: 'bomId', message: 'required for an assembly' }]
       );
     }
@@ -476,7 +476,7 @@ export async function completeAssemblyOrder(
     const quantity = input.quantity ?? order.quantityPlanned;
     if (quantity > order.quantityPlanned) {
       throw new InventoryValidationError(
-        `This run was planned for ${String(order.quantityPlanned)}. To make more, raise another run — a run that quietly grew is one nobody scheduled the parts for.`,
+        `This run was planned for ${String(order.quantityPlanned)}. To make more, raise another run: a run that quietly grew is one nobody scheduled the parts for.`,
         [{ field: 'quantity', message: 'more than planned' }]
       );
     }
@@ -837,7 +837,7 @@ async function loadWorkable(
     throw new InventoryConflictError(
       order.status === 'completed'
         ? `${order.number} is finished. A correction is a new run or a stock count, not a change here.`
-        : `${order.number} was cancelled and can no longer be worked.`,
+        : `${order.number} was canceled and can no longer be worked.`,
       'status'
     );
   }
@@ -898,7 +898,7 @@ async function assertEnoughAvailable(
       select: { sku: true },
     });
     throw new InventoryConflictError(
-      `Not enough ${variant?.sku ?? 'stock'} to commit to this run — it needs ${String(params.quantity)} and ${String(available)} ${available === 1 ? 'is' : 'are'} free here.`,
+      `Not enough ${variant?.sku ?? 'stock'} to commit to this run: it needs ${String(params.quantity)} and ${String(available)} ${available === 1 ? 'is' : 'are'} free here.`,
       'quantity'
     );
   }

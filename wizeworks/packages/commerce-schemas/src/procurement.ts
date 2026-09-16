@@ -427,7 +427,7 @@ export const CreateSupplierBillInput = z.object({
     .refine((v) => Number(v) > 0, 'A rate has to be greater than zero')
     .optional(),
   taxCents: z.number().int().nonnegative().max(1_000_000_000).default(0),
-  shippingCents: z.number().int().nonnegative().max(1_000_000_000).default(0),
+  freightCents: z.number().int().nonnegative().max(1_000_000_000).default(0),
   notes: z.string().max(2000).optional(),
   lines: z.array(SupplierBillLineInput).min(1).max(500),
 });
@@ -439,7 +439,7 @@ export const UpdateSupplierBillInput = z.object({
   billedAt: z.string().datetime().optional(),
   dueAt: z.string().datetime().nullable().optional(),
   taxCents: z.number().int().nonnegative().max(1_000_000_000).optional(),
-  shippingCents: z.number().int().nonnegative().max(1_000_000_000).optional(),
+  freightCents: z.number().int().nonnegative().max(1_000_000_000).optional(),
   notes: z.string().max(2000).nullable().optional(),
 });
 export type UpdateSupplierBillInput = z.infer<typeof UpdateSupplierBillInput>;
@@ -484,18 +484,37 @@ export interface MatchLineInput {
   /** Null when there is no matching order line; 0 is a real answer meaning
    *  "ordered, billed, and nothing has turned up". */
   receivedQuantity: number | null;
+  /** Units of this order line already charged for on every OTHER live bill.
+   *
+   *  A purchase order that arrives in several drops is invoiced in several
+   *  invoices, so "what arrived" is not what THIS invoice is entitled to
+   *  charge for - what is LEFT is. Omit it (or pass 0) on a one-drop,
+   *  one-invoice order and the check behaves exactly as it always has. */
+  alreadyBilledQuantity?: number | null;
 }
 
 export interface MatchLineResult {
   verdict: MatchVerdict;
-  /** Billed minus received. Positive = billed for more than arrived. Null when
-   *  there is nothing to compare against. */
+  /** Billed minus what was LEFT to invoice (arrived, less whatever other live
+   *  bills already charged for). Positive = charged for more than is left, so
+   *  somebody is being billed twice or for goods that never came. Negative =
+   *  units that arrived and are on no invoice yet, which on a multi-drop order
+   *  is the normal state between deliveries. Null when there is nothing to
+   *  compare against. */
   quantityVarianceUnits: number | null;
   /** Billed minus agreed, per unit. Positive = they charged more. */
   priceVarianceCents: number | null;
-  /** The money at stake on this line: what the variance is worth. Positive means
-   *  the bill is higher than the goods justify. */
+  /** The money wrongly charged ON THIS LINE: units charged for that are not
+   *  available to invoice, plus the price gap on the units that are. Positive
+   *  means the bill is higher than the goods justify.
+   *
+   *  A SHORTFALL contributes nothing to it. Nothing is at stake in a unit
+   *  nobody has invoiced — see `uninvoicedCents`. */
   amountVarianceCents: number | null;
+  /** What the units that arrived and are on no invoice yet are worth, at the
+   *  agreed price. Zero on a line that charges for everything left. Null when
+   *  there is no order line to compare against. */
+  uninvoicedCents: number | null;
   /** True for anything a person should look at before this is paid. */
   needsReview: boolean;
 }
@@ -511,6 +530,27 @@ export interface MatchLineResult {
  *
  * Price is compared against the AGREED price on the order rather than against
  * anything on the delivery, because that is what was actually negotiated.
+ *
+ * Three things this gets right that a naive billed-vs-received does not:
+ *
+ * 1. IT COUNTS THE OTHER INVOICES. An order that arrives in two drops is
+ *    invoiced twice, and each invoice may only charge for what is left. Compare
+ *    against the raw received total and every invoice but the last reads short;
+ *    worse, a supplier who invoices the SAME drop twice matches perfectly both
+ *    times, because neither invoice on its own exceeds what arrived.
+ *
+ * 2. PRICE IS CHECKED BEFORE A SHORTFALL, NOT AFTER. A partial invoice that
+ *    also overcharges used to report only the quantity gap, because the
+ *    quantity branch was tested first and won. The quantity gap on a partial
+ *    invoice is expected; the overcharge is the thing that costs money. Money
+ *    first.
+ *
+ * 3. BEING CHARGED FOR LESS THAN ARRIVED NEVER STOPS A PAYMENT. It is reported,
+ *    because knowing another invoice is coming and roughly what it is worth is
+ *    genuinely useful, but it is information rather than a disagreement. There
+ *    is nothing to accept and nothing to query: paying the smaller invoice
+ *    costs the business nothing, and blocking it forces somebody either to sign
+ *    off a variance that never happened or to dispute a correct invoice.
  */
 export function matchBillLine(line: MatchLineInput): MatchLineResult {
   const billedQty = Math.max(0, Math.floor(finite(line.billedQuantity)));
@@ -524,31 +564,50 @@ export function matchBillLine(line: MatchLineInput): MatchLineResult {
       quantityVarianceUnits: null,
       priceVarianceCents: null,
       amountVarianceCents: billedQty * billedCost,
+      uninvoicedCents: null,
       needsReview: true,
     };
   }
 
   const received = Math.max(0, Math.floor(finite(line.receivedQuantity ?? 0)));
+  const alreadyBilled = Math.max(0, Math.floor(finite(line.alreadyBilledQuantity ?? 0)));
+  // What THIS invoice may charge for. Never negative: if other invoices have
+  // already covered everything that arrived, there is nothing left, and any
+  // quantity here is one too many.
+  const billable = Math.max(0, received - alreadyBilled);
   const agreed = Math.round(finite(line.orderedUnitCostCents ?? 0));
-  const qtyVariance = billedQty - received;
+  const qtyVariance = billedQty - billable;
   const priceVariance = billedCost - agreed;
 
   // Valued at the agreed price so the two variances do not double-count each
   // other: the quantity gap is worth what those units should have cost, and the
-  // price gap is worth the overcharge on the units that did arrive.
-  const amountVariance = qtyVariance * agreed + priceVariance * Math.min(billedQty, received);
+  // price gap is worth the overcharge on the units this invoice may charge for.
+  //
+  // A SHORTFALL is deliberately excluded. This figure reads on screen as the
+  // money at stake, and folding in the value of goods nobody has invoiced yet
+  // made an overcharging PARTIAL invoice report a large sum in the tenant's
+  // favour: billed 2 at $20 against an agreed $18 on a line where 40 arrived
+  // came out at -$680.00, thanking a supplier for a $4.00 overcharge.
+  const amountVariance =
+    Math.max(0, qtyVariance) * agreed + priceVariance * Math.min(billedQty, billable);
+  // The shortfall, on its own terms: what has arrived, is on no invoice, and is
+  // therefore still to be charged for.
+  const uninvoicedCents = Math.max(0, -qtyVariance) * agreed;
 
+  // Order matters. Anything that costs money is decided BEFORE a shortfall,
+  // because a shortfall on a partial invoice is the expected state and would
+  // otherwise hide an overcharge sitting on the same line.
   const verdict: MatchVerdict =
     received === 0 && billedQty > 0
       ? 'not_received'
       : qtyVariance > 0
         ? 'over_billed'
-        : qtyVariance < 0
-          ? 'under_billed'
-          : priceVariance > MATCH_PRICE_TOLERANCE_CENTS
-            ? 'price_higher'
-            : priceVariance < -MATCH_PRICE_TOLERANCE_CENTS
-              ? 'price_lower'
+        : priceVariance > MATCH_PRICE_TOLERANCE_CENTS
+          ? 'price_higher'
+          : priceVariance < -MATCH_PRICE_TOLERANCE_CENTS
+            ? 'price_lower'
+            : qtyVariance < 0
+              ? 'under_billed'
               : 'matched';
 
   return {
@@ -556,10 +615,17 @@ export function matchBillLine(line: MatchLineInput): MatchLineResult {
     quantityVarianceUnits: qtyVariance,
     priceVarianceCents: priceVariance,
     amountVarianceCents: amountVariance,
-    // `under_billed` and `price_lower` are in the tenant's favour and still need
-    // a look: a supplier who under-bills today issues a correction next month,
-    // and a business that spent the difference is the one that gets hurt.
-    needsReview: verdict !== 'matched',
+    uninvoicedCents,
+    // `price_lower` is in the tenant's favour and still needs a look: a
+    // supplier who undercharges today issues a correction next month, and a
+    // business that spent the difference is the one that gets hurt.
+    //
+    // `under_billed` does NOT, and that is the difference. It is not a supplier
+    // charging the wrong price for what they sent; it is goods that have
+    // arrived and have not been invoiced yet, which on any order that arrives
+    // in more than one drop is simply where the paperwork is up to. Reported,
+    // never blocking.
+    needsReview: verdict !== 'matched' && verdict !== 'under_billed',
   };
 }
 

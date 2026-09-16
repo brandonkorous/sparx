@@ -59,6 +59,7 @@ import {
   formatCents,
   formatCentsSigned,
   formatRate,
+  profitOutcome,
   kindColor,
   kindLabel,
 } from './format';
@@ -182,13 +183,17 @@ export function ProfitSurface({ ctx }: { ctx: SurfaceContext }) {
   const range = useMemo(() => rangeFor(period), [period]);
   const recompute = useRecomputeProfit();
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useProfit({
+  const { data, isPending, isError, isFetching, refetch } = useProfit({
     from: range.from,
     to: range.to,
     series: true,
   });
 
   const currency = 'USD';
+  // Milliseconds, because the timestamp control speaks numbers. Null stays null:
+  // "never worked out" is not a date and must not become one.
+  const stamp = data?.current.computedAt;
+  const computedAt = stamp ? Date.parse(stamp) : null;
 
   const rebuild = () => {
     recompute.mutate(range, {
@@ -260,7 +265,12 @@ export function ProfitSurface({ ctx }: { ctx: SurfaceContext }) {
         refresh={
           <RefreshButton
             isFetching={isFetching}
-            updatedAt={data ? dataUpdatedAt : undefined}
+            // The FIGURES age, not the browser fetch. These are a cache rebuilt
+            // once a day (revenue 06:00 UTC, profit 06:45), so passing the query
+            // timestamp told a shop opening this at 5pm that it was "updated just
+            // now" over numbers from breakfast. Undefined when nothing has ever
+            // been worked out — there is no date to give.
+            updatedAt={computedAt ?? undefined}
             onRefresh={() => {
               void refetch();
             }}
@@ -290,7 +300,7 @@ export function ProfitSurface({ ctx }: { ctx: SurfaceContext }) {
               module={MODULE}
               icon={<Icon glyph={faArrowTrendUp} className="size-6" aria-hidden />}
               title="Nothing to measure in this period"
-              description="No money came in and no costs were recorded, so there is no profit figure to give you — which is not the same as breaking even. Record some spending, or pick a wider period."
+              description="No money came in and no costs were recorded, so there is no profit figure to give you, which is not the same as breaking even. Record some spending, or pick a wider period."
               actions={
                 <Button
                   size="sm"
@@ -335,6 +345,17 @@ function ProfitBody({
   const lost = current.netProfitCents < 0;
   const margin = revenue > 0 ? current.netProfitCents / revenue : null;
 
+  // The word says which way it went; the number says how big it was. Both halves
+  // come from one call so they cannot drift apart (see `profitOutcome`).
+  const headline = profitOutcome(current.netProfitCents, currency, {
+    kept: 'You kept',
+    lost: 'You lost',
+  });
+  const bottomLine = profitOutcome(current.netProfitCents, currency, {
+    kept: 'What you kept',
+    lost: 'What you lost',
+  });
+
   // The direct cost of delivering the work: goods consumed, what a marketplace
   // kept, and the ledger's cost-of-sale categories. One number in the summary
   // because that is the gross-profit subtrahend, broken out in the lines below.
@@ -344,12 +365,12 @@ function ProfitBody({
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
       {/* The answer. Color first, number second, explanation third. */}
       <Card className="p-5">
-        <Text className="text-sm">{lost ? 'You lost' : 'You kept'}</Text>
+        <Text className="text-sm">{headline.label}</Text>
         <Heading
           level={2}
           className={`mt-1 text-4xl font-semibold tabular-nums ${lost ? 'text-error' : 'text-success'}`}
         >
-          {formatCentsSigned(current.netProfitCents, currency)}
+          {headline.amount}
         </Heading>
         <div className="mt-2 flex flex-wrap items-center gap-3">
           <Movement
@@ -360,7 +381,8 @@ function ProfitBody({
           />
           {margin !== null ? (
             <Badge color={lost ? 'danger' : 'success'} variant="soft" size="sm">
-              {formatRate(margin)} of everything that came in
+              {/* The size of the share. "You lost" above already said which way. */}
+              {formatRate(Math.abs(margin))} of everything that came in
             </Badge>
           ) : null}
         </div>
@@ -396,7 +418,7 @@ function ProfitBody({
           <Progress color="success" value={100} max={100} aria-label="Money in" />
           <div className="flex flex-wrap items-center gap-3">
             <Text className="text-sm">
-              Read straight from your orders and paid invoices — never typed in twice.
+              Read straight from your orders and paid invoices, never typed in twice.
             </Text>
             <Movement
               current={revenue}
@@ -418,7 +440,7 @@ function ProfitBody({
           />
           <Line
             label="Selling fees"
-            detail="What a marketplace kept out of each sale. Card processing fees are not included — the platform does not capture them yet."
+            detail="What a marketplace kept out of each sale. Card processing fees are not included: the platform does not capture them yet."
             cents={current.feeCents}
             currency={currency}
             share={shareOf(current.feeCents, revenue)}
@@ -426,7 +448,7 @@ function ProfitBody({
           />
           <Line
             label={kindLabel('cost_of_sale')}
-            detail="Costs you recorded that only happened because you did the job — parts, materials, a subcontractor."
+            detail="Costs you recorded that only happened because you did the job: parts, materials, a subcontractor."
             cents={current.costOfSaleCents}
             currency={currency}
             share={shareOf(current.costOfSaleCents, revenue)}
@@ -462,7 +484,7 @@ function ProfitBody({
           />
           <Line
             label={kindLabel('operating')}
-            detail="Rent, insurance, software, fuel, marketing — what it costs to be open whether or not you sell anything."
+            detail="Rent, insurance, software, fuel, marketing: what it costs to be open whether or not you sell anything."
             cents={current.operatingCents}
             currency={currency}
             share={shareOf(current.operatingCents, revenue)}
@@ -472,11 +494,11 @@ function ProfitBody({
 
         <div className="border-base-300 flex flex-col gap-1.5 border-t pt-5">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <Text className="font-semibold">{lost ? 'What you lost' : 'What you kept'}</Text>
+            <Text className="font-semibold">{bottomLine.label}</Text>
             <Text
               className={`text-xl font-semibold tabular-nums ${lost ? 'text-error' : 'text-success'}`}
             >
-              {formatCentsSigned(current.netProfitCents, currency)}
+              {bottomLine.amount}
             </Text>
           </div>
         </div>
@@ -488,7 +510,7 @@ function ProfitBody({
             {formatCents(current.unallocatedCents, currency)} was not charged to any job
           </Text>
           <Text className="mt-1 text-sm">
-            That is normal — rent and insurance belong to the business, not to one repair. But if a
+            That is normal: rent and insurance belong to the business, not to one repair. But if a
             job&apos;s parts are sitting in here, that job will look more profitable than it was.
             Charging costs to jobs as you record them is what makes the job figures trustworthy.
           </Text>
@@ -498,7 +520,7 @@ function ProfitBody({
       <Text className="px-1 pb-2 text-sm">
         {productCopy(
           'finance.profit.footnote',
-          "Figures are rebuilt nightly and whenever you press Rebuild. Piggles is not accounting software — this is your operating picture, and your accountant's books stay the record."
+          "Figures are rebuilt nightly and whenever you press Rebuild. Piggles is not accounting software. This is your operating picture, and your accountant's books stay the record."
         )}
       </Text>
     </div>

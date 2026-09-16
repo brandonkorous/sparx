@@ -97,9 +97,9 @@ import { productCopy, productCopyWith } from '../../lib/product';
  *  `recount` puts the differences in the shrinkage report, where a stock-take
  *  belongs, and `manual` does not. */
 const REASONS = [
-  { value: 'recount', label: 'A stock count — differences count as shrinkage' },
-  { value: 'manual', label: 'A correction — keep it out of the shrinkage figures' },
-  { value: 'opening', label: 'What we started with — the first quantities on the books' },
+  { value: 'recount', label: 'A stock count: differences count as shrinkage' },
+  { value: 'manual', label: 'A correction: keep it out of the shrinkage figures' },
+  { value: 'opening', label: 'What we started with: the first quantities on the books' },
   { value: 'receive', label: 'Goods arriving' },
   { value: 'damage', label: 'Damaged stock' },
   { value: 'loss', label: 'Stock lost' },
@@ -160,7 +160,7 @@ function MappingStep({
               resemblance
             </AlertTitle>
             <AlertDescription>
-              {preview.mapping.needsConfirmation.join(', ')} — worth a look before you go on.
+              {preview.mapping.needsConfirmation.join(', ')}: worth a look before you go on.
               Everything else matched exactly.
             </AlertDescription>
           </AlertContent>
@@ -306,7 +306,7 @@ function PlanTable({
               {newItems.length > 0
                 ? productCopyWith(
                     'inventory.import.newCodes',
-                    `${plural(newItems.length, 'row carries a code', 'rows carry codes')} Piggles has never seen. Create them as new items, or leave them out — either way the decision is recorded with the import.`,
+                    `${plural(newItems.length, 'row carries a code', 'rows carry codes')} Piggles has never seen. Create them as new items, or leave them out. Either way the decision is recorded with the import.`,
                     { rows: plural(newItems.length, 'row carries a code', 'rows carry codes') }
                   )
                 : 'Sort these out below, or fix them in the file and upload it again. A missing code usually means a whole column is off by one.'}
@@ -534,7 +534,7 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
               title: `${plural(created.rowsTotal, 'row', 'rows')} read`,
               description:
                 created.rowsInvalid > 0
-                  ? `${plural(created.rowsInvalid, 'row', 'rows')} need sorting out — nothing has been applied.`
+                  ? `${plural(created.rowsInvalid, 'row', 'rows')} need sorting out. Nothing has been applied.`
                   : `${plural(created.rowsToApply, 'row', 'rows')} would change. Nothing has been applied yet.`,
               type: created.rowsInvalid > 0 ? 'warning' : 'info',
             });
@@ -665,7 +665,7 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
                   ))}
                 </NativeSelect>
                 <Text className="text-sm">
-                  A row with its own location column always wins. Nothing is guessed — a row that
+                  A row with its own location column always wins. Nothing is guessed: a row that
                   names no location, with no default chosen here, is reported as an error rather
                   than landing in the wrong building.
                 </Text>
@@ -764,8 +764,8 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
 
             <Text className="text-sm">
               The file needs a code column and either a count or a change. Download what you have
-              above and you get exactly those columns, already filled in — count the shelves,
-              correct the numbers that are wrong, upload it back.
+              above and you get exactly those columns, already filled in: count the shelves, correct
+              the numbers that are wrong, upload it back.
             </Text>
           </FormSection>
 
@@ -1054,7 +1054,7 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
                                     batch.rowsApplied,
                                     'change',
                                     'changes'
-                                  )} it made will be reversed with an opposite movement. Nothing is deleted — the original entries stay on the record, with the undo beside them. Any items it created stay too.`,
+                                  )} it made will be reversed with an opposite movement. Nothing is deleted: the original entries stay on the record, with the undo beside them. Any items it created stay too.`,
                                   confirmLabel: 'Undo it',
                                   cancelLabel: 'Leave it',
                                   color: 'danger',

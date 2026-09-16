@@ -231,7 +231,7 @@ function RuleRow({
             }}
           />
         ) : (
-          <Text className="self-center text-sm">Nothing to compare — this just checks it.</Text>
+          <Text className="self-center text-sm">Nothing to compare. This just checks it.</Text>
         )}
       </div>
 
@@ -344,7 +344,7 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
     const unnamed = rules.findIndex((r) => r.label.trim() === '');
     if (unnamed >= 0) {
       setError(
-        `Rule ${String(unnamed + 1)} needs a short description — it is what people see when they ask why somebody has the score they have.`
+        `Rule ${String(unnamed + 1)} needs a short description. It is what people see when they ask why somebody has the score they have.`
       );
       return;
     }
@@ -393,7 +393,7 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
         toast.add({
           title:
             result.changed === 0
-              ? 'Nothing moved — every score already matched your rules'
+              ? 'Nothing moved: every score already matched your rules'
               : `${String(result.changed)} of ${String(result.scanned)} scores changed`,
           type: 'success',
         });
@@ -468,7 +468,7 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title={`How you score ${label?.label.toLowerCase() ?? 'records'}`}
-            description="Every rule that fits adds its points up. Write them one at a time — the order does not matter, and each one stands on its own."
+            description="Every rule that fits adds its points up. Write them one at a time: the order does not matter, and each one stands on its own."
             action={
               <Button
                 size="sm"
@@ -485,8 +485,8 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
           >
             {rules.length === 0 ? (
               <Text className="text-base">
-                Nothing scores yet, so everybody sits at zero. Add a rule — something like “has
-                bought before: +20” — and the number starts meaning something.
+                Nothing scores yet, so everybody sits at zero. Add a rule (something like “has
+                bought before: +20”) and the number starts meaning something.
               </Text>
             ) : (
               <div className="flex flex-col gap-3">
@@ -520,7 +520,7 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
                   setName(e.target.value);
                 }}
               />
-              <FieldDescription>For you — it shows on the record’s score panel.</FieldDescription>
+              <FieldDescription>For you. It shows on the record’s score panel.</FieldDescription>
             </Field>
 
             <Field>
@@ -568,8 +568,8 @@ export function ScoringSurface({ ctx }: { ctx: SurfaceContext }) {
               />
               <FieldDescription>
                 Leave blank for none. Without it a score is a lifetime total, so somebody who was
-                keen a year ago outranks somebody who replied this morning — and the top of your
-                list slowly stops changing.
+                keen a year ago outranks somebody who replied this morning, and the top of your list
+                slowly stops changing.
               </FieldDescription>
             </Field>
           </FormSection>
@@ -627,7 +627,7 @@ function PreviewSection({
     return (
       <FormSection title="Trying it out">
         <Text className="text-base">
-          Save this, then open any deal — its score shows on the board, with the reasons behind it.
+          Save this, then open any deal. Its score shows on the board, with the reasons behind it.
         </Text>
       </FormSection>
     );
@@ -665,7 +665,7 @@ function PreviewSection({
 
           {breakdown.reasons.length === 0 ? (
             <Text className="text-base">
-              None of your rules fit this person, so they score zero. That is a real answer — but if
+              None of your rules fit this person, so they score zero. That is a real answer, but if
               it is true of everybody you try, the rules are asking about things your records do not
               hold.
             </Text>

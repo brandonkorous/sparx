@@ -4,7 +4,7 @@
 //
 // ── The question this answers ────────────────────────────────────────────
 //
-// "The part I budgeted at £4.00 has been landing at £4.62 all quarter." Nobody
+// "The part I budgeted at $4.00 has been landing at $4.62 all quarter." Nobody
 // discovers that from an average cost, because an average is designed to absorb
 // it — the whole point of the number is to smooth the drift out. So the drift
 // gets absorbed, the margin on that line quietly halves, and the first anyone
@@ -12,7 +12,7 @@
 //
 // ── Against the LANDED cost, deliberately ────────────────────────────────
 //
-// A supplier who holds their price and moves the shipping onto you has not held
+// A supplier who holds their price and moves the freight onto you has not held
 // their price. Comparing the plan to the invoice line would agree with them.
 // This compares it to what the goods actually cost to get onto the shelf, which
 // is the number the business lives with.
@@ -66,7 +66,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 /** A variance said as a direction and a size, never as a bare signed number —
- *  "+£412" makes a reader work out whether up is good. */
+ *  "+$412" makes a reader work out whether up is good. */
 function varianceText(row: PriceVarianceRow, currency: string): string {
   if (row.standardUnitCostCents === null) return 'No planned cost set';
   const size = formatCents(Math.abs(row.varianceCents), currency);
@@ -96,7 +96,7 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Scale className="size-6" aria-hidden />}
           title="Could not work out your costs against plan"
-          description="This is a problem reaching the server. Your deliveries and their costs are unaffected — the comparison just could not be worked out."
+          description="This is a problem reaching the server. Your deliveries and their costs are unaffected: the comparison just could not be worked out."
         />
       );
     }
@@ -135,9 +135,9 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
             What you planned against what you paid
           </Heading>
           <Text>
-            Everything that arrived in the period, compared with the cost you had planned for it —
+            Everything that arrived in the period, compared with the cost you had planned for it,
             including what it cost to get here, because a supplier who holds their price and moves
-            the shipping onto you has not held their price.
+            the freight onto you has not held their price.
           </Text>
         </div>
 
@@ -173,7 +173,7 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
               <StatDesc>
                 {data.totalVarianceCents === 0
                   ? 'Exactly what you planned for'
-                  : `${over ? 'More' : 'Less'} than planned${pct === null ? '' : ` — ${String(Math.abs(pct))}%`}`}
+                  : `${over ? 'More' : 'Less'} than planned${pct === null ? '' : ` (${String(Math.abs(pct))}%)`}`}
               </StatDesc>
             </Stat>
           </Stats>
@@ -202,7 +202,7 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
               Where the difference is
             </Heading>
             <Text className="text-sm">
-              Biggest gaps first. These are the lines worth a conversation with the supplier — or a
+              Biggest gaps first. These are the lines worth a conversation with the supplier, or a
               look at whether the price you charge has kept up.
             </Text>
           </div>

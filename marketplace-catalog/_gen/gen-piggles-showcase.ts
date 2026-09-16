@@ -168,7 +168,7 @@ const GOLDEN_VENDOR = 'House Goods';
 const REWRITES: [string, string][] = [
     [
         'Your site, your store, your content, and your customers, all together, so you can run the whole business from one place. This is a starter you can make entirely your own.',
-        'Your site, your shop, your writing, and your customers — together, so you can run the whole business from one place. This is a starter you can make entirely your own.',
+        'Your site, your shop, your writing, and your customers: together, so you can run the whole business from one place. This is a starter you can make entirely your own.',
     ],
     // Handles before display names, and both before the identity rules.
     ...DEMO_GOODS.map(([handle]): [string, string] => [handle, `${DEMO_SLUG}-${handle}`]),
@@ -201,7 +201,7 @@ function assertUnbranded(label: string, part: unknown): void {
         if (hits) {
             throw new Error(
                 `gen-piggles-showcase: ${hits.length} unhandled "${needle}" string(s) remain in ` +
-                `${label} — add a rule to REWRITES rather than shipping a bundle that names ` +
+                `${label}: add a rule to REWRITES rather than shipping a bundle that names ` +
                 'another business.'
             );
         }
@@ -302,7 +302,7 @@ async function main(): Promise<void> {
 
     const name = 'Universal Starter';
     const summary =
-        'The complete starter — a faceted shop, a journal, a booking page, and a wholesale ' +
+        'The complete starter: a faceted shop, a journal, a booking page, and a wholesale ' +
         'page. Install it, make it yours, and launch a polished working site in minutes.';
 
     await fs.writeFile(join(outDir, 'site.json'), json(healedSite(site)));
@@ -329,7 +329,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: ${JSON.stringify(KEY)},
-  version: '1.3.0',
+  version: '1.3.1',
   name: ${JSON.stringify(name)},
   summary: ${JSON.stringify(summary)},
   vertical: 'retail',
@@ -366,8 +366,8 @@ export default blueprint;
             category: 'blueprint',
             slug: KEY,
             name,
-            version: '1.3.0',
-            tagline: 'A complete multi-module starter — shop, journal, bookings, and wholesale.',
+            version: '1.3.1',
+            tagline: 'A complete multi-module starter. Shop, journal, bookings, and wholesale.',
             description: summary,
             payload: 'blueprint.ts',
             // The counterpart of the sparx showcase family's own restriction. Each
@@ -379,7 +379,7 @@ export default blueprint;
             requires: { modules: ['builder', 'commerce', 'cms', 'crm', 'email'] },
             media: [
                 { file: 'media/icon.png', kind: 'icon', alt: `${name} icon` },
-                { file: 'media/preview.png', kind: 'preview', alt: `${name} — home page preview` },
+                { file: 'media/preview.png', kind: 'preview', alt: `${name}: home page preview` },
             ],
             author: { displayName: 'WizeWorks' },
             accent: LIGHT['--color-primary'],
@@ -393,7 +393,7 @@ export default blueprint;
             await fs.access(dst);
         } catch {
             await fs.copyFile(join(goldenDir, 'media', file), dst);
-            console.log(`  ! ${file} copied from the sparx bundle — PLACEHOLDER, needs a Piggles shot`);
+            console.log(`  ! ${file} copied from the sparx bundle: PLACEHOLDER, needs a Piggles shot`);
         }
     }
 

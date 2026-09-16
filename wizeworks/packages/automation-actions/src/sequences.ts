@@ -55,7 +55,7 @@ export function installSequenceActions(): void {
     module: 'email',
     gates: [],
     manifestNote:
-      'external effect: enrols the customer into an email sequence whose steps enqueue suppression-checked ScheduledSends on their own clock; module-active + kill-switch gates apply',
+      'external effect: enrolls the customer into an email sequence whose steps enqueue suppression-checked ScheduledSends on their own clock; module-active + kill-switch gates apply',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       const cfg = SequenceConfig.parse(effect.config);
       // A sequence is customer-addressed: an add wired to a customerless trigger is

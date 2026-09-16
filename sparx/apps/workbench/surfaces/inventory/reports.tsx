@@ -53,7 +53,6 @@ import { formatCents, plural, useStockLocations } from './data';
 import {
   agingBucketLabel,
   agingBucketTone,
-  deadStockLevelCount,
   deadStockValueCents,
   rangeForDays,
   RANGE_PRESETS,
@@ -69,6 +68,7 @@ import {
   type InventorySummary,
   type ShrinkageReport,
   type TurnoverReport,
+  stillCaption,
 } from './reports-data';
 import { cogsReasonLabel, useCogsReport, useValuationAsOf } from './costing-data';
 
@@ -134,7 +134,6 @@ function Headline({
   const { valuation } = summary;
   const currency = valuation.currency;
   const deadValue = aging ? deadStockValueCents(aging) : null;
-  const deadLevels = aging ? deadStockLevelCount(aging) : 0;
   const turns = turnover ? turnoverHeadline(turnover) : null;
 
   return (
@@ -164,13 +163,7 @@ function Headline({
           >
             {deadValue === null ? '—' : formatCents(deadValue, currency)}
           </StatValue>
-          <StatDesc>
-            {deadValue === null
-              ? 'Working it out…'
-              : deadLevels === 0
-                ? 'Nothing has gone unsold for three months'
-                : `${plural(deadLevels, 'line', 'lines')} not sold in over 3 months`}
-          </StatDesc>
+          <StatDesc>{aging === undefined ? 'Working it out…' : stillCaption(aging)}</StatDesc>
         </Stat>
 
         <Stat>
@@ -195,7 +188,7 @@ function HealthCard({ summary }: { summary: InventorySummary }) {
           How your stock is looking
         </Heading>
         <Text className="text-sm">
-          Counted across every product and place — measured by what a shopper could actually buy.
+          Counted across every product and place: measured by what a shopper could actually buy.
         </Text>
       </div>
       <div className="grid grid-cols-3 gap-2">
@@ -500,8 +493,8 @@ function ShrinkageCard({
             What left without being sold
           </Heading>
           <Text className="text-sm">
-            Losses, breakages and shortfalls found at a count — added up and priced at what they
-            cost you.
+            Losses, breakages and shortfalls found at a count: added up and priced at what they cost
+            you.
           </Text>
         </div>
         {report.percentOfValuation === null ? null : (
@@ -629,7 +622,7 @@ function AsOfCard({ locationId }: { locationId: string }) {
           </Heading>
           <Text className="text-sm">
             The figure an accountant asks for at year end. Worked out from your stock history, so
-            any date works — not only the ones somebody remembered to record.
+            any date works, not only the ones somebody remembered to record.
           </Text>
         </div>
         <DateInput
@@ -675,7 +668,7 @@ function AsOfCard({ locationId }: { locationId: string }) {
                   {report.data.uncostedUnits === 1 ? ' it' : ' them'}
                 </AlertTitle>
                 <AlertDescription>
-                  Those units are counted but not valued, because nothing records what they cost —
+                  Those units are counted but not valued, because nothing records what they cost,
                   usually stock that was here before you started recording deliveries. The value
                   above is everything else.
                 </AlertDescription>
@@ -852,7 +845,7 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<BarChart3 className="size-6" aria-hidden />}
           title="Could not load your reports"
-          description="This is a problem reaching the server. Your stock and its history are unaffected — the figures just could not be worked out just now."
+          description="This is a problem reaching the server. Your stock and its history are unaffected: the figures just could not be worked out just now."
         />
       );
     }
@@ -875,13 +868,17 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Boxes className="size-6" aria-hidden />}
           title="Nothing to report on yet"
-          description="These figures appear once you have stock counted somewhere. Open a product and use its Stock panel to record how many you have — value, ageing and selling pace all build from there."
+          description="These figures appear once you have stock counted somewhere. Open a product and use its Stock panel to record how many you have: value, aging and selling pace all build from there."
         />
       );
     }
 
     const currency = data.valuation.currency;
     const deadStock = aging.data?.deadStock ?? [];
+    // Lines that have never sold at all. They are no longer counted as dead
+    // stock (they have not had the window to sell in), so the reassuring
+    // empty state has to know they exist rather than speak for them.
+    const neverSold = aging.data?.buckets.find((b) => b.bucket === 'never')?.levels ?? 0;
 
     return (
       <div className={COLUMN}>
@@ -890,7 +887,7 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
             Stock reports
           </Heading>
           <Text>
-            What your stock is worth, what is sitting still, and how fast it moves — the money side
+            What your stock is worth, what is sitting still, and how fast it moves: the money side
             of what you hold.
           </Text>
         </div>
@@ -929,15 +926,19 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
         {aging.isError ? (
           <Alert color="warning">
             <AlertContent>
-              <AlertTitle>Could not work out ageing just now</AlertTitle>
+              <AlertTitle>Could not work out aging just now</AlertTitle>
               <AlertDescription>
-                The rest of your figures are fine. Refresh to try the ageing breakdown again.
+                The rest of your figures are fine. Refresh to try the aging breakdown again.
               </AlertDescription>
             </AlertContent>
           </Alert>
         ) : aging.data ? (
           <>
             <AgeingCard report={aging.data} currency={currency} locationName={locationName} />
+            {/* "Everything has sold recently enough" is false for a shop where
+                nothing has sold at all — and after the dead-stock window started
+                being applied to never-sold lines too, that shop is exactly who
+                lands here. The aging buckets already count them. */}
             {deadStock.length > 0 ? (
               <DeadStockCard items={deadStock} currency={currency} onOpen={openItem} />
             ) : (
@@ -945,8 +946,11 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
                 <AlertContent>
                   <AlertTitle>Nothing is gathering dust</AlertTitle>
                   <AlertDescription>
-                    Everything you hold{locationName ? ` at ${locationName}` : ''} has sold recently
-                    enough not to count as dead stock. That is money working, not sitting.
+                    {neverSold > 0
+                      ? `Nothing here has sat longer than your dead-stock window. ${neverSold} ${
+                          neverSold === 1 ? 'line has' : 'lines have'
+                        } not sold at all yet, which is not the same thing as dead. They have not had the time.`
+                      : `Everything you hold${locationName ? ` at ${locationName}` : ''} has sold recently enough not to count as dead stock. That is money working, not sitting.`}
                   </AlertDescription>
                 </AlertContent>
               </Alert>
@@ -954,7 +958,7 @@ export function ReportsSurface({ ctx }: { ctx: SurfaceContext }) {
           </>
         ) : (
           <p className="p-4 text-sm" role="status">
-            Working out ageing…
+            Working out aging…
           </p>
         )}
 

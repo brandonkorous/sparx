@@ -3,7 +3,7 @@ import { LEGAL_DOC_VERSIONS } from '@/lib/legal-versions';
 import { LegalDoc, LegalSection, LegalP, LegalList } from '@/components/marketing/legal-doc';
 
 export const metadata: Metadata = {
-  title: 'Terms of service — sparx',
+  title: 'Terms of service: sparx',
   description: 'The legal terms governing your use of the sparx platform.',
   alternates: { canonical: '/legal/terms' },
 };
@@ -45,9 +45,9 @@ export default function TermsPage() {
 
       <LegalSection heading="3. The Service & modules">
         <LegalP>
-          sparx is modular. You activate only the modules you use — site builder, commerce, CRM,
-          CMS, email, B2B and wholesale, inventory, dropship, scheduling and bookings, forms, social
-          publishing, the marketplace, and AI/MCP integration — and your subscription reflects that
+          sparx is modular. You activate only the modules you use (site builder, commerce, CRM, CMS,
+          email, B2B and wholesale, inventory, dropship, scheduling and bookings, forms, social
+          publishing, the marketplace, and AI/MCP integration) and your subscription reflects that
           selection. A module you have not activated stores no data and runs nothing on your behalf.
           We may add, change, or deprecate features over time; we will give reasonable notice of
           material changes that reduce core functionality you rely on.
@@ -70,7 +70,7 @@ export default function TermsPage() {
           your end users submit to the Service (&ldquo;Customer Data&rdquo;). You grant us a limited
           license to host, process, and transmit Customer Data solely to provide and support the
           Service. With respect to personal data within Customer Data, you are the data controller
-          and we are the data processor — see the <a href="/legal/dpa">Data Processing Addendum</a>{' '}
+          and we are the data processor: see the <a href="/legal/dpa">Data Processing Addendum</a>{' '}
           and our <a href="/legal/privacy">Privacy Policy</a>.
         </LegalP>
       </LegalSection>
@@ -85,14 +85,14 @@ export default function TermsPage() {
 
       <LegalSection heading="7. Third-party services & connected accounts">
         <LegalP>
-          The Service integrates with third parties you choose to connect — payment gateways,
+          The Service integrates with third parties you choose to connect: payment gateways,
           shipping and tax providers, AI providers, and social media platforms. Your use of those
           services is governed by their own terms, and we are not responsible for their acts or
           omissions.
         </LegalP>
         <LegalP>
-          Where you connect an account you control — a social profile, an AI provider key, a payment
-          gateway — you authorize us to act on that account to the extent needed to deliver the
+          Where you connect an account you control (a social profile, an AI provider key, a payment
+          gateway) you authorize us to act on that account to the extent needed to deliver the
           features you have asked for, and you confirm you are entitled to grant that access. You
           remain bound by that platform&rsquo;s own rules for anything done through your connection,
           and you are responsible for what you publish through it. We may suspend a connection
@@ -112,7 +112,7 @@ export default function TermsPage() {
           If you register or transfer a domain name through sparx, we do so through an accredited
           registrar acting as our partner. Registration is subject to that registrar&rsquo;s
           agreement and to the rules of ICANN and the relevant domain registry, which sit above
-          these Terms — including their requirements about accurate registrant contact details,
+          these Terms, including their requirements about accurate registrant contact details,
           dispute resolution, and transfer locks.
         </LegalP>
         <LegalP>
@@ -120,7 +120,7 @@ export default function TermsPage() {
           keep them current; an inaccurate registration can cause the domain to be suspended by
           parties outside our control. Domain fees are charged separately from your subscription,
           are non-refundable once a registration is submitted, and renew on the registry&rsquo;s
-          cycle rather than yours. If your sparx subscription ends, your domain remains yours — you
+          cycle rather than yours. If your sparx subscription ends, your domain remains yours. You
           may transfer it away, and we will not hold it.
         </LegalP>
       </LegalSection>

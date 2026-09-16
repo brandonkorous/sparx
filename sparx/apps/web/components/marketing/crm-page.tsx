@@ -77,7 +77,7 @@ export function CrmPage() {
         src="/scenes/salon-consult.jpg"
         alt="A stylist leaning in to talk with a client in her chair, mid-consultation in a small salon."
         headline="You already do this. It just doesn’t scale past you."
-        lede="You know who’s particular about delivery dates, who orders the same thing every time, and whose last order turned up damaged. None of it is written down anywhere — it’s in your head, and that works right up until you’re not the one standing there."
+        lede="You know who’s particular about delivery dates, who orders the same thing every time, and whose last order turned up damaged. None of it is written down anywhere: it’s in your head, and that works right up until you’re not the one standing there."
       />
       {/* BEAT 3 — THE FALSE FIX. */}
       <CrmOneRecord />
@@ -105,7 +105,7 @@ export function CrmPage() {
         src="/scenes/counter-handover.jpg"
         alt="A café worker smiling as he hands a paper bag across the counter to a regular customer."
         headline="Now the new hire knows them too"
-        lede="The customer who comes back every week is worth more than the one you paid to find, and they can tell whether they’re remembered. Everyone on your team sees the same history — so a regular gets treated like a regular, whoever happens to be working that day."
+        lede="The customer who comes back every week is worth more than the one you paid to find, and they can tell whether they’re remembered. Everyone on your team sees the same history, so a regular gets treated like a regular, whoever happens to be working that day."
       />
       <CrmCapabilities />
       <CrmProof />
@@ -119,7 +119,7 @@ export function CrmPage() {
             <Spark color={M.ink} />
           </>
         }
-        lede="How it connects, what it costs, and what it does for a team — answered straight. Still deciding? Read the CRM docs or start the 14-day trial."
+        lede="How it connects, what it costs, and what it does for a team: answered straight. Still deciding? Read the CRM docs or start the 14-day trial."
       />
       <CrmCta />
     </>
@@ -142,19 +142,19 @@ const CRM_FAQ: FaqItem[] = [
     id: 'crm-pricing',
     question: 'How much does sparx CRM cost?',
     answer:
-      'A flat $49/mo. No tiers, no per-seat charge, and no per-contact metering — your customers, activities, and deals are unlimited. Add any other modules à la carte and it all lands on one bill. Start on a 14-day free trial; no card required to begin.',
+      'A flat $49/mo. No tiers, no per-seat charge, and no per-contact metering. Your customers, activities, and deals are unlimited. Add any other modules à la carte and it all lands on one bill. Start on a 14-day free trial; no card required to begin.',
   },
   {
     id: 'crm-needs-commerce',
     question: 'Do I need Commerce to use CRM?',
     answer:
-      'No. CRM runs on its own — a sales team or a service business can manage contacts, activity, segments, and a pipeline with no store at all. If you do run Commerce, the two share one customer record, so what someone bought and every conversation you have had with them sit on the same page.',
+      'No. CRM runs on its own: a sales team or a service business can manage contacts, activity, segments, and a pipeline with no store at all. If you do run Commerce, the two share one customer record, so what someone bought and every conversation you have had with them sit on the same page.',
   },
   {
     id: 'crm-segments',
     question: 'How do segments work?',
     answer:
-      'You build a segment from rules on any field of the record — lifetime spend, order count, days since last order, tags, email engagement, or B2B pricing tier and credit status. The segment recomputes itself as customers cross the line, and it syncs straight to an Email broadcast, so there is never a list to export.',
+      'You build a segment from rules on any field of the record: lifetime spend, order count, days since last order, tags, email engagement, or B2B pricing tier and credit status. The segment recomputes itself as customers cross the line, and it syncs straight to an Email broadcast, so there is never a list to export.',
   },
   {
     id: 'crm-import',
@@ -166,7 +166,7 @@ const CRM_FAQ: FaqItem[] = [
     id: 'crm-sales-team',
     question: 'Is it built for a sales team?',
     answer:
-      'Yes. Assign reps and deal owners, set tasks with due dates and priorities, and work deals on a kanban board, a sortable list, or a probability-weighted forecast. Reports cover win/loss by rep, deal cycle length, and pipeline value by stage — all off live data, with no per-seat fee.',
+      'Yes. Assign reps and deal owners, set tasks with due dates and priorities, and work deals on a kanban board, a sortable list, or a probability-weighted forecast. Reports cover win/loss by rep, deal cycle length, and pipeline value by stage. All off live data, with no per-seat fee.',
   },
 ];
 
@@ -175,7 +175,7 @@ function CrmProof() {
   const stats: { n: ReactNode; l: string }[] = [
     {
       n: <>1{<Spark color={M.ink} />}</>,
-      l: 'database under customers, orders, and email — nothing to sync',
+      l: 'database under customers, orders, and email: nothing to sync',
     },
     { n: '0', l: 'webhooks to babysit · no Zapier between you and your data' },
     // Replaces a "0.3% Commerce transaction fee once CRM is on — it pays for
@@ -184,8 +184,8 @@ function CrmProof() {
     // stated elsewhere on this page and in the module catalog — and it is not a
     // second "1", which is what a "one record per customer" line would have made
     // this row, next to the "1 database" stat it opens with.
-    { n: '∞', l: 'contacts, activities and deals — nothing metered, no charge per seat' },
-    { n: '$0', l: 'to export — full JSON or SQL from the dashboard, no ticket' },
+    { n: '∞', l: 'contacts, activities and deals: nothing metered, no charge per seat' },
+    { n: '$0', l: 'to export: full JSON or SQL from the dashboard, no ticket' },
   ];
   return (
     <Section surface="dark" padding="lg">
@@ -266,8 +266,8 @@ function CrmPricing() {
           </div>
           <p className="max-w-[620px] text-2xl leading-[1.4]">
             Everything on this page, flat. Nothing extra when you hire someone, nothing extra as
-            your list grows, and no tiers to compare. Free for fourteen days — we don&rsquo;t ask
-            for a card.
+            your list grows, and no tiers to compare. Free for fourteen days. We don&rsquo;t ask for
+            a card.
           </p>
         </div>
         <Button color="neutral" size="xl">
@@ -292,7 +292,7 @@ function CrmCta() {
             what it costs the reader to try, and what happens if they stop. */}
         <p className="max-w-[640px] text-lg">
           Fourteen days free, no card, and no contract at the end of it. Turn it off the day it
-          stops being worth $49 and your customers, their history and every note stay yours —
+          stops being worth $49 and your customers, their history and every note stay yours:
           exportable in full, from a button, without asking anyone.
         </p>
         <div className="flex flex-wrap items-center gap-3">

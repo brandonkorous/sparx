@@ -60,6 +60,24 @@ import { useToolbarFit } from '../lib/use-toolbar-fit';
  */
 export const PANE_SHELL = 'bg-base-200 @container flex h-full flex-col gap-2 p-2 @lg:gap-3 @lg:p-3';
 
+/**
+ * PANE_SHELL for a pane that scrolls as ONE column, rather than holding a
+ * scrolling region inside it.
+ *
+ * `[&>*]:shrink-0` is the whole reason this exists, and leaving it off does not
+ * look like a bug — it looks like a shorter form. PANE_SHELL is a flex column,
+ * and silica's `.card` sets `overflow: hidden`, which makes `min-height: auto`
+ * resolve to 0: a card is then free to shrink below its own content and clip the
+ * remainder, with no scrollbar of its own to get it back. Faced with a pane
+ * shorter than the form, the column squeezes every card instead of scrolling,
+ * the shell measures as fitting, and the hidden part is unreachable.
+ *
+ * A counting schedule in a 908px pane was hiding 459px of itself that way,
+ * including the location dropdown and the warning that says the schedule covers
+ * nothing (issue 505). Same reason the toolbar row below carries `shrink-0`.
+ */
+export const PANE_SHELL_SCROLL = `${PANE_SHELL} overflow-y-auto [&>*]:shrink-0`;
+
 interface PaneToolbarProps {
   /**
    * What this bar controls, e.g. "Invoice list controls". Required, not optional:

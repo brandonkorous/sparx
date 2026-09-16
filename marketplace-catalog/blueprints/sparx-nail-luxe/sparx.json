@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "sparx-nail-luxe",
   "name": "Nail Studio (Luxe)",
-  "version": "1.4.0",
-  "tagline": "A warm, quiet template for nail studios — book online from day one.",
-  "description": "A quiet, upscale nail-studio site — a warm champagne palette, a soft-gold primary and a Cormorant Garamond serif over Inter, with calm, spacious photography. Installs a working booking flow: a real service menu (luxury and gel manicures, spa pedicures, gel extensions, nail art), three technicians you book by name with their own hours, two pedicure chairs, and a small deposit on extensions. Ships as \"Gilded\", a calm, considered studio.",
+  "version": "1.4.1",
+  "tagline": "A warm, quiet template for nail studios. Book online from day one.",
+  "description": "A quiet, upscale nail-studio site: a warm champagne palette, a soft-gold primary and a Cormorant Garamond serif over Inter, with calm, spacious photography. Installs a working booking flow: a real service menu (luxury and gel manicures, spa pedicures, gel extensions, nail art), three technicians you book by name with their own hours, two pedicure chairs, and a small deposit on extensions. Ships as \"Gilded\", a calm, considered studio.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
@@ -28,7 +28,7 @@
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "Nail Studio (Luxe) — home page preview"
+      "alt": "Nail Studio (Luxe): home page preview"
     }
   ],
   "author": {

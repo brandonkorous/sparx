@@ -590,7 +590,8 @@ export function useProductOptions(productId: string) {
   return useQuery({
     queryKey: productKeys.facet(productId, 'options'),
     queryFn: () => api.get<ProductOption[]>(`/v1/commerce/products/${productId}/variants/options`),
-    enabled: productId !== 'new',
+    // '' is what a screen passes when it has no product in hand yet.
+    enabled: productId !== 'new' && productId !== '',
   });
 }
 
@@ -641,13 +642,93 @@ export function useProductMedia(productId: string) {
  * so the true limit is ~66 variants); beyond that the answer is a paged facet
  * pane, never a loop.
  */
+/**
+ * How many a shopper could actually buy right now.
+ *
+ * NOT `level.available`, and the difference is the whole reason this function
+ * exists. The API's `available` is `onHand − allocated` and stops there, but the
+ * sell path also withholds the safety buffer — so on a buffered level `available`
+ * is a number nobody can ever reach. Showing it beside a sentence saying units
+ * are held back produced exactly the contradiction that sentence was written to
+ * prevent: "3 units are held back" over two identical figures.
+ *
+ * Derived here rather than fixed in the API on purpose: `available` is a
+ * documented public-API field that integrators already read, and quietly
+ * changing what it means is not a call to make from a UI pane.
+ *
+ * It lives beside the TYPE rather than in one pane because a second screen now
+ * asks the same question — the replacement picker on a swap, where the number is
+ * what stops somebody promising a customer a size they do not have.
+ */
+export function sellable(level: ProductStockLevel): number {
+  return Math.max(0, level.onHand - level.allocated - level.safetyBuffer);
+}
+
+/**
+ * What to say about how many there are, when the number is part of a decision.
+ *
+ * THREE states, not two, and the third is the one that keeps being got wrong.
+ * `undefined` means nobody has ever counted this version — the shop sells it
+ * without limit and there is no figure to show, so rendering "0 left" would be
+ * inventing a measurement nobody took (issues 444, 446). Zero itself is a real
+ * answer and the only one that must stop somebody promising it to a customer.
+ */
+export type StockNoteKind = 'uncounted' | 'none' | 'some';
+
+export function stockNoteKind(count: number | undefined): StockNoteKind {
+  if (count === undefined) return 'uncounted';
+  return count <= 0 ? 'none' : 'some';
+}
+
 export function useProductStock(productId: string) {
   return useQuery({
     queryKey: productKeys.facet(productId, 'inventory'),
     queryFn: () =>
       api.list<ProductStockLevel>('/v1/inventory', { product_id: productId, take: 200 }),
-    enabled: productId !== 'new',
+    // '' is what a screen passes when it has no product in hand. The endpoint
+    // types `product_id` as a uuid, so an empty one is a 400 and every row then
+    // reads as uncounted (issue 451).
+    enabled: productId !== 'new' && productId !== '',
   });
+}
+/**
+ * How many there are of each version of ONE product.
+ *
+ * The product id is not decoration. These counts come from a single
+ * `product_id`-filtered read, so they answer for that product and NOTHING else
+ * — and a picker that lists the whole catalog will draw rows this cannot speak
+ * for. Carrying the id with the map is what lets a screen stay quiet about
+ * those rows instead of reporting them as uncounted (issue 451).
+ */
+export interface VariantStock {
+  /** The one product these counts cover. */
+  productId: string;
+  /** variantId to how many there are to sell. Absent for a variant OF THAT
+   *  PRODUCT means never counted, which is not zero. */
+  counts: Map<string, number>;
+}
+
+/** What a stock note should say about one row, or NULL for say nothing. */
+export type VariantStockNote =
+  { kind: 'uncounted' } | { kind: 'none' } | { kind: 'some'; count: number };
+
+/**
+ * What to say beside one version in a picker.
+ *
+ * Null for a row these counts do not cover. "Not counted" is a claim about the
+ * shop's records, and making it about a product nobody asked about is inventing
+ * a measurement exactly the way "0 left" over an untracked version would be
+ * (issue 451, and the rule it broke is the same one as issues 444 and 446).
+ */
+export function stockNoteFor(
+  variant: { id: string; productId: string },
+  stock: VariantStock | undefined
+): VariantStockNote | null {
+  if (!stock) return null;
+  if (stock.productId !== variant.productId) return null;
+  const count = stock.counts.get(variant.id);
+  if (count === undefined) return { kind: 'uncounted' };
+  return stockNoteKind(count) === 'none' ? { kind: 'none' } : { kind: 'some', count };
 }
 
 /**
@@ -1500,7 +1581,7 @@ export function productState(product: {
     label: 'Not on sale',
     tone: 'info',
     detail:
-      'This is saved but hidden — nobody can see it on your website yet. Put it on sale when you are ready.',
+      'This is saved but hidden. Nobody can see it on your website yet. Put it on sale when you are ready.',
   };
 }
 
@@ -2861,4 +2942,75 @@ export function splitMemberships(
   chosen.sort(byName);
   automatic.sort(byName);
   return { chosen, automatic, unknownIds };
+}
+
+/* ── Are these products findable? ────────────────────────────────── */
+
+/**
+ * How many of this tenant's records are in the search index.
+ *
+ * The public storefront does not read the products table — it reads the search
+ * index, and when that index is empty it renders "No products found". A site
+ * with products on sale and an empty index tells every visitor there is nothing
+ * to buy, tells the operator nothing at all, and looks from the console exactly
+ * like a site that is working.
+ *
+ * That is the gap this closes. It is not a diagnostic: it is the only place the
+ * operator can learn their storefront is invisible.
+ *
+ * Ported from the Piggles console, which has had it since issue 318. Sparx runs
+ * the same api-rest, the same indexer and the same Typesense, and had no way to
+ * see any of this or to do anything about it (issue 513).
+ */
+export interface SearchCollectionStat {
+  collection: string;
+  documents: number;
+}
+
+export interface SearchStatus {
+  collections: SearchCollectionStat[];
+  /** Products on sale that searching cannot find. `null` means the check could
+   *  not run — say nothing, never render it as none. */
+  productsMissing: number | null;
+}
+
+export function useSearchStatus() {
+  return useQuery({
+    queryKey: ['search', 'status'],
+    queryFn: () => api.get<SearchStatus>('/v1/search/status'),
+    // A search-side hiccup must never take the products list down with it.
+    retry: false,
+    staleTime: 60_000,
+  });
+}
+
+/** How many products are on sale but cannot be found by searching, or null when
+ *  nothing measured it. Distinct from a document COUNT: twelve documents look
+ *  exactly like sixteen until something knows there should be sixteen. */
+export function unfindableProductCount(data: SearchStatus | undefined): number | null {
+  return data?.productsMissing ?? null;
+}
+
+/** How many PRODUCT documents this tenant has in search, or null when the
+ *  answer could not be fetched — which is not the same as zero and must not
+ *  render as one. */
+export function indexedProductCount(
+  data: { collections: SearchCollectionStat[] } | undefined
+): number | null {
+  if (!data) return null;
+  const row = data.collections.find((c) => c.collection.includes('product'));
+  return row ? row.documents : null;
+}
+
+/** Rebuild this tenant's search index from its real records. The work happens on
+ *  a worker, so this returns as soon as the request is accepted — the copy has
+ *  to say "started", never "done". */
+export function useReindexSearch() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<{ runId: string }>('/v1/search/reindex'),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['search', 'status'] });
+    },
+  });
 }

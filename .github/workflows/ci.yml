@@ -317,6 +317,33 @@ jobs:
       - name: Check the two consoles have not drifted apart
         run: node scripts/check-console-parity.mjs
 
+      # A seeded saved view carries a TARGET, and a target is a screen pathname
+      # that has to match the string a pane registers. They are two literals in
+      # two packages that never import each other. Eight of seventeen pointed at
+      # nothing: the invoicing pair named the API route, so a shop opened its
+      # receivables list, opened Views, and read "No saved views yet" over the
+      # Overdue view sitting in its own database.
+      - name: Check every seeded saved view points at a screen that exists
+        run: node scripts/check-saved-view-targets.mjs
+
+      # TypeScript CANNOT catch this one, so a check is the only thing that can.
+      # A generated `<Model>Select` is a mapped type over a type parameter, and
+      # excess-property checking does not run on those — so `where` is checked
+      # and `select` is not. Six shipped past typecheck, lint and the whole test
+      # suite: `Booking.customer` (no such relation, deliberately) answered 500
+      # on every request the By-job screen makes in its DEFAULT filter, and
+      # `resolveDueAt` threw on every ticket automation before it read a field.
+      - name: Check no Prisma select names a field that does not exist
+        run: node scripts/check-prisma-selects.mjs
+
+      # Same silent shape, a layer up. A browser can read seven response headers
+      # and no others unless CORS names them, and nothing anywhere reports the
+      # difference: `headers.get('x-sparx-unpriced-minutes')` simply answers
+      # null and `?? '0'` turns that into "nothing was left out". Three shipped
+      # that way, including a payroll warning nobody had ever seen.
+      - name: Check every response header a console reads is actually exposed
+        run: node scripts/check-exposed-headers.mjs
+
   webhook-events:
     name: Webhook event parity
     runs-on: ubuntu-latest

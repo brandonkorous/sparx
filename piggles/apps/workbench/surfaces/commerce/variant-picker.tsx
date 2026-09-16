@@ -12,7 +12,7 @@ import { useMemo, useState } from 'react';
 import { Badge, SearchInput, Text } from '@wizeworks/silicaui-react';
 import { faBoxMagnifyingGlass } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { formatCents } from './products-data';
+import { formatCents, stockNoteFor, type VariantStock } from './products-data';
 import { useVariantCatalog, type VariantChoice } from './bundles-data';
 
 /**
@@ -33,15 +33,77 @@ export function versionOf(variant: VariantChoice): string {
   return variant.isDefault ? '' : variant.sku;
 }
 
+/**
+ * What there is to send, beside the version being considered.
+ *
+ * FOUR answers, not three, and the fourth is silence. The counts cover one
+ * product, so a row for any other product gets no note at all — badging it
+ * "Not counted" would report on records nobody read (issue 451).
+ *
+ * Of the three it does say: a version nobody has counted is NOT zero, because
+ * the shop sells it without limit and there is no number to show (issue 444).
+ * Zero itself is a real answer and the one that must stop somebody promising it
+ * to a customer, so it is the only one that gets a color.
+ */
+function StockNote({
+  variant,
+  stock,
+}: {
+  variant: VariantChoice;
+  stock: VariantStock | undefined;
+}): React.ReactElement | null {
+  const note = stockNoteFor(variant, stock);
+  if (note === null) return null;
+  switch (note.kind) {
+    case 'uncounted':
+      return (
+        <Badge color="info" variant="soft" size="sm" className="shrink-0">
+          Not counted
+        </Badge>
+      );
+    case 'none':
+      return (
+        <Badge color="danger" variant="soft" size="sm" className="shrink-0">
+          None left
+        </Badge>
+      );
+    default:
+      return (
+        <Text as="span" className="shrink-0 text-sm tabular-nums">
+          {note.count} to sell
+        </Text>
+      );
+  }
+}
+
 export function VariantPicker({
   onPick,
   excludeIds = [],
+  preferProductId,
+  stock,
   placeholder = 'Search your products…',
 }: {
   onPick: (variant: VariantChoice) => void;
   /** Variant ids already chosen — hidden from the results so they cannot be
    *  added twice. */
   excludeIds?: string[];
+  /**
+   * One product this pick is ABOUT, floated to the top.
+   *
+   * Without it the list opens alphabetically over the whole catalog, which for a
+   * shop that sells clothes and jewellery meant a knitwear swap opening on
+   * signet rings. The obvious answer to "what are you sending instead" is
+   * another version of the thing that came back, so it goes first — and the rest
+   * of the catalog is still there, because sending something else is allowed
+   * (persona issue 450).
+   */
+  preferProductId?: string;
+  /**
+   * How many of each version there are to sell, for ONE product. Only passed
+   * where the number is part of the decision, and rows outside that product get
+   * no note rather than a wrong one (issues 444, 451).
+   */
+  stock?: VariantStock;
   placeholder?: string;
 }) {
   const [search, setSearch] = useState('');
@@ -51,21 +113,31 @@ export function VariantPicker({
   const results = useMemo(() => {
     const all = data ?? [];
     const term = search.trim().toLowerCase();
-    return all
-      .filter((v) => !excluded.has(v.id))
-      .filter((v) => {
-        if (term === '') return true;
-        return (
-          v.productTitle.toLowerCase().includes(term) ||
-          v.sku.toLowerCase().includes(term) ||
-          (v.title?.toLowerCase().includes(term) ?? false) ||
-          // "slate" and "medium" are what a person types, and on a catalog with
-          // no variant titles they live nowhere else.
-          v.options.some((option) => option.value.toLowerCase().includes(term))
-        );
-      })
-      .slice(0, 40);
-  }, [data, search, excluded]);
+    return (
+      all
+        .filter((v) => !excluded.has(v.id))
+        .filter((v) => {
+          if (term === '') return true;
+          return (
+            v.productTitle.toLowerCase().includes(term) ||
+            v.sku.toLowerCase().includes(term) ||
+            (v.title?.toLowerCase().includes(term) ?? false) ||
+            // "slate" and "medium" are what a person types, and on a catalog with
+            // no variant titles they live nowhere else.
+            v.options.some((option) => option.value.toLowerCase().includes(term))
+          );
+        })
+        // The product this pick is about, first. Stable within each group, so the
+        // shop's own option order survives.
+        .sort((a, b) => {
+          if (!preferProductId) return 0;
+          const aMine = a.productId === preferProductId ? 0 : 1;
+          const bMine = b.productId === preferProductId ? 0 : 1;
+          return aMine - bMine;
+        })
+        .slice(0, 40)
+    );
+  }, [data, search, excluded, preferProductId]);
 
   return (
     <div className="flex flex-col gap-3">
@@ -115,6 +187,7 @@ export function VariantPicker({
                   </Text>
                 ) : null}
               </span>
+              <StockNote variant={variant} stock={stock} />
               <Text as="span" className="shrink-0 text-sm tabular-nums">
                 {formatCents(variant.priceCents, variant.currency)}
               </Text>

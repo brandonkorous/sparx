@@ -34,7 +34,6 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
 import {
   CURRENCY_OPTIONS,
@@ -86,7 +85,7 @@ function samePolicy(a: DunningPolicy, b: DunningPolicy): boolean {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-export function CommerceSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
+export function CommerceSettingsSurface() {
   const {
     data: settings,
     isPending,
@@ -96,10 +95,6 @@ export function CommerceSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
     dataUpdatedAt,
     refetch,
   } = useCommerceSettings();
-
-  useEffect(() => {
-    ctx.setTitle('Selling settings');
-  }, [ctx]);
 
   if (isError) {
     return (
@@ -309,7 +304,7 @@ function SettingsForm({
               />
               <FieldDescription>
                 On, shoppers must sign in or create an account before paying. Off, they can check
-                out as a guest — usually the smoother choice.
+                out as a guest, usually the smoother choice.
               </FieldDescription>
             </Field>
 
@@ -430,7 +425,7 @@ function FailedPaymentsSection({
   return (
     <FormSection
       title="When a repeat payment fails"
-      description="Cards expire and get replaced — this is what happens when one stops working. It applies to every repeat order in your business, on all of your sites."
+      description="Cards expire and get replaced. This is what happens when one stops working. It applies to every repeat order in your business, on all of your sites."
     >
       <Field>
         <FieldLabel>How many times to try the card</FieldLabel>
@@ -502,7 +497,7 @@ function FailedPaymentsSection({
           }
         />
         <FieldDescription>
-          Pausing is the usual choice — the order picks straight back up when the customer saves a
+          Pausing is the usual choice: the order picks straight back up when the customer saves a
           new card.
         </FieldDescription>
       </Field>
@@ -512,11 +507,11 @@ function FailedPaymentsSection({
         // resumes itself; a cancelled one has to be sold again.
         <Alert color="warning">
           <AlertContent>
-            <AlertTitle>Cancelling ends the customer relationship</AlertTitle>
+            <AlertTitle>Canceling ends the customer relationship</AlertTitle>
             <AlertDescription>
-              A cancelled repeat order can&rsquo;t be restarted by the customer — they have to place
-              a new one, and most won&rsquo;t. An expired card is usually worth pausing over, not
-              cancelling.
+              A canceled repeat order can&rsquo;t be restarted by the customer. They have to place a
+              new one, and most won&rsquo;t. An expired card is usually worth pausing over, not
+              canceling.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -536,7 +531,7 @@ function FailedPaymentsSection({
           }
         />
         <FieldDescription>
-          Only the first failure is emailed — the tries in between are silent, so nobody gets four
+          Only the first failure is emailed: the tries in between are silent, so nobody gets four
           emails about one card.
         </FieldDescription>
       </Field>

@@ -17,7 +17,6 @@ import { publishPlatformEvent } from '../consumers/platform-bus';
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { recomputeOrderPaymentRollup } from './order-payments-service';
-import { recomputeCustomerCommerce } from './customer-rollup';
 
 export async function listForOrder(ctx: ServiceContext, orderId: string): Promise<OrderRefund[]> {
   return withTenant(ctx, (tx) =>
@@ -48,7 +47,7 @@ export async function recordRefund(ctx: ServiceContext, rawInput: unknown): Prom
     orderCustomerId = order.customerId;
     orderNumber = order.orderNumber;
     if (order.status === 'cancelled') {
-      throw new CrmValidationError('Cannot refund a cancelled order');
+      throw new CrmValidationError('Cannot refund a canceled order');
     }
 
     // Surcharge proration (docs/48 §6.3) — the card-fee pass-through reverses in
@@ -136,12 +135,11 @@ export async function recordRefund(ctx: ServiceContext, rawInput: unknown): Prom
       });
     }
 
-    await recomputeOrderPaymentRollup(tx, ctx.tenantId, input.orderId);
     // Giving money back lowers what they have spent, in the same transaction as
-    // the refund. This was a `{ decrement }` in a consumer whose matching
-    // increment could go missing, and when it did the customer's lifetime spend
-    // went NEGATIVE — see customer-rollup.ts.
-    await recomputeCustomerCommerce(tx, ctx.tenantId, order.customerId);
+    // the refund — the buyer's figures are recomputed inside this call. It was a
+    // `{ decrement }` in a consumer whose matching increment could go missing,
+    // and when it did the customer's lifetime spend went NEGATIVE.
+    await recomputeOrderPaymentRollup(tx, ctx.tenantId, input.orderId);
 
     await writeAuditLog({
       tx,

@@ -78,6 +78,21 @@ export function useSocialBoard(ctx: SurfaceContext) {
     [overview.data]
   );
 
+  /**
+   * Has this tenant connected anything at all?
+   *
+   * Derived HERE because both views need it and both were writing their first-run
+   * copy without it — the calendar said "click any day to write your first one"
+   * and the queue offered "New post", over an account with nowhere for a post to
+   * go. Neither was lying, and both cost the very first visit a wasted click:
+   * the composer opens, explains there is no destination, and sends you back.
+   *
+   * `isSuccess` and not `?? []`. While the list is loading nobody knows yet, and
+   * an empty array read as "nothing connected" would show the first-run sentence
+   * on every cold open.
+   */
+  const nothingConnected = overview.isSuccess && overview.data.connections.length === 0;
+
   const counts = useMemo(() => {
     const out: Record<string, number> = {};
     for (const group of GROUPS) {
@@ -159,6 +174,7 @@ export function useSocialBoard(ctx: SurfaceContext) {
     all,
     assetsById,
     avatarByTargetId,
+    nothingConnected,
     catalogMap,
     counts,
     openNew,

@@ -35,7 +35,7 @@ export const INCLUDED: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: LayoutGrid,
     title: 'The unified dashboard',
-    body: 'One admin for every module you turn on — no extra logins.',
+    body: 'One admin for every module you turn on: no extra logins.',
   },
   {
     icon: Code2,
@@ -45,7 +45,7 @@ export const INCLUDED: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: ShieldCheck,
     title: 'Multi-tenant security',
-    body: 'Row-level isolation in the database — your data is fenced off by default.',
+    body: 'Row-level isolation in the database. Your data is fenced off by default.',
   },
   {
     icon: Users,
@@ -55,7 +55,7 @@ export const INCLUDED: { icon: LucideIcon; title: string; body: string }[] = [
   {
     icon: RefreshCw,
     title: 'Automatic updates',
-    body: 'New features and fixes ship to your tenant — no upgrades to run.',
+    body: 'New features and fixes ship to your tenant: no upgrades to run.',
   },
   {
     icon: Download,
@@ -80,7 +80,7 @@ export const STATS: { value: string; suffix?: string; label: string }[] = [
   {
     value: '0%',
     label:
-      'Extra on every sale — versus the 0.6–2% surcharge hosted stores add to use your own processor.',
+      'Extra on every sale: versus the 0.6–2% surcharge hosted stores add to use your own processor.',
   },
 ];
 
@@ -88,10 +88,10 @@ export const STATS: { value: string; suffix?: string; label: string }[] = [
  *  replaces. Figures match the switchboard's ELSEWHERE_MONTHLY so the two never
  *  disagree. */
 export const LEDGER: { key: string; name: string; price: string; alt: string; amt: string }[] = [
-  { key: 'builder', name: 'Builder', price: '$10', alt: 'Webflow — Premium site plan', amt: '$39' },
-  { key: 'commerce', name: 'Commerce', price: '$49', alt: 'Shopify — Advanced', amt: '$399' },
-  { key: 'cms', name: 'CMS', price: '$49', alt: 'Storyblok — Growth (headless CMS)', amt: '$99' },
-  { key: 'crm', name: 'CRM', price: '$49', alt: 'HubSpot — Sales Pro, 3 seats', amt: '$300' },
+  { key: 'builder', name: 'Builder', price: '$10', alt: 'Webflow: Premium site plan', amt: '$39' },
+  { key: 'commerce', name: 'Commerce', price: '$49', alt: 'Shopify: Advanced', amt: '$399' },
+  { key: 'cms', name: 'CMS', price: '$49', alt: 'Storyblok: Growth (headless CMS)', amt: '$99' },
+  { key: 'crm', name: 'CRM', price: '$49', alt: 'HubSpot: Sales Pro, 3 seats', amt: '$300' },
   {
     key: 'email',
     name: 'Email',
@@ -103,7 +103,7 @@ export const LEDGER: { key: string; name: string; price: string; alt: string; am
     key: 'b2b',
     name: 'B2B · Fleet',
     price: '$99',
-    alt: 'Shopify Plus — native B2B',
+    alt: 'Shopify Plus: native B2B',
     amt: '$2,400',
   },
   {
@@ -113,29 +113,29 @@ export const LEDGER: { key: string; name: string; price: string; alt: string; am
     alt: 'Zapier Team + custom integration work',
     amt: '$103',
   },
-  { key: 'dropship', name: 'Dropship', price: '$29', alt: 'Spocket — Pro', amt: '$60' },
-  { key: 'scheduling', name: 'Scheduling', price: '$29', alt: 'Acuity — Powerhouse', amt: '$61' },
-  { key: 'invoicing', name: 'Invoicing', price: '$19', alt: 'FreshBooks — Plus', amt: '$33' },
+  { key: 'dropship', name: 'Dropship', price: '$29', alt: 'Spocket: Pro', amt: '$60' },
+  { key: 'scheduling', name: 'Scheduling', price: '$29', alt: 'Acuity: Powerhouse', amt: '$61' },
+  { key: 'invoicing', name: 'Invoicing', price: '$19', alt: 'FreshBooks: Plus', amt: '$33' },
   {
     key: 'inventory',
     name: 'Inventory',
     price: '$29',
-    alt: 'Zoho Inventory — Professional',
+    alt: 'Zoho Inventory: Professional',
     amt: '$99',
   },
-  { key: 'chat', name: 'Live Chat', price: '$19', alt: 'Intercom — live chat', amt: '$74' },
+  { key: 'chat', name: 'Live Chat', price: '$19', alt: 'Intercom: live chat', amt: '$74' },
   {
     key: 'finance',
     name: 'Finance',
     price: '$29',
-    alt: 'Expensify — Control, 3 seats',
+    alt: 'Expensify: Control, 3 seats',
     amt: '$54',
   },
   // Priced against scheduling-plus-time-clock, which is what a nine-person
   // business actually buys. NOT against a payroll bureau: sparx does not run
   // payroll, and comparing itself to one would be the line on this page that
   // makes an owner distrust every other line.
-  { key: 'staff', name: 'Team', price: '$29', alt: 'Homebase — Plus, one location', amt: '$60' },
+  { key: 'staff', name: 'Team', price: '$29', alt: 'Homebase: Plus, one location', amt: '$60' },
 ];
 
 /** Two worked scenarios: separate-tools total vs. the sparx total, plus savings. */
@@ -152,20 +152,20 @@ export const SCENARIOS: {
     sub: 'Builder · Commerce · CMS · CRM · Email',
     separate: '$1,002/mo',
     sparx: '$186/mo',
-    save: 'You keep $816/mo — about $9,800 a year',
+    save: 'You keep $816/mo: about $9,800 a year',
   },
   {
     title: 'The full platform',
-    sub: 'All fourteen modules — Invoicing, Inventory & Finance included free',
+    sub: 'All fourteen modules: Invoicing, Inventory & Finance included free',
     separate: '$3,946/mo',
     sparx: '$440/mo',
-    save: 'You keep $3,506/mo — about $42,100 a year',
+    save: 'You keep $3,506/mo: about $42,100 a year',
     featured: true,
   },
 ];
 
 export const LEDGER_FOOTNOTE =
-  'Comparison uses publicly listed 2026 monthly prices for representative growth-tier plans of the tools each module replaces — Webflow Premium, Shopify Advanced and Plus, a headless CMS, HubSpot Sales Professional, Klaviyo, a dropshipping app, FreshBooks, an inventory app, Intercom, an expense tracker, a staff scheduling and time-clock app, and Zapier for the glue between them. Those prices scale up with seats, contacts, and usage, so a real-world stack usually costs more. Invoicing, Inventory and Finance come free with Commerce or B2B, so they add $0 to the full-platform total. sparx is flat — the module price is the price. Finance is not accounting software and does not replace QuickBooks or Sage 50 — it tracks spending and profit, and exports to whichever package keeps your books. Team is not payroll — it records hours and pay rates and exports them to whoever runs yours.';
+  'Comparison uses publicly listed 2026 monthly prices for representative growth-tier plans of the tools each module replaces: Webflow Premium, Shopify Advanced and Plus, a headless CMS, HubSpot Sales Professional, Klaviyo, a dropshipping app, FreshBooks, an inventory app, Intercom, an expense tracker, a staff scheduling and time-clock app, and Zapier for the glue between them. Those prices scale up with seats, contacts, and usage, so a real-world stack usually costs more. Invoicing, Inventory and Finance come free with Commerce or B2B, so they add $0 to the full-platform total. sparx is flat: the module price is the price. Finance is not accounting software and does not replace QuickBooks or Sage 50. It tracks spending and profit, and exports to whichever package keeps your books. Team is not payroll. It records hours and pay rates and exports them to whoever runs yours.';
 
 /** Every module, its price, what it replaces, and the full feature list. */
 export const FEATURES: {
@@ -186,7 +186,7 @@ export const FEATURES: {
       'Global edge CDN, stale-while-revalidate',
       'Draft → preview → publish',
       'Reusable components & sections',
-      'Headless SDK — Next, Remix, Astro',
+      'Headless SDK: Next, Remix, Astro',
     ],
   },
   {
@@ -199,8 +199,8 @@ export const FEATURES: {
       'Real-time inventory',
       'One-tap checkout (Apple Pay)',
       'Stripe, PayPal, Klarna, Affirm',
-      'Tax — Avalara / TaxJar',
-      'Shipping — Shippo / EasyPost',
+      'Tax: Avalara / TaxJar',
+      'Shipping: Shippo / EasyPost',
       'Discounts & gift cards',
       'Orders, refunds, fulfillment',
     ],
@@ -241,7 +241,7 @@ export const FEATURES: {
     feats: [
       'Transactional wired into every module',
       'Campaigns + A/B testing',
-      'Your domain — SPF/DKIM/DMARC',
+      'Your domain: SPF/DKIM/DMARC',
       'React Email templates',
       'Audiences synced from CRM',
       'Flat price, no per-email fees',
@@ -256,7 +256,7 @@ export const FEATURES: {
       'Account-tier + contract pricing',
       'Net 15 / 30 / 60 / 90 + PO checkout',
       'Quotes & RFQ',
-      'Fleet — vehicles, VIN, cost centers',
+      'Fleet: vehicles, VIN, cost centers',
       'Catalog visibility & access control',
       'Approval workflows & buyer roles',
     ],
@@ -280,7 +280,7 @@ export const FEATURES: {
     price: '+ $29/mo',
     repl: 'Replaces a standalone dropshipping app',
     feats: [
-      'Supplier connectors — CSV/FTP/API',
+      'Supplier connectors: CSV/FTP/API',
       'Per-supplier margin rules',
       'Automated multi-supplier routing',
       'Real-time stock sync',
@@ -293,7 +293,7 @@ export const FEATURES: {
     repl: 'Replaces a standalone appointments tool',
     feats: [
       'Appointments, classes, reservations, rentals',
-      'No double-booking — enforced in the DB',
+      'No double-booking: enforced in the DB',
       'Deposits, no-show & cancellation policies',
       'Auto-promoting waitlists',
       'Email & SMS reminders',
@@ -306,7 +306,7 @@ export const FEATURES: {
     price: '$19/mo',
     repl: 'Replaces a standalone invoicing tool',
     feats: [
-      'Estimates, quotes & invoices — one document',
+      'Estimates, quotes & invoices: one document',
       'Card & ACH payment links',
       'Recurring & milestone billing',
       'Automatic overdue reminders',
@@ -335,9 +335,9 @@ export const FEATURES: {
     // Deliberately NOT "replaces QuickBooks". sparx does not do bookkeeping and
     // says so on this page — claiming otherwise here would be the one line that
     // makes a business owner distrust everything else on it.
-    repl: 'Replaces an expense tracker — not your accounting package',
+    repl: 'Replaces an expense tracker, not your accounting package',
     feats: [
-      'Every cost in one place — parts, wages, rent, fuel',
+      'Every cost in one place: parts, wages, rent, fuel',
       'Repeating costs recorded for you',
       'Bills to pay, sorted by how late they are',
       'Profit per period, netted against real sales',
@@ -353,12 +353,12 @@ export const FEATURES: {
     // "Not payroll" is the first thing this card says, in the slot where every
     // other card names what it replaces. Anything vaguer sells a payroll system
     // by implication and produces a refund.
-    repl: 'Replaces a scheduling and time-clock app — not your payroll',
+    repl: 'Replaces a scheduling and time-clock app, not your payroll',
     feats: [
-      'Hours, clocked or typed in — approved before they count',
+      'Hours, clocked or typed in: approved before they count',
       'Pay rates that change on a date, so last year’s costs stay put',
       'Shifts and time off, published to the team in one act',
-      'Licence and ticket renewals, warned about before they lapse',
+      'License and ticket renewals, warned about before they lapse',
       'Wages flow straight into your Finance figures',
       'An hours export for whoever runs your payroll',
     ],
@@ -393,7 +393,7 @@ export const PRINCIPLES: { num: string; title: string; body: string }[] = [
   {
     num: '03',
     title: 'One invoice',
-    body: 'Every active module on a single monthly bill — not five subscriptions, five renewal dates, and five support queues.',
+    body: 'Every active module on a single monthly bill, not five subscriptions, five renewal dates, and five support queues.',
   },
 ];
 
@@ -412,31 +412,31 @@ export const PRICING_FAQ: { id: string; question: string; answer: string }[] = [
     id: 'what-is-a-module',
     question: 'What counts as a module?',
     answer:
-      'The fourteen capabilities in the switchboard — Builder, Commerce, CMS, CRM, Invoicing, Email, B2B, Dropship, Inventory, Live Chat, Scheduling, Finance, Team, and AI. Each is a flat monthly price you switch on or off independently — and Invoicing, Inventory and Finance come free the moment you turn on Commerce or B2B. The platform underneath (hosting, security, API) is included on every plan.',
+      'The fourteen capabilities in the switchboard: Builder, Commerce, CMS, CRM, Invoicing, Email, B2B, Dropship, Inventory, Live Chat, Scheduling, Finance, Team, and AI. Each is a flat monthly price you switch on or off independently, and Invoicing, Inventory and Finance come free the moment you turn on Commerce or B2B. The platform underneath (hosting, security, API) is included on every plan.',
   },
   {
     id: 'start-with-builder',
     question: 'Do I have to start with Builder?',
     answer:
-      'No. Builder hosts and serves a website, so any hosted sparx site turns it on — but it is optional, not a base. A content-only publisher, a CRM-only team, or anyone driving their own frontend off the API can start from the module they actually use.',
+      'No. Builder hosts and serves a website, so any hosted sparx site turns it on, but it is optional, not a base. A content-only publisher, a CRM-only team, or anyone driving their own frontend off the API can start from the module they actually use.',
   },
   {
     id: 'switch-off',
     question: 'Can I switch a module off later?',
     answer:
-      'Anytime, from the dashboard. Billing stops the same day and the module goes quiet — no workers, no charges. Your data stays exactly where it was and comes right back if you turn it on again.',
+      'Anytime, from the dashboard. Billing stops the same day and the module goes quiet: no workers, no charges. Your data stays exactly where it was and comes right back if you turn it on again.',
   },
   {
     id: 'seat-usage-fees',
     question: 'Are there per-seat or usage fees?',
     answer:
-      'No. Team members are unlimited, and the module price is the price — no per-record or per-contact metering. Email is flat too: send ten thousand or a million a month, same bill.',
+      'No. Team members are unlimited, and the module price is the price: no per-record or per-contact metering. Email is flat too: send ten thousand or a million a month, same bill.',
   },
   {
     id: 'free-trial',
     question: 'Is there a free trial?',
     answer:
-      'Yes — 14 days free, with full access to every module and no credit card to start. Build your whole site during the trial and pick the modules you want to keep before it ends. Need more time? Your data is preserved for 30 days after the trial.',
+      'Yes: 14 days free, with full access to every module and no credit card to start. Build your whole site during the trial and pick the modules you want to keep before it ends. Need more time? Your data is preserved for 30 days after the trial.',
   },
   {
     id: 'migrate',

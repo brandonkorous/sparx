@@ -2,17 +2,12 @@
 
 // How a broadcast did, once it has gone out.
 //
-// The honest part of this file is the Delivered tile. A delivery is CONFIRMED by
-// the mail provider minutes to hours after a send, so "delivered: 0" a minute
-// after pressing Send does not mean nobody got it — it means nothing has been
-// confirmed yet. Rendering that raw told an owner her whole newsletter had
-// failed, so the tile says which of the two it is, in words AND in color.
+// The rules that decide what each tile SAYS live next door in
+// `broadcast-stats-words`, where they can be tested. This file is the drawing.
 
 import { Text } from '@wizeworks/silicaui-react';
 import type { BroadcastStats } from './broadcasts-data';
-
-/** `plain` is the colorless case, for a number that carries no verdict. */
-type Tone = 'plain' | 'info' | 'success' | 'warning' | 'error';
+import { achievedTone, deliveredTile, shareOfLabel, type Tone } from './broadcast-stats-words';
 
 export function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
@@ -23,42 +18,24 @@ export function SummaryRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-/** The Delivered tile's number, sentence and color. Three states, because
- *  "handed over, not yet confirmed" is neither "delivered" nor "failed". */
-function deliveredTile(stats: BroadcastStats): { value: number; hint: string; tone: Tone } {
-  if (stats.delivered > 0) {
-    return {
-      value: stats.delivered,
-      hint: 'Confirmed by the receiving mail server',
-      tone: 'success',
-    };
-  }
-  if (stats.accepted > 0) {
-    return {
-      value: stats.accepted,
-      hint: 'On their way. Confirmations arrive over the next few minutes.',
-      tone: 'info',
-    };
-  }
-  return { value: 0, hint: 'Nothing has gone out yet', tone: 'plain' };
-}
-
-/** Good news only once there is some. A zero in success green says the opposite
- *  of the sentence under it. */
-function achievedTone(count: number): Tone {
-  return count > 0 ? 'success' : 'plain';
-}
-
-export function StatsGrid({ stats, recipients }: { stats: BroadcastStats; recipients: number }) {
+export function StatsGrid({
+  stats,
+  recipients,
+  sentAt,
+}: {
+  stats: BroadcastStats;
+  recipients: number;
+  /** When it went out. The Delivered tile needs it: "confirmations arrive over
+   *  the next few minutes" is only true for the next few minutes. */
+  sentAt: string | null;
+}) {
   // Opens and clicks are shares of what actually landed; the rest are counts on
   // their own. Fall back through delivered → accepted → recipients so an early
   // send with sparse events still reads sensibly.
   const base = stats.delivered || stats.accepted || recipients || 0;
   const pct = (part: number) => (base > 0 ? `${String(Math.round((part / base) * 100))}%` : '—');
-  const delivered = deliveredTile(stats);
-  // "of delivered" is a lie while nothing is confirmed — the share is of what
-  // actually went out.
-  const shareOf = stats.delivered > 0 ? 'of delivered' : 'of those sent';
+  const delivered = deliveredTile(stats, sentAt);
+  const shareOf = shareOfLabel(stats.delivered);
 
   return (
     <div className="grid gap-3 @sm:grid-cols-2 @xl:grid-cols-3">

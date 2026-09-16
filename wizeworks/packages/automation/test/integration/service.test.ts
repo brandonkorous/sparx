@@ -271,3 +271,63 @@ describe('automation service — versioning (Slice G-versioning)', () => {
     expect(versions[0]!.version).toBe(1);
   });
 });
+
+describe('automation service: a renamed system seed', () => {
+  // The seed is matched on (origin, name), so the display name IS the identity.
+  // Reword the name and the lookup misses: a second row is created, the first
+  // stays active, and the tenant now holds two copies of one rule. These are
+  // mostly email rules, and the reconcile pass runs daily over every tenant, so
+  // the failure mode is every customer receiving the same message twice.
+  const seed = (name: string, previousNames?: readonly string[]) => ({
+    name,
+    ...(previousNames ? { previousNames } : {}),
+    trigger: eventTrigger,
+    conditions: { logic: 'AND' as const, conditions: [] },
+    actions: oneAction,
+  });
+
+  it('adopts and renames the existing row instead of adding a second one', async () => {
+    const ctx = await tenant();
+    const before = await upsertSystemAutomation(ctx, seed('Order delivered — email'));
+
+    await upsertSystemAutomation(ctx, seed('Order delivered: email', ['Order delivered — email']));
+
+    const rows = await listAutomations(ctx, { origin: 'system' });
+    // Remove `previousNames` from the seed above and this is 2, not 1 — which is
+    // the whole defect, stated as a number.
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.id).toBe(before.id);
+    expect(rows[0]!.name).toBe('Order delivered: email');
+  });
+
+  it('matches the current name first, so a re-run after the rename is a no-op', async () => {
+    const ctx = await tenant();
+    const spec = seed('Payment failed: email', ['Payment failed — email']);
+    const first = await upsertSystemAutomation(ctx, spec);
+    await upsertSystemAutomation(ctx, spec);
+    await upsertSystemAutomation(ctx, spec);
+
+    const rows = await listAutomations(ctx, { origin: 'system' });
+    expect(rows).toHaveLength(1);
+    expect(rows[0]!.id).toBe(first.id);
+  });
+
+  it('leaves a tenant-authored rule of the same old name alone', async () => {
+    // Adoption is scoped to origin='system'. A rule the business wrote itself is
+    // theirs, even if it happens to carry the name a seed used to use.
+    const ctx = await tenant();
+    const mine = await createAutomation(ctx, {
+      name: 'Order delivered — email',
+      trigger: eventTrigger,
+      actions: oneAction,
+    });
+
+    await upsertSystemAutomation(ctx, seed('Order delivered: email', ['Order delivered — email']));
+
+    const user = await listAutomations(ctx, { origin: 'user' });
+    expect(user).toHaveLength(1);
+    expect(user[0]!.id).toBe(mine.id);
+    expect(user[0]!.name).toBe('Order delivered — email');
+    expect(await listAutomations(ctx, { origin: 'system' })).toHaveLength(1);
+  });
+});

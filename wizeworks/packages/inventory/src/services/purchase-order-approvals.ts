@@ -42,6 +42,7 @@ import { withTenant } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { indexInventoryEntityOnCommit } from '../events';
 import {
   InventoryConflictError,
   InventoryNotFoundError,
@@ -409,6 +410,10 @@ export async function decidePoApproval(
       });
     }
 
+    // Deciding an approval moves the order's status, so its search document is
+    // now stale. NOT in the `audit` helper below: three of its five callers
+    // pass an approval RULE id under entityType 'PurchaseOrder'.
+    await indexInventoryEntityOnCommit(ctx, 'purchase_order', po.id);
     await audit(tx, ctx, `approval.${input.decision}`, po.id, {
       approvalId,
       number: po.number,
@@ -445,6 +450,7 @@ export async function cancelPoApproval(
         data: { status: 'draft', orderedAt: null },
       });
     }
+    await indexInventoryEntityOnCommit(ctx, 'purchase_order', approval.purchaseOrder.id);
     await audit(tx, ctx, 'approval.cancelled', approval.purchaseOrder.id, { approvalId });
     return loadPurchaseOrderDetail(tx, approval.purchaseOrder.id);
   });

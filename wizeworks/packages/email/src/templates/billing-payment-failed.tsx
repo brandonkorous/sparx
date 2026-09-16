@@ -54,7 +54,7 @@ export function BillingPaymentFailedEmail({
       <EmailDisplayHeading>Action needed</EmailDisplayHeading>
 
       <EmailAlert tone="warn" title="We couldn't process your payment">
-        Your sites and store are still online — but they&rsquo;ll pause soon if we can&rsquo;t renew
+        Your sites and store are still online, but they&rsquo;ll pause soon if we can&rsquo;t renew
         your subscription.
       </EmailAlert>
 
@@ -62,8 +62,8 @@ export function BillingPaymentFailedEmail({
         Hi {accountName ?? 'there'}, we tried to charge
         {card ? ` your ${card.brandLabel} ending in ${card.last4}` : ' the card on file'} for your{' '}
         {platform.name} subscription{attemptedOnLabel ? ` on ${attemptedOnLabel}` : ''}, and it was
-        declined. This usually means the card expired, hit a limit, or was replaced by your bank —
-        nothing&rsquo;s wrong on your end.
+        declined. This usually means the card expired, hit a limit, or was replaced by your bank.
+        Nothing&rsquo;s wrong on your end.
       </EmailParagraph>
 
       {retries && retries.length > 0 ? (
@@ -74,14 +74,14 @@ export function BillingPaymentFailedEmail({
       ) : (
         <EmailParagraph>
           We&rsquo;ll automatically try again over the next few days. Everything stays online in the
-          meantime — updating your card now is the quickest way to settle it.
+          meantime: updating your card now is the quickest way to settle it.
         </EmailParagraph>
       )}
 
       <EmailPayCard
         brandLabel={card?.brandLabel ?? 'CARD'}
         title={
-          card ? `${card.brandLabel} ending in ${card.last4} — declined` : 'Payment method declined'
+          card ? `${card.brandLabel} ending in ${card.last4}: declined` : 'Payment method declined'
         }
         note={`Amount due ${amountLabel}${attemptedOnLabel ? ` · Attempted ${attemptedOnLabel}` : ''}`}
       />
@@ -89,7 +89,7 @@ export function BillingPaymentFailedEmail({
       <EmailActionButton href={updateUrl}>Update payment method</EmailActionButton>
 
       <EmailParagraph flush style={{ marginTop: 18 }}>
-        Already updated your card? You can safely ignore this — the next retry will go through.
+        Already updated your card? You can safely ignore this: the next retry will go through.
       </EmailParagraph>
     </PlatformEmailLayout>
   );

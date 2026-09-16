@@ -21,6 +21,20 @@ import { useLocalStorage } from './lib/use-local-storage';
 import { Aside, CheckField, Panel, SelectField, TextField, ToolLayout } from './ui-kit';
 import { useReportToolResult } from './tool-result-context';
 
+/**
+ * Today, as the person filling this in would say it.
+ *
+ * `new Date().toISOString().slice(0, 10)` is the UTC calendar day, which turns
+ * over at five in the afternoon in Los Angeles — so this offered TOMORROW as
+ * the date a privacy policy takes effect, every evening, to everyone west of
+ * UTC. Read off the local clock instead, the same way the console does it in
+ * `apps/workbench/lib/today.ts`.
+ */
+function todayIso(now: Date = new Date()): string {
+  const pad = (n: number): string => String(n).padStart(2, '0');
+  return `${String(now.getFullYear())}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
 /** The answers, in the same words the questions used. Keyed off the shape of
  *  `collects` so a new question here is a compile error rather than a line that
  *  quietly goes missing from the email. */
@@ -64,7 +78,7 @@ export function PrivacyTool() {
     },
     processors: [],
     retentionMonths: 24,
-    effectiveDate: new Date().toISOString().slice(0, 10),
+    effectiveDate: todayIso(),
     sells: 'nothing',
     refundDays: 14,
   });
@@ -198,7 +212,7 @@ export function PrivacyTool() {
             />
             <CheckField
               label="Analytics"
-              hint="Anything that counts visits — including the built-in stats your website host provides."
+              hint="Anything that counts visits, including the built-in stats your website host provides."
               checked={input.collects.analytics}
               onChange={(v) => setCollects('analytics', v)}
             />
@@ -245,7 +259,7 @@ export function PrivacyTool() {
               value={input.sells}
               onChange={(v) => set('sells', v)}
               options={[
-                { value: 'nothing', label: 'Nothing — the site is information only' },
+                { value: 'nothing', label: 'Nothing: the site is information only' },
                 { value: 'goods', label: 'Physical things' },
                 { value: 'services', label: 'Services or work' },
                 { value: 'both', label: 'Both' },
@@ -313,8 +327,8 @@ export function PrivacyTool() {
               <h3 className="text-lg font-bold">Read it before you publish it</h3>
               <p className="mt-2 text-base">
                 This is a statement about your business that you are responsible for. It is written
-                to be short enough that reading it is realistic — which is the whole reason it is
-                not nine pages.
+                to be short enough that reading it is realistic, which is the whole reason it is not
+                nine pages.
               </p>
               <p className="mt-3 text-base">
                 Two things to check in particular: that the list of services you use is complete,

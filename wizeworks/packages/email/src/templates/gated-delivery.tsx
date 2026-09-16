@@ -38,8 +38,7 @@ export function GatedDeliveryEmail({
   expiresInDays,
 }: GatedDeliveryEmailProps) {
   const site = siteName ?? '';
-  const body =
-    message ?? 'Thanks for asking — here is the file you wanted, ready whenever you are.';
+  const body = message ?? 'Thanks for asking. Here is the file you wanted, ready whenever you are.';
   const days = expiresInDays === 1 ? '1 day' : `${String(expiresInDays)} days`;
   return (
     <EmailLayout
@@ -55,7 +54,7 @@ export function GatedDeliveryEmail({
           This link works for the next {days}. If it runs out, just ask for it again on the site and
           we will send a fresh one.
         </EmailMuted>
-        <EmailParagraph>{site ? `— The ${site} team` : '— Thanks again'}</EmailParagraph>
+        <EmailParagraph>{site ? `The ${site} team` : 'Thanks again'}</EmailParagraph>
       </Section>
     </EmailLayout>
   );

@@ -797,7 +797,7 @@ function PostMetricsSection({
           {!hasAny ? (
             <Text className="text-sm">
               {collecting
-                ? 'Checking with your accounts — this takes a few seconds.'
+                ? 'Checking with your accounts. This takes a few seconds.'
                 : productCopy(
                     'social.metrics.pending',
                     'Nothing reported back yet. Accounts answer on their own schedule, usually within a few hours of a post going out, and Piggles keeps re-checking. Refresh numbers asks now.'
@@ -981,8 +981,8 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
               Connect an account to start posting
             </Heading>
             <Text>
-              There is nowhere for a post to go yet. Connect a page or profile — your Facebook Page,
-              Instagram, Google Business listing — and it shows up here as a destination you can
+              There is nowhere for a post to go yet. Connect a page or profile (your Facebook Page,
+              Instagram, Google Business listing) and it shows up here as a destination you can
               write to.
             </Text>
             <Button
@@ -1056,8 +1056,8 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
                   ) : mediaRequiredBy.length > 0 ? (
                     <>
                       Needed by{' '}
-                      {listNames(mediaRequiredBy.map((d) => platformName(d.platform, catalogMap)))}{' '}
-                      — the preview shows how each one crops it.
+                      {listNames(mediaRequiredBy.map((d) => platformName(d.platform, catalogMap)))}:
+                      the preview shows how each one crops it.
                     </>
                   ) : (
                     <>
@@ -1108,7 +1108,7 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
                   }
                 />
                 <FieldDescription>
-                  A page you want people to visit. Each account treats a link differently — the
+                  A page you want people to visit. Each account treats a link differently: the
                   preview shows which.
                 </FieldDescription>
               </Field>
@@ -1162,7 +1162,7 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
                       <AlertContent>
                         <AlertTitle>One destination needs a fix first</AlertTitle>
                         <AlertDescription>
-                          A destination above cannot post as things stand — add what it needs, or
+                          A destination above cannot post as things stand. Add what it needs, or
                           turn it off for this post. You can still save a draft.
                         </AlertDescription>
                       </AlertContent>
@@ -1450,7 +1450,7 @@ function ComposeManage({
     approve.mutate(undefined, {
       onSuccess: (updated) => {
         toast.add({
-          title: updated.status === 'scheduled' ? 'Approved and scheduled' : 'Approved — going out',
+          title: updated.status === 'scheduled' ? 'Approved and scheduled' : 'Approved: going out',
           type: 'success',
         });
       },
@@ -1541,7 +1541,7 @@ function ComposeManage({
         afterPaneChange(() => {
           toast.add({
             title: 'Copied to a new draft',
-            description: 'Same words, pictures and accounts — edit it however you like.',
+            description: 'Same words, pictures and accounts. Edit it however you like.',
             type: 'success',
           });
         });
@@ -1744,7 +1744,7 @@ function ComposeManage({
               title="Where it goes"
               description={
                 editable && canWrite
-                  ? 'Turn accounts on or off — you can change this right up until it sends.'
+                  ? 'Turn accounts on or off. You can change this right up until it sends.'
                   : 'The accounts this post was set up to reach, and how each is doing.'
               }
             >
@@ -1915,7 +1915,7 @@ function ComposeManage({
                     <Text className="text-sm">
                       {productCopy(
                         'social.evergreen.explain',
-                        'Add this to the posts you’re happy to run again. When a posting time on your calendar has nothing planned, Piggles can fill it from here — you still approve anything before it goes out.'
+                        'Add this to the posts you’re happy to run again. When a posting time on your calendar has nothing planned, Piggles can fill it from here. You still approve anything before it goes out.'
                       )}
                     </Text>
                   </div>
@@ -1952,7 +1952,7 @@ function ComposeManage({
               <Text className="text-sm">
                 {post.targets.length === 0
                   ? 'This post has no destinations.'
-                  : 'The real thing, per account — cropped to its shape, cut to its limit.'}
+                  : 'The real thing, per account: cropped to its shape, cut to its limit.'}
               </Text>
             </div>
 

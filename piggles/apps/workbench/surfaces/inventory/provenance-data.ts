@@ -97,6 +97,10 @@ export interface StockProvenance {
   ageSeconds: number;
   updatedAt: string;
   lastMovementAt: string | null;
+  /** When somebody last checked this against the shelf. Null if nobody has. */
+  lastCountedAt: string | null;
+  /** The counting cadence this is held to, in days, or null if none is set. */
+  countIntervalDays: number | null;
   sources: ProvenanceSource[];
   staleness: StalenessPenalty;
 

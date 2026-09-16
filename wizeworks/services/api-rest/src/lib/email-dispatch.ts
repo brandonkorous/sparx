@@ -129,7 +129,12 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
         // interactive transaction would hold a scarce PgBouncer server connection
         // across a second one.
         const identity = await loadSenderIdentity(row.tenant_id, propertyId);
-        const from = await buildFrom(row.tenant_id, identity.fromName, identity.fromAddress);
+        const from = await buildFrom(
+          row.tenant_id,
+          identity.fromName,
+          identity.fromAddress,
+          propertyId
+        );
         // A per-send Reply-To (a form notification → the visitor) wins over the
         // site's default reply address.
         const replyTo = payload.replyTo ?? identity.replyTo ?? undefined;
@@ -168,7 +173,7 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
               : { builderEmailId: payload.defer.builderEmailId };
             logger.warn(
               { sendId: row.id, ...which },
-              'email-dispatch: designed email not published — marking failed'
+              'email-dispatch: designed email not published, marking failed'
             );
             await markSendFailed(row.tenant_id, row.id, 'designed email not published');
             continue;
@@ -267,7 +272,7 @@ export function startEmailDispatchLoop(
     try {
       await runEmailDispatchTick(logger);
     } catch (err) {
-      logger.error({ err }, 'email-dispatch: tick threw — will retry next interval');
+      logger.error({ err }, 'email-dispatch: tick threw, will retry next interval');
     }
     if (stopped) return;
     timer = setTimeout(() => void tick(), intervalMs);

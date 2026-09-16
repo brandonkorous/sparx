@@ -25,7 +25,7 @@ const STEPS: { t: string; d: string }[] = [
   },
   {
     t: 'Refer',
-    d: 'Bring a client over on your link. It is credited to you for 30 days, and your rate is locked in at that moment — a later rate change never rewrites your history.',
+    d: 'Bring a client over on your link. It is credited to you for 30 days, and your rate is locked in at that moment: a later rate change never rewrites your history.',
   },
   {
     t: 'Get paid',
@@ -43,7 +43,7 @@ export function PartnersSteps() {
             <span className="text-primary">.</span>
           </Heading>
           <Text variant="lead" className="max-w-3xl">
-            Four steps, and none of them is a sales call. There is no onboarding programme to sit
+            Four steps, and none of them is a sales call. There is no onboarding program to sit
             through and nobody decides whether you are allowed to sell.
           </Text>
         </div>

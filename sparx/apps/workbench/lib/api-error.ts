@@ -24,9 +24,16 @@ export function isNotFound(error: unknown): boolean {
  * screen said the server could not be reached, over a "Try again" that could
  * only ever fail. Deep-linking a record from another business, opening a saved
  * layout pinned to a deleted one, and following an old bookmark all land here.
+ *
+ * A 5xx is the THIRD case, and it was wearing the first one's sentence. The
+ * server WAS reached; it answered, and its answer was that it had failed. "The
+ * server could not be reached" sends someone to check their connection over a
+ * fault that is entirely ours, and no amount of checking it will help.
  */
-export function paneLoadReason(error: unknown): 'missing' | 'unreachable' {
-  return isNotFound(error) ? 'missing' : 'unreachable';
+export function paneLoadReason(error: unknown): 'missing' | 'unreachable' | 'failed' {
+  if (isNotFound(error)) return 'missing';
+  if (error instanceof ApiError && error.status >= 500) return 'failed';
+  return 'unreachable';
 }
 
 /**

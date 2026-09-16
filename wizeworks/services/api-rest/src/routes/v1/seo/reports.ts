@@ -67,11 +67,28 @@ const seoReportRoutes: FastifyPluginAsync = (app) => {
 
     return withRequestTenant(request, async (tx) => {
       const [rows, pagesScored] = await Promise.all([
+        // ── GROUPED BY `id` ALONE, NOT BY THE WORDS ──────────────────────
+        //
+        // A stored card is a SNAPSHOT: it keeps the label the checks carried on
+        // the day that page was scored, and a page is only re-scored when it is
+        // saved or the owner runs a scan. So a site normally holds cards written
+        // by several versions of the rules at once.
+        //
+        // Grouping by (id, label, category) made every rewording split one check
+        // into two rows. After the plain-English pass, one live site showed all
+        // THIRTEEN checks twice — "Title length, 33 of 37" directly above "How
+        // long the title is, 52 of 93" — which reads as twenty-six different
+        // problems, each with a denominator that is only the share of pages that
+        // happen to hold that wording.
+        //
+        // The `id` is the check's real identity and has never changed, so it is
+        // what groups; the words and the category are taken from the most
+        // recently scored card, which is the wording the product uses today.
         tx.$queryRaw<RawCheckRow[]>`
           SELECT
-            chk->>'id'       AS id,
-            chk->>'label'    AS label,
-            chk->>'category' AS category,
+            chk->>'id' AS id,
+            (array_agg(chk->>'label'    ORDER BY a.computed_at DESC))[1] AS label,
+            (array_agg(chk->>'category' ORDER BY a.computed_at DESC))[1] AS category,
             COUNT(*)::int                                        AS total,
             COUNT(*) FILTER (WHERE chk->>'status' = 'pass')::int AS pass,
             COUNT(*) FILTER (WHERE chk->>'status' = 'warn')::int AS warn,
@@ -85,7 +102,7 @@ const seoReportRoutes: FastifyPluginAsync = (app) => {
           WHERE ${scope}::uuid IS NULL
              OR a.property_id = ${scope}::uuid
              OR a.property_id IS NULL
-          GROUP BY 1, 2, 3
+          GROUP BY 1
         `,
         tx.seoAudit.count({ where: auditsOnSite(propertyId) }),
       ]);

@@ -47,7 +47,7 @@ import { CloseBand } from '@/components/marketing/close-band';
 export const metadata: Metadata = {
   title: 'Who Piggles is for',
   description:
-    'A bakery, a barber, a potter, a garage, a market stall — what is different about running each of them, and which of the fifteen apps that shape leans on.',
+    'A bakery, a barber, a potter, a garage, a market stall: what is different about running each of them, and which of the fifteen apps that shape leans on.',
 };
 
 interface Trade {
@@ -198,7 +198,7 @@ export default function WhoItsForPage() {
     <>
       <PageHero
         heading="A bakery, a barber, a potter, and the person who makes things in a shed."
-        lede="Every tool you have looked at was built for somebody else's trade, and you have been settling. Here is what is genuinely different about eleven kinds of business — and how little of it the software needs to care about."
+        lede="Every tool you have looked at was built for somebody else's trade, and you have been settling. Here is what is genuinely different about eleven kinds of business, and how little of it the software needs to care about."
         figure={<TradesFigure />}
         assurances={['Free for 14 days', 'No card needed']}
       >
@@ -232,8 +232,8 @@ export default function WhoItsForPage() {
         <p className="mt-6 max-w-[62ch] text-lg">
           A barber sells time and a bakery sells bread, and underneath they are the same four
           things: someone to remember, something to sell, a bill to send, and a website that says
-          you exist. If your trade is not on this page, it is not missing — it is one of these
-          eleven with a different word on the door.
+          you exist. If your trade is not on this page, it is not missing. It is one of these eleven
+          with a different word on the door.
         </p>
         <Link className={`${buttonClasses({ color: 'secondary', size: 'lg' })} mt-8`} href="/apps">
           See what you would actually get

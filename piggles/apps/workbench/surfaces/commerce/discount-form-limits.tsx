@@ -13,6 +13,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { FormSection } from '../../components/form-section';
 import type { Draft } from './discount-draft';
+import { MoneyTextInput } from '../../components/money-input';
 
 export interface LimitFieldsProps {
   draft: Draft;
@@ -31,16 +32,12 @@ export function DiscountLimitFields({ draft, set }: LimitFieldsProps) {
                 <Text as="span" className="text-lg">
                   $
                 </Text>
-                <Input
+                <MoneyTextInput
                   color="module"
-                  type="number"
-                  min={0}
-                  step="0.01"
-                  inputMode="decimal"
-                  value={draft.minSpendDollars}
-                  placeholder="0.00"
-                  onChange={(event) => {
-                    set('minSpendDollars', event.target.value);
+                  aria-label="Least they have to spend"
+                  text={draft.minSpendDollars}
+                  onTextChange={(value) => {
+                    set('minSpendDollars', value);
                   }}
                 />
               </div>
@@ -183,7 +180,7 @@ export function DiscountLimitFields({ draft, set }: LimitFieldsProps) {
           <FieldDescription>
             {draft.combine
               ? 'A shopper can use this alongside other offers on the same order.'
-              : 'This is used on its own — no other discount stacks with it.'}
+              : 'This is used on its own: no other discount stacks with it.'}
           </FieldDescription>
         </Field>
       </FormSection>

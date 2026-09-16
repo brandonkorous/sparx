@@ -90,8 +90,7 @@ export const wholesalePack: SampleDataPack = {
       warehouseKey: 'DC1',
       lotNumber: 'NIT-2025-1188',
       quantity: 40,
-      recall:
-        'Lot notice: pinhole defect reported on a single carton run — quarantined pending QA.',
+      recall: 'Lot notice: pinhole defect reported on a single carton run, quarantined pending QA.',
     },
   ],
 
@@ -305,10 +304,10 @@ export const wholesalePack: SampleDataPack = {
   products: [
     {
       key: 'nitrile-gloves',
-      title: 'Nitrile Exam Gloves — Powder-Free (Case of 1,000)',
+      title: 'Nitrile Exam Gloves: Powder-Free (Case of 1,000)',
       handle: 'nitrile-exam-gloves-powder-free-case',
       description:
-        '<p>Powder-free, 4-mil nitrile gloves built for back-of-house and facility crews who burn through boxes by the carton. Textured fingertips for wet grip, latex-free for allergen-safe kitchens and clinics, and a beaded cuff that resists roll-down through a full shift.</p><p><strong>Case pack:</strong> 10 dispenser boxes of 100 (1,000 gloves per case). Ambidextrous. AQL 1.5. Choose your size — most facilities stock a 60/40 split of Medium to Large.</p><p><strong>Who buys it:</strong> hotels, restaurants, schools, property crews, and clinics standardizing on one disposable glove across every department.</p>',
+        '<p>Powder-free, 4-mil nitrile gloves built for back-of-house and facility crews who burn through boxes by the carton. Textured fingertips for wet grip, latex-free for allergen-safe kitchens and clinics, and a beaded cuff that resists roll-down through a full shift.</p><p><strong>Case pack:</strong> 10 dispenser boxes of 100 (1,000 gloves per case). Ambidextrous. AQL 1.5. Choose your size. Most facilities stock a 60/40 split of Medium to Large.</p><p><strong>Who buys it:</strong> hotels, restaurants, schools, property crews, and clinics standardizing on one disposable glove across every department.</p>',
       productType: 'Safety',
       vendor: 'GuardTouch',
       tags: ['nitrile gloves', 'powder-free', 'ppe', 'case', 'foodservice'],
@@ -321,7 +320,7 @@ export const wholesalePack: SampleDataPack = {
           },
           {
             label: 'Case pack',
-            body: '10 dispenser boxes of 100 — 1,000 gloves per case. Sold by the size; most facilities stock a 60/40 Medium-to-Large split.',
+            body: '10 dispenser boxes of 100: 1,000 gloves per case. Sold by the size; most facilities stock a 60/40 Medium-to-Large split.',
           },
           {
             label: 'Sizing',
@@ -333,15 +332,15 @@ export const wholesalePack: SampleDataPack = {
           },
         ],
       },
-      seoTitle: 'Nitrile Exam Gloves Powder-Free — Wholesale Case of 1,000',
+      seoTitle: 'Nitrile Exam Gloves Powder-Free: Wholesale Case of 1,000',
       seoDescription:
-        'Powder-free 4-mil nitrile gloves by the case. Latex-free, textured grip — bulk pricing for facilities, foodservice, and clinics.',
+        'Powder-free 4-mil nitrile gloves by the case. Latex-free, textured grip: bulk pricing for facilities, foodservice, and clinics.',
       categoryKeys: ['safety'],
       collectionKeys: ['best-sellers', 'bulk-deals'],
       variants: [
         {
           sku: 'GLV-NIT-M-CS10',
-          title: 'Medium — Case of 1,000',
+          title: 'Medium: Case of 1,000',
           priceCents: 7499,
           costCents: 4200,
           stock: [
@@ -370,7 +369,7 @@ export const wholesalePack: SampleDataPack = {
         },
         {
           sku: 'GLV-NIT-L-CS10',
-          title: 'Large — Case of 1,000',
+          title: 'Large: Case of 1,000',
           priceCents: 7499,
           costCents: 4200,
           stock: [
@@ -394,8 +393,7 @@ export const wholesalePack: SampleDataPack = {
           title: 'Standardized every property on these',
           body: 'We run twelve hotels off one glove now. Consistent fit, no tearing on housekeeping carts. Reordering by the pallet is painless.',
           authorPersona: 'harlan',
-          response:
-            'Thanks Harlan — happy to set up a standing PO so you never run a property dry.',
+          response: 'Thanks Harlan: happy to set up a standing PO so you never run a property dry.',
           helpfulCount: 12,
           daysAgo: 22,
         },
@@ -418,10 +416,10 @@ export const wholesalePack: SampleDataPack = {
       ],
       questions: [
         {
-          body: 'What is the minimum order — can we do a single case or is there a pallet MOQ?',
+          body: 'What is the minimum order: can we do a single case or is there a pallet MOQ?',
           authorPersona: 'rhonda',
           answer:
-            'Single case is fine for an opening order. Standing accounts usually move to half-pallet (24 cases) for the bracket price — ask us for a quote.',
+            'Single case is fine for an opening order. Standing accounts usually move to half-pallet (24 cases) for the bracket price. Ask us for a quote.',
           daysAgo: 16,
         },
         {
@@ -434,7 +432,7 @@ export const wholesalePack: SampleDataPack = {
     },
     {
       key: 'paper-towels',
-      title: 'Multifold Paper Towels — 1-Ply (Case of 4,000)',
+      title: 'Multifold Paper Towels: 1-Ply (Case of 4,000)',
       handle: 'multifold-paper-towels-case',
       description:
         '<p>High-capacity multifold towels engineered for fold-out dispensers in high-traffic restrooms. One-at-a-time dispense cuts usage and waste versus loose stacks, and the absorbent embossed sheet dries hands in a single pull.</p><p><strong>Case pack:</strong> 16 packs of 250 (4,000 towels per case). Fits standard universal multifold dispensers. 9.25" x 9.4" unfolded.</p><p><strong>Who buys it:</strong> schools, gyms, offices, and any facility running dozens of restroom dispensers around the clock.</p>',
@@ -450,7 +448,7 @@ export const wholesalePack: SampleDataPack = {
           },
           {
             label: 'Case pack',
-            body: '16 packs of 250 — 4,000 towels per case.',
+            body: '16 packs of 250: 4,000 towels per case.',
           },
           {
             label: 'Dispenser fit',
@@ -462,7 +460,7 @@ export const wholesalePack: SampleDataPack = {
           },
         ],
       },
-      seoTitle: 'Multifold Paper Towels 1-Ply — Wholesale Case of 4,000',
+      seoTitle: 'Multifold Paper Towels 1-Ply: Wholesale Case of 4,000',
       seoDescription:
         'Universal-fit multifold paper towels by the case. High-capacity, low-waste dispense for high-traffic restrooms.',
       categoryKeys: ['paper'],
@@ -504,7 +502,7 @@ export const wholesalePack: SampleDataPack = {
           body: 'Switching the district to multifold from roll cut waste in every restroom. Kids pull one, not a handful.',
           authorPersona: 'denise',
           response:
-            'Glad the dispensers paid off — let us know if you want a refill schedule by campus.',
+            'Glad the dispensers paid off: let us know if you want a refill schedule by campus.',
           helpfulCount: 9,
           daysAgo: 19,
         },
@@ -522,17 +520,17 @@ export const wholesalePack: SampleDataPack = {
           body: 'Do these fit the older recessed dispensers, or only the surface-mount ones?',
           authorPersona: 'aisha',
           answer:
-            'They fit both — multifold is the universal standard. If your dispensers take C-fold instead, ask us and we will quote the right pack.',
+            'They fit both: multifold is the universal standard. If your dispensers take C-fold instead, ask us and we will quote the right pack.',
           daysAgo: 14,
         },
       ],
     },
     {
       key: 'trash-liners-33',
-      title: 'Trash Can Liners — 33 Gal, 1.5 Mil (Case of 250)',
+      title: 'Trash Can Liners: 33 Gal, 1.5 Mil (Case of 250)',
       handle: 'trash-liners-33-gal-case',
       description:
-        '<p>Heavy-duty low-density 33-gallon liners with a star-seal bottom that distributes weight and resists leaks — no gusseted seam to split. The 1.5-mil wall handles wet, sharp, and heavy waste streams without double-bagging.</p><p><strong>Case pack:</strong> 10 rolls of 25 (250 liners per case). 33" x 39", black. Coreless rolls for clean dispense.</p><p><strong>Who buys it:</strong> offices, schools, and property crews on a daily can-change cadence.</p>',
+        '<p>Heavy-duty low-density 33-gallon liners with a star-seal bottom that distributes weight and resists leaks: no gusseted seam to split. The 1.5-mil wall handles wet, sharp, and heavy waste streams without double-bagging.</p><p><strong>Case pack:</strong> 10 rolls of 25 (250 liners per case). 33" x 39", black. Coreless rolls for clean dispense.</p><p><strong>Who buys it:</strong> offices, schools, and property crews on a daily can-change cadence.</p>',
       productType: 'Can Liners',
       vendor: 'Kimberly',
       tags: ['trash liners', 'can liners', '33 gallon', 'star-seal', 'case'],
@@ -541,11 +539,11 @@ export const wholesalePack: SampleDataPack = {
         details: [
           {
             label: 'Size & gauge',
-            body: '33 gal, 33" × 39", 1.5-mil low-density with a star-seal bottom that distributes weight and resists leaks — no gusseted seam to split.',
+            body: '33 gal, 33" × 39", 1.5-mil low-density with a star-seal bottom that distributes weight and resists leaks: no gusseted seam to split.',
           },
           {
             label: 'Case pack',
-            body: '10 coreless rolls of 25 — 250 liners per case. Black. Coreless rolls dispense clean off the cart.',
+            body: '10 coreless rolls of 25: 250 liners per case. Black. Coreless rolls dispense clean off the cart.',
           },
           {
             label: 'Best for',
@@ -553,9 +551,9 @@ export const wholesalePack: SampleDataPack = {
           },
         ],
       },
-      seoTitle: 'Trash Can Liners 33 Gal 1.5 Mil — Wholesale Case of 250',
+      seoTitle: 'Trash Can Liners 33 Gal 1.5 Mil: Wholesale Case of 250',
       seoDescription:
-        'Star-seal 33-gallon low-density can liners by the case. Leak-resistant, no double-bagging — bulk facility pricing.',
+        'Star-seal 33-gallon low-density can liners by the case. Leak-resistant, no double-bagging: bulk facility pricing.',
       categoryKeys: ['liners'],
       collectionKeys: ['best-sellers'],
       variants: [
@@ -602,14 +600,14 @@ export const wholesalePack: SampleDataPack = {
           body: 'What is your lead time and freight policy on a 30-case standing order?',
           authorPersona: 'rhonda',
           answer:
-            'Ten business days from DC1, and freight is free over $750 on a single delivery — a 30-case order clears that easily.',
+            'Ten business days from DC1, and freight is free over $750 on a single delivery: a 30-case order clears that easily.',
           daysAgo: 12,
         },
       ],
     },
     {
       key: 'trash-liners-55',
-      title: 'Trash Can Liners — 55 Gal, 2.0 Mil (Case of 100)',
+      title: 'Trash Can Liners: 55 Gal, 2.0 Mil (Case of 100)',
       handle: 'trash-liners-55-gal-case',
       description:
         '<p>Contractor-grade 55-gallon liners for drum cans, dock waste, and event cleanup. The 2.0-mil wall and star-seal bottom take heavy, jagged, and wet loads that tear lighter bags. Sized to line a full 55-gallon barrel with cuff to spare.</p><p><strong>Case pack:</strong> 4 rolls of 25 (100 liners per case). 38" x 58", black.</p><p><strong>Who buys it:</strong> restaurants, hospitals, and property crews handling large-can and back-of-house waste.</p>',
@@ -625,7 +623,7 @@ export const wholesalePack: SampleDataPack = {
           },
           {
             label: 'Case pack',
-            body: '4 rolls of 25 — 100 liners per case. Black. Sized to line a full 55-gallon barrel with cuff to spare.',
+            body: '4 rolls of 25: 100 liners per case. Black. Sized to line a full 55-gallon barrel with cuff to spare.',
           },
           {
             label: 'Best for',
@@ -674,10 +672,10 @@ export const wholesalePack: SampleDataPack = {
     },
     {
       key: 'hand-soap',
-      title: 'Foaming Hand Soap — Gallon Refill (Case of 4)',
+      title: 'Foaming Hand Soap: Gallon Refill (Case of 4)',
       handle: 'foaming-hand-soap-gallon-case',
       description:
-        '<p>Concentrated foaming hand soap in bulk gallon refills — pour-and-go for any open dispenser, no proprietary cartridge lock-in. A mild, dye-free formula that lathers fast and rinses clean, gentle enough for the dozens of washes a foodservice or clinic shift demands.</p><p><strong>Case pack:</strong> 4 one-gallon jugs. One gallon refills a 1,000-mL dispenser roughly four times.</p><p><strong>Who buys it:</strong> restaurants, schools, gyms, and clinics standardizing restroom and kitchen soap across sites.</p>',
+        '<p>Concentrated foaming hand soap in bulk gallon refills: pour-and-go for any open dispenser, no proprietary cartridge lock-in. A mild, dye-free formula that lathers fast and rinses clean, gentle enough for the dozens of washes a foodservice or clinic shift demands.</p><p><strong>Case pack:</strong> 4 one-gallon jugs. One gallon refills a 1,000-mL dispenser roughly four times.</p><p><strong>Who buys it:</strong> restaurants, schools, gyms, and clinics standardizing restroom and kitchen soap across sites.</p>',
       productType: 'Cleaning Chemicals',
       vendor: 'ProChem',
       tags: ['hand soap', 'foaming', 'gallon', 'refill', 'case'],
@@ -694,7 +692,7 @@ export const wholesalePack: SampleDataPack = {
           },
           {
             label: 'Dispenser compatibility',
-            body: 'Pour-and-go for any open or refillable foaming dispenser — no proprietary cartridge lock-in.',
+            body: 'Pour-and-go for any open or refillable foaming dispenser: no proprietary cartridge lock-in.',
           },
           {
             label: 'Best for',
@@ -702,9 +700,9 @@ export const wholesalePack: SampleDataPack = {
           },
         ],
       },
-      seoTitle: 'Foaming Hand Soap Gallon Refill — Wholesale Case of 4',
+      seoTitle: 'Foaming Hand Soap Gallon Refill: Wholesale Case of 4',
       seoDescription:
-        'Bulk foaming hand soap in gallon refills, 4 per case. Dye-free, dispenser-agnostic — facility pricing.',
+        'Bulk foaming hand soap in gallon refills, 4 per case. Dye-free, dispenser-agnostic: facility pricing.',
       categoryKeys: ['chemicals'],
       collectionKeys: ['best-sellers'],
       variants: [
@@ -734,7 +732,7 @@ export const wholesalePack: SampleDataPack = {
           title: 'No cartridge lock-in',
           body: 'We ditched the proprietary-cartridge system. Gallon refills into open dispensers cost a third as much.',
           authorPersona: 'victor',
-          response: 'That switch saves our restaurant accounts the most — glad it landed.',
+          response: 'That switch saves our restaurant accounts the most: glad it landed.',
           helpfulCount: 8,
           daysAgo: 17,
         },
@@ -752,17 +750,17 @@ export const wholesalePack: SampleDataPack = {
           body: 'Is this compatible with our existing wall dispensers or do we need new ones?',
           authorPersona: 'victor',
           answer:
-            'Any open/refillable foaming dispenser works — just pour. If yours only takes sealed cartridges, ask us about a low-cost open-dispenser swap.',
+            'Any open/refillable foaming dispenser works. Just pour. If yours only takes sealed cartridges, ask us about a low-cost open-dispenser swap.',
           daysAgo: 13,
         },
       ],
     },
     {
       key: 'disinfectant',
-      title: 'Disinfectant Cleaner Concentrate — Gallon (Case of 4)',
+      title: 'Disinfectant Cleaner Concentrate: Gallon (Case of 4)',
       handle: 'disinfectant-cleaner-concentrate-case',
       description:
-        '<p>Hospital-grade quaternary disinfectant concentrate — one gallon dilutes to dozens of ready-to-use gallons at the trigger bottle. EPA-registered, kills the bacteria and viruses on a standard facility kill list, and doubles as a one-step cleaner-disinfectant for hard surfaces.</p><p><strong>Case pack:</strong> 4 one-gallon concentrate jugs. Dilution ~1:64 for general use; see the label for contact times.</p><p><strong>Who buys it:</strong> hospitals, schools, gyms, and hotels running daily high-touch disinfection.</p>',
+        '<p>Hospital-grade quaternary disinfectant concentrate. One gallon dilutes to dozens of ready-to-use gallons at the trigger bottle. EPA-registered, kills the bacteria and viruses on a standard facility kill list, and doubles as a one-step cleaner-disinfectant for hard surfaces.</p><p><strong>Case pack:</strong> 4 one-gallon concentrate jugs. Dilution ~1:64 for general use; see the label for contact times.</p><p><strong>Who buys it:</strong> hospitals, schools, gyms, and hotels running daily high-touch disinfection.</p>',
       productType: 'Cleaning Chemicals',
       vendor: 'ProChem',
       tags: ['disinfectant', 'concentrate', 'gallon', 'epa-registered', 'case'],
@@ -775,7 +773,7 @@ export const wholesalePack: SampleDataPack = {
           },
           {
             label: 'Dilution & yield',
-            body: 'Dilutes roughly 1:64 — one gallon makes dozens of ready-to-use gallons at the trigger bottle. See the label for contact times.',
+            body: 'Dilutes roughly 1:64. One gallon makes dozens of ready-to-use gallons at the trigger bottle. See the label for contact times.',
           },
           {
             label: 'Case pack',
@@ -835,14 +833,14 @@ export const wholesalePack: SampleDataPack = {
           body: 'Do you provide the SDS and EPA master label for our compliance binder?',
           authorPersona: 'samuel',
           answer:
-            'Yes — the SDS and master label download from the product page, and we email a packet with every first shipment to a new account.',
+            'Yes: the SDS and master label download from the product page, and we email a packet with every first shipment to a new account.',
           daysAgo: 11,
         },
       ],
     },
     {
       key: 'stretch-wrap',
-      title: 'Stretch Wrap Film — 18" x 1,500 ft (Case of 4 Rolls)',
+      title: 'Stretch Wrap Film: 18" x 1,500 ft (Case of 4 Rolls)',
       handle: 'stretch-wrap-film-18in-case',
       description:
         '<p>80-gauge hand stretch film for palletizing and load containment. High cling locks loads without tails, and the pre-stretched blend yields more wrap per pound so a case goes further than the spec suggests. Clear, so labels and contents stay readable on the dock.</p><p><strong>Case pack:</strong> 4 rolls, 18" x 1,500 ft each. Fits standard hand dispensers.</p><p><strong>Who buys it:</strong> warehouses, restaurants, and property crews shipping or staging palletized goods.</p>',
@@ -908,17 +906,17 @@ export const wholesalePack: SampleDataPack = {
           body: 'Can we get a machine-grade roll for our wrapper, or is this hand-grade only?',
           displayName: 'DCSupervisor',
           answer:
-            'This SKU is hand-grade. We stock machine-grade in 20" x 5,000 ft — ask us for a quote and we will add it to your catalog.',
+            'This SKU is hand-grade. We stock machine-grade in 20" x 5,000 ft. Ask us for a quote and we will add it to your catalog.',
           daysAgo: 9,
         },
       ],
     },
     {
       key: 'shipping-boxes',
-      title: 'Corrugated Shipping Boxes — 12x12x12 (Bundle of 25)',
+      title: 'Corrugated Shipping Boxes: 12x12x12 (Bundle of 25)',
       handle: 'corrugated-shipping-boxes-12x12x12',
       description:
-        '<p>200-lb-test, 32-ECT single-wall corrugated boxes — the workhorse cube for shipping, storage, and move-outs. Ships flat to save space and assembles into a square, stackable cube that protects edges and holds in a stack.</p><p><strong>Case pack:</strong> bundle of 25, shipped flat. 12" x 12" x 12" inside dimensions. Kraft brown.</p><p><strong>Who buys it:</strong> property managers handling turnovers, restaurants storing dry goods, and any account that ships or stores by the box.</p>',
+        '<p>200-lb-test, 32-ECT single-wall corrugated boxes: the workhorse cube for shipping, storage, and move-outs. Ships flat to save space and assembles into a square, stackable cube that protects edges and holds in a stack.</p><p><strong>Case pack:</strong> bundle of 25, shipped flat. 12" x 12" x 12" inside dimensions. Kraft brown.</p><p><strong>Who buys it:</strong> property managers handling turnovers, restaurants storing dry goods, and any account that ships or stores by the box.</p>',
       productType: 'Packaging',
       vendor: 'PackRight',
       tags: ['shipping boxes', 'corrugated', 'cardboard', '12x12x12', 'bundle'],
@@ -935,7 +933,7 @@ export const wholesalePack: SampleDataPack = {
           },
           {
             label: 'Best for',
-            body: 'Shipping, dry-goods storage, and unit turnovers — survives the dolly and holds under a stack.',
+            body: 'Shipping, dry-goods storage, and unit turnovers: survives the dolly and holds under a stack.',
           },
         ],
       },
@@ -980,10 +978,10 @@ export const wholesalePack: SampleDataPack = {
     },
     {
       key: 'packing-tape',
-      title: 'Packing Tape — 2" x 110 yd, 2.0 Mil (Case of 36)',
+      title: 'Packing Tape: 2" x 110 yd, 2.0 Mil (Case of 36)',
       handle: 'packing-tape-2in-case',
       description:
-        '<p>2.0-mil acrylic carton-sealing tape that holds its grip across temperature swings — cold docks to hot trailers — without the yellowing or release that kills cheaper hot-melt tape in storage. Clear, quiet off the roll, and sized to fit any standard 2" dispenser.</p><p><strong>Case pack:</strong> 36 rolls, 2" x 110 yd each.</p><p><strong>Who buys it:</strong> warehouses, restaurants, and offices that seal cartons daily.</p>',
+        '<p>2.0-mil acrylic carton-sealing tape that holds its grip across temperature swings (cold docks to hot trailers) without the yellowing or release that kills cheaper hot-melt tape in storage. Clear, quiet off the roll, and sized to fit any standard 2" dispenser.</p><p><strong>Case pack:</strong> 36 rolls, 2" x 110 yd each.</p><p><strong>Who buys it:</strong> warehouses, restaurants, and offices that seal cartons daily.</p>',
       productType: 'Packaging',
       vendor: 'PackRight',
       tags: ['packing tape', 'carton tape', 'acrylic', 'shipping', 'case'],
@@ -1035,7 +1033,7 @@ export const wholesalePack: SampleDataPack = {
         {
           rating: 5,
           title: 'Holds in the cold dock',
-          body: 'Acrylic was the right call — hot-melt let go in our cold storage. These seal and stay.',
+          body: 'Acrylic was the right call: hot-melt let go in our cold storage. These seal and stay.',
           authorPersona: 'samuel',
           helpfulCount: 5,
           daysAgo: 11,
@@ -1051,7 +1049,7 @@ export const wholesalePack: SampleDataPack = {
       ],
       questions: [
         {
-          body: 'Whats the MOQ to get the bracket price — one case or do we need to combine SKUs?',
+          body: 'Whats the MOQ to get the bracket price. One case or do we need to combine SKUs?',
           authorPersona: 'victor',
           answer:
             'Bracket pricing kicks in at 6 cases of tape, or you can hit it by combining packaging SKUs on one order. Either way we will quote it.',
@@ -1061,10 +1059,10 @@ export const wholesalePack: SampleDataPack = {
     },
     {
       key: 'floor-cleaner',
-      title: 'Neutral Floor Cleaner Concentrate — Gallon (Case of 4)',
+      title: 'Neutral Floor Cleaner Concentrate: Gallon (Case of 4)',
       handle: 'neutral-floor-cleaner-concentrate-case',
       description:
-        '<p>pH-neutral floor cleaner concentrate safe for finished floors, sealed concrete, tile, and LVT — no dulling, no film, no rinse required on most surfaces. One gallon dilutes to dozens of mop buckets, and the low-foam formula plays nice with auto-scrubbers.</p><p><strong>Case pack:</strong> 4 one-gallon concentrate jugs. Dilution ~2 oz per gallon of water for daily mopping.</p><p><strong>Who buys it:</strong> schools, hotels, gyms, and property crews running large finished-floor areas.</p>',
+        '<p>pH-neutral floor cleaner concentrate safe for finished floors, sealed concrete, tile, and LVT: no dulling, no film, no rinse required on most surfaces. One gallon dilutes to dozens of mop buckets, and the low-foam formula plays nice with auto-scrubbers.</p><p><strong>Case pack:</strong> 4 one-gallon concentrate jugs. Dilution ~2 oz per gallon of water for daily mopping.</p><p><strong>Who buys it:</strong> schools, hotels, gyms, and property crews running large finished-floor areas.</p>',
       productType: 'Cleaning Chemicals',
       vendor: 'ProChem',
       tags: ['floor cleaner', 'neutral', 'concentrate', 'auto-scrubber', 'case'],
@@ -1077,7 +1075,7 @@ export const wholesalePack: SampleDataPack = {
           },
           {
             label: 'Surfaces',
-            body: 'Safe for finished floors, sealed concrete, tile, and LVT — one cleaner for every floor type.',
+            body: 'Safe for finished floors, sealed concrete, tile, and LVT. One cleaner for every floor type.',
           },
           {
             label: 'Dilution & pack',
@@ -1145,7 +1143,7 @@ export const wholesalePack: SampleDataPack = {
           body: 'Can we set up auto-reorder so we never run a campus dry mid-semester?',
           authorPersona: 'denise',
           answer:
-            'Yes — we will set reorder points per ship-to and trigger a PO automatically. Most districts run it as a standing monthly delivery.',
+            'Yes. We will set reorder points per ship-to and trigger a PO automatically. Most districts run it as a standing monthly delivery.',
           daysAgo: 12,
         },
       ],
@@ -1155,7 +1153,7 @@ export const wholesalePack: SampleDataPack = {
       title: 'Facility Starter Pallet',
       handle: 'facility-starter-pallet',
       description:
-        '<p>Everything a new site needs to open the doors, on one pallet at one price: a case of nitrile gloves, multifold paper towels, 33-gallon can liners, and foaming hand soap. Built for property turnovers, new-location openings, and onboarding a fresh account — skip the line-by-line cart and order the whole opening kit.</p><p>Priced below the sum of its cases. Swap the glove size at checkout.</p>',
+        '<p>Everything a new site needs to open the doors, on one pallet at one price: a case of nitrile gloves, multifold paper towels, 33-gallon can liners, and foaming hand soap. Built for property turnovers, new-location openings, and onboarding a fresh account, skip the line-by-line cart and order the whole opening kit.</p><p>Priced below the sum of its cases. Swap the glove size at checkout.</p>',
       productType: 'Bundle',
       vendor: 'House Pallet',
       tags: ['starter pallet', 'bundle', 'facility', 'opening order'],
@@ -1164,7 +1162,7 @@ export const wholesalePack: SampleDataPack = {
         details: [
           {
             label: "What's included",
-            body: 'A case each of nitrile gloves, multifold paper towels, 33-gallon can liners, and foaming hand soap — one pallet, one price.',
+            body: 'A case each of nitrile gloves, multifold paper towels, 33-gallon can liners, and foaming hand soap. One pallet, one price.',
           },
           {
             label: 'Pricing',
@@ -1189,7 +1187,7 @@ export const wholesalePack: SampleDataPack = {
           title: 'Opened a new building off one order',
           body: 'New property, one pallet, done. Saved our ops team an afternoon of building a cart and beat buying the cases separately.',
           authorPersona: 'rhonda',
-          response: 'Exactly what we built it for — congrats on the new building, Rhonda.',
+          response: 'Exactly what we built it for: congrats on the new building, Rhonda.',
           helpfulCount: 7,
           daysAgo: 10,
         },
@@ -1225,7 +1223,7 @@ export const wholesalePack: SampleDataPack = {
       slug: 'setting-up-net-30-terms',
       title: 'Setting up net-30 terms with your distributor',
       excerpt:
-        'How a wholesale account actually opens credit — what we ask for, how fast it clears, and how to keep the terms once you have them.',
+        'How a wholesale account actually opens credit: what we ask for, how fast it clears, and how to keep the terms once you have them.',
       daysAgo: 6,
       body: doc(
         p(
@@ -1244,7 +1242,7 @@ export const wholesalePack: SampleDataPack = {
         ),
         h2('Keeping your terms'),
         p(
-          'Pay inside the window. A net-30 line is a relationship, not a right — consistent on-time payment is what unlocks higher limits, longer terms, and the bracket pricing that comes with volume. If a payment will be late, call your rep before the due date; a heads-up keeps the line open.'
+          'Pay inside the window. A net-30 line is a relationship, not a right: consistent on-time payment is what unlocks higher limits, longer terms, and the bracket pricing that comes with volume. If a payment will be late, call your rep before the due date; a heads-up keeps the line open.'
         )
       ),
     },
@@ -1252,7 +1250,7 @@ export const wholesalePack: SampleDataPack = {
       slug: 'forecasting-reorder-points',
       title: 'How to forecast reorder points for facility supplies',
       excerpt:
-        'A simple way to set the trigger level for every SKU so you reorder before you run out — without drowning in safety stock.',
+        'A simple way to set the trigger level for every SKU so you reorder before you run out, without drowning in safety stock.',
       daysAgo: 14,
       body: doc(
         p(
@@ -1263,16 +1261,16 @@ export const wholesalePack: SampleDataPack = {
           'A reorder point is just your usage during the lead time, plus a safety buffer. Track three numbers per SKU and the rest is arithmetic:'
         ),
         ol(
-          'Average daily usage — total cases consumed over a period, divided by the days',
-          'Lead time — how many days from PO to receiving (ask your distributor per SKU)',
-          'Safety stock — a buffer for demand spikes and late deliveries, often a few days of usage'
+          'Average daily usage: total cases consumed over a period, divided by the days',
+          'Lead time: how many days from PO to receiving (ask your distributor per SKU)',
+          'Safety stock: a buffer for demand spikes and late deliveries, often a few days of usage'
         ),
         p(
           'Reorder point = (average daily usage × lead-time days) + safety stock. When on-hand drops to that number, cut the PO.'
         ),
         h2('Tune it over time'),
         p(
-          'Start conservative, then watch how often you actually hit the trigger. If you reorder and still have weeks of cushion, your safety stock is too high. If you scramble, raise it. Seasonal accounts — schools, resorts — should set different points for peak and off-peak.'
+          'Start conservative, then watch how often you actually hit the trigger. If you reorder and still have weeks of cushion, your safety stock is too high. If you scramble, raise it. Seasonal accounts (schools, resorts) should set different points for peak and off-peak.'
         )
       ),
     },
@@ -1284,7 +1282,7 @@ export const wholesalePack: SampleDataPack = {
       daysAgo: 21,
       body: doc(
         p(
-          'Every purchasing manager feels the pull of the pallet price. Buying deep cuts the per-unit cost and the freight per case — but it also parks cash on a shelf and bets that you will use it before it ages out. The right answer is usually different for different SKUs.'
+          'Every purchasing manager feels the pull of the pallet price. Buying deep cuts the per-unit cost and the freight per case, but it also parks cash on a shelf and bets that you will use it before it ages out. The right answer is usually different for different SKUs.'
         ),
         h2('Buy in bulk when'),
         ul(

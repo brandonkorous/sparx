@@ -157,7 +157,7 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
           <AlertContent>
             <AlertTitle>Could not load this teammate</AlertTitle>
             <AlertDescription>
-              Nothing about their access has changed — this is a problem reaching the server.
+              Nothing about their access has changed. This is a problem reaching the server.
             </AlertDescription>
           </AlertContent>
           <AlertActions>
@@ -193,7 +193,7 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<UserX className="size-6" aria-hidden />}
           title="This person is no longer on your team"
-          description="They may have been removed since you opened this. You can close this panel — everything else in your workspace is unaffected."
+          description="They may have been removed since you opened this. You can close this panel. Everything else in your workspace is unaffected."
           actions={
             <Button
               color="neutral"
@@ -288,8 +288,8 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
                   <AlertTitle>This is you</AlertTitle>
                   <AlertDescription>
                     You cannot change your own role or remove yourself. Ask another owner or admin
-                    if you need it changed — it is the rule that stops an account being locked out
-                    by accident.
+                    if you need it changed. It is the rule that stops an account being locked out by
+                    accident.
                   </AlertDescription>
                 </AlertContent>
               </Alert>
@@ -367,7 +367,7 @@ export function TeamMemberSurface({ ctx }: { ctx: SurfaceContext }) {
                       <span className="flex flex-col gap-0.5">
                         <span className="font-medium">Only the areas I choose</span>
                         <span className="text-sm">
-                          Everything else disappears for them entirely — not greyed out, simply not
+                          Everything else disappears for them entirely, not greyed out, simply not
                           there.
                         </span>
                       </span>
@@ -506,7 +506,7 @@ function MemberActivity({ userId, name }: { userId: string; name: string }) {
                   />
                   <span className="min-w-0 truncate">
                     {item.title}
-                    {item.subject ? ` — ${item.subject}` : ''}
+                    {item.subject ? ` (${item.subject})` : ''}
                   </span>
                 </span>
                 <Text className="shrink-0 text-sm">{describeAgo(item.at)}</Text>

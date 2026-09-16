@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-handyman-modern',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Handyman (Modern)',
   summary:
-    'A bright, techy handyman site for on-demand home repairs — book a vetted pro online in minutes at a flat hourly rate. Installs a working booking flow: a real task menu (mounting, assembly, smart-home, half-day projects), three vetted pros dispatched as bookable resources with long weekday and weekend hours, and same-day scheduling. Ships as "FixList", a modern on-demand handyman service.',
+    'A bright, techy handyman site for on-demand home repairs. Book a vetted pro online in minutes at a flat hourly rate. Installs a working booking flow: a real task menu (mounting, assembly, smart-home, half-day projects), three vetted pros dispatched as bookable resources with long weekday and weekend hours, and same-day scheduling. Ships as "FixList", a modern on-demand handyman service.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

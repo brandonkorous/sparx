@@ -969,7 +969,7 @@ async function aggregateRevenueByDay(
       COALESCE(SUM(refund_total), 0)       AS refunded,
       COALESCE(SUM(total), 0)              AS collected
     FROM orders
-    WHERE status <> 'cancelled'
+    WHERE status <> 'canceled'
       AND placed_at >= ${from}
       AND placed_at < ${toExclusive}
       ${propertyId ? Prisma.sql`AND property_id = ${propertyId}::uuid` : Prisma.empty}
@@ -1002,7 +1002,7 @@ async function aggregateRevenueByDayPerProperty(
       COALESCE(SUM(refund_total), 0)       AS refunded,
       COALESCE(SUM(total), 0)              AS collected
     FROM orders
-    WHERE status <> 'cancelled'
+    WHERE status <> 'canceled'
       AND placed_at >= ${from}
       AND placed_at < ${toExclusive}
     GROUP BY property_id, 2

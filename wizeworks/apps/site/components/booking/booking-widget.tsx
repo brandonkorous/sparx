@@ -399,8 +399,8 @@ export function BookingWidget({
         ) : slots?.length === 0 ? (
           <div className="grid justify-items-start gap-2">
             <p className="text-base-content">
-              No open times that day — try another date, or join the waitlist and we&rsquo;ll let
-              you know the moment a spot opens.
+              No open times that day. Try another date, or join the waitlist and we&rsquo;ll let you
+              know the moment a spot opens.
             </p>
             <Button
               type="button"

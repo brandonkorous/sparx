@@ -68,7 +68,7 @@ export function SubscriptionCard({ billing }: { billing: OperatorTenantBilling }
         <Stack gap={1}>
           {billing.planType === 'enterprise' ? (
             <Text size="sm" variant="muted">
-              Enterprise plan — custom pricing managed through support.
+              Enterprise plan: custom pricing managed through support.
             </Text>
           ) : null}
           {trialEnds && billing.subscriptionStatus === 'trialing' ? (
@@ -82,8 +82,8 @@ export function SubscriptionCard({ billing }: { billing: OperatorTenantBilling }
           ) : null}
           {!billing.billingActive ? (
             <Text size="sm" variant="muted">
-              Billing isn’t live yet — the amount above is what this tenant will pay once its
-              modules are billed.
+              Billing isn’t live yet: the amount above is what this tenant will pay once its modules
+              are billed.
             </Text>
           ) : null}
         </Stack>

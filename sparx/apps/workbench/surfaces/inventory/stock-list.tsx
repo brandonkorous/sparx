@@ -60,7 +60,7 @@ import {
   type StockSortKey,
 } from './data';
 import { openProductFacet } from '../commerce/product-scope';
-import { humanDuration, stockAgeTone } from './integrity-data';
+import { countVerdict } from './integrity-data';
 import { RowOpenHint } from '../../components/row-open-hint';
 import { StockUncountedBand } from './stock-uncounted-band';
 
@@ -81,7 +81,7 @@ function emptyAdvice(search: string, locationName: string | null): string {
   if (search) parts.push('Try part of a product code or a product name.');
   if (locationName) {
     parts.push(
-      `You are only seeing stock kept at ${locationName} — switch to every location for the rest.`
+      `You are only seeing stock kept at ${locationName}. Switch to every location for the rest.`
     );
   }
   return parts.join(' ');
@@ -219,7 +219,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Boxes className="size-6" aria-hidden />}
           title="Could not load your stock"
-          description="This is a problem reaching the server. Your stock is unaffected — the numbers just could not be read just now."
+          description="This is a problem reaching the server. Your stock is unaffected: the numbers just could not be read just now."
         />
       );
     }
@@ -297,7 +297,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
           description={
             narrowed
               ? emptyAdvice(search.trim(), locationName)
-              : 'Stock appears here once you record how many of something you have. Open a product and use its Stock panel to count it for the first time — and until you do, your website sells it without limit.'
+              : 'Stock appears here once you record how many of something you have. Open a product and use its Stock panel to count it for the first time, and until you do, your website sells it without limit.'
           }
         />
       );
@@ -323,6 +323,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
         <tbody>
           {rows.map((level) => {
             const state = levelState(level);
+            const countBadge = countVerdict(level.lastCountedAt, level.countIntervalDays);
             return (
               <tr
                 key={`${level.variantId}:${level.warehouseId}`}
@@ -369,14 +370,17 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <Badge color={state.tone} variant="soft" size="sm">
                       {state.label}
                     </Badge>
-                    {/* Only when the number has actually gone stale. A row of
-                        "2 hours" beside every healthy line is noise that trains
-                        people to stop reading the column before it ever means
-                        anything — an age badge is a deliberate signal, and a
-                        deliberate signal shown always is a decoration. */}
-                    {stockAgeTone(level.ageSeconds) !== 'success' ? (
-                      <Badge color={stockAgeTone(level.ageSeconds)} variant="soft" size="sm">
-                        {humanDuration(level.ageSeconds)} old
+                    {/* Only against a counting schedule the business set
+                        itself, and only once it is actually late — see
+                        `countVerdict`. What this replaced measured how long
+                        since the quantity last MOVED and called it a check, so
+                        it flagged 69 of one dressmaker's 73 rows and stayed
+                        quiet on the ones that mattered (issue 498). An age
+                        badge is a deliberate signal, and a deliberate signal
+                        shown always is a decoration. */}
+                    {countBadge ? (
+                      <Badge color={countBadge.tone} variant="soft" size="sm">
+                        {countBadge.label}
                       </Badge>
                     ) : null}
                   </span>

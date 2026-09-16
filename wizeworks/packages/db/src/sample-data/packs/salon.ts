@@ -107,7 +107,7 @@ export const salonPack: SampleDataPack = {
       postalCode: '97239',
       properties: {
         formula: 'Balayage, lightener to level 8, toner 9A for 8 minutes.',
-        allergies: 'Reacts to PPD — ammonia-free line only, patch tested 2026-02-11.',
+        allergies: 'Reacts to PPD: ammonia-free line only, patch tested 2026-02-11.',
         usualStylist: 'Kai',
         visitEvery: '12w',
       },
@@ -122,7 +122,7 @@ export const salonPack: SampleDataPack = {
       region: 'WA',
       postalCode: '98661',
       properties: {
-        formula: '4NN full coverage, 10 vol, 30 min. Grey at the temples needs the extra time.',
+        formula: '4NN full coverage, 10 vol, 30 min. Gray at the temples needs the extra time.',
         usualStylist: 'Rina',
         visitEvery: '4w',
       },
@@ -168,7 +168,7 @@ export const salonPack: SampleDataPack = {
       postalCode: '97217',
       properties: {
         formula: 'Keratin smoothing, half head. Sulphate-free aftercare only.',
-        allergies: 'Scalp is sensitive to heat — keep the dryer moving.',
+        allergies: 'Scalp is sensitive to heat. Keep the dryer moving.',
         usualStylist: 'Marisol',
         visitEvery: 'occasional',
       },
@@ -181,7 +181,7 @@ export const salonPack: SampleDataPack = {
       title: 'Bond Repair Shampoo (250 ml)',
       handle: 'bond-repair-shampoo',
       description:
-        '<p>A sulfate-free repair shampoo built for color-treated and chemically processed hair. It cleanses gently while a bond-building complex works to relink the broken disulfide bonds that leave hair brittle after lightening or heat styling. The lather is low and rinses clean — no squeaky stripped feeling, no fading your color faster than it should.</p><p>Use two to three times a week, alternating with your daily wash. Massage into wet hair, leave for sixty seconds so the actives can work, then rinse and follow with the matching conditioner.</p>',
+        '<p>A sulfate-free repair shampoo built for color-treated and chemically processed hair. It cleanses gently while a bond-building complex works to relink the broken disulfide bonds that leave hair brittle after lightening or heat styling. The lather is low and rinses clean: no squeaky stripped feeling, no fading your color faster than it should.</p><p>Use two to three times a week, alternating with your daily wash. Massage into wet hair, leave for sixty seconds so the actives can work, then rinse and follow with the matching conditioner.</p>',
       productType: 'Hair Care',
       productTypeKey: 'cosmetics',
       attributes: {
@@ -229,7 +229,7 @@ export const salonPack: SampleDataPack = {
           title: 'Saved my over-bleached ends',
           body: 'My stylist put me on this after a big lightening session. Hair actually feels like hair again instead of straw.',
           authorPersona: 'amara',
-          response: 'So glad your bond treatment is holding, Amara — see you at the next color!',
+          response: 'So glad your bond treatment is holding, Amara: see you at the next color!',
           helpfulCount: 7,
           daysAgo: 19,
         },
@@ -247,7 +247,7 @@ export const salonPack: SampleDataPack = {
           body: 'Is this safe for keratin-treated hair?',
           authorPersona: 'noor',
           answer:
-            'Yes — it is sulfate- and salt-free, so it will not strip a keratin treatment. It is actually a great choice for extending one.',
+            'Yes. It is sulfate- and salt-free, so it will not strip a keratin treatment. It is actually a great choice for extending one.',
           daysAgo: 13,
         },
       ],
@@ -321,7 +321,7 @@ export const salonPack: SampleDataPack = {
           body: 'Will this weigh down fine hair?',
           displayName: 'finehairfran',
           answer:
-            'Not if you keep it to the mid-lengths and ends and rinse well — it is formulated to be lightweight. Skip the roots if your hair is very fine.',
+            'Not if you keep it to the mid-lengths and ends and rinse well. It is formulated to be lightweight. Skip the roots if your hair is very fine.',
           daysAgo: 10,
         },
       ],
@@ -384,7 +384,7 @@ export const salonPack: SampleDataPack = {
         {
           rating: 4,
           title: 'Great, faint scent',
-          body: 'Controls my frizz in humidity. The scent is subtle but lingers — fine by me.',
+          body: 'Controls my frizz in humidity. The scent is subtle but lingers: fine by me.',
           displayName: 'pdxwaves',
           status: 'pending',
           helpfulCount: 1,
@@ -396,7 +396,7 @@ export const salonPack: SampleDataPack = {
           body: 'Can I use this on dry hair too or just damp?',
           authorPersona: 'devon',
           answer:
-            'Both — rake it through damp hair before drying for hold, then rub a tiny bit between your palms on dry hair to smooth flyaways.',
+            'Both: rake it through damp hair before drying for hold, then rub a tiny bit between your palms on dry hair to smooth flyaways.',
           daysAgo: 12,
         },
       ],
@@ -406,14 +406,14 @@ export const salonPack: SampleDataPack = {
       title: 'Nourishing Hair Oil (50 ml)',
       handle: 'nourishing-hair-oil',
       description:
-        '<p>A weightless, fast-absorbing finishing oil — argan, marula, and squalane — that adds shine and tames split ends without leaving a greasy film. A single drop on the ends finishes a style; a few drops on damp hair protects against heat and tangles before you dry.</p><p>Start with one or two drops, warm between your palms, and smooth over the mid-lengths and ends. Add more only as needed — this concentrate goes a very long way.</p>',
+        '<p>A weightless, fast-absorbing finishing oil (argan, marula, and squalane) that adds shine and tames split ends without leaving a greasy film. A single drop on the ends finishes a style; a few drops on damp hair protects against heat and tangles before you dry.</p><p>Start with one or two drops, warm between your palms, and smooth over the mid-lengths and ends. Add more only as needed: this concentrate goes a very long way.</p>',
       productType: 'Hair Care',
       productTypeKey: 'cosmetics',
       attributes: {
         keyIngredients:
-          'A weightless blend of argan oil (fatty acids and vitamin E for shine), marula oil (fast-absorbing and antioxidant-rich), and plant-derived squalane to smooth the cuticle and tame split ends without a greasy film. No added fragrance — the faint scent is the natural oils themselves.',
+          'A weightless blend of argan oil (fatty acids and vitamin E for shine), marula oil (fast-absorbing and antioxidant-rich), and plant-derived squalane to smooth the cuticle and tame split ends without a greasy film. No added fragrance: the faint scent is the natural oils themselves.',
         howToUse:
-          'Start with one or two drops, warm between your palms, and smooth over the mid-lengths and ends of damp or dry hair. Add more only as needed — this concentrate goes a very long way.',
+          'Start with one or two drops, warm between your palms, and smooth over the mid-lengths and ends of damp or dry hair. Add more only as needed. This concentrate goes a very long way.',
         skinType: ['dry'],
         volume: '50 ml / 1.7 fl oz',
         fullIngredients:
@@ -462,7 +462,7 @@ export const salonPack: SampleDataPack = {
           body: 'Does this have a strong fragrance? I am sensitive to scents.',
           displayName: 'gentlescent',
           answer:
-            'It is very lightly scented from the natural oils themselves — there is no added fragrance, so it fades almost immediately.',
+            'It is very lightly scented from the natural oils themselves. There is no added fragrance, so it fades almost immediately.',
           daysAgo: 8,
         },
       ],
@@ -472,7 +472,7 @@ export const salonPack: SampleDataPack = {
       title: 'Long-Wear Nail Polish (15 ml)',
       handle: 'long-wear-nail-polish',
       description:
-        '<p>A salon-grade, chip-resistant nail lacquer with a high-gloss gel-like finish — no lamp required. The 10-free formula skips the harshest ingredients and goes on smooth in two even coats. Pick your shade; each is mixed in small batches for true, saturated color.</p><p>Apply a base coat, two thin coats of color, and a top coat, letting each layer flash off for two minutes. Expect five to seven days of wear with a top coat refresh midweek.</p>',
+        '<p>A salon-grade, chip-resistant nail lacquer with a high-gloss gel-like finish: no lamp required. The 10-free formula skips the harshest ingredients and goes on smooth in two even coats. Pick your shade; each is mixed in small batches for true, saturated color.</p><p>Apply a base coat, two thin coats of color, and a top coat, letting each layer flash off for two minutes. Expect five to seven days of wear with a top coat refresh midweek.</p>',
       productType: 'Nails',
       productTypeKey: 'cosmetics',
       attributes: {
@@ -489,7 +489,7 @@ export const salonPack: SampleDataPack = {
       tags: ['nail polish', '10-free', 'long-wear', 'gel-like'],
       seoTitle: 'Long-Wear 10-Free Nail Polish (15 ml)',
       seoDescription:
-        'Chip-resistant, 10-free nail lacquer with a high-gloss gel-like finish — no lamp. True saturated color in two coats.',
+        'Chip-resistant, 10-free nail lacquer with a high-gloss gel-like finish: no lamp. True saturated color in two coats.',
       categoryKeys: ['nails'],
       collectionKeys: ['salon-favorites'],
       options: [
@@ -586,7 +586,7 @@ export const salonPack: SampleDataPack = {
           body: 'Is the formula vegan and cruelty-free?',
           authorPersona: 'priya',
           answer:
-            'Yes — every shade is vegan, cruelty-free, and 10-free (no formaldehyde, toluene, DBP, and so on).',
+            'Yes: every shade is vegan, cruelty-free, and 10-free (no formaldehyde, toluene, DBP, and so on).',
           daysAgo: 11,
         },
       ],
@@ -596,7 +596,7 @@ export const salonPack: SampleDataPack = {
       title: 'Bond Repair Duo',
       handle: 'bond-repair-duo',
       description:
-        '<p>Our two best-sellers in one set: the Bond Repair Shampoo and matching Conditioner, built to work together on color-treated and chemically processed hair. Buy them as a duo and save over picking each up on its own.</p><p>The everyday kit your stylist would send you home with after a color or lightening session — gentle cleanse, instant slip, and a bond-building complex in both bottles.</p>',
+        '<p>Our two best-sellers in one set: the Bond Repair Shampoo and matching Conditioner, built to work together on color-treated and chemically processed hair. Buy them as a duo and save over picking each up on its own.</p><p>The everyday kit your stylist would send you home with after a color or lightening session, gentle cleanse, instant slip, and a bond-building complex in both bottles.</p>',
       productType: 'Hair Care',
       productTypeKey: 'cosmetics',
       attributes: {
@@ -611,7 +611,7 @@ export const salonPack: SampleDataPack = {
       },
       vendor: 'Studio Label',
       tags: ['duo', 'set', 'bond repair', 'color-safe'],
-      seoTitle: 'Bond Repair Duo — Shampoo & Conditioner Set',
+      seoTitle: 'Bond Repair Duo: Shampoo & Conditioner Set',
       seoDescription:
         'The Bond Repair Shampoo and Conditioner together as a money-saving duo for color-treated and processed hair.',
       categoryKeys: ['hair-care'],
@@ -632,7 +632,7 @@ export const salonPack: SampleDataPack = {
           body: 'Is the duo the full-size bottles or travel size?',
           displayName: 'planahead',
           answer:
-            'Both are the full 250 ml size — the same bottles sold individually, just bundled.',
+            'Both are the full 250 ml size: the same bottles sold individually, just bundled.',
           daysAgo: 9,
         },
       ],
@@ -763,7 +763,7 @@ export const salonPack: SampleDataPack = {
         key: 'full-color',
         name: 'Full Color',
         description:
-          'Single-process all-over color — gray coverage or a top-to-bottom shade change — with a gloss and blow-dry to finish.',
+          'Single-process all-over color (gray coverage or a top-to-bottom shade change) with a gloss and blow-dry to finish.',
         durationMinutes: 120,
         priceCents: 13500,
         bookingType: 'appointment',
@@ -847,12 +847,12 @@ export const salonPack: SampleDataPack = {
         ul(
           'Gray coverage and root touch-ups: every four to six weeks, as the regrowth line appears',
           'All-over single-process color: every six to eight weeks',
-          'Balayage and hand-painted highlights: every twelve to sixteen weeks — that is the whole point of a lived-in blend',
+          'Balayage and hand-painted highlights: every twelve to sixteen weeks. That is the whole point of a lived-in blend',
           'A gloss or toner refresh: every four to six weeks to revive faded tone between full color'
         ),
         h2('Let the damage, not the calendar, lead'),
         p(
-          'If your ends feel dry, gummy when wet, or break easily, stretch the time between sessions and lean on a bond-repair routine at home. Over-processing is far harder to fix than a few extra days of visible roots. When in doubt, ask your stylist to plan your next two visits at the chair — it is easier to space them out than to undo damage later.'
+          'If your ends feel dry, gummy when wet, or break easily, stretch the time between sessions and lean on a bond-repair routine at home. Over-processing is far harder to fix than a few extra days of visible roots. When in doubt, ask your stylist to plan your next two visits at the chair. It is easier to space them out than to undo damage later.'
         )
       ),
     },
@@ -868,7 +868,7 @@ export const salonPack: SampleDataPack = {
         ),
         h2('Start with the right prep'),
         p(
-          'Hold is built on a clean foundation. Use a smoothing primer or styling cream with heat protection before you dry, and make sure hair is fully dry — even slightly damp roots will fall flat within hours. Finish with a cool shot to set the cuticle.'
+          'Hold is built on a clean foundation. Use a smoothing primer or styling cream with heat protection before you dry, and make sure hair is fully dry: even slightly damp roots will fall flat within hours. Finish with a cool shot to set the cuticle.'
         ),
         h2('Protect it between washes'),
         ul(
@@ -894,7 +894,7 @@ export const salonPack: SampleDataPack = {
         ),
         h2('Build a simple routine'),
         ul(
-          'Use a sulfate-free, color-safe shampoo and conditioner — harsh cleansers strip tone fast',
+          'Use a sulfate-free, color-safe shampoo and conditioner: harsh cleansers strip tone fast',
           'Add a bond-repair treatment once or twice a week if your hair is colored or heat-styled',
           'Always use a heat protectant before hot tools, every single time',
           'Finish with a drop of oil on the ends to seal and add shine'
@@ -905,7 +905,7 @@ export const salonPack: SampleDataPack = {
         ),
         h2('Know when to come in'),
         p(
-          'Book your next visit before you leave — a standing rhythm beats waiting until your roots or your ends force the issue. If something feels off between appointments, call us; a quick gloss or trim is far cheaper than a correction later.'
+          'Book your next visit before you leave: a standing rhythm beats waiting until your roots or your ends force the issue. If something feels off between appointments, call us; a quick gloss or trim is far cheaper than a correction later.'
         )
       ),
     },

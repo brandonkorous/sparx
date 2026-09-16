@@ -42,6 +42,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
+import { BroadcastPreview } from './broadcast-preview';
 import {
   broadcastErrorMessage,
   broadcastState,
@@ -61,6 +62,7 @@ import {
   type BroadcastStats,
 } from './broadcasts-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { achievedTone, deliveredTile, shareOfLabel, type Tone } from './broadcast-stats-words';
 
 const DETAIL_KEY = 'email.broadcasts.detail';
 const SETTINGS_KEY = 'email.settings';
@@ -418,7 +420,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
                   <Input
                     color="module"
                     value={draft.subject}
-                    placeholder="Spring is here — 20% off everything"
+                    placeholder="Spring is here: 20% off everything"
                     onChange={(event) => {
                       set('subject', event.target.value);
                     }}
@@ -464,7 +466,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
               <div className="flex flex-col items-start gap-2">
                 <Text className="text-sm">
                   You don’t have any saved audiences yet. Audiences are built from your customer
-                  list — create one, then come back to send to it.
+                  list: create one, then come back to send to it.
                 </Text>
               </div>
             ) : (
@@ -504,7 +506,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
 
           <FormSection
             title="What you’re sending"
-            description="Pick one of your designed emails. It has to be published — a draft design has nothing to send yet."
+            description="Pick one of your designed emails. It has to be published: a draft design has nothing to send yet."
             action={
               <Button
                 size="sm"
@@ -548,7 +550,7 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
                   {designedItems.map((email) => (
                     <option key={email.id} value={email.id}>
                       {email.name}
-                      {email.published ? '' : ' (draft — not published)'}
+                      {email.published ? '' : ' (draft, not published)'}
                     </option>
                   ))}
                 </NativeSelect>
@@ -560,6 +562,18 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
                 ) : null}
               </Field>
             )}
+          </FormSection>
+
+          <FormSection
+            title="What it looks like"
+            description="Exactly what lands in your customer’s inbox, shown for one real person out of your audience."
+          >
+            {dirty && currentId ? (
+              <Text className="text-sm">
+                You’ve made changes since this was last saved. Save the draft to see them here.
+              </Text>
+            ) : null}
+            <BroadcastPreview id={currentId ?? 'new'} enabled={currentId !== null} />
           </FormSection>
 
           <FormSection
@@ -681,7 +695,7 @@ function BroadcastReview({ ctx, broadcast }: { ctx: SurfaceContext; broadcast: B
       title: 'Cancel this scheduled broadcast?',
       description: `“${broadcast.name}” is set to send ${
         broadcast.scheduledAt ? `on ${formatWhen(broadcast.scheduledAt)}` : 'later'
-      }. Cancelling stops it going out for good — nobody receives it. You can always start a new broadcast later.`,
+      }. Canceling stops it going out for good. Nobody receives it. You can always start a new broadcast later.`,
       confirmLabel: 'Cancel the send',
       cancelLabel: 'Leave it scheduled',
       color: 'danger',
@@ -689,7 +703,7 @@ function BroadcastReview({ ctx, broadcast }: { ctx: SurfaceContext; broadcast: B
     if (!ok) return;
     cancel.mutate(broadcast.id, {
       onSuccess: () => {
-        toast.add({ title: 'Scheduled send cancelled', type: 'success' });
+        toast.add({ title: 'Scheduled send canceled', type: 'success' });
       },
       onError: (error) => {
         toast.add({
@@ -753,7 +767,7 @@ function BroadcastReview({ ctx, broadcast }: { ctx: SurfaceContext; broadcast: B
           {broadcast.status === 'cancelled' ? (
             <Alert color="warning">
               <AlertContent>
-                <AlertTitle>This send was cancelled</AlertTitle>
+                <AlertTitle>This send was canceled</AlertTitle>
                 <AlertDescription>
                   It never went out. You can start a new broadcast whenever you’re ready.
                 </AlertDescription>
@@ -796,6 +810,16 @@ function BroadcastReview({ ctx, broadcast }: { ctx: SurfaceContext; broadcast: B
             </dl>
           </FormSection>
 
+          {/* The summary above names the pieces; this is the thing itself. On a
+              SENT broadcast it is the only record of what went out, because the
+              design it was built from can be edited afterwards. */}
+          <FormSection
+            title="What was sent"
+            description="The email as it arrived, shown for one person out of the audience."
+          >
+            <BroadcastPreview id={broadcast.id} enabled />
+          </FormSection>
+
           {isSent ? (
             <FormSection
               title="How it did"
@@ -815,7 +839,11 @@ function BroadcastReview({ ctx, broadcast }: { ctx: SurfaceContext; broadcast: B
                   Loading results…
                 </Text>
               ) : (
-                <StatsGrid stats={stats.data} recipients={broadcast.recipientCount} />
+                <StatsGrid
+                  stats={stats.data}
+                  recipients={broadcast.recipientCount}
+                  sentAt={broadcast.sentAt}
+                />
               )}
             </FormSection>
           ) : null}
@@ -834,51 +862,76 @@ function SummaryRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-/* ── Engagement figures ───────────────────────────────────────────────────── */
+/* ── Engagement figures ───────────────────────────────────── */
 
-function StatsGrid({ stats, recipients }: { stats: BroadcastStats; recipients: number }) {
+function StatsGrid({
+  stats,
+  recipients,
+  sentAt,
+}: {
+  stats: BroadcastStats;
+  recipients: number;
+  /** When it went out. The Delivered tile needs it: "confirmations arrive over
+   *  the next few minutes" is only true for the next few minutes. */
+  sentAt: string | null;
+}) {
   // Opens and clicks are shares of what actually landed; the rest are counts on
   // their own. Fall back through delivered → accepted → recipients so an early
   // send with sparse events still reads sensibly.
   const base = stats.delivered || stats.accepted || recipients || 0;
   const pct = (part: number) => (base > 0 ? `${String(Math.round((part / base) * 100))}%` : '—');
+  const delivered = deliveredTile(stats, sentAt);
+  const shareOf = shareOfLabel(stats.delivered);
 
   return (
     <div className="grid gap-3 @sm:grid-cols-2 @xl:grid-cols-3">
-      <StatBlock label="Delivered" value={stats.delivered.toLocaleString()} tone="neutral" />
+      <StatBlock
+        label="Delivered"
+        value={delivered.value.toLocaleString()}
+        hint={delivered.hint}
+        tone={delivered.tone}
+      />
       <StatBlock
         label="Opened"
         value={stats.opened.toLocaleString()}
-        hint={`${pct(stats.opened)} of delivered`}
-        tone="success"
+        hint={`${pct(stats.opened)} ${shareOf}`}
+        tone={achievedTone(stats.opened)}
       />
       <StatBlock
         label="Clicked"
         value={stats.clicked.toLocaleString()}
-        hint={`${pct(stats.clicked)} of delivered`}
-        tone="success"
+        hint={`${pct(stats.clicked)} ${shareOf}`}
+        tone={achievedTone(stats.clicked)}
       />
       <StatBlock
         label="Bounced"
         value={stats.bounced.toLocaleString()}
         hint="Couldn’t be delivered"
-        tone={stats.bounced > 0 ? 'warning' : 'neutral'}
+        tone={stats.bounced > 0 ? 'warning' : 'plain'}
       />
       <StatBlock
         label="Unsubscribed"
         value={stats.unsubscribed.toLocaleString()}
         hint="Opted out from this"
-        tone={stats.unsubscribed > 0 ? 'warning' : 'neutral'}
+        tone={stats.unsubscribed > 0 ? 'warning' : 'plain'}
       />
       <StatBlock
         label="Spam complaints"
         value={stats.complained.toLocaleString()}
         hint="Marked as spam"
-        tone={stats.complained > 0 ? 'error' : 'neutral'}
+        tone={stats.complained > 0 ? 'error' : 'plain'}
       />
     </div>
   );
 }
+
+const TONE_INK: Record<Tone, string> = {
+  plain: '',
+  info: 'text-info',
+  success: 'text-success',
+  warning: 'text-warning',
+  error: 'text-error',
+};
 
 function StatBlock({
   label,
@@ -889,20 +942,12 @@ function StatBlock({
   label: string;
   value: string;
   hint?: string;
-  tone: 'neutral' | 'success' | 'warning' | 'error';
+  tone: Tone;
 }) {
-  const accent =
-    tone === 'success'
-      ? 'text-success'
-      : tone === 'warning'
-        ? 'text-warning'
-        : tone === 'error'
-          ? 'text-error'
-          : '';
   return (
     <div className="border-base-300 bg-base-100 flex flex-col gap-1 rounded-lg border p-3">
       <Text className="text-sm">{label}</Text>
-      <Text className={`text-2xl font-semibold tabular-nums ${accent}`}>{value}</Text>
+      <Text className={`text-2xl font-semibold tabular-nums ${TONE_INK[tone]}`}>{value}</Text>
       {hint ? <Text className="text-sm">{hint}</Text> : null}
     </div>
   );

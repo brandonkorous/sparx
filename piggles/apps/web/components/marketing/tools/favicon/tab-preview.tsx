@@ -34,9 +34,9 @@ export function TabPreview({
       <CardBody>
         <h3 className="text-lg font-bold">At the size that actually matters</h3>
         <p className="mt-2 text-base">
-          Sixteen pixels, in a row of tabs — once on a browser set to light, once on one set to
-          dark. Your visitors use both. If you cannot pick yours out of <em>both</em> rows at a
-          glance, it needs a background behind it, or a simpler shape.
+          Sixteen pixels, in a row of tabs: once on a browser set to light, once on one set to dark.
+          Your visitors use both. If you cannot pick yours out of <em>both</em> rows at a glance, it
+          needs a background behind it, or a simpler shape.
         </p>
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -47,7 +47,7 @@ export function TabPreview({
         <div className="mt-6 flex flex-wrap items-end gap-8">
           <div>
             <canvas ref={medium} width={32} height={32} className="size-8" aria-label="At 32 px" />
-            <p className="mt-2 text-base">32px — a sharp screen</p>
+            <p className="mt-2 text-base">32px: a sharp screen</p>
           </div>
           <div>
             <canvas

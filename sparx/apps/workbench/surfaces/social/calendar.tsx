@@ -48,6 +48,8 @@ interface CalendarProps {
   /** The business's standing posting times, drawn as gaps where nothing is planned. */
   slots: PostingSlot[];
   canWrite: boolean;
+  /** Nothing is connected yet, so the first thing to do is not writing a post. */
+  nothingConnected: boolean;
   onOpenPost: (post: Post, event: OpenEvent) => void;
   onNewOnDay: (day: Date) => void;
   /** Start a post at an exact moment — clicking an empty posting time. */
@@ -147,7 +149,7 @@ function DayChip({
       ref={setNodeRef}
       type="button"
       onClick={onOpen}
-      title={`${excerpt(post.body, 80)} — ${meta.label}${movable ? ' · drag to reschedule' : ''}`}
+      title={`${excerpt(post.body, 80)}: ${meta.label}${movable ? ' · drag to reschedule' : ''}`}
       className={`hover:bg-base-300 bg-base-200 flex w-full min-w-0 items-center gap-1.5 rounded-md px-1 py-1 text-left ${
         movable ? 'cursor-grab' : 'cursor-pointer'
       } ${isDragging ? 'opacity-40' : ''}`}
@@ -183,7 +185,7 @@ function EmptySlotChip({
   canWrite: boolean;
   onFill: () => void;
 }) {
-  const label = `${formatTime(at.toISOString())} — nothing planned`;
+  const label = `${formatTime(at.toISOString())}: nothing planned`;
   return (
     <button
       type="button"
@@ -488,6 +490,7 @@ export function PostsCalendar({
   assetsById,
   slots,
   canWrite,
+  nothingConnected,
   onOpenPost,
   onNewOnDay,
   onNewAt,
@@ -676,9 +679,15 @@ export function PostsCalendar({
 
         {canWrite ? (
           <Text className="shrink-0 text-sm">
-            {posts.length === 0
-              ? 'No posts yet — click any day to write your first one.'
-              : 'Click any day to write a post dated to it. Drag a post to another day to reschedule it — or drag a draft up from below onto a day to schedule it.'}
+            {/* Three states, not two. "Click any day" is the right invitation for
+                a tenant with somewhere to post and the wrong one for a tenant with
+                nothing connected, who gets the composer's "there is nowhere for a
+                post to go" and a trip back here. */}
+            {nothingConnected
+              ? 'Connect an account first and your posts appear here, on the days they go out.'
+              : posts.length === 0
+                ? 'No posts yet. Click any day to write your first one.'
+                : 'Click any day to write a post dated to it. Drag a post to another day to reschedule it, or drag a draft up from below onto a day to schedule it.'}
           </Text>
         ) : null}
 
@@ -764,7 +773,7 @@ export function SocialCalendarSurface({ ctx }: { ctx: SurfaceContext }) {
                 color="module"
                 size="sm"
                 className="ml-auto shrink-0 whitespace-nowrap"
-                title="Write a new post — hold Shift to open alongside, Alt for a new window"
+                title="Write a new post: hold Shift to open alongside, Alt for a new window"
                 onClick={(event) => {
                   board.openNew(event);
                 }}
@@ -807,6 +816,7 @@ export function SocialCalendarSurface({ ctx }: { ctx: SurfaceContext }) {
               assetsById={board.assetsById}
               slots={slots.data ?? []}
               canWrite={canWrite}
+              nothingConnected={board.nothingConnected}
               onOpenPost={board.openPost}
               onNewOnDay={board.newOnDay}
               onNewAt={board.newAt}

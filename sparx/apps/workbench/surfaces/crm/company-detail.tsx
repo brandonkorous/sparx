@@ -76,6 +76,7 @@ import {
   type CompanyStatus,
 } from './companies-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { MoneyTextInput, moneyCents } from '../../components/money-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -146,7 +147,7 @@ const DOMAIN_RE = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/;
 /** The first thing typed that is not a domain, said in words rather than a regex. */
 function firstBadDomain(raw: string): string | null {
   const bad = splitDomains(raw).find((d) => !DOMAIN_RE.test(d));
-  return bad ? `"${bad}" does not look like a domain — try something like acme.com` : null;
+  return bad ? `"${bad}" does not look like a domain. Try something like acme.com` : null;
 }
 
 function numberOrEmpty(value: string): string {
@@ -275,8 +276,10 @@ function CompanyEditor({
     draft.website.trim() !== '' && !URL_RE.test(draft.website.trim())
       ? 'Enter a full web address, starting with http:// or https://.'
       : null;
+  // Read the way a person writes money — "1,250.00", "$1,250" (issue 486).
+  const creditCents = draft.creditLimit.trim() === '' ? null : moneyCents(draft.creditLimit);
   const creditError =
-    draft.creditLimit.trim() !== '' && !(Number(draft.creditLimit) >= 0)
+    draft.creditLimit.trim() !== '' && creditCents === null
       ? 'Enter the credit limit as a number, or leave it blank for none.'
       : null;
   const discountError =
@@ -302,7 +305,7 @@ function CompanyEditor({
     create.isError || update.isError
       ? accountErrorMessage(
           create.error ?? update.error,
-          'The server did not answer. Nothing was changed and your work is still on screen — try again in a moment.'
+          'The server did not answer. Nothing was changed and your work is still on screen. Try again in a moment.'
         )
       : null;
 
@@ -315,7 +318,7 @@ function CompanyEditor({
     taxId: trimOrNull(draft.taxId),
     pricingTier: trimOrNull(draft.pricingTier),
     status: draft.status,
-    creditLimit: draft.creditLimit.trim() === '' ? 0 : Number(draft.creditLimit),
+    creditLimit: (creditCents ?? 0) / 100,
     discountPercent: draft.discountPercent.trim() === '' ? 0 : Number(draft.discountPercent),
     paymentTerms: draft.paymentTerms || null,
     assignedRepId: draft.assignedRepId || null,
@@ -506,7 +509,7 @@ function CompanyEditor({
               ) : null}
               <FieldDescription>
                 When someone new is added with an email address at one of these, we&rsquo;ll suggest
-                putting them under this company — we never do it for you. Separate several with
+                putting them under this company. We never do it for you. Separate several with
                 commas. Leave it blank if their people use personal addresses.
               </FieldDescription>
             </Field>
@@ -542,16 +545,12 @@ function CompanyEditor({
                         <Text as="span" className="text-lg">
                           $
                         </Text>
-                        <Input
+                        <MoneyTextInput
                           color={creditError && touched ? 'error' : 'module'}
-                          type="number"
-                          min={0}
-                          step="0.01"
-                          inputMode="decimal"
-                          value={draft.creditLimit}
-                          placeholder="0.00"
-                          onChange={(event) => {
-                            set('creditLimit', numberOrEmpty(event.target.value));
+                          aria-label="How much credit they get"
+                          text={draft.creditLimit}
+                          onTextChange={(value) => {
+                            set('creditLimit', value);
                           }}
                         />
                       </div>
@@ -712,7 +711,7 @@ function CompanyEditor({
                     color="module"
                     rows={3}
                     value={draft.notes}
-                    placeholder="Anything worth remembering about this company — only your team sees it."
+                    placeholder="Anything worth remembering about this company. Only your team sees it."
                     onChange={(event) => {
                       set('notes', event.target.value);
                     }}
@@ -802,8 +801,8 @@ function CompanyEditor({
  * A company knew who worked there and nothing else. Its invoices, its deals and
  * its support requests all existed, all carried a `company_id`, and all were
  * filterable on the API already; there was simply no screen that asked. So the
- * pane could show a trade account with a £40k credit limit and give no hint that
- * they were £12k overdue on it, which is the single fact that decides whether
+ * pane could show a trade account with a $40k credit limit and give no hint that
+ * they were $12k overdue on it, which is the single fact that decides whether
  * you take the next order.
  *
  * Read-only on purpose, like every related list in the CRM: a row opens the real
@@ -844,7 +843,7 @@ function CompanyRelated({ companyId, ctx }: { companyId: string; ctx: SurfaceCon
     <>
       <FormSection
         title="What they owe"
-        description="Everything billed to this company or to anyone who works here, newest first — because a contact's unpaid invoice is still this company's debt."
+        description="Everything billed to this company or to anyone who works here, newest first, because a contact's unpaid invoice is still this company's debt."
       >
         <ModuleScope module="invoicing">
           {invoices.isPending ? (

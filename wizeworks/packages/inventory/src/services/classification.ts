@@ -77,6 +77,19 @@ export interface ClassificationRow {
   valueSharePct: number;
   cumulativeSharePct: number;
   demandCv: number | null;
+  /**
+   * Whether a cost basis was found for this line, as opposed to one that is
+   * genuinely zero.
+   *
+   * The ranking key is units × cost, and the cost COALESCEs to 0 so the
+   * arithmetic has a number to work with — which makes "nobody has said what
+   * this cost" and "this cost nothing" the same row. They rank identically and
+   * they mean opposite things, so the reader has to be told which one this is.
+   * A C reached on a real zero is a finding; a C reached on an absent cost is
+   * the absence of one. Same reasoning as `xyzClass` being nullable, one axis
+   * over.
+   */
+  costKnown: boolean;
   /** What to DO about this pair, in a sentence. */
   advice: string;
   overrideReason: string | null;
@@ -359,7 +372,11 @@ export async function listClassifications(
       tx.inventoryClassification.count({ where }),
     ]);
 
-    return { items: rows.map(toClassificationRow), total };
+    const costKnown = await costKnownByLevel(tx, rows);
+    return {
+      items: rows.map((row) => toClassificationRow(row, costKnown.get(keyOf(row)) ?? false)),
+      total,
+    };
   });
 }
 
@@ -377,7 +394,9 @@ export async function getClassification(
         warehouse: { select: { code: true, name: true } },
       },
     });
-    return row ? toClassificationRow(row) : null;
+    if (!row) return null;
+    const costKnown = await costKnownByLevel(tx, [row]);
+    return toClassificationRow(row, costKnown.get(keyOf(row)) ?? false);
   });
 }
 
@@ -457,28 +476,75 @@ export async function setClassificationOverride(
       },
     });
     // Re-read inside the same transaction; the update above guarantees it exists.
-    return toClassificationRow(updated!);
+    const costKnown = await costKnownByLevel(tx, [updated!]);
+    return toClassificationRow(updated!, costKnown.get(keyOf(updated!)) ?? false);
   });
 }
 
-function toClassificationRow(row: {
-  variantId: string;
-  warehouseId: string;
-  abcClass: string;
-  xyzClass: string | null;
-  abcOverride: string | null;
-  xyzOverride: string | null;
-  annualUsageUnits: number;
-  annualUsageValueCents: bigint;
-  valueSharePct: unknown;
-  cumulativeSharePct: unknown;
-  demandCv: unknown;
-  overrideReason: string | null;
-  overrideAt: Date | null;
-  classifiedAt: Date;
-  variant?: { sku: string | null; title: string | null; product?: { title: string } | null } | null;
-  warehouse?: { code: string; name?: string } | null;
-}): ClassificationRow {
+/**
+ * Whether each (variant, location) on a page of results has a cost basis at all.
+ *
+ * Read separately rather than stored, because the answer moves the moment
+ * somebody fills in what they paid — a flag frozen at classification time would
+ * keep saying "no cost price" over a screen where the cost is now set. The
+ * COALESCE chain is the one valuation and the ranking both use, so the three
+ * cannot disagree about whether a cost exists.
+ */
+async function costKnownByLevel(
+  tx: TxClient,
+  keys: { variantId: string; warehouseId: string }[]
+): Promise<Map<string, boolean>> {
+  const known = new Map<string, boolean>();
+  if (keys.length === 0) return known;
+
+  const levels = await tx.inventoryLevel.findMany({
+    where: {
+      variantId: { in: [...new Set(keys.map((k) => k.variantId))] },
+      warehouseId: { in: [...new Set(keys.map((k) => k.warehouseId))] },
+    },
+    select: {
+      variantId: true,
+      warehouseId: true,
+      avgCostCents: true,
+      unitCostCents: true,
+      variant: { select: { costCents: true } },
+    },
+  });
+
+  for (const level of levels) {
+    known.set(
+      keyOf(level),
+      (level.avgCostCents ?? level.unitCostCents ?? level.variant?.costCents ?? null) !== null
+    );
+  }
+  return known;
+}
+
+function toClassificationRow(
+  row: {
+    variantId: string;
+    warehouseId: string;
+    abcClass: string;
+    xyzClass: string | null;
+    abcOverride: string | null;
+    xyzOverride: string | null;
+    annualUsageUnits: number;
+    annualUsageValueCents: bigint;
+    valueSharePct: unknown;
+    cumulativeSharePct: unknown;
+    demandCv: unknown;
+    overrideReason: string | null;
+    overrideAt: Date | null;
+    classifiedAt: Date;
+    variant?: {
+      sku: string | null;
+      title: string | null;
+      product?: { title: string } | null;
+    } | null;
+    warehouse?: { code: string; name?: string } | null;
+  },
+  costKnown: boolean
+): ClassificationRow {
   const measuredAbc = row.abcClass as AbcClass;
   const measuredXyz = (row.xyzClass as XyzClass | null) ?? null;
   const abc = (row.abcOverride as AbcClass | null) ?? measuredAbc;
@@ -501,6 +567,7 @@ function toClassificationRow(row: {
     valueSharePct: Number(row.valueSharePct),
     cumulativeSharePct: Number(row.cumulativeSharePct),
     demandCv: row.demandCv === null ? null : Number(row.demandCv),
+    costKnown,
     advice: classificationAdvice(abc, xyz),
     overrideReason: row.overrideReason,
     overrideAt: row.overrideAt?.toISOString() ?? null,

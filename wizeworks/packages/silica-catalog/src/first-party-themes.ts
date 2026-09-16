@@ -76,7 +76,7 @@ export const SPARX_THEME_META: Record<string, ThemeMeta> = {
     density: 'Spacious',
     tagline: 'Quiet, considered retail where the product is the color.',
     description:
-      'Near-white and almost colorless, with a near-black primary and one soft blush accent. Built for the shop that hangs forty things, not four hundred — small fashion, jewelry, and considered goods.',
+      'Near-white and almost colorless, with a near-black primary and one soft blush accent. Built for the shop that hangs forty things, not four hundred: small fashion, jewelry, and considered goods.',
   },
   kitchen: {
     industry: 'Food & Beverage',
@@ -85,7 +85,7 @@ export const SPARX_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'Warm and appetizing for restaurants, cafés, and bakeries.',
     description:
-      'A genuinely warm, buttery page with a tomato-red brand and olive support — tuned for appetite and momentum. For restaurants, cafés, bakeries, and anywhere the food should look as good on screen as on the plate.',
+      'A genuinely warm, buttery page with a tomato-red brand and olive support: tuned for appetite and momentum. For restaurants, cafés, bakeries, and anywhere the food should look as good on screen as on the plate.',
   },
   cellar: {
     industry: 'Food & Beverage',
@@ -94,7 +94,7 @@ export const SPARX_THEME_META: Record<string, ThemeMeta> = {
     density: 'Spacious',
     tagline: 'Low-lit and grown-up for wine, beer, spirits, and bars.',
     description:
-      'A dark page even in light mode — the low-lit room a wine bar or bottle shop already is. Deep burgundy and restrained gold for merchants who sell an evening, not just a bottle.',
+      'A dark page even in light mode: the low-lit room a wine bar or bottle shop already is. Deep burgundy and restrained gold for merchants who sell an evening, not just a bottle.',
   },
   petal: {
     industry: 'Weddings & Events',
@@ -103,7 +103,7 @@ export const SPARX_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'Soft and celebratory for florists, weddings, and events.',
     description:
-      'A gentle blush ground with a confident rose primary — warm without tipping into sugary. For florists, wedding planners, and event stylists whose work is already the prettiest thing on the page.',
+      'A gentle blush ground with a confident rose primary: warm without tipping into sugary. For florists, wedding planners, and event stylists whose work is already the prettiest thing on the page.',
   },
   lodge: {
     industry: 'Travel & Hospitality',
@@ -140,7 +140,7 @@ export const SPARX_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'Rugged and outdoorsy for land and outdoor work.',
     description:
-      'A grounded green-and-soil palette built for daylight and mud. For farming, landscaping, tree work, and outdoor contracting — honest, weatherproof, and easy to read on a phone in the sun.',
+      'A grounded green-and-soil palette built for daylight and mud. For farming, landscaping, tree work, and outdoor contracting: honest, weatherproof, and easy to read on a phone in the sun.',
   },
   harbor: {
     industry: 'Logistics & Freight',
@@ -244,7 +244,7 @@ export const SPARX_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'Dramatic and low-lit for shows and events.',
     description:
-      'A dark house with a spotlight-violet primary — the room going quiet before the lights come up. For music, theatre, comedy, and ticketed events that sell a night out.',
+      'A dark house with a spotlight-violet primary: the room going quiet before the lights come up. For music, theatre, comedy, and ticketed events that sell a night out.',
   },
   signal: {
     industry: 'Tech & Electronics',
@@ -271,7 +271,7 @@ export const CONTENT_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'A cool-white newsroom carried by one saturated emerald.',
     description:
-      'A pure, monochrome news feed where a single emerald marks every category tag, link, and subscribe button. Grotesk headlines over a neutral sans at real density — for tech blogs, news sites, and publications that run a lot of stories cleanly.',
+      'A pure, monochrome news feed where a single emerald marks every category tag, link, and subscribe button. Grotesk headlines over a neutral sans at real density, for tech blogs, news sites, and publications that run a lot of stories cleanly.',
   },
   broadsheet: {
     industry: 'Media & Publishing',
@@ -280,7 +280,7 @@ export const CONTENT_THEME_META: Record<string, ThemeMeta> = {
     density: 'Spacious',
     tagline: 'Warm paper and serif-across type for long-form reading.',
     description:
-      'A warm-paper reading theme set entirely in serif — a high-contrast display over a readable text serif — with one decisive editorial red on rubrics and the subscribe call. For magazines, essays, and literary longform where the writing is the product.',
+      'A warm-paper reading theme set entirely in serif (a high-contrast display over a readable text serif) with one decisive editorial red on rubrics and the subscribe call. For magazines, essays, and literary longform where the writing is the product.',
   },
   runway: {
     industry: 'Fashion & Beauty',
@@ -289,7 +289,7 @@ export const CONTENT_THEME_META: Record<string, ThemeMeta> = {
     density: 'Spacious',
     tagline: 'Pure black-and-white editorial luxury, color from the photography.',
     description:
-      'White page, near-black ink, and a high-contrast Didone display over a clean sans — with no chromatic accent at all, so every ounce of color comes from full-bleed imagery. For fashion, beauty, and glossy editorial where the pictures carry the page.',
+      'White page, near-black ink, and a high-contrast Didone display over a clean sans, with no chromatic accent at all, so every ounce of color comes from full-bleed imagery. For fashion, beauty, and glossy editorial where the pictures carry the page.',
   },
   amplitude: {
     industry: 'Media & Publishing',
@@ -299,7 +299,7 @@ export const CONTENT_THEME_META: Record<string, ThemeMeta> = {
     accentRole: 'secondary',
     tagline: 'A loud, near-black culture magazine with a voltage crimson masthead.',
     description:
-      "The set's loudest dark magazine: near-black grounds, bright near-white type, and one electric crimson for the masthead, ranked lists, and the primary action. Heavy condensed headlines — for music, film, and culture coverage that wants to be looked at.",
+      "The set's loudest dark magazine: near-black grounds, bright near-white type, and one electric crimson for the masthead, ranked lists, and the primary action. Heavy condensed headlines, for music, film, and culture coverage that wants to be looked at.",
   },
   expanse: {
     industry: 'Travel & Nature',
@@ -309,7 +309,7 @@ export const CONTENT_THEME_META: Record<string, ThemeMeta> = {
     accentRole: 'secondary',
     tagline: 'A near-black photographic ground lit by one solar-amber line.',
     description:
-      'A dark, cinematic canvas that makes full-bleed imagery pop, with a single solar amber used only as a thin rule, underline, or tag. Serif display over a neutral sans — for photo journalism, nature, and travel stories told mostly in pictures.',
+      'A dark, cinematic canvas that makes full-bleed imagery pop, with a single solar amber used only as a thin rule, underline, or tag. Serif display over a neutral sans, for photo journalism, nature, and travel stories told mostly in pictures.',
   },
   podium: {
     industry: 'Education & Ideas',
@@ -318,7 +318,7 @@ export const CONTENT_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'A warm, optimistic ideas hub carried by one bright coral.',
     description:
-      'A clean warm-white page with a single friendly coral on the play button, talk badges, and donate call. Geometric display over a humanist sans, softly rounded — for talks, conferences, courses, and idea platforms that want to feel welcoming.',
+      'A clean warm-white page with a single friendly coral on the play button, talk badges, and donate call. Geometric display over a humanist sans, softly rounded, for talks, conferences, courses, and idea platforms that want to feel welcoming.',
   },
   console: {
     industry: 'Gaming & Entertainment',
@@ -328,7 +328,7 @@ export const CONTENT_THEME_META: Record<string, ThemeMeta> = {
     accentRole: 'secondary',
     tagline: 'A true-dark brand newsroom with a scarce electric-violet signal.',
     description:
-      'A first-party newsroom on a near-black ground where big cover art carries the color, and one electric violet marks active nav, category chips, and the primary action. Technical grotesk over a neutral sans — for gaming, product, and brand blogs built on imagery.',
+      'A first-party newsroom on a near-black ground where big cover art carries the color, and one electric violet marks active nav, category chips, and the primary action. Technical grotesk over a neutral sans, for gaming, product, and brand blogs built on imagery.',
   },
   quad: {
     industry: 'Education & Institutions',
@@ -356,7 +356,7 @@ export const CONTENT_THEME_META: Record<string, ThemeMeta> = {
     accentRole: 'secondary',
     tagline: 'A near-black concert stage in electric magenta and cyan.',
     description:
-      'A dark stage ground carrying a magenta-and-cyan duotone — the two-light gel look — behind key art, tour dates, and release players. Expressive poster display over a neutral sans, softly lifted. For artists, labels, and music sites that perform on the page.',
+      'A dark stage ground carrying a magenta-and-cyan duotone (the two-light gel look) behind key art, tour dates, and release players. Expressive poster display over a neutral sans, softly lifted. For artists, labels, and music sites that perform on the page.',
   },
 };
 
@@ -373,7 +373,7 @@ export const TEMPLATE_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'Monochrome endurance-kit chrome with one hi-vis chartreuse.',
     description:
-      'A near-white page carried by a near-black primary that inverts to white in dark, plus a single race-visibility chartreuse held to the signals. Condensed grotesque headlines over a neutral sans — for athletic wear, gyms, and performance brands.',
+      'A near-white page carried by a near-black primary that inverts to white in dark, plus a single race-visibility chartreuse held to the signals. Condensed grotesque headlines over a neutral sans, for athletic wear, gyms, and performance brands.',
   },
   atelier: {
     industry: 'Apparel & Streetwear',
@@ -382,7 +382,7 @@ export const TEMPLATE_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'A paper-ground editorial grid where the product is the color.',
     description:
-      'A warm paper mono theme carrying a high-contrast serif display, light-grey product tiles, and effectively no chrome accent — all color lives in the imagery. For considered apparel, streetwear, and lifestyle shops built on a tight grid.',
+      'A warm paper mono theme carrying a high-contrast serif display, light-gray product tiles, and effectively no chrome accent. All color lives in the imagery. For considered apparel, streetwear, and lifestyle shops built on a tight grid.',
   },
   'sage-oat': {
     industry: 'Natural & Sustainable Goods',
@@ -391,7 +391,7 @@ export const TEMPLATE_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'A tinted oat page with olive and sage for natural goods.',
     description:
-      'A visibly warm oat ground — not white with a rumour of cream — with a near-black primary that flips to oat inside dark bands, plus olive and sage support. Soft serif over a geometric sans. For natural, sustainable, and wellness products sold on calm.',
+      'A visibly warm oat ground (not white with a rumour of cream) with a near-black primary that flips to oat inside dark bands, plus olive and sage support. Soft serif over a geometric sans. For natural, sustainable, and wellness products sold on calm.',
   },
   romp: {
     industry: 'Apparel & Basics',
@@ -400,7 +400,7 @@ export const TEMPLATE_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'A warm-cream page energised by a bright marigold and giveback joy.',
     description:
-      'A cheerful cream ground whose energy comes from color bands, with a bright marigold primary on the feel-good action, a deep navy for dark islands, and a sage accent. Heavy rounded display — for mission-driven brands, basics, and playful direct-to-consumer shops.',
+      'A cheerful cream ground whose energy comes from color bands, with a bright marigold primary on the feel-good action, a deep navy for dark islands, and a sage accent. Heavy rounded display, for mission-driven brands, basics, and playful direct-to-consumer shops.',
   },
   roastery: {
     industry: 'Food & Subscription',
@@ -409,7 +409,7 @@ export const TEMPLATE_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'A mid-warm cream page in deep terracotta and forest green.',
     description:
-      'A warm cream page with an espresso dark island for footer and newsletter beats, a deep terracotta primary on prices and savings, and a disciplined forest-green for headings. High-contrast serif over a humanist sans — for coffee, food boxes, and subscription commerce.',
+      'A warm cream page with an espresso dark island for footer and newsletter beats, a deep terracotta primary on prices and savings, and a disciplined forest-green for headings. High-contrast serif over a humanist sans, for coffee, food boxes, and subscription commerce.',
   },
   maison: {
     industry: 'Luxury Fashion',
@@ -418,7 +418,7 @@ export const TEMPLATE_THEME_META: Record<string, ThemeMeta> = {
     density: 'Spacious',
     tagline: 'Pure white and pure black, classical serif set across everything.',
     description:
-      'Colder and starker than a gallery theme: a pure-white page, pure-black ink, warm stone tiles, and a classical serif used for body and headings alike. Restraint is the point — for couture, luxury fashion, and any brand that sells by holding back.',
+      'Colder and starker than a gallery theme: a pure-white page, pure-black ink, warm stone tiles, and a classical serif used for body and headings alike. Restraint is the point, for couture, luxury fashion, and any brand that sells by holding back.',
   },
   flux: {
     industry: 'Tech & Electronics',
@@ -428,7 +428,7 @@ export const TEMPLATE_THEME_META: Record<string, ThemeMeta> = {
     accentRole: 'secondary',
     tagline: 'A cinematic near-black showroom in deep electric blue.',
     description:
-      'A genuinely dark page in both modes — a cinematic showroom where product renders pop against near-black — with a deep electric-blue primary on Buy and active nav, plus cyan and signal-blue for spec highlights. Technical grotesk, hairline structure. For hardware and premium tech.',
+      'A genuinely dark page in both modes (a cinematic showroom where product renders pop against near-black) with a deep electric-blue primary on Buy and active nav, plus cyan and signal-blue for spec highlights. Technical grotesk, hairline structure. For hardware and premium tech.',
   },
   gloss: {
     industry: 'Beauty & Cosmetics',
@@ -437,7 +437,7 @@ export const TEMPLATE_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'Blush grounds filled with a bold, white-inked hot magenta.',
     description:
-      'Blush-tinted grounds that fill with a bold, saturated hot magenta on the header band, buttons, prices, and stars, plus a wine secondary and warm-nude accent. Rounded and lifted — for beauty counters, cosmetics, and color-forward retail.',
+      'Blush-tinted grounds that fill with a bold, saturated hot magenta on the header band, buttons, prices, and stars, plus a wine secondary and warm-nude accent. Rounded and lifted, for beauty counters, cosmetics, and color-forward retail.',
   },
   voltage: {
     industry: 'Fashion & Apparel',
@@ -446,7 +446,7 @@ export const TEMPLATE_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'Near-black chrome and white content with one loud sale-red.',
     description:
-      'White and grey content alternating with near-black chrome, a near-black mono primary that inverts on the dark islands, and one loud sale-red on badges, prices, and urgency. Bold grotesque caps — for high-volume fashion catalogs and value retail.',
+      'White and gray content alternating with near-black chrome, a near-black mono primary that inverts on the dark islands, and one loud sale-red on badges, prices, and urgency. Bold grotesque caps, for high-volume fashion catalogs and value retail.',
   },
   bare: {
     industry: 'Loungewear & Basics',
@@ -455,7 +455,7 @@ export const TEMPLATE_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'A warm bone off-white with greige and near-black restraint.',
     description:
-      'A warm bone page with a greige ramp and near-black ink and buttons, and deliberately no real accent — chroma comes from product imagery, never the theme. Heavy condensed all-caps display — for loungewear, intimates, and minimalist luxe basics.',
+      'A warm bone page with a greige ramp and near-black ink and buttons, and deliberately no real accent: chroma comes from product imagery, never the theme. Heavy condensed all-caps display, for loungewear, intimates, and minimalist luxe basics.',
   },
 };
 
@@ -473,7 +473,7 @@ export const PORTFOLIO_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'An almost achromatic case-study page with one electric blue.',
     description:
-      'Judgment over decoration: a near-white, almost colorless page carried by a single electric signal-blue on the primary action, the outcome metric, and the active filter. Tight grotesk over a humanist sans — for product and UX designers whose case studies do the talking.',
+      'Judgment over decoration: a near-white, almost colorless page carried by a single electric signal-blue on the primary action, the outcome metric, and the active filter. Tight grotesk over a humanist sans, for product and UX designers whose case studies do the talking.',
   },
   silver: {
     industry: 'Photography & Portfolio',
@@ -482,7 +482,7 @@ export const PORTFOLIO_THEME_META: Record<string, ThemeMeta> = {
     density: 'Spacious',
     tagline: 'A near-white gallery wall where the photographs are the color.',
     description:
-      'The work is the design: a cool gallery-white ground, near-black ink and primary, and an elegant serif display over a clean sans — with no chromatic accent, so every ounce of color comes from the images. For photographers and image-first portfolios.',
+      'The work is the design: a cool gallery-white ground, near-black ink and primary, and an elegant serif display over a clean sans, with no chromatic accent, so every ounce of color comes from the images. For photographers and image-first portfolios.',
   },
   void: {
     industry: 'Developer & Portfolio',
@@ -492,7 +492,7 @@ export const PORTFOLIO_THEME_META: Record<string, ThemeMeta> = {
     accentRole: 'secondary',
     tagline: 'A terminal-black page in acid green and cyan, monospace throughout.',
     description:
-      'The medium is the message: a near-black void in both modes with a monospace body, one acid-green primary and an electric-cyan accent — the console prompt made into a site. Surfaces separate by base-shift and border, never a glow. For developers and technical portfolios.',
+      'The medium is the message: a near-black void in both modes with a monospace body, one acid-green primary and an electric-cyan accent, the console prompt made into a site. Surfaces separate by base-shift and border, never a glow. For developers and technical portfolios.',
   },
   riso: {
     industry: 'Illustration & Art',
@@ -501,7 +501,7 @@ export const PORTFOLIO_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'A warm riso-cream page in a loud coral-and-cobalt duotone.',
     description:
-      'The palette is the brand: a warm riso-cream ground with an electric coral primary, a cobalt accent, and deep indigo ink. Expressive display over a rounded humanist sans — a loud, unmistakably one-maker look for illustrators, artists, and designers with a voice.',
+      'The palette is the brand: a warm riso-cream ground with an electric coral primary, a cobalt accent, and deep indigo ink. Expressive display over a rounded humanist sans, a loud, unmistakably one-maker look for illustrators, artists, and designers with a voice.',
   },
   manuscript: {
     industry: 'Writing & Publishing',
@@ -510,7 +510,7 @@ export const PORTFOLIO_THEME_META: Record<string, ThemeMeta> = {
     density: 'Spacious',
     tagline: 'A warm-paper reading page in serif throughout with one oxblood.',
     description:
-      'The words are the work: a warm-paper page set entirely in serif — a high-contrast display over a readable text serif — with a single oxblood on the byline, links, and primary action. Hairline rules, zero radius. For writers, journalists, and authors whose type is the hero.',
+      'The words are the work: a warm-paper page set entirely in serif (a high-contrast display over a readable text serif) with a single oxblood on the byline, links, and primary action. Hairline rules, zero radius. For writers, journalists, and authors whose type is the hero.',
   },
   atlas: {
     industry: 'Studio & Portfolio',
@@ -519,7 +519,7 @@ export const PORTFOLIO_THEME_META: Record<string, ThemeMeta> = {
     density: 'Wide',
     tagline: 'A sober concrete-and-bone index in burnt amber and slate.',
     description:
-      'A studio index built for range with precision: a bone-and-concrete chassis with a burnt-amber primary on the call, active category, and project year, and a cool slate accent for the facts column. Wide architectural grotesk — for design studios, architects, and multidisciplinary practices.',
+      'A studio index built for range with precision: a bone-and-concrete chassis with a burnt-amber primary on the call, active category, and project year, and a cool slate accent for the facts column. Wide architectural grotesk, for design studios, architects, and multidisciplinary practices.',
   },
 };
 
@@ -553,7 +553,7 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     mood: 'Professional',
     colorFamily: 'Graphite',
     density: 'Standard',
-    tagline: 'Near-black controls on paper — serious without being cold.',
+    tagline: 'Near-black controls on paper: serious without being cold.',
     description:
       'Almost no chroma in the primary, so buttons read as ink rather than as brand. Suits professional services, documentation, and anywhere a colorful interface would undercut the message.',
   },
@@ -562,7 +562,7 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     mood: 'Editorial',
     colorFamily: 'Stone',
     density: 'Spacious',
-    tagline: 'Generous spacing and stone-grey type for long-form reading.',
+    tagline: 'Generous spacing and stone-gray type for long-form reading.',
     description:
       'Built for words. Wide measure, a restrained stone primary, and a warm ochre accent that marks a link without shouting. A good fit for publications, essays, and documentation sites.',
   },
@@ -573,7 +573,7 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'Pure greyscale with one orange accent doing all the pointing.',
     description:
-      'The primary has zero chroma — every scrap of color on the page is the accent, which makes calls to action impossible to miss. Suits tools, dashboards, and technical products where decoration is a distraction.',
+      'The primary has zero chroma: every scrap of color on the page is the accent, which makes calls to action impossible to miss. Suits tools, dashboards, and technical products where decoration is a distraction.',
   },
   frost: {
     industry: 'General',
@@ -582,7 +582,7 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     density: 'Spacious',
     tagline: 'Cool, airy blue on the lightest page in the set.',
     description:
-      'A pale, even palette with plenty of room around everything. Reads as calm and unhurried — health, wellbeing, and any product whose job is to lower someone’s blood pressure rather than raise it.',
+      'A pale, even palette with plenty of room around everything. Reads as calm and unhurried: health, wellbeing, and any product whose job is to lower someone’s blood pressure rather than raise it.',
   },
 
   // Blues and greens — the trust-and-growth end of the shelf.
@@ -591,7 +591,7 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     mood: 'Professional',
     colorFamily: 'Blue',
     density: 'Standard',
-    tagline: 'Confident mid-blue with a teal accent — the classic trust palette.',
+    tagline: 'Confident mid-blue with a teal accent: the classic trust palette.',
     description:
       'The most conventional choice here, and conventional for a reason: a clear blue primary reads as dependable at a glance. Good for software, finance, and services that need to look established on first sight.',
   },
@@ -618,7 +618,7 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     mood: 'Calm',
     colorFamily: 'Teal',
     density: 'Standard',
-    tagline: 'Teal and lime — fresh without tipping into novelty.',
+    tagline: 'Teal and lime: fresh without tipping into novelty.',
     description:
       'A cool teal primary with a bright green accent that keeps it lively. Works for travel, leisure, and consumer products that want to feel modern and uncomplicated.',
   },
@@ -629,7 +629,7 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'Muted green with a soft gold accent.',
     description:
-      'A restrained, slightly herbal green — closer to sage than to emerald. Suits considered, slow-made things: skincare, tea, homeware, anything whose selling point is care.',
+      'A restrained, slightly herbal green: closer to sage than to emerald. Suits considered, slow-made things: skincare, tea, homeware, anything whose selling point is care.',
   },
   fern: {
     industry: 'General',
@@ -638,7 +638,7 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'A brighter, growing green with real saturation.',
     description:
-      'Where jade is calm, fern is alive. High-chroma green through the chrome and a citrus accent on top — good for food, outdoors, sustainability, and anything sold on freshness.',
+      'Where jade is calm, fern is alive. High-chroma green through the chrome and a citrus accent on top: good for food, outdoors, sustainability, and anything sold on freshness.',
   },
 
   // Warm grounds — the appetite-and-craft end.
@@ -649,7 +649,7 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'Warm orange into red, with a golden accent.',
     description:
-      'The warmest palette in the set and the most appetising. Orange primary, red secondary and a gold accent give it real energy — food, events, and consumer brands that want to feel welcoming.',
+      'The warmest palette in the set and the most appetising. Orange primary, red secondary and a gold accent give it real energy: food, events, and consumer brands that want to feel welcoming.',
   },
   amber: {
     industry: 'General',
@@ -658,7 +658,7 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'Honeyed amber on a faintly warm page.',
     description:
-      'Softer and more grown-up than sunset — the page itself carries a little warmth, so the whole screen feels lit rather than white. Bakeries, bars, and makers who want warmth without brightness.',
+      'Softer and more grown-up than sunset: the page itself carries a little warmth, so the whole screen feels lit rather than white. Bakeries, bars, and makers who want warmth without brightness.',
   },
   copper: {
     industry: 'General',
@@ -674,7 +674,7 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     mood: 'Earthy',
     colorFamily: 'Terracotta',
     density: 'Standard',
-    tagline: 'Terracotta and olive — handmade, not homespun.',
+    tagline: 'Terracotta and olive: handmade, not homespun.',
     description:
       'Warm earth primary against a green secondary, the pairing you get from a pot and the plant in it. Ceramics, garden, food and anything sold as made by a person.',
   },
@@ -685,7 +685,7 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     density: 'Wide',
     tagline: 'Sand-toned and low-contrast, with room to breathe.',
     description:
-      'The most muted warm option: a tan page and a soft brown primary, set wide. Reads as understated and expensive — interiors, architecture, and slow fashion.',
+      'The most muted warm option: a tan page and a soft brown primary, set wide. Reads as understated and expensive, interiors, architecture, and slow fashion.',
   },
 
   // Pinks and purples — the expressive end.
@@ -696,7 +696,7 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     density: 'Spacious',
     tagline: 'Dusty rose with a peach accent and plenty of air.',
     description:
-      'Soft without being sweet — the pink is desaturated enough to hold a full page of text. Beauty, weddings, stationery, and editorial brands with a feminine register.',
+      'Soft without being sweet: the pink is desaturated enough to hold a full page of text. Beauty, weddings, stationery, and editorial brands with a feminine register.',
   },
   plum: {
     industry: 'General',
@@ -705,14 +705,14 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'Deep plum lifted by a gold accent.',
     description:
-      'Rich and slightly nocturnal. The gold accent does the lifting, so buttons and links glow against the depth — wine, fragrance, and anything sold as an indulgence.',
+      'Rich and slightly nocturnal. The gold accent does the lifting, so buttons and links glow against the depth: wine, fragrance, and anything sold as an indulgence.',
   },
   grape: {
     industry: 'General',
     mood: 'Bold',
     colorFamily: 'Violet',
     density: 'Standard',
-    tagline: 'Saturated violet into magenta — confident and modern.',
+    tagline: 'Saturated violet into magenta: confident and modern.',
     description:
       'High chroma across primary and secondary, so the interface itself is part of the brand. Suits software, creative studios, and products aimed at people who like a point of view.',
   },
@@ -723,7 +723,7 @@ export const SILICA_THEME_META: Record<string, ThemeMeta> = {
     density: 'Standard',
     tagline: 'Electric magenta and lime. Not for the cautious.',
     description:
-      'The loudest theme in the set by a distance — a heavily saturated primary with a lime accent that has no intention of blending in. Music, nightlife, gaming, and launches that want to be looked at.',
+      'The loudest theme in the set by a distance: a heavily saturated primary with a lime accent that has no intention of blending in. Music, nightlife, gaming, and launches that want to be looked at.',
   },
 };
 

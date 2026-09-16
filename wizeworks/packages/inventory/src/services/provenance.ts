@@ -112,6 +112,14 @@ export interface StockProvenance {
   ageSeconds: number;
   updatedAt: string;
   lastMovementAt: string | null;
+  /** When somebody last checked this against the shelf — a `recount`, or a
+   *  `sync` from an outside system of record. Null if nobody ever has. Neither
+   *  `asOf` nor `lastMovementAt` answers this: a sale moves both. */
+  lastCountedAt: string | null;
+  /** The cadence this level is meant to be counted at, in days, from the
+   *  tenant's own schedule. Null when none covers it — and with no cadence
+   *  there is no such thing as overdue. */
+  countIntervalDays: number | null;
   sources: ProvenanceSource[];
   staleness: StalenessPenalty;
 
@@ -132,6 +140,7 @@ interface DerivedRow {
   derived: number;
   movementCount: number;
   lastMovementAt: Date | null;
+  lastCountedAt: Date | null;
 }
 
 /**
@@ -172,13 +181,22 @@ export async function stockProvenance(
     const derivedRows = await tx.$queryRaw<DerivedRow[]>`
       SELECT COALESCE(SUM(delta), 0)::int AS "derived",
              COUNT(*)::int                AS "movementCount",
-             MAX(created_at)              AS "lastMovementAt"
+             MAX(created_at)              AS "lastMovementAt",
+             -- A CHECK, not a movement. Only these two re-establish the number
+             -- from something other than the book's own arithmetic.
+             MAX(created_at) FILTER (WHERE reason IN ('recount', 'sync'))
+                                          AS "lastCountedAt"
         FROM inventory_movements
        WHERE tenant_id = ${ctx.tenantId}::uuid
          AND variant_id = ${input.variantId}::uuid
          AND warehouse_id = ${input.warehouseId}::uuid
     `;
-    const derived = derivedRows[0] ?? { derived: 0, movementCount: 0, lastMovementAt: null };
+    const derived = derivedRows[0] ?? {
+      derived: 0,
+      movementCount: 0,
+      lastMovementAt: null,
+      lastCountedAt: null,
+    };
 
     const [movements, holds, sourceLinks, staleness] = await Promise.all([
       tx.inventoryMovement.findMany({
@@ -250,6 +268,22 @@ export async function stockProvenance(
       };
     }
 
+    // The cadence this level is held to, if the tenant declared one. Only a
+    // schedule covering the WHOLE level counts: a zone-scoped one covers part of
+    // it and cannot speak for the row. The tightest one wins.
+    const schedules = await tx.cycleCountSchedule.findMany({
+      where: {
+        tenantId: ctx.tenantId,
+        warehouseId: input.warehouseId,
+        isActive: true,
+        zoneName: null,
+        OR: [{ abcClass: null }, { abcClass: level.abcClass }],
+      },
+      select: { intervalDays: true },
+    });
+    const countInterval =
+      schedules.length === 0 ? null : Math.min(...schedules.map((s) => s.intervalDays));
+
     const asOf = level.asOf;
     return {
       variantId: level.variantId,
@@ -296,6 +330,8 @@ export async function stockProvenance(
       ageSeconds: Math.max(0, Math.floor((Date.now() - asOf.getTime()) / 1000)),
       updatedAt: level.updatedAt.toISOString(),
       lastMovementAt: derived.lastMovementAt?.toISOString() ?? null,
+      lastCountedAt: derived.lastCountedAt?.toISOString() ?? null,
+      countIntervalDays: countInterval,
       // A soft-deleted source keeps its links (the rows are history), but it is
       // not something that still feeds this level, so it must not appear as one.
       sources: sourceLinks.flatMap((l) => {

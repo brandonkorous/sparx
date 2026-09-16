@@ -141,7 +141,7 @@ async function loadGolden(): Promise<Golden> {
     }
     return {
         brandBusinessName: brand.businessName,
-        brandTagline: brand.tagline ?? 'Everything you sell, publish, and book — in one place.',
+        brandTagline: brand.tagline ?? 'Everything you sell, publish, and book: in one place.',
         assets: bp.assets,
         commerce: bp.commerce,
         content: bp.content,
@@ -193,7 +193,7 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: ${JSON.stringify(opts.key)},
-  version: '1.5.0',
+  version: '1.5.1',
   name: ${JSON.stringify(opts.name)},
   summary: ${JSON.stringify(opts.summary)},
   vertical: ${JSON.stringify(opts.vertical)},
@@ -243,7 +243,7 @@ function manifestJson(opts: {
         category: 'blueprint',
         slug: opts.key,
         name: opts.name,
-        version: '1.5.0',
+        version: '1.5.1',
         tagline: opts.tagline,
         description: opts.summary,
         payload: 'blueprint.ts',
@@ -259,7 +259,7 @@ function manifestJson(opts: {
         requires: { modules: ['builder', 'commerce', 'cms', 'crm', 'email'] },
         media: [
             { file: 'media/icon.png', kind: 'icon', alt: `${opts.name} icon` },
-            { file: 'media/preview.png', kind: 'preview', alt: `${opts.name} — home page preview` },
+            { file: 'media/preview.png', kind: 'preview', alt: `${opts.name}: home page preview` },
         ],
         author: { displayName: 'WizeWorks' },
         // Restricted to sparx as a DELIBERATE SCOPING CHOICE, and no longer because of
@@ -327,10 +327,10 @@ async function main(): Promise<void> {
         // even where the gate is not the thing being tested.
         const name = t;
         const summary =
-            `The complete starter — a faceted shop, a journal, a booking page, and a ` +
-            `wholesale page — in the ${t} look, tuned for ${desc.audience}. Install it, make it ` +
+            `The complete starter: a faceted shop, a journal, a booking page, and a ` +
+            `wholesale page: in the ${t} look, tuned for ${desc.audience}. Install it, make it ` +
             `yours, and launch a polished working site in minutes.`;
-        const tagline = `A complete multi-module starter in the ${t} look — for ${desc.audience}.`;
+        const tagline = `A complete multi-module starter in the ${t} look, for ${desc.audience}.`;
 
         const brand = {
             businessName: golden.brandBusinessName,

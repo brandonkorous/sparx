@@ -85,9 +85,9 @@ function AiHero() {
         <div className="max-w-content flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-end">
           <p className="m-0 max-w-[640px] font-sans text-lg">
             We didn&rsquo;t build you another AI assistant to learn. We opened a direct line so the
-            AI you <em>already use</em> &mdash; Claude, ChatGPT, Copilot &mdash; can read and write
-            your live business data in plain English, from the same chat you&rsquo;re already in. No
-            new tool. No new tab. No exports.
+            AI you <em>already use</em> (Claude, ChatGPT, Copilot) can read and write your live
+            business data in plain English, from the same chat you&rsquo;re already in. No new tool.
+            No new tab. No exports.
           </p>
 
           <div className="flex flex-col items-start gap-3.5">
@@ -120,7 +120,7 @@ function TheInversion() {
     'One more tool to open, check, and keep in your head.',
   ];
   const sparx = [
-    'The assistant you already use — and already trust.',
+    'The assistant you already use, and already trust.',
     'Your existing threads, context, and habits, untouched.',
     'An open port (MCP), not a walled garden you log into.',
     'Your whole business, reachable from where your attention already is.',
@@ -133,15 +133,15 @@ function TheInversion() {
           accent={AI.color}
           headline={
             <>
-              sparx inside your AI &mdash; <span>not another AI inside sparx</span>
+              sparx inside your AI, <span>not another AI inside sparx</span>
             </>
           }
           lede={
             <>
               Every other platform&rsquo;s move is to add a chatbot you have to learn. That&rsquo;s
-              vendor-centric &mdash; it assumes their product deserves your attention. We did the
-              opposite: sparx doesn&rsquo;t ask for your attention, it makes your business{' '}
-              <em>reachable</em> from wherever your attention already is.
+              vendor-centric: it assumes their product deserves your attention. We did the opposite:
+              sparx doesn&rsquo;t ask for your attention, it makes your business <em>reachable</em>{' '}
+              from wherever your attention already is.
             </>
           }
         />
@@ -195,7 +195,7 @@ function HowItWorks() {
   const steps = [
     {
       title: 'Activate',
-      body: 'Turn on the AI module in your dashboard — one click. It gates the MCP server and tracks which modules your AI can reach.',
+      body: 'Turn on the AI module in your dashboard. One click. It gates the MCP server and tracks which modules your AI can reach.',
     },
     {
       title: 'Connect',
@@ -264,8 +264,8 @@ function HowItWorks() {
         </div>
       </div>
       <p className="mt-4 max-w-[640px] font-sans text-sm">
-        The exact config for each client — Claude, ChatGPT, Copilot — is generated with your real
-        key in the dashboard and spelled out step by step in the{' '}
+        The exact config for each client (Claude, ChatGPT, Copilot) is generated with your real key
+        in the dashboard and spelled out step by step in the{' '}
         <a href="/docs" className={`${AI.ink} font-medium`}>
           connection guide
         </a>
@@ -295,22 +295,22 @@ function AskInPlainEnglish() {
       client: 'Claude',
       ask: 'Write a short post announcing we’re open Saturdays now, and save it as a draft.',
       answer:
-        'Done — I’ve saved a draft, “Now Open Saturdays,” to your blog. Want me to publish it, or schedule it for Friday morning?',
+        'Done: I’ve saved a draft, “Now Open Saturdays,” to your blog. Want me to publish it, or schedule it for Friday morning?',
       via: 'Saved a draft to your site',
     },
     {
       client: 'ChatGPT',
       ask: 'Which customers haven’t bought from me in a while? Send them a friendly note with a discount.',
       answer:
-        'I found 47 people who haven’t ordered in about 3 months. I’ll send your “Win-Back” email with 10% off — just say the word and it goes out.',
-      via: 'Ready to send — waiting for your OK',
+        'I found 47 people who haven’t ordered in about 3 months. I’ll send your “Win-Back” email with 10% off. Just say the word and it goes out.',
+      via: 'Ready to send: waiting for your OK',
       confirm: true,
     },
     {
       client: 'Copilot',
       ask: 'How’s business this month compared to last?',
       answer:
-        'You’re at $84,200 this month — up 23% from $68,400 last month. Your best seller is the Bosch Injector Set.',
+        'You’re at $84,200 this month: up 23% from $68,400 last month. Your best seller is the Bosch Injector Set.',
       via: 'Read from your live data',
     },
     {
@@ -330,7 +330,7 @@ function AskInPlainEnglish() {
         lede={
           <>
             No dashboards to learn, no exports, no formulas. You ask the way you&rsquo;d ask a
-            colleague &mdash; in the assistant you already use &mdash; and it works from your live,
+            colleague (in the assistant you already use) and it works from your live,
             up-to-the-minute data.
           </>
         }
@@ -486,17 +486,17 @@ function ToolSurface() {
     {
       module: 'crm',
       label: 'Invoicing & quotes',
-      actions: 'Draft and read invoices and quotes — when the Invoicing module is on.',
+      actions: 'Draft and read invoices and quotes, when the Invoicing module is on.',
     },
     {
       module: 'scheduling',
       label: 'Scheduling & bookings',
-      actions: 'Services, availability, and bookings — create, reschedule, or cancel a booking.',
+      actions: 'Services, availability, and bookings: create, reschedule, or cancel a booking.',
     },
     {
       module: 'cms',
       label: 'Universal search',
-      actions: 'One query across every record — products, customers, content, more.',
+      actions: 'One query across every record: products, customers, content, more.',
     },
   ];
 
@@ -507,8 +507,8 @@ function ToolSurface() {
         headline={<>Everything your AI can reach</>}
         lede={
           <>
-            Your assistant can use the tools for the modules you&rsquo;ve turned on &mdash; and only
-            those. Scopes follow your modules, so the surface grows as you do.
+            Your assistant can use the tools for the modules you&rsquo;ve turned on, and only those.
+            Scopes follow your modules, so the surface grows as you do.
           </>
         }
       />
@@ -547,11 +547,11 @@ function ScopedAudited() {
     },
     {
       title: 'Per-tool permissions',
-      body: 'A key carries exactly the scopes you grant — read-only, a single module, or write where you allow it.',
+      body: 'A key carries exactly the scopes you grant. Read-only, a single module, or write where you allow it.',
     },
     {
       title: 'Writes confirm first',
-      body: 'Anything that changes data — an order status, inventory, a send — surfaces a confirmation before it runs.',
+      body: 'Anything that changes data (an order status, inventory, a send) surfaces a confirmation before it runs.',
     },
     {
       title: 'Every call audited',
@@ -559,7 +559,7 @@ function ScopedAudited() {
     },
     {
       title: 'Revoke in one click',
-      body: 'Kill a key the moment you want to. The line closes instantly — no propagation delay, no leftover access.',
+      body: 'Kill a key the moment you want to. The line closes instantly: no propagation delay, no leftover access.',
     },
     {
       title: 'Abuse-capped, not metered',
@@ -571,7 +571,7 @@ function ScopedAudited() {
     <Section surface="dark" padding="lg">
       <div className="max-w-[720px]">
         <Display size={56} lineHeight={60}>
-          Let AI touch your business — safely
+          Let AI touch your business: safely
           <Spark color={AI.color} />
         </Display>
         <p className="mt-6 mb-0 max-w-[640px] font-sans text-lg">
@@ -616,7 +616,7 @@ function WorksWithEveryAssistant() {
         lede={
           <>
             MCP is an open standard, so this isn&rsquo;t a one-vendor bet. The same endpoint and key
-            work in whatever you already use — switch assistants and your connection comes with you.
+            work in whatever you already use. Switch assistants and your connection comes with you.
           </>
         }
       />
@@ -693,7 +693,7 @@ function AiPricing() {
           </div>
           <p className="m-0 max-w-[640px] font-sans text-sm">
             A flat $49/mo. Connect any MCP client and read or write live data across every module
-            you run — scoped, audited, revocable, all on one bill.
+            you run: scoped, audited, revocable, all on one bill.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-4">
@@ -722,7 +722,7 @@ function AiCta() {
         </Display>
         <p className="m-0 max-w-[640px] font-sans text-lg">
           No new assistant to learn, no migration, no contract. Generate a key, paste it once, and
-          ask your own AI anything about your business. Turn it off any time — your data stays.
+          ask your own AI anything about your business. Turn it off any time. Your data stays.
         </p>
         <div className="flex flex-wrap items-center gap-4">
           <Button size="xl" variant="solid">

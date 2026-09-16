@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-auto-euro',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Auto (European Specialist)',
   summary:
-    'A precision European-import auto shop — BMW, Mercedes, Audi, Porsche and VW — in a dark graphite palette with a sharp marque-red primary. Installs a working booking flow: factory-trained master technicians you book by name, real service bays as bookable resources (a visit reserves both), and a live menu of diagnostics, scheduled maintenance, performance and pre-purchase inspection with a diagnostic-deposit policy. Ships as "Autobahn Werks" — dealer-level, without the dealer markup.',
+    'A precision European-import auto shop: BMW, Mercedes, Audi, Porsche and VW, in a dark graphite palette with a sharp marque-red primary. Installs a working booking flow: factory-trained master technicians you book by name, real service bays as bookable resources (a visit reserves both), and a live menu of diagnostics, scheduled maintenance, performance and pre-purchase inspection with a diagnostic-deposit policy. Ships as "Autobahn Werks", dealer-level, without the dealer markup.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

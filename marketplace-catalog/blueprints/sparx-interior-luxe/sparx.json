@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "sparx-interior-luxe",
   "name": "Interior Design (Luxe)",
-  "version": "1.4.0",
-  "tagline": "A refined, editorial template for interior design studios — book consultations online from day one.",
-  "description": "A refined, editorial site for a high-end interior design studio — a deep charcoal palette, a warm brass accent and an elegant serif display over soft-lit interiors. Installs a working booking flow: consultation types from a complimentary discovery call to full-service and in-home design, three designers you book by name with their own hours, and a design-deposit policy. Ships as \"Atelier Nord\", a residential design studio.",
+  "version": "1.4.1",
+  "tagline": "A refined, editorial template for interior design studios. Book consultations online from day one.",
+  "description": "A refined, editorial site for a high-end interior design studio: a deep charcoal palette, a warm brass accent and an elegant serif display over soft-lit interiors. Installs a working booking flow: consultation types from a complimentary discovery call to full-service and in-home design, three designers you book by name with their own hours, and a design-deposit policy. Ships as \"Atelier Nord\", a residential design studio.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
@@ -28,7 +28,7 @@
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "Interior Design (Luxe) — home page preview"
+      "alt": "Interior Design (Luxe): home page preview"
     }
   ],
   "author": {

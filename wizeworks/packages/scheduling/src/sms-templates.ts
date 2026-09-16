@@ -31,7 +31,7 @@ export function renderBookingSms(type: BookingNotificationType, f: BookingSmsFie
     case 'change':
       return `${f.siteName}: your ${f.serviceName} has been rescheduled to ${f.whenLabel}.`;
     case 'cancellation':
-      return `${f.siteName}: your ${f.serviceName} on ${f.whenLabel} has been cancelled. Contact us to rebook.`;
+      return `${f.siteName}: your ${f.serviceName} on ${f.whenLabel} has been canceled. Contact us to rebook.`;
   }
 }
 

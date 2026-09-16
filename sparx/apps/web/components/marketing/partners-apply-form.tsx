@@ -149,7 +149,7 @@ export function PartnersApplyForm() {
             ("EVERY application is reviewed … no tier activates automatically").
             The confirmation is the one that matches the server action. */}
         <Text as="span" className="text-md">
-          Reviewed by a person within 3 business days &mdash; every tier.
+          Reviewed by a person within 3 business days, every tier.
         </Text>
       </div>
 
@@ -202,7 +202,7 @@ function Confirmation() {
         <span className="text-primary">.</span>
       </Heading>
       <Text className="max-w-sm text-lg">
-        Every application is read by a person — we’ll be in touch within 3 business days.
+        Every application is read by a person: we’ll be in touch within 3 business days.
       </Text>
     </div>
   );

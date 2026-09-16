@@ -38,7 +38,6 @@ import {
   FieldDescription,
   FieldLabel,
   Heading,
-  Input,
   Stat,
   StatDesc,
   StatTitle,
@@ -58,7 +57,7 @@ import {
   faReceipt,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
-import { PANE_SHELL } from '../../components/pane-toolbar';
+import { PANE_SHELL, PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
 import { useConfirm } from '../../lib/confirm';
 import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -72,11 +71,13 @@ import {
   useApproveSupplierBill,
   useCancelSupplierBill,
   useDisputeSupplierBill,
+  useSettleBillQuery,
   useRecordBillPayment,
   useSupplierBill,
   verdictLabel,
   verdictTone,
 } from './supplier-bills-data';
+import { MoneyTextInput, moneyCents } from '../../components/money-input';
 
 export function SupplierBillDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = ctx.params.id ?? 'new';
@@ -89,6 +90,7 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const approve = useApproveSupplierBill(id);
   const accept = useAcceptBillVariance(id);
   const dispute = useDisputeSupplierBill(id);
+  const settle = useSettleBillQuery(id);
   const pay = useRecordBillPayment(id);
   const cancel = useCancelSupplierBill(id);
   const confirm = useConfirm();
@@ -183,20 +185,36 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     });
   };
 
+  const onSettle = () => {
+    settle.mutate(undefined, {
+      onSuccess: () => {
+        afterCommit(() => {
+          toast.add({
+            title: `${data.number} is back with you`,
+            description: 'Put the figures right off what they sent back, then approve it.',
+            type: 'info',
+          });
+        });
+      },
+      onError: fail('Could not settle that query'),
+    });
+  };
+
   const onPay = async () => {
-    const parsed = Number.parseFloat(paidAmount);
-    if (!Number.isFinite(parsed) || parsed < 0) return;
+    // Read the way a person writes money — "1,250.00", "$8.00" (issue 486).
+    const paidCents = paidAmount.trim() === '' ? null : moneyCents(paidAmount);
+    if (paidCents === null) return;
     const ok = await confirm({
-      title: `Record ${formatCents(Math.round(parsed * 100), data.currency)} paid?`,
+      title: `Record ${formatCents(paidCents, data.currency)} paid?`,
       description:
-        'This records that the money has gone. It does not send a payment — that happens in your bank or your accounting package.',
+        'This records that the money has gone. It does not send a payment. That happens in your bank or your accounting package.',
       confirmLabel: 'It has been paid',
       cancelLabel: 'Not yet',
       color: 'warning',
     });
     if (!ok) return;
     pay.mutate(
-      { paidCents: Math.round(parsed * 100) },
+      { paidCents },
       {
         onSuccess: () => {
           afterCommit(() => {
@@ -221,7 +239,7 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     cancel.mutate(undefined, {
       onSuccess: () => {
         afterCommit(() => {
-          toast.add({ title: `${data.number} cancelled`, type: 'info' });
+          toast.add({ title: `${data.number} canceled`, type: 'info' });
         });
         ctx.close();
       },
@@ -229,11 +247,14 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     });
   };
 
-  const needsExplaining = data.match.ok === false && data.varianceAcceptedAt === null;
+  // Out with the supplier. Nothing about the match matters while it is: the
+  // question on the screen is what they came back with, not whether to accept.
+  const isQueried = data.status === 'disputed';
+  const needsExplaining = data.match.ok === false && data.varianceAcceptedAt === null && !isQueried;
   const isOpen = data.status !== 'paid' && data.status !== 'cancelled';
 
   return (
-    <div className={`${PANE_SHELL} overflow-y-auto`}>
+    <div className={PANE_SHELL_SCROLL}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Heading level={2} className="text-lg">
           <span className="font-mono">{data.number}</span> · {data.supplierName ?? 'Supplier'}
@@ -249,8 +270,8 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           <StatValue>{formatCents(data.totalCents, data.currency)}</StatValue>
           <StatDesc>
             {formatCents(data.subtotalCents, data.currency)} goods
-            {data.shippingCents > 0
-              ? ` + ${formatCents(data.shippingCents, data.currency)} carriage`
+            {data.freightCents > 0
+              ? ` + ${formatCents(data.freightCents, data.currency)} carriage`
               : ''}
             {data.taxCents > 0 ? ` + ${formatCents(data.taxCents, data.currency)} tax` : ''}
           </StatDesc>
@@ -263,13 +284,22 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             </Badge>
           </StatValue>
           <StatDesc>
-            {data.match.totalVarianceCents === null || data.match.totalVarianceCents === 0
-              ? 'nothing at stake'
-              : `${formatCents(Math.abs(data.match.totalVarianceCents), data.currency)} ${
+            {/* At stake first, because that is what the badge above is about.
+                A remainder nobody has invoiced yet is worth saying out loud —
+                another invoice is coming and this is roughly what for — but it
+                is not at stake and must never be read as a disagreement. */}
+            {data.match.totalVarianceCents !== null && data.match.totalVarianceCents !== 0
+              ? `${formatCents(Math.abs(data.match.totalVarianceCents), data.currency)} ${
                   data.match.totalVarianceCents > 0
                     ? 'more than the goods justify'
-                    : 'in your favour'
-                }`}
+                    : 'in your favor'
+                }`
+              : data.match.uninvoicedCents !== null && data.match.uninvoicedCents > 0
+                ? `${formatCents(
+                    data.match.uninvoicedCents,
+                    data.currency
+                  )} of this order is still to be invoiced`
+                : 'nothing at stake'}
           </StatDesc>
         </Stat>
         <Stat>
@@ -296,6 +326,18 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         </AlertContent>
       </Alert>
 
+      {/* Why it is out with them. The card that queried it says an override
+          leaving no trace looks exactly like nobody noticing, and then the
+          reason went to the database and onto no screen (issue 511). */}
+      {isQueried ? (
+        <Alert color="danger">
+          <AlertContent>
+            <AlertTitle>This is out with the supplier</AlertTitle>
+            <AlertDescription>{data.notes ?? 'No reason was recorded.'}</AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
+
       {data.varianceAcceptedAt ? (
         <Alert color="info">
           <AlertContent>
@@ -304,7 +346,7 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             </AlertTitle>
             <AlertDescription>
               <Timestamp value={data.varianceAcceptedAt} format="relative" />
-              {data.notes ? ` — ${data.notes}` : ''}
+              {data.notes ? ` (${data.notes})` : ''}
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -339,7 +381,19 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                   </span>
                 </td>
                 <td className="text-right tabular-nums">{line.orderedQuantity ?? '—'}</td>
-                <td className="text-right tabular-nums">{line.receivedQuantity ?? '—'}</td>
+                <td className="text-right tabular-nums">
+                  {/* What arrived, and how much of it somebody else's invoice
+                      has already charged for. Without the second line, a row
+                      saying 40 arrived, 2 billed and "agrees" looks broken. */}
+                  <span className="flex flex-col items-end">
+                    <span>{line.receivedQuantity ?? '—'}</span>
+                    {line.alreadyBilledQuantity !== null && line.alreadyBilledQuantity > 0 ? (
+                      <span className="text-sm">
+                        {`${String(line.alreadyBilledQuantity)} on other invoices`}
+                      </span>
+                    ) : null}
+                  </span>
+                </td>
                 <td className="text-right tabular-nums">{line.quantity}</td>
                 <td className="text-right tabular-nums">
                   <span className="flex flex-col items-end">
@@ -356,10 +410,18 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                   <Badge color={verdictTone(line.match.verdict)} variant="soft" size="sm">
                     {verdictLabel(line.match.verdict)}
                   </Badge>
+                  {/* The money the badge is about. A shortfall is worth
+                      naming — it is roughly what the next invoice will be —
+                      but it lives in its own figure, because it is not money
+                      wrongly charged. */}
                   {line.match.amountVarianceCents !== null &&
                   line.match.amountVarianceCents !== 0 ? (
                     <span className="block text-sm">
                       {formatCents(Math.abs(line.match.amountVarianceCents), data.currency)}
+                    </span>
+                  ) : line.match.uninvoicedCents !== null && line.match.uninvoicedCents > 0 ? (
+                    <span className="block text-sm">
+                      {formatCents(line.match.uninvoicedCents, data.currency)}
                     </span>
                   ) : null}
                 </td>
@@ -372,15 +434,34 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       {isOpen ? (
         <Card className="flex flex-col gap-3 p-3">
           <Heading level={3} className="text-base">
-            {needsExplaining ? 'Before this can be approved' : 'What happens next'}
+            {isQueried
+              ? 'While it is with the supplier'
+              : needsExplaining
+                ? 'Before this can be approved'
+                : 'What happens next'}
           </Heading>
 
-          {needsExplaining ? (
+          {isQueried ? (
+            <>
+              <Text className="text-sm">
+                Nothing will be paid against this invoice while it is queried. Settle the query once
+                the supplier has answered. If they send a credit note or a new invoice, cancel this
+                one and enter theirs instead. If they say this one was right, settle it and then
+                accept the difference.
+              </Text>
+              <div className="flex flex-wrap gap-2">
+                <Button color="module" loading={settle.isPending} onClick={onSettle}>
+                  <Icon glyph={faCheck} className="size-4" aria-hidden />
+                  The query is settled
+                </Button>
+              </div>
+            </>
+          ) : needsExplaining ? (
             <>
               <Text className="text-sm">
                 {plural(data.match.linesFlagged, 'line does', 'lines do')} not agree with what was
-                ordered and received. Either accept the difference — which is recorded against your
-                name — or query it with the supplier, which stops it being paid.
+                ordered and received. Either accept the difference (which is recorded against your
+                name) or query it with the supplier, which stops it being paid.
               </Text>
               <Field>
                 <FieldLabel>Why</FieldLabel>
@@ -390,7 +471,7 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                       color="module"
                       rows={2}
                       value={reason}
-                      placeholder="Two units were damaged and are going back separately — the invoice is right."
+                      placeholder="Two units were damaged and are going back separately: the invoice is right."
                       onChange={(event) => {
                         setReason(event.target.value);
                       }}
@@ -436,15 +517,11 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                 <FieldLabel>Paid</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <MoneyTextInput
                       color="module"
-                      type="number"
-                      min={0}
-                      step="0.01"
-                      value={paidAmount}
-                      onChange={(event) => {
-                        setPaidAmount(event.target.value);
-                      }}
+                      aria-label="How much you paid"
+                      text={paidAmount}
+                      onTextChange={setPaidAmount}
                     />
                   }
                 />

@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-nail-gallery',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Nail Studio (Gallery)',
   summary:
-    'A gallery-chic nail-studio site — a clean gallery-cream palette, a coral-rose primary and a deep-teal accent under a crisp grotesque display, with the nail-art photography carrying the page. Installs a working booking flow: a real menu (manicures, gel, builder-gel, pedicures, art, removal), three artists you book by name, and two shared nail stations a manicure consumes alongside its artist. Ships as "Lacquer", a calm daylight studio.',
+    'A gallery-chic nail-studio site: a clean gallery-cream palette, a coral-rose primary and a deep-teal accent under a crisp grotesque display, with the nail-art photography carrying the page. Installs a working booking flow: a real menu (manicures, gel, builder-gel, pedicures, art, removal), three artists you book by name, and two shared nail stations a manicure consumes alongside its artist. Ships as "Lacquer", a calm daylight studio.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

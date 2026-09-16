@@ -16,10 +16,10 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-summit',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Summit',
   summary:
-    'The complete starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Summit look, tuned for consulting and B2B agencies. Install it, make it yours, and launch a polished working site in minutes.',
+    'The complete starter (a faceted shop, a journal, a booking page, and a wholesale page) in the Summit look, tuned for consulting and B2B agencies. Install it, make it yours, and launch a polished working site in minutes.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
@@ -28,7 +28,7 @@ const blueprint = {
   // rides site.theme (below) + this theme; the installing tenant rebrands the name.
   brand: {
     businessName: 'Alder & Ash',
-    tagline: 'Everything you sell, publish, and book — in one place.',
+    tagline: 'Everything you sell, publish, and book: in one place.',
     colors: {
       primary: '#8bb5ff',
       primaryForeground: '#070b14',
@@ -68,7 +68,7 @@ const blueprint = {
 
   emails: [
     { name: 'Welcome', doc: welcomeEmail, publish: false },
-    { name: 'Welcome — day 3', doc: welcomeEmail2, publish: false },
+    { name: 'Welcome: day 3', doc: welcomeEmail2, publish: false },
   ],
 
   sequences: [
@@ -84,13 +84,13 @@ const blueprint = {
           emailName: 'Welcome',
           delaySeconds: 0,
           emailType: 'marketing',
-          name: 'Day 0 — welcome',
+          name: 'Day 0: welcome',
         },
         {
-          emailName: 'Welcome — day 3',
+          emailName: 'Welcome: day 3',
           delaySeconds: 259200,
           emailType: 'marketing',
-          name: 'Day 3 — places to start',
+          name: 'Day 3: places to start',
         },
       ],
     },

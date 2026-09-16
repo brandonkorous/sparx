@@ -321,7 +321,7 @@ function ResourceEditor({
             title={isNew ? 'New person or thing' : 'What it is'}
             description={
               isNew
-                ? 'Say what kind of thing this is and give it a name your team will recognise.'
+                ? 'Say what kind of thing this is and give it a name your team will recognize.'
                 : undefined
             }
           >
@@ -371,7 +371,7 @@ function ResourceEditor({
                     color="module"
                     rows={2}
                     value={draft.description}
-                    placeholder="Anything worth noting — a speciality, a location, a quirk."
+                    placeholder="Anything worth noting: a speciality, a location, a quirk."
                     onChange={(event) => {
                       set('description', event.target.value);
                     }}
@@ -401,7 +401,7 @@ function ResourceEditor({
                 }
               />
               <FieldDescription>
-                The zone this works in — the hours you set are read in this time.
+                The zone this works in: the hours you set are read in this time.
               </FieldDescription>
             </Field>
           </FormSection>
@@ -498,14 +498,14 @@ function ResourceEditor({
               </>
             ) : (
               <Text className="text-sm">
-                A person holds one booking at a time — that is what stops them being double-booked.
+                A person holds one booking at a time. That is what stops them being double-booked.
               </Text>
             )}
           </FormSection>
 
           <FormSection
             title="Skills & matching"
-            description="Words a service can look for when it needs a particular skill or feature — “color”, “senior”, “wheelchair access”. A service that asks for a skill is only offered the people or things that carry it."
+            description="Words a service can look for when it needs a particular skill or feature: “color”, “senior”, “wheelchair access”. A service that asks for a skill is only offered the people or things that carry it."
           >
             <Field>
               <FieldLabel>Skills or features (optional)</FieldLabel>
@@ -550,7 +550,7 @@ function ResourceEditor({
                   Customers can be booked onto this online
                 </Text>
                 <Text as="span" className="text-sm">
-                  Off, only your team can assign bookings to it — it never shows on your public
+                  Off, only your team can assign bookings to it. It never shows on your public
                   booking page.
                 </Text>
               </span>
@@ -570,7 +570,7 @@ function ResourceEditor({
                   This is in use
                 </Text>
                 <Text as="span" className="text-sm">
-                  Switch it off to take it out of the picture — on holiday, out of action — without
+                  Switch it off to take it out of the picture (on holiday, out of action) without
                   removing it. Turn it back on any time.
                 </Text>
               </span>

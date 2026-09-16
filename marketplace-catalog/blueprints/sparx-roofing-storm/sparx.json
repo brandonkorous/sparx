@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "sparx-roofing-storm",
   "name": "Roofing (Storm)",
-  "version": "1.4.0",
-  "tagline": "A bold, storm-ready template for roofers — book inspections online from day one.",
-  "description": "A bold storm-damage and exteriors template — a deep-graphite palette with a sharp signal-red accent and condensed type. Installs a working booking spine for storm inspections and insurance claims: free inspections, claim consults, roof/siding/window estimates and an emergency tarp visit, with three roofers dispatched by skill on their own weekly hours and a priority policy. Ships as \"Ironclad Roofing & Exteriors\".",
+  "version": "1.4.1",
+  "tagline": "A bold, storm-ready template for roofers. Book inspections online from day one.",
+  "description": "A bold storm-damage and exteriors template: a deep-graphite palette with a sharp signal-red accent and condensed type. Installs a working booking spine for storm inspections and insurance claims: free inspections, claim consults, roof/siding/window estimates and an emergency tarp visit, with three roofers dispatched by skill on their own weekly hours and a priority policy. Ships as \"Ironclad Roofing & Exteriors\".",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
@@ -28,7 +28,7 @@
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "Roofing (Storm) — home page preview"
+      "alt": "Roofing (Storm): home page preview"
     }
   ],
   "author": {

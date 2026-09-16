@@ -25,7 +25,7 @@ function workspaceRoot(): string {
     const parent = dirname(dir);
     if (parent === dir) {
       throw new Error(
-        `No pnpm-workspace.yaml above ${process.cwd()} — cannot locate the repo root.`
+        `No pnpm-workspace.yaml above ${process.cwd()}: cannot locate the repo root.`
       );
     }
     dir = parent;
@@ -43,16 +43,14 @@ export const BLUEPRINTS = join(workspaceRoot(), 'marketplace-catalog', 'blueprin
  */
 export function blueprintSlugs(): string[] {
   if (!existsSync(BLUEPRINTS)) {
-    throw new Error(
-      `Blueprint bundles not found at ${BLUEPRINTS} — this guard would scan nothing.`
-    );
+    throw new Error(`Blueprint bundles not found at ${BLUEPRINTS}: this guard would scan nothing.`);
   }
   const slugs = readdirSync(BLUEPRINTS, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
     .sort();
   if (slugs.length === 0) {
-    throw new Error(`No blueprint bundles in ${BLUEPRINTS} — this guard would scan nothing.`);
+    throw new Error(`No blueprint bundles in ${BLUEPRINTS}: this guard would scan nothing.`);
   }
   return slugs;
 }

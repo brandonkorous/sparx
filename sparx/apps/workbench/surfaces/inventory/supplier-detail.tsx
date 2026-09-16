@@ -25,6 +25,7 @@
 // loud card competing with the details someone came in to change.
 
 import { useEffect, useMemo, useState } from 'react';
+import { shownInPlace } from '@wizeworks/query';
 import {
   Alert,
   AlertContent,
@@ -44,6 +45,7 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { MoneyTextInput, moneyCents } from '../../components/money-input';
 import { useConfirm } from '../../lib/confirm';
 import { Archive, ClipboardList, Plus, Save, Star, Trash2, Truck } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -169,10 +171,12 @@ function toInput(form: FormState): SupplierInput {
 
 /* ── Money helpers for the purchasing links ─────────────────────────────── */
 
+/** Nothing typed reads as nothing set. Everything else goes through
+ *  `moneyCents`, which reads "8,50", "$8.00" and "1,250.00" the way a person
+ *  writes them; `Number.parseFloat` read one spelling and returned NaN for the
+ *  rest (issues 086 and 486). */
 function inputToCents(value: string): number | null {
-  const parsed = Number.parseFloat(value);
-  if (!Number.isFinite(parsed) || parsed < 0) return null;
-  return Math.round(parsed * 100);
+  return value.trim() === '' ? null : moneyCents(value);
 }
 
 /* ── What you buy from this supplier ────────────────────────────────────── */
@@ -214,7 +218,15 @@ function PurchasingLinks({
     if (code === '') return;
     let resolved;
     try {
-      resolved = await lookup.mutateAsync(code);
+      // `shownInPlace` because this catch renders the failure beside the field,
+      // and a try/catch is as invisible to the failed-write net as a render is:
+      // without it the net sees a call site that said nothing, and speaks too.
+      // What it says here is not a duplicate but a contradiction — a lookup miss
+      // comes back 404, and the net's 404 sentence is "someone may have deleted
+      // it while you had it open", about a code that never existed, to an owner
+      // who works alone. The recipe pane two files over passes its own onError
+      // and is quiet for the same reason.
+      resolved = await lookup.mutateAsync(code, { onError: shownInPlace });
     } catch (err) {
       setError(
         isNotFound(err)
@@ -251,7 +263,7 @@ function PurchasingLinks({
     const ok = await confirm({
       title: `Stop buying ${label} from this supplier?`,
       description:
-        'This only removes the record that you source it here — your stock, your product and any past orders are untouched. You can add it back at any time.',
+        'This only removes the record that you source it here. Your stock, your product and any past orders are untouched. You can add it back at any time.',
       confirmLabel: 'Remove it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -389,19 +401,13 @@ function PurchasingLinks({
               <FieldLabel>What they charge (each)</FieldLabel>
               <FieldControl
                 render={
-                  <Input
+                  <MoneyTextInput
                     color="module"
                     size="sm"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    inputMode="decimal"
-                    value={cost}
-                    placeholder="0.00"
-                    className="text-right tabular-nums"
-                    onChange={(event) => {
-                      setCost(event.target.value);
-                    }}
+                    aria-label="What they charge for each one"
+                    text={cost}
+                    className="text-right"
+                    onTextChange={setCost}
                   />
                 }
               />
@@ -549,7 +555,15 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.setTitle(isNew ? 'New supplier' : (supplier.data?.name ?? 'Supplier'));
   }, [ctx, isNew, supplier.data?.name]);
 
+  // Whether she has typed anything yet. A brand-new form is empty because it is
+  // new, not because she got it wrong, and an error under a field nobody has
+  // touched reads as a telling-off before the first keystroke. The Short code
+  // field two rows down already waits ("code is not empty AND invalid"); Name
+  // could not use that shape, because empty IS its error.
+  const [touched, setTouched] = useState(false);
+
   const set = <K extends keyof FormState>(key: K, value: string) => {
+    setTouched(true);
     setForm((current) => ({ ...current, [key]: value }));
   };
 
@@ -572,6 +586,15 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isNew) {
       create.mutate(input, {
         onSuccess: (result) => {
+          // Rebased BEFORE the pane swap. `target: 'replace'` changes this
+          // pane's params in place rather than remounting it, so the load
+          // effect never runs again and a baseline left at EMPTY keeps the pane
+          // dirty forever: an unsaved dot on the tab, "Not saved" in the status
+          // bar, and a leave-guard asking whether to discard a record that is
+          // safely written. Same rebase the update path below already does, and
+          // the same one `staff/person-writes.ts` and `crm/object-type-detail`
+          // spell out in their own comments.
+          setBaseline(form);
           ctx.open('inventory.suppliers.detail', { id: result.id }, { target: 'replace' });
           afterPaneChange(() => {
             toast.add({
@@ -736,7 +759,7 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     />
                   }
                 />
-                {form.name.trim() === '' ? (
+                {touched && form.name.trim() === '' ? (
                   <FieldStatus status="error">A supplier needs a name.</FieldStatus>
                 ) : null}
               </Field>
@@ -762,7 +785,7 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   </FieldStatus>
                 ) : (
                   <FieldDescription>
-                    A short handle printed on orders — like ACME. Must be unique.
+                    A short handle printed on orders, like ACME. Must be unique.
                   </FieldDescription>
                 )}
               </Field>
@@ -1011,7 +1034,7 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   />
                 }
               />
-              <FieldDescription>Only you see this — it never appears on an order.</FieldDescription>
+              <FieldDescription>Only you see this. It never appears on an order.</FieldDescription>
             </Field>
           </FormSection>
 

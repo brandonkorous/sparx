@@ -65,6 +65,8 @@ export type CommerceTopic = Extract<
   | 'return.received'
   | 'return.refunded'
   | 'return.exchanged'
+  | 'return.denied'
+  | 'return.replacement_shipped'
   | 'review.submitted'
   | 'review.published'
   | 'review.flagged'

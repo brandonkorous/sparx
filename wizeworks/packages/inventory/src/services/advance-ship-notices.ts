@@ -389,7 +389,7 @@ export async function consumeAdvanceShipNoticeOnTx(
   if (!asn) throw new InventoryNotFoundError('AdvanceShipNotice', params.advanceShipNoticeId);
   if (asn.status === 'cancelled') {
     throw new InventoryConflictError(
-      `Notice ${asn.number} was cancelled and cannot be received against`,
+      `Notice ${asn.number} was canceled and cannot be received against`,
       'status'
     );
   }

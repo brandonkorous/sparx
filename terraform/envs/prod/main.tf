@@ -465,6 +465,8 @@ module "pubsub" {
     "return.received"  = []
     "return.refunded"  = []
     "return.exchanged" = []
+    "return.denied"    = []
+    "return.replacement_shipped" = []
 
     # Customer-generated content — reviews + product questions
     "review.submitted"   = []

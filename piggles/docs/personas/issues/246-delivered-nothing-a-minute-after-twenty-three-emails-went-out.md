@@ -8,6 +8,14 @@
 **Fixed:** 2026-08-26
 **Confirmed by:** P03 · Juniper Row · act 10 — the same broadcast now reads "Delivered 23 · On their way"
 
+> **2026-09-15 — this fix reached one of the two consoles.** The same screen
+> exists in the sparx workbench, which may not import from here, and it went on
+> shipping the bare `Delivered 0` with no sentence under it for twenty days after
+> this was closed. Carried over in
+> [531](531-a-promise-about-the-next-few-minutes-twenty-days-late.md), along with
+> the discovery that the sentence written here had **no clock in it** and so kept
+> promising confirmations "over the next few minutes" for ever.
+
 ## What happened
 
 Devi sent her newsletter to 23 people. It worked: 23 rows queued, 23 dispatched,

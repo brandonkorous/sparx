@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-jewelry-artisan',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Artisan Jeweler',
   summary:
-    'A complete, working shop for a handmade / artisan jeweler: a real catalogue of hand-forged pieces in recycled sterling silver and bronze — hammered hoops, a raw-stone ring, a hand-stamped cuff, a mixed-metal pendant, studs, a forged chain, a signet and a raw birthstone pendant — with Metal and Size variants, categories, collections, a bespoke PDP and a merchandised home page. Earthy theme — warm clay ground, bark ink, oxidised-bronze primary, fired-copper accent. Shipped as Forge & Fold.',
+    'A complete, working shop for a handmade / artisan jeweler: a real catalogue of hand-forged pieces in recycled sterling silver and bronze, hammered hoops, a raw-stone ring, a hand-stamped cuff, a mixed-metal pendant, studs, a forged chain, a signet and a raw birthstone pendant, with Metal and Size variants, categories, collections, a bespoke PDP and a merchandised home page. Earthy theme, warm clay ground, bark ink, oxidised-bronze primary, fired-copper accent. Shipped as Forge & Fold.',
   vertical: 'retail',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

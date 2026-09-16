@@ -31,12 +31,16 @@ export interface NewProductFieldsProps {
   onOnSale: (value: boolean) => void;
 }
 
+// Name, Price and Product code are marked `required` — the same asterisk the
+// supplier, purchase-order and 20 other forms use. It says which answers are
+// needed BEFORE anything is typed; the field messages say what is still missing
+// after. Without it the Add product button simply sat grey (issue 481).
 export function NewProductFields(p: NewProductFieldsProps) {
   return (
     <>
       <FormSection title="What you are selling">
         <Field>
-          <FieldLabel>Name</FieldLabel>
+          <FieldLabel required>Name</FieldLabel>
           <FieldControl
             render={
               <Input
@@ -69,7 +73,7 @@ export function NewProductFields(p: NewProductFieldsProps) {
             }
           />
           <FieldDescription>
-            The end of this product&apos;s page address on your website — yoursite.com/products/
+            The end of this product&apos;s page address on your website: yoursite.com/products/
             {p.handle || '…'}
           </FieldDescription>
         </Field>
@@ -80,7 +84,7 @@ export function NewProductFields(p: NewProductFieldsProps) {
         description="Every product needs a price and a code before anyone can buy it, so both are set up here. Once it exists you can add sizes, colors and their own prices on the Options and Variants tabs."
       >
         <Field>
-          <FieldLabel>Price</FieldLabel>
+          <FieldLabel required>Price</FieldLabel>
           <FieldControl
             render={
               <MoneyTextInput
@@ -99,7 +103,7 @@ export function NewProductFields(p: NewProductFieldsProps) {
         </Field>
 
         <Field>
-          <FieldLabel>Product code</FieldLabel>
+          <FieldLabel required>Product code</FieldLabel>
           <FieldControl
             render={
               <Input
@@ -118,7 +122,7 @@ export function NewProductFields(p: NewProductFieldsProps) {
             <FieldStatus status="error">{p.skuError}</FieldStatus>
           ) : (
             <FieldDescription>
-              Your own reference for this product — on labels, on invoices, in your records. It has
+              Your own reference for this product: on labels, on invoices, in your records. It has
               to be different from every other code you use.
             </FieldDescription>
           )}

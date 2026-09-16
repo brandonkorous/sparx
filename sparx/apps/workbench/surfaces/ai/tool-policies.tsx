@@ -333,7 +333,7 @@ export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
                 disabled={changedCount === 0}
                 title={
                   changedCount === 0
-                    ? 'Nothing to reset — every tool is at its default'
+                    ? 'Nothing to reset: every tool is at its default'
                     : 'Remove every restriction and turn all tools back on'
                 }
                 onClick={() => {
@@ -365,16 +365,16 @@ export function AiToolPoliciesSurface({ ctx }: { ctx: SurfaceContext }) {
                 Permissions
               </Heading>
               <Text>
-                What an AI app you’ve connected — like an assistant on your own computer — may look
-                up or change in your business, tool by tool. Everything is available by default;
-                switch off anything it shouldn’t reach. You connect an app and manage its keys in AI
+                What an AI app you’ve connected (like an assistant on your own computer) may look up
+                or change in your business, tool by tool. Everything is available by default; switch
+                off anything it shouldn’t reach. You connect an app and manage its keys in AI
                 connections.
               </Text>
             </div>
             <div className="border-base-300 flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-lg border px-3 py-2">
               <Text as="span" className="text-sm">
                 This is about an outside app reaching into your business and acting. It’s not the
-                writing help sparx does with your own AI account — that’s in
+                writing help sparx does with your own AI account: that’s in
               </Text>
               <Button
                 variant="link"

@@ -15,6 +15,7 @@ import Fastify, {
 } from 'fastify';
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
+import { EXPOSED_RESPONSE_HEADERS } from './lib/exposed-headers.js';
 import { CrmConflictError, CrmNotFoundError, CrmValidationError } from '@wizeworks/crm';
 import {
   SitebuilderConflictError,
@@ -749,11 +750,14 @@ function schedulingErrorMapper(
 
 // Finance errors (@wizeworks/finance) — same envelope vocabulary as the rest.
 //
-// Two get their own status on purpose. Over-allocating an expense is a 422: the
-// request is well-formed, it just charges jobs for money nobody spent. A
+// Three get their own status on purpose. Over-allocating an expense is a 422:
+// the request is well-formed, it just charges jobs for money nobody spent. A
 // protected/in-use category is a 409, because the fix is a different action
 // (archive it, or re-file its spend) rather than a corrected field — and the
-// message already says which, in words an owner can act on.
+// message already says which, in words an owner can act on. A duplicate category
+// NAME joins them: it is the textbook conflict-with-existing-state, and when the
+// row it clashes with is archived the remedy is again an action (bring that one
+// back) rather than a better name.
 function financeErrorMapper(
   err: unknown,
   request: { id: string },
@@ -764,7 +768,9 @@ function financeErrorMapper(
 
   const status = err.code.endsWith('_NOT_FOUND')
     ? 404
-    : err.code === 'SYSTEM_CATEGORY_PROTECTED' || err.code === 'CATEGORY_IN_USE'
+    : err.code === 'SYSTEM_CATEGORY_PROTECTED' ||
+        err.code === 'CATEGORY_IN_USE' ||
+        err.code === 'CATEGORY_NAME_TAKEN'
       ? 409
       : 422;
 
@@ -875,10 +881,17 @@ export async function createApp(): Promise<FastifyInstance> {
   // silently strands every browser-origin PATCH/PUT/DELETE at preflight. The
   // dashboard never noticed (it calls api-rest from the server); the workbench
   // calls from the browser and does full CRUD with a Bearer token.
+  //
+  // `exposedHeaders` must be explicit for the same reason `methods` is, and it
+  // fails even quieter. A cross-origin fetch can read seven response headers and
+  // no others, so `content-disposition` and every `x-sparx-*` a download rides
+  // on came back null — silently, with each caller's fallback reading as good
+  // news. See lib/exposed-headers.ts for the three that shipped that way.
   await app.register(cors, {
     origin: true,
     credentials: false,
     methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    exposedHeaders: [...EXPOSED_RESPONSE_HEADERS],
   });
   // Cookie support — used by the storefront customer session (httpOnly
   // sparx_customer_session). Unsigned: the session token is already a

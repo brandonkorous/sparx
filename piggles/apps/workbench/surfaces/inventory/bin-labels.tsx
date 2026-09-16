@@ -135,7 +135,7 @@ function LabelCell({
         </span>
         {!bin.isSellable ? (
           <span className="truncate text-[10px] leading-tight font-bold text-black">
-            {binTypeLabel(bin.type).toUpperCase()} — NOT FOR SALE
+            {binTypeLabel(bin.type).toUpperCase()}: NOT FOR SALE
           </span>
         ) : null}
       </span>
@@ -260,7 +260,7 @@ export function BinLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
                 <ToggleGroupItem
                   key={s.value}
                   value={s.value}
-                  aria-label={`${s.label} labels — ${s.hint}`}
+                  aria-label={`${s.label} labels: ${s.hint}`}
                 >
                   {s.label}
                 </ToggleGroupItem>
@@ -287,7 +287,7 @@ export function BinLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : (
           <div className="flex flex-col gap-3">
             <Text className="text-sm print:hidden">
-              {plural(bins.length, 'label', 'labels')} at {sizeSpec.label.toLowerCase()} size —{' '}
+              {plural(bins.length, 'label', 'labels')} at {sizeSpec.label.toLowerCase()} size:{' '}
               {sizeSpec.hint.toLowerCase()}. What you see here is exactly what prints.
             </Text>
 
@@ -300,8 +300,8 @@ export function BinLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
             </PrintSheet>
 
             <Text className="text-sm print:hidden">
-              The square holds the shelf label itself, not a web address — so it still scans when
-              the wifi does not reach the back of the building.
+              The square holds the shelf label itself, not a web address, so it still scans when the
+              wifi does not reach the back of the building.
             </Text>
           </div>
         )}

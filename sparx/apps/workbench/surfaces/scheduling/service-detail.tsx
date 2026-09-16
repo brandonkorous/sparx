@@ -270,7 +270,7 @@ function ServiceEditor({
     const ok = await confirm({
       title: `Remove ${existing.name}?`,
       description:
-        'This takes the service off your booking page and out of this list. Bookings already made against it are kept. This cannot be undone — you would have to set it up again.',
+        'This takes the service off your booking page and out of this list. Bookings already made against it are kept. This cannot be undone. You would have to set it up again.',
       confirmLabel: 'Remove this service',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -366,7 +366,7 @@ function ServiceEditor({
             title={isNew ? 'New service' : 'What it is'}
             description={
               isNew
-                ? 'Give the service a name a customer will recognise, and say what kind of booking it is.'
+                ? 'Give the service a name a customer will recognize, and say what kind of booking it is.'
                 : undefined
             }
           >
@@ -444,7 +444,7 @@ function ServiceEditor({
                   }
                 />
                 <FieldDescription>
-                  The most people who can join one session — the class fills up at this number.
+                  The most people who can join one session: the class fills up at this number.
                 </FieldDescription>
               </Field>
             ) : null}
@@ -491,7 +491,7 @@ function ServiceEditor({
                   }
                 />
                 <FieldDescription>
-                  How far apart the bookable slots sit — every 15 minutes, on the hour, and so on.
+                  How far apart the bookable slots sit: every 15 minutes, on the hour, and so on.
                 </FieldDescription>
               </Field>
 
@@ -614,7 +614,7 @@ function ServiceEditor({
 
           <FormSection
             title="Who or what it needs"
-            description="What a booking uses up — a member of staff, a room, a machine. Two bookings can never claim the same one at the same time. Leave this empty if a booking needs nothing set aside."
+            description="What a booking uses up: a member of staff, a room, a machine. Two bookings can never claim the same one at the same time. Leave this empty if a booking needs nothing set aside."
           >
             {draft.requirements.length > 0 ? (
               <Field>
@@ -790,7 +790,7 @@ function ServiceEditor({
                   Customers can book this themselves online
                 </Text>
                 <Text as="span" className="text-sm">
-                  Off, only your team can add this booking — it never appears on your public booking
+                  Off, only your team can add this booking. It never appears on your public booking
                   page.
                 </Text>
               </span>
@@ -830,7 +830,7 @@ function ServiceEditor({
                   The customer names a specific item when booking
                 </Text>
                 <Text as="span" className="text-sm">
-                  For work done on a customer’s own thing — their vehicle, their bike, their
+                  For work done on a customer’s own thing. Their vehicle, their bike, their
                   instrument. They tell you which one when they book.
                 </Text>
               </span>
@@ -850,7 +850,7 @@ function ServiceEditor({
                   This service is switched on
                 </Text>
                 <Text as="span" className="text-sm">
-                  Switch it off to stop taking bookings for it without removing it — turn it back on
+                  Switch it off to stop taking bookings for it without removing it. Turn it back on
                   any time.
                 </Text>
               </span>

@@ -49,8 +49,7 @@ export function piecesGroup(session: StudioSession, kind: DocumentKind): Palette
       // pieces apart said the same thing about both. The sentence stays as the
       // fallback, because a piece she has not annotated still needs the one fact a
       // first-timer is missing.
-      hint:
-        session.pieceNote(symbol.id) ?? 'Your saved piece — edit it once and every copy follows',
+      hint: session.pieceNote(symbol.id) ?? 'Your saved piece: edit it once and every copy follows',
       // Id-free by contract: the palette stamps ids on the way in, and minting one
       // here would hand the same id to every insert.
       make: (): Node => ({ kind: 'element', tag: 'div', instanceOf: symbol.id, children: [] }),

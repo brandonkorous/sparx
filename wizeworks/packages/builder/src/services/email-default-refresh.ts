@@ -195,6 +195,11 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
   'return-approved': new Set(['530dd0e43444ee9645b702fd33ef423b972ae5aa214ce0345f6935971c3e99a2']),
   'return-received': new Set(['ffbc6d93cca341490c35be643f1f261ce304c543a6e5d74a73bd8e86370b4f7e']),
   'return-refunded': new Set(['fa810aec0d201b0aef078620fa40ec23a47bed247aa9ce4dc9ae7c44fc665524']),
+  // Brand new in 2026-09 (persona issue 448) — only ever one body, so nothing to
+  // roll forward from. Empty is the decision, per the note at the top of this file.
+  'return-exchanged': new Set([]),
+  'return-replacement-shipped': new Set([]),
+  'return-denied': new Set([]),
   'b2b-order-approved': new Set([
     'fc09aded0e05d7213355165dd0bf3f8c77039e682c2ea42bb2edcf2a0fbbc38b',
   ]),

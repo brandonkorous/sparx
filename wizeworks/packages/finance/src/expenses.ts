@@ -5,6 +5,7 @@
 // goods sell, which the inventory cost tables already record (docs/148 §1, locked
 // decision #2). Filing a PO here would double-count every part.
 
+import { endOfDayExclusive } from './rollup';
 import { withTenant, type FinanceExpense, type Prisma, type TxClient } from '@wizeworks/db';
 
 import { ExpenseNotFoundError, OverAllocatedError } from './errors';
@@ -292,6 +293,11 @@ export interface ExpenseListPage {
   /** Total spend matching the filter, ignoring pagination — the figure the list
    *  header shows, which must not change as someone scrolls. */
   totalCents: number;
+  /** HOW MANY costs match the filter, on the same whole-set grain as
+   *  `totalCents`. Free: it rides the aggregate the total was already running.
+   *  A caller that only wants to know whether a period is EMPTY can ask for one
+   *  row and read this, rather than paging the lot to count them. */
+  totalCount: number;
 }
 
 export async function listExpenses(
@@ -308,11 +314,14 @@ export async function listExpenses(
     ...(input.source ? { source: input.source } : {}),
     ...(input.unpaidOnly === true ? { paidAt: null } : {}),
     ...(input.unpaidOnly === false ? { paidAt: { not: null } } : {}),
+    // `to` is an inclusive calendar DAY, so the bound is the start of the next
+    // one. `lte: to` covered none of the last day and hid every cost recorded
+    // today from a "This month" list that ends today — see `endOfDayExclusive`.
     ...(input.from || input.to
       ? {
           incurredAt: {
             ...(input.from ? { gte: input.from } : {}),
-            ...(input.to ? { lte: input.to } : {}),
+            ...(input.to ? { lt: endOfDayExclusive(input.to) } : {}),
           },
         }
       : {}),
@@ -338,7 +347,7 @@ export async function listExpenses(
         take: input.limit + 1,
         ...(input.cursor ? { cursor: { id: input.cursor }, skip: 1 } : {}),
       }),
-      tx.financeExpense.aggregate({ _sum: { amountCents: true }, where }),
+      tx.financeExpense.aggregate({ _sum: { amountCents: true }, _count: true, where }),
     ]);
 
     const hasMore = rows.length > input.limit;
@@ -347,6 +356,7 @@ export async function listExpenses(
       items,
       nextCursor: hasMore ? (items[items.length - 1]?.id ?? null) : null,
       totalCents: sum._sum.amountCents ?? 0,
+      totalCount: sum._count,
     };
   });
 }

@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-barber-modern',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Barbershop (Modern)',
   summary:
-    'A modern, high-energy barbershop site — a clean near-white palette, an electric-blue primary and a bold-red accent, with a tall condensed display and a type-first hero that leads with attitude over a photo. Installs a working booking flow: a real service menu (skin fade, taper, cut + beard, kids cut), three barbers you book by name with their own hours, and a standard no-deposit policy. Ships as "Fade Room", a fast, dialed-in fade shop.',
+    'A modern, high-energy barbershop site: a clean near-white palette, an electric-blue primary and a bold-red accent, with a tall condensed display and a type-first hero that leads with attitude over a photo. Installs a working booking flow: a real service menu (skin fade, taper, cut + beard, kids cut), three barbers you book by name with their own hours, and a standard no-deposit policy. Ships as "Fade Room", a fast, dialed-in fade shop.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

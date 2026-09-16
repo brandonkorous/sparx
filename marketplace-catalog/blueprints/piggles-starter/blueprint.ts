@@ -13,10 +13,10 @@ import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
 
 const blueprint = {
   key: 'piggles-starter',
-  version: '1.3.0',
+  version: '1.3.1',
   name: 'Universal Starter',
   summary:
-    'The complete starter — a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.',
+    'The complete starter: a faceted shop, a journal, a booking page, and a wholesale page. Install it, make it yours, and launch a polished working site in minutes.',
   vertical: 'retail',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
@@ -61,7 +61,7 @@ const blueprint = {
 
   emails: [
     { name: 'Welcome', doc: welcomeEmail, publish: false },
-    { name: 'Welcome — day 3', doc: welcomeEmail2, publish: false },
+    { name: 'Welcome: day 3', doc: welcomeEmail2, publish: false },
   ],
 
   sequences: [
@@ -77,13 +77,13 @@ const blueprint = {
           emailName: 'Welcome',
           delaySeconds: 0,
           emailType: 'marketing',
-          name: 'Day 0 — welcome',
+          name: 'Day 0: welcome',
         },
         {
-          emailName: 'Welcome — day 3',
+          emailName: 'Welcome: day 3',
           delaySeconds: 259200,
           emailType: 'marketing',
-          name: 'Day 3 — places to start',
+          name: 'Day 3: places to start',
         },
       ],
     },

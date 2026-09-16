@@ -44,9 +44,8 @@ import {
   type BusinessDetails,
   type FormState,
 } from './business-details-form';
-import type { SurfaceContext } from '../lib/surfaces/registry';
 
-export function BusinessDetailsSurface({ ctx }: { ctx: SurfaceContext }) {
+export function BusinessDetailsSurface() {
   const toast = useToast();
   const queryClient = useQueryClient();
   const [form, setForm] = useState<FormState>(EMPTY);
@@ -57,10 +56,6 @@ export function BusinessDetailsSurface({ ctx }: { ctx: SurfaceContext }) {
     queryKey: ['tenant', 'business'],
     queryFn: () => api.get<BusinessDetails>('/v1/tenant/business'),
   });
-
-  useEffect(() => {
-    ctx.setTitle('Business details');
-  }, [ctx]);
 
   // Seed once. Re-seeding on every refetch would overwrite what someone is
   // part-way through typing when a background refresh lands.
@@ -123,7 +118,7 @@ export function BusinessDetailsSurface({ ctx }: { ctx: SurfaceContext }) {
           <AlertContent>
             <AlertTitle>Could not load your business details</AlertTitle>
             <AlertDescription>
-              Nothing has been lost — this is a problem reaching the server, not with your saved
+              Nothing has been lost. This is a problem reaching the server, not with your saved
               details.
             </AlertDescription>
           </AlertContent>

@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-medspa-clinical',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Med Spa (Clinical)',
   summary:
-    'A clean, clinical med-spa site — clinical white and pale mint, a calm teal-sage primary and a warm-sand accent, with a modern sans throughout. Installs a working booking flow: a free consultation you approve, plus HydraFacial, peels, microneedling, laser and IV therapy booked to licensed providers across two treatment rooms, with a deposit on treatments. Ships as "Lumen", a results-forward skin clinic.',
+    'A clean, clinical med-spa site: clinical white and pale mint, a calm teal-sage primary and a warm-sand accent, with a modern sans throughout. Installs a working booking flow: a free consultation you approve, plus HydraFacial, peels, microneedling, laser and IV therapy booked to licensed providers across two treatment rooms, with a deposit on treatments. Ships as "Lumen", a results-forward skin clinic.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

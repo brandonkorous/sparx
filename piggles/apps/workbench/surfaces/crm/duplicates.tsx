@@ -33,7 +33,7 @@ import { useState } from 'react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
-import { useViewer } from '../../lib/api/shell-data';
+import { useActivePropertyId, useSites, useViewer } from '../../lib/api/shell-data';
 import { type Customer } from './customers-data';
 import {
   customerName,
@@ -81,6 +81,19 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data: groups, isPending, isError, isFetching, dataUpdatedAt, refetch } = useDuplicates();
   const { data: viewer } = useViewer();
   const canMerge = viewer?.role === 'admin' || viewer?.role === 'owner';
+
+  // Which book was searched, so the empty state can say so. Both are already in
+  // the shell's cache — the rail reads them — so naming the site costs nothing.
+  const { data: sites } = useSites();
+  const activePropertyId = useActivePropertyId();
+  const activeSite = sites?.find((site) => site.id === activePropertyId);
+  const oneSite = (sites?.length ?? 0) <= 1;
+  // A business with one site is not helped by being told its customers are kept
+  // per site; a business with seven needs to know, because the same person on
+  // two of them is two records here and nothing on this screen can pair them.
+  const emptyDescription = oneSite
+    ? 'Nobody shares an email address, or a name and company. We check again whenever you reopen this, so come back after a busy spell.'
+    : `Nobody in ${activeSite?.name ?? 'this site'}'s customers shares an email address, or a name and company. Each of your sites keeps its own customers, so somebody who bought from two of them is two records here on purpose. We check again whenever you reopen this.`;
   const bulkMerge = useBulkMerge();
   const toast = useToast();
   const confirm = useConfirm();
@@ -95,7 +108,7 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Merge ${String(certainCount)} certain duplicates?`,
       description:
-        'Each group has one email address shared by two or more records. The most recently updated record in each survives and absorbs the others — their orders, spend, deals and tasks move onto it, and anything it was missing is filled in from them. This cannot be undone.',
+        'Each group has one email address shared by two or more records. The most recently updated record in each survives and absorbs the others. Their orders, spend, deals and tasks move onto it, and anything it was missing is filled in from them. This cannot be undone.',
       confirmLabel: 'Merge them',
       cancelLabel: 'Not now',
       color: 'danger',
@@ -154,7 +167,7 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
             <PaneLoadError
               icon={<Icon glyph={faClipboardCheck} className="size-6" aria-hidden />}
               title="Could not check for duplicates"
-              description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
+              description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
               onRetry={() => {
                 void refetch();
               }}
@@ -168,14 +181,26 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
               module={MODULE}
               icon={<Icon glyph={faClipboardCheck} className="size-6" aria-hidden />}
               title="No duplicates found"
-              description="Every customer looks unique — nobody shares an email address, or a name and company. We check whenever you reopen this, so come back after a busy spell."
+              // WHAT WAS ACTUALLY CHECKED. This said "Every customer looks
+              // unique. Nobody shares an email address" — a claim about the
+              // whole business, made after looking at one site.
+              //
+              // The search is per site on purpose (merge-service keys every
+              // bucket by `propertyId`, so two businesses under one owner can
+              // never have their customers chained together). The consequence is
+              // that the same person arriving through two of YOUR sites is two
+              // records that no site can see as a pair — which is correct, and
+              // was being denied rather than explained. One shop here had the
+              // same email on its main site and its archive, and every screen
+              // told her nobody shared an email address.
+              description={emptyDescription}
             />
           </Card>
         ) : (
           <div className={COLUMN}>
             <Text>
               Each group below looks like one person entered more than once. Choose the record to
-              keep, then merge the others into it — their orders, spending and history all move
+              keep, then merge the others into it. Their orders, spending and history all move
               across, and the extra records are retired.
             </Text>
 
@@ -184,8 +209,8 @@ export function DuplicatesSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Text className="text-sm">
                   {certainCount === 1
                     ? '1 of these is an identical email address'
-                    : `${String(certainCount)} of these are identical email addresses`}{' '}
-                  — the same person by any definition.
+                    : `${String(certainCount)} of these are identical email addresses`}
+                  , the same person by any definition.
                 </Text>
                 <Button
                   color="module"
@@ -246,7 +271,7 @@ function DuplicateCard({
     const keepName = customerName(primary);
     const ok = await confirm({
       title: `Merge ${duplicates.length === 1 ? '1 record' : `${String(duplicates.length)} records`} into ${keepName}?`,
-      description: `Everything from the other ${duplicates.length === 1 ? 'record' : 'records'} — orders, spending, notes and addresses — moves onto ${keepName}. The ${duplicates.length === 1 ? 'other record is' : 'others are'} then retired and drop out of your lists. This cannot be undone.`,
+      description: `Everything from the other ${duplicates.length === 1 ? 'record' : 'records'} (orders, spending, notes and addresses) moves onto ${keepName}. The ${duplicates.length === 1 ? 'other record is' : 'others are'} then retired and drop out of your lists. This cannot be undone.`,
       confirmLabel: 'Merge them',
       cancelLabel: 'Leave them separate',
       color: 'danger',
@@ -302,7 +327,7 @@ function DuplicateCard({
       {canMerge ? (
         <footer className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t px-4 py-3">
           <Text className="text-sm">
-            Keeping <span className="font-semibold">{customerName(primary)}</span> — the other{' '}
+            Keeping <span className="font-semibold">{customerName(primary)}</span>. The other{' '}
             {duplicates.length === 1
               ? 'record merges'
               : `${String(duplicates.length)} records merge`}{' '}

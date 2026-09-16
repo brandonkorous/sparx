@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-office-supply',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Office Supply (B2B / Wholesale)',
   summary:
-    'A complete, working wholesale shop for a workplace-supplies distributor: a real trade catalogue sold by the box and case — paper & ink, writing, furniture and breakroom supplies — with categories, collections, a bespoke trade PDP (per-box pricing, volume breaks, net-30), and a full merchandised home page. Clean corporate theme — cool slate ground, confident blue, teal accent. Shipped as Worksmith Supply Co.',
+    'A complete, working wholesale shop for a workplace-supplies distributor: a real trade catalogue sold by the box and case, paper & ink, writing, furniture and breakroom supplies, with categories, collections, a bespoke trade PDP (per-box pricing, volume breaks, net-30), and a full merchandised home page. Clean corporate theme, cool slate ground, confident blue, teal accent. Shipped as Worksmith Supply Co.',
   vertical: 'b2b',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

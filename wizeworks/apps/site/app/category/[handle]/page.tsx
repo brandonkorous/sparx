@@ -19,6 +19,7 @@ import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
+import { SUSPENDED_METADATA } from '@/lib/suspended';
 
 // NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
 // forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
@@ -34,6 +35,10 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const site = await resolveSite();
   if (!site) return {};
+  // A dark site tells a crawler nothing about the tenant. The layout says the
+  // same, but a route's metadata overrides a layout's, so it has to be said
+  // here too (issue 503).
+  if (site.billingPhase === 'suspended') return SUSPENDED_METADATA;
   const { handle } = await params;
   const category = await getCategory(site.slug, handle);
   if (!category) return {};

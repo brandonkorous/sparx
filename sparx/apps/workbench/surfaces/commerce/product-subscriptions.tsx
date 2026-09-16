@@ -131,13 +131,13 @@ function SubscriptionsBody({ product, data }: { product: Product; data: ProductS
             size="sm"
             icon={<ShoppingBag className="size-6" aria-hidden />}
             title="People buy this one at a time"
-            description={`${product.title} is a normal one-off purchase — someone buys it, you send it, and that is the end of it. Nothing is missing here.`}
+            description={`${product.title} is a normal one-off purchase. Someone buys it, you send it, and that is the end of it. Nothing is missing here.`}
           />
           <Text className="text-sm">
-            If you wanted it delivered on a schedule instead — every month, every quarter — you
-            would set that up on the product itself by changing how it is fulfilled. Customers would
-            then choose a delivery frequency at checkout, and every repeat order would appear on
-            this panel.
+            If you wanted it delivered on a schedule instead (every month, every quarter), you would
+            set that up on the product itself by changing how it is fulfilled. Customers would then
+            choose a delivery frequency at checkout, and every repeat order would appear on this
+            panel.
           </Text>
         </FormSection>
       ) : null}
@@ -162,7 +162,7 @@ function SubscriptionsBody({ product, data }: { product: Product; data: ProductS
         <>
           <FormSection
             title="What repeat orders are worth"
-            description="This product's share only — a subscription box holding other products counts here for this product's part of it."
+            description="This product's share only: a subscription box holding other products counts here for this product's part of it."
           >
             <div className="flex flex-wrap gap-x-8 gap-y-4">
               <Figure
@@ -205,7 +205,7 @@ function SubscriptionsBody({ product, data }: { product: Product; data: ProductS
 
           <FormSection
             title="Who has it on repeat"
-            description="To pause, change or stop one of these, open that customer's repeat order — it belongs to them, not to this product."
+            description="To pause, change or stop one of these, open that customer's repeat order. It belongs to them, not to this product."
           >
             <div className="flex flex-col gap-3">
               {data.subscriptions.map((subscriber) => (

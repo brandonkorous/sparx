@@ -259,7 +259,7 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
   const drop = async (id: string, label: string) => {
     const ok = await confirm({
       title: 'Remove this rate?',
-      description: `This deletes the ${label} rate outright. If they simply stopped earning it, set an end date instead — deleting it removes the ability to explain any cost already worked out from it.`,
+      description: `This deletes the ${label} rate outright. If they simply stopped earning it, set an end date instead: deleting it removes the ability to explain any cost already worked out from it.`,
       confirmLabel: 'Remove it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -284,7 +284,7 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
             <AlertTitle>Only an account admin can see pay</AlertTitle>
             <AlertDescription>
               Rates, documents and commission are limited to admins and owners. This person may well
-              have a rate on file — you are not able to see it.
+              have a rate on file. You are not able to see it.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -298,7 +298,7 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
   return (
     <FormSection
       title="What they're paid"
-      description="A raise is a new rate, not an edit — so what a job cost last March still explains itself."
+      description="A raise is a new rate, not an edit, so what a job cost last March still explains itself."
       action={
         adding ? null : (
           <Button
@@ -322,8 +322,8 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
           <AlertContent>
             <AlertTitle>No pay rate on file</AlertTitle>
             <AlertDescription>
-              Until there is one, this person’s hours are counted but never costed — they show up as
-              unpriced on the timesheet rather than as free labour.
+              Until there is one, this person’s hours are counted but never costed. They show up as
+              unpriced on the timesheet rather than as free labor.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -444,8 +444,8 @@ function PaySection({ staffMemberId, canSeePay }: { staffMemberId: string; canSe
                   }
                 />
                 <FieldDescription>
-                  A percentage — your share of payroll taxes, insurance, workers’ comp. Leaving it
-                  at zero makes your labour costs read about 15–30% light.
+                  A percentage. Your share of payroll taxes, insurance, workers’ comp. Leaving it at
+                  zero makes your labor costs read about 15–30% light.
                 </FieldDescription>
               </Field>
             ) : null}
@@ -662,7 +662,7 @@ function CertificationsSection({ staffMemberId }: { staffMemberId: string }) {
                 }
               />
               <FieldDescription>
-                Leave blank if it never expires — that is a real answer, and it will not be treated
+                Leave blank if it never expires. That is a real answer, and it will not be treated
                 as a missing date.
               </FieldDescription>
             </Field>
@@ -703,7 +703,7 @@ function CertificationsSection({ staffMemberId }: { staffMemberId: string }) {
 
       {items.length === 0 && !adding ? (
         <Text className="text-sm">
-          Nothing recorded. If this person needs a licence, ticket or certificate to do their job,
+          Nothing recorded. If this person needs a license, ticket or certificate to do their job,
           add it here and sparx will warn you before it runs out.
         </Text>
       ) : null}
@@ -765,7 +765,7 @@ function DocumentsSection({
   return (
     <FormSection
       title="Paperwork"
-      description="Signed contracts, handbooks and ID — the drawer in the back office."
+      description="Signed contracts, handbooks and ID: the drawer in the back office."
     >
       {docs.isPending ? (
         <Text className="text-sm">Loading…</Text>
@@ -894,7 +894,7 @@ function HoursSection({
   const drop = async (entry: TimeEntry) => {
     const ok = await confirm({
       title: 'Delete these hours?',
-      description: `${formatMinutes(entry.minutes)} on ${formatDate(entry.workedOn)} will be removed. If the work happened but the figure is wrong, correct it instead — deleting it means nobody is paid for that time.`,
+      description: `${formatMinutes(entry.minutes)} on ${formatDate(entry.workedOn)} will be removed. If the work happened but the figure is wrong, correct it instead: deleting it means nobody is paid for that time.`,
       confirmLabel: 'Delete them',
       cancelLabel: 'Keep them',
       color: 'danger',
@@ -966,7 +966,7 @@ function HoursSection({
                 }
               />
               <FieldDescription>
-                What you are paying for. 7.5 is seven and a half hours — take any unpaid break off
+                What you are paying for. 7.5 is seven and a half hours: take any unpaid break off
                 before you type it.
               </FieldDescription>
             </Field>
@@ -1001,7 +1001,7 @@ function HoursSection({
             <FieldControl
               render={
                 <Input
-                  placeholder="Forgot to clock in, callout on the Henderson job…"
+                  placeholder="Forgot to clock in, early start on Saturday…"
                   value={entryNote}
                   onChange={(event) => {
                     setEntryNote(event.target.value);
@@ -1244,7 +1244,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
       const ok = await confirm({
         title: `Mark ${person.data.name} as having left?`,
         description:
-          'They come off the roster and out of the schedule. Every hour they have worked stays exactly where it is — last year’s profit figure still adds up, and you can bring them back at any time.',
+          'They come off the roster and out of the schedule. Every hour they have worked stays exactly where it is: last year’s profit figure still adds up, and you can bring them back at any time.',
         confirmLabel: 'They have left',
         cancelLabel: 'Cancel',
         color: 'warning',
@@ -1270,7 +1270,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Delete ${person.data.name} completely?`,
       description:
-        'This is for a record created by mistake. It removes their timesheet, shifts, qualifications and paperwork. Wage costs already filed against your spending are NOT removed — deleting spend is a decision you make on the spending screen. This cannot be undone.',
+        'This is for a record created by mistake. It removes their timesheet, shifts, qualifications and paperwork. Wage costs already filed against your spending are NOT removed: deleting spend is a decision you make on the spending screen. This cannot be undone.',
       confirmLabel: 'Delete the record',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -1378,7 +1378,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
                         onSuccess: (entry) => {
                           afterPaneChange(() => {
                             toast.add({
-                              title: `Clocked out — ${formatMinutes(entry.minutes)}`,
+                              title: `Clocked out: ${formatMinutes(entry.minutes)}`,
                               description: 'It is waiting to be approved on the timesheet.',
                               type: 'success',
                             });
@@ -1510,7 +1510,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
                     />
                   }
                 />
-                <FieldDescription>Optional — plenty of people go by one name.</FieldDescription>
+                <FieldDescription>Optional: plenty of people go by one name.</FieldDescription>
               </Field>
               <Field>
                 <FieldLabel>What they do</FieldLabel>
@@ -1725,8 +1725,8 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
               <div className="flex items-center gap-2 px-1 pb-2">
                 <ShieldCheck className="size-4 shrink-0" aria-hidden />
                 <Text className="text-xs">
-                  sparx is not a payroll system. It records what people worked and what that cost —
-                  it does not withhold tax, file returns, or pay anybody.
+                  sparx is not a payroll system. It records what people worked and what that cost.
+                  It does not withhold tax, file returns, or pay anybody.
                 </Text>
               </div>
             </>

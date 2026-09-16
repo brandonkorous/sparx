@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-pt-wellness',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Physical Therapy & Wellness',
   summary:
-    'A calm, whole-person physical-therapy site — a soft-sage palette, a warm-clay accent and a gentle serif display. Installs online booking from day one: evaluations and one-on-one sessions for pelvic health, balance, chronic pain and wellness, three therapists you book by name plus two private treatment rooms as resources, and reminder + evaluation-hold policies. Ships as "Restore Physical Therapy & Wellness".',
+    'A calm, whole-person physical-therapy site: a soft-sage palette, a warm-clay accent and a gentle serif display. Installs online booking from day one: evaluations and one-on-one sessions for pelvic health, balance, chronic pain and wellness, three therapists you book by name plus two private treatment rooms as resources, and reminder + evaluation-hold policies. Ships as "Restore Physical Therapy & Wellness".',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

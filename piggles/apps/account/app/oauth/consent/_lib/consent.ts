@@ -119,12 +119,12 @@ export async function validateAuthorizeRequest(p: AuthorizeParams): Promise<Vali
     return { ok: false, error: 'The request is missing the security check it needs (PKCE).' };
   }
   if (p.codeChallengeMethod.toLowerCase() !== 's256') {
-    return { ok: false, error: 'That security method is not supported — only S256.' };
+    return { ok: false, error: 'That security method is not supported. Only S256.' };
   }
 
   const client = await getRegisteredMcpClient(p.clientId);
   if (!client) {
-    return { ok: false, error: 'We do not recognise this app. Try connecting again from it.' };
+    return { ok: false, error: 'We do not recognize this app. Try connecting again from it.' };
   }
   if (client.disabled) {
     return { ok: false, error: 'This connection has been turned off by an administrator.' };

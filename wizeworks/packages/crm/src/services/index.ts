@@ -156,6 +156,11 @@ export { buildRenderDataFromDraft } from './billing-draft-render';
 export type { BillingDraftInput, BillingDraftLine } from './billing-draft-render';
 export * as billingTemplateService from './billing-template-service';
 export type { BillingTemplateDto } from './billing-template-service';
+// How late a bill is, in CALENDAR days — exported because three surfaces outside
+// this package answer that question and each had grown its own arithmetic. One
+// rule, so a screen, an aging report and the dunning ladder can never disagree
+// about whether the same invoice is late.
+export { daysPastDue } from './billing-ar';
 // The default renderer + the shared print section builders the builder-authored
 // template renderer (api-rest's renderInvoiceTree) composes (docs/87 §10).
 export {

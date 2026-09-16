@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-ideas-talks',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Ideas & Talks',
   summary:
-    'A video-forward home for an ideas-and-talks nonprofit — a big idea-statement hero over a grid of talk cards, a themes browse, a live journal of essays, and a bespoke bylined talk page, in a clean warm-white one-coral theme. Modelled on the talks-hub archetype; shipped as The Commons. Ships a light membership store (an annual membership, an anthology, a notebook) to demonstrate content + commerce together.',
+    'A video-forward home for an ideas-and-talks nonprofit: a big idea-statement hero over a grid of talk cards, a themes browse, a live journal of essays, and a bespoke bylined talk page, in a clean warm-white one-coral theme. Modelled on the talks-hub archetype; shipped as The Commons. Ships a light membership store (an annual membership, an anthology, a notebook) to demonstrate content + commerce together.',
   vertical: 'content',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

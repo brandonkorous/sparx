@@ -48,8 +48,8 @@ export function PiecesList({
       <div className="bg-base-200 flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
         <p className="text-base-content">You haven’t saved any pieces yet.</p>
         <p className="text-base-content text-sm">
-          On a page, select something you’ll want again — a contact band, a set of opening hours —
-          and save it as a piece. Change it once, and it changes everywhere you put it.
+          On a page, select something you’ll want again (a contact band, a set of opening hours) and
+          save it as a piece. Change it once, and it changes everywhere you put it.
         </p>
       </div>
     );
@@ -137,7 +137,7 @@ function useRemovePiece(piece: PieceEntry): { remove: () => Promise<void>; remov
 
     const ok = await confirm({
       title: `Delete “${piece.name}”?`,
-      description: `${where} Those stay exactly as they look now — they just stop following this piece, so changing it later won’t change them.${
+      description: `${where} Those stay exactly as they look now. They just stop following this piece, so changing it later won’t change them.${
         piece.shared ? ' This piece is shared with your other sites.' : ''
       }`,
       confirmLabel: 'Delete piece',

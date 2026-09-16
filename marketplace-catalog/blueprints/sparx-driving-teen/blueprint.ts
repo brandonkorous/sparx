@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-driving-teen',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Driving School (Teen)',
   summary:
-    'A cheerful, safety-first template for a teen driving school — a warm off-white palette with a friendly blue and a sunny coral, rounded and encouraging. Installs a working booking flow: real lessons and packages (intro drive, behind-the-wheel, driver’s ed, permit and road-test prep), patient instructors you book by name, and dual-brake training cars booked alongside them for behind-the-wheel time. Ships as "RoadReady Driving School".',
+    'A cheerful, safety-first template for a teen driving school: a warm off-white palette with a friendly blue and a sunny coral, rounded and encouraging. Installs a working booking flow: real lessons and packages (intro drive, behind-the-wheel, driver’s ed, permit and road-test prep), patient instructors you book by name, and dual-brake training cars booked alongside them for behind-the-wheel time. Ships as "RoadReady Driving School".',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

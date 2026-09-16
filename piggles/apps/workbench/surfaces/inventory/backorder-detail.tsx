@@ -112,7 +112,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             module={MODULE}
             icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
             title="Could not load that commitment"
-            description="It may have been cancelled, or the server is unreachable. Nothing anyone is owed has changed."
+            description="It may have been canceled, or the server is unreachable. Nothing anyone is owed has changed."
             onRetry={() => {
               void refetch();
             }}
@@ -224,7 +224,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               onClick={() => {
                 void confirm({
                   title: 'Drop this commitment?',
-                  description: `${plural(data.outstanding, 'unit', 'units')} owed to ${data.customerName ?? 'a guest'} will stop being tracked. The order itself is untouched — do this only when the customer no longer wants it.`,
+                  description: `${plural(data.outstanding, 'unit', 'units')} owed to ${data.customerName ?? 'a guest'} will stop being tracked. The order itself is untouched: do this only when the customer no longer wants it.`,
                   confirmLabel: 'Drop it',
                   cancelLabel: 'Keep it',
                   color: 'danger',
@@ -282,8 +282,8 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   <AlertTitle>Nobody has promised a date</AlertTitle>
                   <AlertDescription>
                     Nothing here knows when more is coming, so nothing has been said. Raising a
-                    purchase order with an expected arrival gives this a real date automatically —
-                    or type one below if you know something the system does not.
+                    purchase order with an expected arrival gives this a real date automatically, or
+                    type one below if you know something the system does not.
                   </AlertDescription>
                 </AlertContent>
               </Alert>
@@ -397,7 +397,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               <EmptyState
                 icon={<Icon glyph={faBoxMagnifyingGlass} className="size-6" aria-hidden />}
                 title="Nothing has arrived yet"
-                description="When a delivery or a transfer lands, whatever it covers is recorded here — in queue order, so the split is never decided at the receiving desk."
+                description="When a delivery or a transfer lands, whatever it covers is recorded here: in queue order, so the split is never decided at the receiving desk."
               />
             ) : (
               <Table size="sm">

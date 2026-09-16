@@ -23,7 +23,7 @@
 // fills the technical boxes from that, and says in plain words where to find an
 // app password for that specific provider.
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   Button,
@@ -81,10 +81,6 @@ export function MailboxConnectSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const connect = useConnectMailbox();
   const [draft, setDraft] = useState<Draft>(() => draftFor(DEFAULT_PRESET));
-
-  useEffect(() => {
-    ctx.setTitle('Connect a mailbox');
-  }, [ctx]);
 
   const preset = MAIL_PRESETS.find((p) => p.id === draft.presetId) ?? DEFAULT_PRESET;
 
@@ -283,7 +279,7 @@ export function MailboxConnectSurface({ ctx }: { ctx: SurfaceContext }) {
                       set('scope', event.currentTarget.value as 'personal' | 'shared');
                     }}
                   >
-                    <option value="personal">Mine — my own work email</option>
+                    <option value="personal">Mine: my own work email</option>
                     <option value="shared">
                       A shared address the team uses (sales@, support@)
                     </option>
@@ -302,8 +298,8 @@ export function MailboxConnectSurface({ ctx }: { ctx: SurfaceContext }) {
             className="mt-4"
           >
             {draft.scope === 'personal'
-              ? 'Because this is your own mailbox, sparx keeps only the messages to and from people already on your customer list. Everything else is discarded as it is read — never saved, never searchable, never visible to your team.'
-              : 'A shared address is meant to receive mail from people you have not met, so sparx keeps everything that arrives here — including messages from strangers. Do not connect a personal mailbox this way.'}
+              ? 'Because this is your own mailbox, sparx keeps only the messages to and from people already on your customer list. Everything else is discarded as it is read, never saved, never searchable, never visible to your team.'
+              : 'A shared address is meant to receive mail from people you have not met, so sparx keeps everything that arrives here, including messages from strangers. Do not connect a personal mailbox this way.'}
           </Alert>
 
           <details className="mt-4">
@@ -326,7 +322,7 @@ export function MailboxConnectSurface({ ctx }: { ctx: SurfaceContext }) {
                   }
                 />
                 {draft.imapHost.includes('://') ? (
-                  <FieldError>Just the server name — no https:// in front.</FieldError>
+                  <FieldError>Just the server name: no https:// in front.</FieldError>
                 ) : null}
               </Field>
               <Field>

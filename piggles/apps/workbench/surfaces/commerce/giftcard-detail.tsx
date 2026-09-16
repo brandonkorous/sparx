@@ -38,7 +38,7 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
-import { MoneyTextInput } from '../../components/money-input';
+import { MoneyTextInput, moneyCents } from '../../components/money-input';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents } from './products-data';
@@ -63,12 +63,13 @@ const CURRENCIES = {
   AUD: 'Australian dollars',
 };
 
+/** Nothing typed is `undefined` — a different answer from zero. Everything else
+ *  goes through `moneyCents`, which reads "8,50", "$8.00" and "1,250.00" the way
+ *  a person writes them; `Number()` read exactly one spelling and quietly
+ *  returned NaN for the rest (issues 086 and 486). */
 function dollarsToCents(value: string): number | undefined {
-  const trimmed = value.trim();
-  if (trimmed === '') return undefined;
-  const parsed = Number(trimmed);
-  if (!Number.isFinite(parsed) || parsed < 0) return undefined;
-  return Math.round(parsed * 100);
+  if (value.trim() === '') return undefined;
+  return moneyCents(value) ?? undefined;
 }
 
 function formatDate(iso: string): string {
@@ -493,7 +494,7 @@ function GiftCardBody({ card }: { card: GiftCardDetail }) {
 
       <FormSection
         title="Adjust the balance"
-        description="Add money to the card, or take some off — for a refund kept on the card, or a correction. Every change is recorded below."
+        description="Add money to the card, or take some off, for a refund kept on the card, or a correction. Every change is recorded below."
       >
         <div className="grid gap-3 @md:grid-cols-2">
           <Field>

@@ -304,7 +304,7 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
     if (result.error) {
       setError(
         useBackupCode
-          ? 'That backup code did not work. Each code can only be used once — try another one.'
+          ? 'That backup code did not work. Each code can only be used once. Try another one.'
           : 'That code did not work. Codes change every 30 seconds, so check your app for the current one.'
       );
       setCode('');
@@ -361,7 +361,7 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
       }
       finish();
     } catch {
-      setError('Passkey sign-in was cancelled or is unavailable on this device.');
+      setError('Passkey sign-in was canceled or is unavailable on this device.');
       setPending(null);
     }
   }
@@ -532,7 +532,7 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
           >
             {useBackupCode
               ? 'Use my authenticator app instead'
-              : 'I don’t have my phone — use a backup code'}
+              : 'I don’t have my phone: use a backup code'}
           </Button>
         </form>
       </AuthShell>
@@ -548,8 +548,8 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
             <h2 className="text-xl font-semibold">Your sign-in link is on its way</h2>
             <Text className="text-sm">
               We emailed a sign-in link to <span className="font-medium">{email}</span>. Open it on
-              this device and you&rsquo;ll be signed straight in — the link works once and expires
-              in 15 minutes.
+              this device and you&rsquo;ll be signed straight in: the link works once and expires in
+              15 minutes.
             </Text>
           </div>
           <Button
@@ -632,7 +632,7 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
             <h2 className="text-xl font-semibold">Check your email</h2>
             <Text className="text-sm">
               If an account exists for <span className="font-medium">{email}</span>, a
-              password-reset link is on its way. It expires in an hour — check your spam folder if
+              password-reset link is on its way. It expires in an hour. Check your spam folder if
               you don&rsquo;t see it.
             </Text>
           </div>
@@ -673,7 +673,7 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
           </h2>
           <Text className="text-sm">
             {isSignUp
-              ? 'Your story, multiplied — create your account and you’ll be up and running in minutes.'
+              ? 'Your story, multiplied: create your account and you’ll be up and running in minutes.'
               : 'Sign in to pick up exactly where you left off.'}
           </Text>
         </div>

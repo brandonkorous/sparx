@@ -77,7 +77,7 @@ export function PartnerLoadError({
         title={`${section.charAt(0).toUpperCase()}${section.slice(1)} isn’t available on this account`}
         description={
           reason ??
-          'This part of the partner programme is open to owners, admins and members with partner access.'
+          'This part of the partner program is open to owners, admins and members with partner access.'
         }
       />
     );
@@ -86,7 +86,7 @@ export function PartnerLoadError({
     <PartnerMessage
       icon={<ServerCrash className="size-6" aria-hidden />}
       title={`Could not load ${section}`}
-      description="This is a problem reaching the server. Nothing about your partner account has changed — try again in a moment."
+      description="This is a problem reaching the server. Nothing about your partner account has changed. Try again in a moment."
       actions={
         <Button size="sm" color="module" onClick={onRetry}>
           Try again
@@ -105,7 +105,7 @@ export function NotAPartner({ section }: { section: string }) {
     <PartnerMessage
       icon={<Award className="size-6" aria-hidden />}
       title="This account isn’t a sparx partner"
-      description={`${section} is part of the partner programme, for agencies and consultants who bring clients onto sparx. An owner or admin can apply to join from your account settings; once sparx approves it, this section fills in.`}
+      description={`${section} is part of the partner program, for agencies and consultants who bring clients onto sparx. An owner or admin can apply to join from your account settings; once sparx approves it, this section fills in.`}
     />
   );
 }

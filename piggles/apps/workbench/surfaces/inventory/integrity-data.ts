@@ -320,7 +320,7 @@ function policyConsequence(source: SourceFreshness): string {
       source.stalenessBuffer === 1 ? 'unit' : 'units'
     } per line while it is late, so the gap does not cost you an order.`;
   }
-  return 'Selling continues as normal — this is a warning only.';
+  return 'Selling continues as normal. This is a warning only.';
 }
 
 /** Durations the way a person says them: "3 days", "4 hours", "20 minutes". */
@@ -335,16 +335,58 @@ export function humanDuration(seconds: number): string {
 }
 
 /**
- * How fresh a stock number is, as a badge tone.
+ * When this stock was last CHECKED against the shelf, and whether that is a
+ * problem yet.
  *
- * Deliberately generous thresholds. This is a hint beside a quantity, not an
- * alarm — an hour-old number is completely normal for a shop that sells a few
- * things a day, and painting it amber would train everyone to ignore the color
- * before it ever meant anything.
+ * Shaped like `freshnessVerdict` above on purpose, because it has the same trap
+ * in it: A VERDICT NEEDS A PROMISE. With no counting schedule there is no such
+ * thing as overdue, so this returns null and the screen says nothing. A warning
+ * against a deadline nobody set is the same lie as a reassuring green tick on a
+ * feed that never promised anything.
+ *
+ * What this replaced was worse than nothing (issue 498). The old badge measured
+ * `asOf` — "when the quantity was last established" — against invented one-day
+ * and seven-day deadlines. But a SALE establishes the quantity, so a line
+ * selling every day read as freshly checked while nobody had looked at the
+ * shelf in a fortnight, and a line that simply was not selling wore a red
+ * warning for it. Exactly backwards from the risk, because what makes a book
+ * number drift from the shelf is handling, and handling is what selling IS. On
+ * one dressmaker's stock list it painted 56 of 73 rows red and said nothing at
+ * all about the three that really had gone sixteen days unchecked.
  */
-export function stockAgeTone(ageSeconds: number | null | undefined): Tone {
-  if (ageSeconds === null || ageSeconds === undefined) return 'neutral';
-  if (ageSeconds < 60 * 60 * 24) return 'success';
-  if (ageSeconds < 60 * 60 * 24 * 7) return 'warning';
-  return 'danger';
+export function countVerdict(
+  lastCountedAt: string | null | undefined,
+  intervalDays: number | null | undefined
+): { label: string; tone: Tone; detail: string } | null {
+  // Tested for what it IS, not for null. These cross a network boundary
+  // TypeScript cannot see: a response that does not carry the field at all
+  // hands back `undefined`, which is neither `null` nor `<= 0`, so a null check
+  // lets it through and the arithmetic below puts "Count due NaN days ago" on
+  // every row of the list. It did exactly that on the first run.
+  if (typeof intervalDays !== 'number' || !Number.isFinite(intervalDays) || intervalDays <= 0) {
+    return null;
+  }
+  const every = `every ${intervalDays === 1 ? 'day' : `${String(intervalDays)} days`}`;
+  if (typeof lastCountedAt !== 'string') {
+    return {
+      label: 'Never counted',
+      tone: 'warning',
+      detail: `You count this ${every}, and nobody has counted it yet.`,
+    };
+  }
+  const countedMs = new Date(lastCountedAt).getTime();
+  // A date that will not parse is NOT "never counted". It is not known, and
+  // either sentence would be one the screen cannot stand behind.
+  if (!Number.isFinite(countedMs)) return null;
+  const dueSeconds = intervalDays * 24 * 60 * 60;
+  const ageSeconds = (Date.now() - countedMs) / 1000;
+  if (ageSeconds <= dueSeconds) return null;
+  const overdueBy = ageSeconds - dueSeconds;
+  return {
+    label: `Count due ${humanDuration(overdueBy)} ago`,
+    // A whole cycle late is a different fact from a day late: it says the
+    // schedule is not being kept, not that one count slipped.
+    tone: overdueBy > dueSeconds ? 'danger' : 'warning',
+    detail: `You count this ${every}. It was last counted ${humanDuration(ageSeconds)} ago.`,
+  };
 }

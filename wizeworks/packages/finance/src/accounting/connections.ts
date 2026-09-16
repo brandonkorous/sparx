@@ -15,6 +15,7 @@ import {
   type TxClient,
 } from '@wizeworks/db';
 
+import { endOfDayExclusive } from '../rollup';
 import { FinanceError } from '../errors';
 import type { AccountingProvider } from '../schemas';
 import { exportColumns } from './export';
@@ -66,10 +67,15 @@ export function accountingCatalog(): AccountingProviderDescriptor[] {
     name,
     connect,
     availability: 'coming_soon',
+    // NO DIRECTION WORD. This sentence is written in the finance package and
+    // rendered by a console that decides where the export card sits, so "below"
+    // was a guess — and a wrong one: both consoles put the export ABOVE this
+    // list, and the section's own heading already says "the export above".
+    // "On this screen" stays true wherever it is placed.
     unavailableReason:
       connect === 'oauth'
-        ? `Direct ${name} sync is not switched on yet. You can still export a file below and import it into ${name} today.`
-        : `A one-click ${name} layout is not ready yet. The spreadsheet export below works with it today.`,
+        ? `Direct ${name} sync is not switched on yet. The spreadsheet export on this screen already imports into ${name} today.`
+        : `A one-click ${name} layout is not ready yet. The spreadsheet export on this screen works with it today.`,
     blurb,
     exportColumns: exportColumns(provider),
   });
@@ -466,7 +472,11 @@ export async function markExported(
     const result = await tx.financeExpense.updateMany({
       where: {
         deletedAt: null,
-        incurredAt: { gte: from, lte: to },
+        // The SAME half-open bound the export itself uses. These two must agree
+        // exactly or the mismatch is silent and expensive: an lte-midnight end
+        // here would leave the last day's costs unstamped after they were sent,
+        // so "what still needs sending" would offer them again next time.
+        incurredAt: { gte: from, lt: endOfDayExclusive(to) },
         ...(propertyId !== undefined && propertyId !== null ? { propertyId } : {}),
       },
       data: { exportedAt: new Date() },

@@ -213,7 +213,7 @@ export function onwardLinks(): Node {
     gridThree([
       link('See our work', 'Photographs of everything we finished this year.'),
       link('What we charge', 'Fixed prices, published, including fitting.'),
-      link('Talk to us', 'A call, a message, or a visit — whichever suits.'),
+      link('Talk to us', 'A call, a message, or a visit: whichever suits.'),
     ]),
   ]);
 }
@@ -237,8 +237,8 @@ export function checklistSplit(): Node {
               text: 'Why people choose us over a bigger firm',
             }),
             body(
-              'We are not cheaper and we do not pretend to be. What we are is answerable — there is no ' +
-                'call centre, no subcontractor, and no version of this where you cannot reach the person ' +
+              'We are not cheaper and we do not pretend to be. What we are is answerable. There is no ' +
+                'call center, no subcontractor, and no version of this where you cannot reach the person ' +
                 'who did the work.'
             ),
             actions([secondaryAction('Read about us')]),

@@ -72,8 +72,8 @@ export function SchedulingShapes() {
           <Spark color={M.color} />
         </Heading>
         <Text variant="lead" className="max-w-[640px] pt-2">
-          An appointment, a class, a reservation, and a rental aren&apos;t four products —
-          they&apos;re one booking engine with a type discriminator. The same availability math, the
+          An appointment, a class, a reservation, and a rental aren&apos;t four products.
+          They&apos;re one booking engine with a type discriminator. The same availability math, the
           same deposits and reminders, the same reports. Switch on the shapes a business needs;
           nothing is a separate tool to learn or pay for.
         </Text>
@@ -104,7 +104,7 @@ export function SchedulingDeposits() {
     {
       name: 'Free',
       tag: 'no payment',
-      body: 'Book with nothing held — for low-stakes slots where a no-show costs little.',
+      body: 'Book with nothing held, for low-stakes slots where a no-show costs little.',
       emphasis: false,
     },
     {
@@ -122,7 +122,7 @@ export function SchedulingDeposits() {
     {
       name: 'Prepay',
       tag: 'full price now',
-      body: 'Take the full service price at booking — the strongest commitment, ideal for classes and rentals.',
+      body: 'Take the full service price at booking: the strongest commitment, ideal for classes and rentals.',
       emphasis: false,
     },
   ];
@@ -130,14 +130,14 @@ export function SchedulingDeposits() {
     <Section surface="surface" padding="lg">
       <div className="flex flex-col items-start gap-6">
         <Heading level={2} className="max-w-[960px]">
-          Deposits stop no-shows — pick the policy per service
+          Deposits stop no-shows. Pick the policy per service
           <Spark color={M.color} />
         </Heading>
         <Text variant="lead" className="max-w-[640px] pt-2">
           No-show protection is the single highest-ROI feature in booking. Choose it per service and
           mix it across your catalog: a free slot here, a deposit there, a card hold for the ones
           that hurt. When a fee fires, the policy the customer accepted, the reminders sent, and the
-          booking timeline are all on record — the evidence you need, captured automatically.
+          booking timeline are all on record: the evidence you need, captured automatically.
         </Text>
       </div>
       <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -157,9 +157,8 @@ export function SchedulingDeposits() {
         ))}
       </div>
       <Alert color="info" className="mt-6">
-        Deposits need only a connected payment gateway &mdash; Stripe, sparx Pay, PayPal, or Square
-        at your own rates. Not the Commerce module, not a locked-in processor. Scheduling stays
-        standalone.
+        Deposits need only a connected payment gateway: Stripe, sparx Pay, PayPal, or Square at your
+        own rates. Not the Commerce module, not a locked-in processor. Scheduling stays standalone.
       </Alert>
     </Section>
   );
@@ -175,13 +174,13 @@ export function SchedulingCalendar() {
       points: [
         'One subscribe URL per staff member or resource.',
         'A per-booking .ics rides on every confirmation and reminder.',
-        'Read-only and one-way — your bookings flow out to their calendar.',
+        'Read-only and one-way. Your bookings flow out to their calendar.',
       ],
     },
     {
       tag: 'inbound',
       title: 'Import the busy time you already keep',
-      body: 'Point sparx at the calendars where your outside commitments live — by secret iCal URL or a CalDAV connection — and that busy time blocks your sparx availability so nothing books over it.',
+      body: 'Point sparx at the calendars where your outside commitments live (by secret iCal URL or a CalDAV connection) and that busy time blocks your sparx availability so nothing books over it.',
       points: [
         'Pull external busy blocks from an iCal URL or CalDAV.',
         'All connected calendars are checked, never just a primary.',
@@ -200,7 +199,7 @@ export function SchedulingCalendar() {
           No spreadsheet, no copy-paste. Subscribe to your sparx schedule in any calendar, and
           import the busy time from the calendars you already keep so external commitments block
           your slots. And whatever a synced feed says, the double-booking guarantee holds at the
-          database — degraded sync never degrades the core promise.
+          database: degraded sync never degrades the core promise.
         </Text>
       </div>
       <div className="mt-13 grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -236,25 +235,25 @@ export function SchedulingLoop() {
     {
       n: '01 · book',
       title: 'A slot is booked',
-      body: 'From your branded site, the customer portal, the phone, or an AI assistant — every channel hits one engine.',
+      body: 'From your branded site, the customer portal, the phone, or an AI assistant: every channel hits one engine.',
       where: 'Scheduling',
     },
     {
       n: '02 · remind',
       title: 'Confirmations & reminders go out',
-      body: 'Email and SMS on your cadence, deduped and logged — the same pipeline your other sends already use.',
+      body: 'Email and SMS on your cadence, deduped and logged: the same pipeline your other sends already use.',
       where: 'Email + SMS',
     },
     {
       n: '03 · deposit',
       title: 'A deposit or hold is taken',
-      body: 'Through your own connected gateway at your own rates — held, captured, or refunded by policy.',
+      body: 'Through your own connected gateway at your own rates: held, captured, or refunded by policy.',
       where: 'Payments',
     },
     {
       n: '04 · fulfill',
       title: 'The visit happens',
-      body: 'Check in, complete, no-show, or reschedule — every state captured on the booking timeline.',
+      body: 'Check in, complete, no-show, or reschedule: every state captured on the booking timeline.',
       where: 'Scheduling',
     },
     {
@@ -266,7 +265,7 @@ export function SchedulingLoop() {
     {
       n: '06 · follow up',
       title: 'The win-back fires',
-      body: 'A re-book nudge or review ask runs on its own — turning one visit into the next.',
+      body: 'A re-book nudge or review ask runs on its own: turning one visit into the next.',
       where: 'Automation',
     },
   ];
@@ -274,7 +273,7 @@ export function SchedulingLoop() {
     <Section id="loop" padding="lg">
       <div className="flex flex-col items-start gap-6">
         <Heading level={2} className="max-w-[960px]">
-          One booking, one loop — not five disconnected tools
+          One booking, one loop, not five disconnected tools
           <Spark color={M.color} />
         </Heading>
         <Text variant="lead" className="max-w-[640px] pt-2">
@@ -318,7 +317,7 @@ export function SchedulingVerticals() {
     {
       name: 'Restaurants',
       shape: 'reservation',
-      note: 'Tables matched to party size, reservations by the slot — and no per-cover fee, ever.',
+      note: 'Tables matched to party size, reservations by the slot, and no per-cover fee, ever.',
     },
     {
       name: 'Fitness & classes',
@@ -333,7 +332,7 @@ export function SchedulingVerticals() {
     {
       name: 'Rentals & spaces',
       shape: 'rental',
-      note: 'Rooms, bays, courts, and equipment booked by the block — one renter per asset.',
+      note: 'Rooms, bays, courts, and equipment booked by the block. One renter per asset.',
     },
     {
       name: 'Field & fleet service',
@@ -350,7 +349,7 @@ export function SchedulingVerticals() {
         </Heading>
         <Text variant="lead" className="max-w-[640px] pt-2">
           A salon, a restaurant, a studio, a clinic, a makerspace, and a fleet shop all run on this
-          one engine. They differ only in which booking shapes and capabilities they switch on —
+          one engine. They differ only in which booking shapes and capabilities they switch on,
           never in which product they had to buy.
         </Text>
       </div>

@@ -171,7 +171,7 @@ function DomainLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             error={error}
             noun="list"
             title="Could not load this list"
-            description="This is a problem reaching the server. The list itself is unaffected — nothing has been lost."
+            description="This is a problem reaching the server. The list itself is unaffected. Nothing has been lost."
             onRetry={() => {
               void refetch();
             }}
@@ -254,7 +254,7 @@ function DomainEditor({
 
   const nameError = draft.displayName.trim() === '' ? 'Give this list a name.' : null;
   const hasLevel = draft.levels.some((level) => level.label.trim() !== '');
-  const levelError = hasLevel ? null : 'Add at least one level — for example “Make”.';
+  const levelError = hasLevel ? null : 'Add at least one level, for example “Make”.';
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(saved);
   const saving = create.isPending || update.isPending;
@@ -328,7 +328,7 @@ function DomainEditor({
     const count = domain.rootCount;
     const ok = await confirm({
       title: `Delete ${domain.displayName}?`,
-      description: `This removes the whole list — its ${String(count)} top-level ${count === 1 ? 'entry' : 'entries'} and everything under them — and takes it off every product marked as fitting something in it. The products themselves are kept. This cannot be undone.`,
+      description: `This removes the whole list: its ${String(count)} top-level ${count === 1 ? 'entry' : 'entries'} and everything under them, and takes it off every product marked as fitting something in it. The products themselves are kept. This cannot be undone.`,
       confirmLabel: 'Delete this list',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -395,7 +395,7 @@ function DomainEditor({
           {isNew ? (
             <Text>
               A compatibility list is how your website answers “does this fit what I have?”. You
-              describe the kinds of things your products fit — vehicles, phones, machines — and
+              describe the kinds of things your products fit (vehicles, phones, machines) and
               shoppers can filter to just the parts that work for them.
             </Text>
           ) : null}
@@ -421,7 +421,7 @@ function DomainEditor({
                 <FieldStatus status="error">{nameError}</FieldStatus>
               ) : (
                 <FieldDescription>
-                  What your team calls this list — “Vehicles”, “Phone models”, “Machines”.
+                  What your team calls this list: “Vehicles”, “Phone models”, “Machines”.
                 </FieldDescription>
               )}
             </Field>
@@ -474,7 +474,7 @@ function DomainEditor({
 
           <FormSection
             title="How it narrows down"
-            description="A shopper picks their way down these, step by step — for vehicles that is the make, then the model, then the engine. Add one level for each step, from broadest to most specific."
+            description="A shopper picks their way down these, step by step, for vehicles that is the make, then the model, then the engine. Add one level for each step, from broadest to most specific."
           >
             <div className="flex flex-col gap-2">
               {draft.levels.map((level, index) => (
@@ -520,8 +520,7 @@ function DomainEditor({
             {levelError && touched ? <p className="text-error text-sm">{levelError}</p> : null}
             {!isNew ? (
               <Text className="text-sm">
-                Removing a level that already has entries is not allowed — clear those entries
-                first.
+                Removing a level that already has entries is not allowed: clear those entries first.
               </Text>
             ) : null}
             <div>
@@ -541,11 +540,11 @@ function DomainEditor({
 
           <FormSection
             title="Number ranges"
-            description="Optional. Some things are narrowed by a span of numbers rather than a fixed choice — a range of years, a weight limit. Add one for each."
+            description="Optional. Some things are narrowed by a span of numbers rather than a fixed choice: a range of years, a weight limit. Add one for each."
           >
             {draft.ranges.length === 0 ? (
               <Text className="text-sm">
-                None yet. Most lists do not need any — add one only if a product fits, say, a range
+                None yet. Most lists do not need any. Add one only if a product fits, say, a range
                 of model years.
               </Text>
             ) : (
@@ -611,7 +610,7 @@ function DomainEditor({
 
           {isNew ? (
             <Text className="text-sm">
-              Create the list and you can start adding its entries — the makes, models and engines
+              Create the list and you can start adding its entries: the makes, models and engines
               shoppers pick from.
             </Text>
           ) : domain ? (

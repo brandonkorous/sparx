@@ -26,7 +26,7 @@
 // keeps producing nothing. Delete it and make another if it is genuinely wrong.
 // (The server agrees: `UpdateSnippetInput` has no shortcut.)
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   Badge,
   Button,
@@ -56,7 +56,6 @@ import { RefreshButton } from '../../components/refresh-button';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   engagementErrorMessage,
   useSalesSnippetMutations,
@@ -89,15 +88,11 @@ interface Draft {
 
 const BLANK: Draft = { shortcut: '', name: '', body: '', isShared: true };
 
-export function SnippetsListSurface({ ctx }: { ctx: SurfaceContext }) {
+export function SnippetsListSurface() {
   const snippets = useSalesSnippets();
   const { create, update, remove } = useSalesSnippetMutations();
   const toast = useToast();
   const confirm = useConfirm();
-
-  useEffect(() => {
-    ctx.setTitle('Saved paragraphs');
-  }, [ctx]);
 
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<SalesSnippet | null>(null);
@@ -289,7 +284,7 @@ export function SnippetsListSurface({ ctx }: { ctx: SurfaceContext }) {
               firstRun={{
                 title: 'Stop retyping your own opening hours',
                 description:
-                  'Save a paragraph once — your hours, your returns policy, your usual lead time — give it a short name like hours, and anyone writing an email can type ;hours and press space to drop the whole thing in. Change the wording here and everybody is saying the new version from the next email onwards.',
+                  'Save a paragraph once (your hours, your returns policy, your usual lead time) give it a short name like hours, and anyone writing an email can type ;hours and press space to drop the whole thing in. Change the wording here and everybody is saying the new version from the next email onwards.',
                 actions: (
                   <Button color="module" onClick={startNew}>
                     <Icon glyph={faPlus} className="size-4" aria-hidden />
@@ -467,7 +462,7 @@ export function SnippetsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   }
                 />
                 <FieldDescription>
-                  Only your team sees this — it is how you find the right one in this list later.
+                  Only your team sees this. It is how you find the right one in this list later.
                 </FieldDescription>
               </Field>
 
@@ -508,8 +503,8 @@ export function SnippetsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     </Text>
                     <Text className="text-sm">
                       On by default, because a saved paragraph is usually a fact about the business
-                      — your hours, your terms — and everybody should be quoting the same one. Turn
-                      it off for something only you would ever send.
+                      (your hours, your terms) and everybody should be quoting the same one. Turn it
+                      off for something only you would ever send.
                     </Text>
                   </div>
                 </div>

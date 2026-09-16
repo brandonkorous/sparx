@@ -62,7 +62,7 @@ export function openingHours(): Node {
         }),
       ],
     }),
-    body('Holiday hours vary — call ahead if you are making a special trip.'),
+    body('Holiday hours vary. Call ahead if you are making a special trip.'),
   ]);
 }
 
@@ -147,7 +147,7 @@ export function serviceArea(): Node {
   return section([
     sectionHead(
       'Where we work',
-      'We cover these towns as standard. Further afield, ask — we often can.'
+      'We cover these towns as standard. Further afield, ask. We often can.'
     ),
     el('ul', 'grid grid-cols-2 gap-3 @2xl:grid-cols-3 @4xl:grid-cols-4', {
       children: [
@@ -165,7 +165,7 @@ export function serviceArea(): Node {
         })
       ),
     }),
-    body('Outside these? Call us — a longer trip is usually still worth it for a bigger job.'),
+    body('Outside these? Call us: a longer trip is usually still worth it for a bigger job.'),
   ]);
 }
 
@@ -203,7 +203,7 @@ export function priceList(): Node {
           '$420'
         ),
         item(
-          'Fitted wardrobe, per metre',
+          'Fitted wardrobe, per meter',
           'Made to your ceiling height, painted to your color.',
           '$680'
         ),
@@ -256,6 +256,6 @@ export function menuSections(): Node {
         ]),
       ],
     }),
-    body('Please tell us about any allergies — everything is cooked to order.'),
+    body('Please tell us about any allergies. Everything is cooked to order.'),
   ]);
 }

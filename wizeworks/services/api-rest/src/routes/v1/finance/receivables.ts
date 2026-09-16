@@ -7,9 +7,12 @@
 // The canonical open-AR view returns bucket TOTALS (GET /v1/invoicing/aging); the
 // receivables surface needs the DOCUMENTS themselves, grouped by how late — so
 // this reads the open billing documents directly (72-invoicing) and buckets them
-// on the stored `overdueDays`, the same figure the aging report and the invoice
-// list already agree on. Gated on the invoicing module (which Commerce/B2B
-// tenants get free via BUNDLED_FREE), site-scoped like every list.
+// with `daysPastDue`, the shared rule the aging report uses, computed at QUERY
+// time rather than read from the stored `overdueDays` column. (This header used
+// to say it bucketed on the stored column; it has not since that column was
+// found to be as stale as its last recompute job.) Gated on the invoicing module
+// (which Commerce/B2B tenants get free via BUNDLED_FREE), site-scoped like every
+// list.
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -19,6 +22,7 @@ import { requireRole } from '@wizeworks/api-core/auth';
 import { withRequestTenant } from '@wizeworks/api-core/db';
 import { requireInvoicingModule } from '../../../lib/invoicing-context.js';
 import { resolveListScope } from '../../../lib/property.js';
+import { daysPastDue } from '@wizeworks/crm';
 
 const BUCKET_KEYS = ['current', 'd1_30', 'd31_60', 'd61_90', 'd90_plus'] as const;
 
@@ -107,13 +111,16 @@ const financeReceivablesRoutes: FastifyPluginAsync = (app) => {
       })
     );
 
-    // Compute days-past-due from `dueAt` at query time, exactly as the canonical
-    // AR aging report (billing-ar.bucketAging) does — NOT from the stored
-    // `overdueDays` column, which is only as fresh as the last overdue-recompute
-    // job and would put a three-weeks-late invoice in "Not yet due" until that job
-    // ran. A doc with no due date (pay-now, no terms) counts as current.
-    const now = Date.now();
-    const DAY = 86_400_000;
+    // Days past due at QUERY time, through the canonical `daysPastDue` — NOT the
+    // stored `overdueDays` column, which is only as fresh as the last
+    // overdue-recompute job and would put a three-weeks-late invoice in "Not yet
+    // due" until that job ran. A doc with no due date (pay-now, no terms) is
+    // current.
+    //
+    // Calling the shared helper rather than repeating its arithmetic is the point:
+    // this route carried its own copy of the rule, and when the rule was wrong it
+    // was wrong in two places at once.
+    const now = new Date();
 
     const items = docs.map((d) => {
       const c = d.customer;
@@ -125,7 +132,7 @@ const financeReceivablesRoutes: FastifyPluginAsync = (app) => {
           c?.companyName,
           c?.email
         ) ?? 'Customer';
-      const daysPast = d.dueAt ? Math.floor((now - d.dueAt.getTime()) / DAY) : 0;
+      const daysPast = daysPastDue(d.dueAt, now);
       return {
         id: d.id,
         number: d.number,

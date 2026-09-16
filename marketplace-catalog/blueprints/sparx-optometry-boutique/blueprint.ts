@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-optometry-boutique',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Optometry (Boutique)',
   summary:
-    'A sleek, design-forward optical & eye-care studio site — a deep charcoal palette, a warm brass accent and a refined modern display, with online booking live from day one. Installs a working booking flow: comprehensive and contact-lens exams that pair an optometrist with an exam room, plus personal eyewear-styling appointments with a stylist — real hours, resources and a no-show policy. Ships as "Iris Optical", a boutique eyewear studio.',
+    'A sleek, design-forward optical & eye-care studio site: a deep charcoal palette, a warm brass accent and a refined modern display, with online booking live from day one. Installs a working booking flow: comprehensive and contact-lens exams that pair an optometrist with an exam room, plus personal eyewear-styling appointments with a stylist, real hours, resources and a no-show policy. Ships as "Iris Optical", a boutique eyewear studio.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

@@ -183,7 +183,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
                 : `${String(result.approvedIds.length)} entries approved`,
             description:
               result.skippedOpen.length > 0
-                ? `${String(result.skippedOpen.length)} were skipped because someone is still clocked in — approving those would record no hours at all. Their wages will appear in your spending shortly.`
+                ? `${String(result.skippedOpen.length)} were skipped because someone is still clocked in: approving those would record no hours at all. Their wages will appear in your spending shortly.`
                 : 'Their wages are on their way into your spending, filed under Wages.',
             type: 'success',
           });
@@ -212,7 +212,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
                   : `${String(result.expenses)} wage ${result.expenses === 1 ? 'cost' : 'costs'} filed`,
               description:
                 result.unpricedMinutes > 0
-                  ? `${formatMinutes(result.unpricedMinutes)} could not be costed — somebody has no pay rate covering this period, so the total is short by whatever that time is worth.`
+                  ? `${formatMinutes(result.unpricedMinutes)} could not be costed: somebody has no pay rate covering this period, so the total is short by whatever that time is worth.`
                   : 'Your spending and profit figures now include this period’s wages.',
               type: result.unpricedMinutes > 0 ? 'warning' : 'success',
             });
@@ -239,7 +239,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
         // the file, so it is said out loud rather than left in a header.
         description:
           result.unpricedMinutes > 0
-            ? `${formatMinutes(result.unpricedMinutes)} are in the hours column but not the cost column — nobody has a pay rate covering them. They still have to be paid.`
+            ? `${formatMinutes(result.unpricedMinutes)} are in the hours column but not the cost column. Nobody has a pay rate covering them. They still have to be paid.`
             : 'Approved hours per person, with their payroll id.',
         type: result.unpricedMinutes > 0 ? 'warning' : 'success',
       });
@@ -263,8 +263,8 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
               <AlertTitle>Only an account admin can open timesheets</AlertTitle>
               <AlertDescription>
                 This grid shows what each person’s hours cost, which is their pay rate with one
-                division undone. Hours on their own — without the money — are on each person’s
-                record and on the schedule.
+                division undone. Hours on their own (without the money) are on each person’s record
+                and on the schedule.
               </AlertDescription>
             </AlertContent>
           </Alert>
@@ -383,7 +383,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
           <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
             <Card className="p-4">
               <Text className="text-sm">
-                {data.complete ? 'Labour cost this period' : 'Labour cost this period — so far'}
+                {data.complete ? 'Labor cost this period' : 'Labor cost this period, so far'}
               </Text>
               <Heading level={2} className="mt-1 text-3xl font-semibold tabular-nums">
                 {formatCostOrNothing(data.costCents)}
@@ -405,8 +405,8 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
                     </AlertTitle>
                     <AlertDescription>
                       Their hours are counted but not costed, so the figure above is short by
-                      whatever that time is worth. Open their record and add a rate — it applies
-                      from whatever date you give it, so past periods stay as they were.
+                      whatever that time is worth. Open their record and add a rate. It applies from
+                      whatever date you give it, so past periods stay as they were.
                     </AlertDescription>
                   </AlertContent>
                 </Alert>
@@ -464,7 +464,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
               </Heading>
               <Text className="text-sm">
                 Approving hours files them as a wage cost automatically. If your spending looks out
-                of date — a rate added after the fact, or a hiccup reaching the server — you can
+                of date (a rate added after the fact, or a hiccup reaching the server), you can
                 re-file this period by hand. It is safe to press twice: it updates the same records
                 rather than adding more.
               </Text>

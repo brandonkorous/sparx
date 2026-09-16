@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "sparx-handyman-modern",
   "name": "Handyman (Modern)",
-  "version": "1.4.0",
-  "tagline": "A modern, on-demand template for handymen — booked online from day one.",
-  "description": "A bright, techy handyman site for on-demand home repairs — book a vetted pro online in minutes at a flat hourly rate. Installs a working booking flow: a real task menu (mounting, assembly, smart-home, half-day projects), three vetted pros dispatched as bookable resources with long weekday and weekend hours, and same-day scheduling. Ships as \"FixList\", a modern on-demand handyman service.",
+  "version": "1.4.1",
+  "tagline": "A modern, on-demand template for handymen: booked online from day one.",
+  "description": "A bright, techy handyman site for on-demand home repairs. Book a vetted pro online in minutes at a flat hourly rate. Installs a working booking flow: a real task menu (mounting, assembly, smart-home, half-day projects), three vetted pros dispatched as bookable resources with long weekday and weekend hours, and same-day scheduling. Ships as \"FixList\", a modern on-demand handyman service.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "services",
@@ -28,7 +28,7 @@
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "Handyman (Modern) — home page preview"
+      "alt": "Handyman (Modern): home page preview"
     }
   ],
   "author": {

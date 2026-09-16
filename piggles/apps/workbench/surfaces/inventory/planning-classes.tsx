@@ -23,12 +23,13 @@ import {
   EmptyState,
   NativeSelect,
   SearchInput,
+  Tooltip,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { faBoxOpen, faGauge } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { formatCents } from './data';
+import { formatCents, plural } from './data';
 import {
   abcLabel,
   abcTone,
@@ -140,21 +141,55 @@ function ClassesPanel({
   // state of every row, say WHY once at the top instead of leaving the reader to
   // infer that half the screen is broken.
   const noneJudged = rows.length > 0 && rows.every((row) => row.xyzClass === null);
+  // Worth is a year of usage multiplied by what a unit cost. An unrecorded cost
+  // has to enter that multiplication as a zero for the arithmetic to run, so a
+  // line nobody has priced scores nothing, ties with every other unpriced line
+  // and lands in the long tail - indistinguishable from a line genuinely worth
+  // nothing. The count is what lets the screen say which it is looking at.
+  const withoutCost = rows.filter((row) => !row.costKnown).length;
+  const noneRankable = rows.length > 0 && withoutCost === rows.length;
+  // An override is a person answering the question, so it stands whether or not
+  // a cost was ever recorded.
+  const rankable = (row: (typeof rows)[number]) => row.costKnown || row.abcOverride !== null;
+  // Advice follows from the WORTH x DEMAND pair, so a row whose worth is not a
+  // finding has no advice to give. Nulled rather than skipped, so the run-length
+  // dedupe below does not hide the next row's real sentence.
+  const adviceOf = (row: (typeof rows)[number] | undefined) =>
+    row && rankable(row) ? row.advice : null;
 
   return (
     // See planning.tsx: `h-full` against PlanningShell's scroll container (a
     // block with a definite height) turns this into a flex column with free
     // space to give, so the table card can fill down to the foot of the pane.
     <div className="flex h-full flex-col gap-3">
-      {noneJudged ? (
+      {noneRankable ? (
+        // AHEAD of the steadiness message, which reassures the reader that the
+        // worth column "is real". It is not real here, and that sentence was
+        // being printed over a catalogue where all 72 lines read Long tail,
+        // $0.00 and 0.00% because not one of them had a cost price.
+        <Alert color="warning">
+          <AlertContent>
+            <AlertTitle>Neither column can rank anything yet</AlertTitle>
+            <AlertDescription>
+              Worth is what you use in a year multiplied by what a unit cost you, and nothing here
+              has a cost price recorded against it. So every line multiplies out to nothing, every
+              line ties, and every line lands in the long tail. That is the absence of a ranking
+              rather than a ranking. Fill in what you paid on “What your stock cost you” and this
+              becomes a real one. Steadiness needs something else again: about six separate selling
+              days per item, over at least four weeks.
+            </AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : noneJudged ? (
         <Alert color="info">
           <AlertContent>
             <AlertTitle>Worth is ranked; steadiness is not, yet</AlertTitle>
             <AlertDescription>
-              The left-hand column is real — it ranks your stock by what you actually use in a year,
-              and that only needs totals. The right-hand one needs a pattern: about six separate
-              selling days per item, over at least four weeks. Nothing here has reached that, so
-              rather than guess, it says so. Value is enough to act on in the meantime.
+              The left-hand column ranks your stock by what you use in a year at what it cost you,
+              so it needs a cost price as well as the usage: any line without one says so in place
+              of a rank. The right-hand one needs a pattern: about six separate selling days per
+              item, over at least four weeks. Nothing here has reached that, so rather than guess,
+              it says so.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -163,7 +198,7 @@ function ClassesPanel({
           <AlertContent>
             <AlertTitle>Two questions, not one</AlertTitle>
             <AlertDescription>
-              Where the money is (top value, mid value, long tail — by what you actually use in a
+              Where the money is (top value, mid value, long tail: by what you actually use in a
               year) and whether demand can be predicted (steady, uneven, erratic). The PAIR tells
               you what to do: a steady top-value line earns a tight reorder level and a monthly
               count; an erratic long-tail one earns buying when someone asks.
@@ -171,6 +206,21 @@ function ClassesPanel({
           </AlertContent>
         </Alert>
       )}
+
+      {/* Some priced and some not. The ranking still means something, but the
+          unpriced lines are sitting at the bottom of it for the wrong reason. */}
+      {withoutCost > 0 && !noneRankable ? (
+        <Alert color="warning">
+          <AlertContent>
+            <AlertTitle>{plural(withoutCost, 'item has', 'items have')} no cost price</AlertTitle>
+            <AlertDescription>
+              Worth is worked out from what a unit cost you, so those lines rank at the bottom
+              whatever they are really worth. Set what you paid for them and they will take their
+              real place in this list.
+            </AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
 
       {/* Ahead of every empty state: a failed request is not a finding about
           the catalogue, and all three messages below would read as one. */}
@@ -258,14 +308,24 @@ function ClassesPanel({
                           the same pair. Printing it once per run keeps the
                           instruction without the wall of identical sentences —
                           the badges on every row still carry the pair. */}
-                      {row.advice !== rows[index - 1]?.advice ? (
+                      {adviceOf(row) && adviceOf(row) !== adviceOf(rows[index - 1]) ? (
                         <span className="truncate text-sm">{row.advice}</span>
                       ) : null}
                     </span>
                   </td>
                   <td className="whitespace-nowrap">
-                    <Badge color={abcTone(row.abcClass)} variant="soft" size="sm">
-                      {abcLabel(row.abcClass)}
+                    {/* Not "Long tail" on a line whose cost nobody has recorded:
+                        that is where the arithmetic puts every such line, and it
+                        is a statement about the missing cost rather than about
+                        the item. Same shape as the Demand column beside it,
+                        which already says "Not enough history" rather than
+                        guessing at Erratic. */}
+                    <Badge
+                      color={abcTone(rankable(row) ? row.abcClass : null)}
+                      variant="soft"
+                      size="sm"
+                    >
+                      {rankable(row) ? abcLabel(row.abcClass) : 'No cost price'}
                     </Badge>
                     {row.abcOverride ? (
                       <span className="block text-sm">
@@ -282,12 +342,20 @@ function ClassesPanel({
                     {row.annualUsageUnits}
                   </td>
                   <td className="hidden text-right tabular-nums @xl:table-cell">
-                    {formatCents(row.annualUsageValueCents)}
+                    {row.costKnown ? (
+                      formatCents(row.annualUsageValueCents)
+                    ) : (
+                      <Tooltip content="No cost price recorded for this item, so a year of it cannot be valued.">
+                        <span>No cost set</span>
+                      </Tooltip>
+                    )}
                   </td>
                   <td className="hidden text-right tabular-nums @2xl:table-cell">
-                    {row.valueSharePct < 0.01 && row.valueSharePct > 0
-                      ? '<0.01%'
-                      : `${row.valueSharePct.toFixed(2)}%`}
+                    {!row.costKnown
+                      ? '—'
+                      : row.valueSharePct < 0.01 && row.valueSharePct > 0
+                        ? '<0.01%'
+                        : `${row.valueSharePct.toFixed(2)}%`}
                   </td>
                 </tr>
               ))}

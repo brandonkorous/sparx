@@ -182,9 +182,9 @@ export function CalendarConnectionsSurface(_props: { ctx: SurfaceContext }) {
               Linked calendars
             </Heading>
             <Text>
-              Link a member of staff&rsquo;s outside calendar — Google, Outlook, Apple — so the
-              times they are busy elsewhere are blocked here too. Nobody gets booked when they
-              already have something on.
+              Link a member of staff&rsquo;s outside calendar (Google, Outlook, Apple) so the times
+              they are busy elsewhere are blocked here too. Nobody gets booked when they already
+              have something on.
             </Text>
           </div>
 
@@ -248,7 +248,7 @@ export function CalendarConnectionsSurface(_props: { ctx: SurfaceContext }) {
                 />
                 <FieldDescription>
                   In most calendar apps this is under &ldquo;share&rdquo; or &ldquo;secret
-                  address&rdquo;. It is read-only — nothing here is written back to it.
+                  address&rdquo;. It is read-only. Nothing here is written back to it.
                 </FieldDescription>
               </Field>
 

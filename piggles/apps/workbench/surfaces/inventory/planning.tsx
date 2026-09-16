@@ -9,8 +9,8 @@
 // ── Ordered by money, not by emptiness ────────────────────────────────────
 //
 // "Least in stock first" ranks by how empty a shelf looks. With forty rows and
-// an hour, a buyer needs the row whose emptiness costs the most — a fast £40
-// line four days out beats a dormant £2 one down to its last unit. Every row
+// an hour, a buyer needs the row whose emptiness costs the most — a fast $40
+// line four days out beats a dormant $2 one down to its last unit. Every row
 // carries the sentence explaining its own figure, so the ordering is checkable
 // rather than asserted.
 //
@@ -93,7 +93,7 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
       <EmptyState
         icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
         title="Could not work out what is at risk"
-        description="This is a problem reaching the server. Your stock is unaffected — the figures just could not be read right now."
+        description="This is a problem reaching the server. Your stock is unaffected: the figures just could not be read right now."
       />
     );
   }
@@ -112,18 +112,47 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
     // its sideways scrollbar lands at the foot of the pane instead of floating
     // under the last row of a six-row list.
     <div className="flex h-full flex-col gap-3">
+      {/* Both of the first two figures are the OUTPUT of the pass, so before one
+          has run they are not zero — they are unknown. The rows below and the
+          alert above both say so in words, and a headline still beat them: the
+          first time this screen was opened it read "$0.00 at risk" in danger
+          red, and the pass it was asking for returned $558. A number that big
+          and that calm is the most reassuring thing on the screen, and it was
+          reassuring about something nobody had checked.
+
+          "Suppliers measured" is left alone. It counts delivery times taken
+          from real deliveries, which is a fact about the supplier records rather
+          than an output of the pass, so zero there is a real zero. */}
       <Stats className="w-full">
         <Stat>
           <StatTitle>Sales at risk</StatTitle>
-          <StatValue className="text-danger">
-            {formatCents(report?.totalRevenueAtRiskCents ?? 0)}
-          </StatValue>
-          <StatDesc>Orders that would have nothing to come from</StatDesc>
+          {measured ? (
+            <>
+              <StatValue className="text-danger">
+                {formatCents(report?.totalRevenueAtRiskCents ?? 0)}
+              </StatValue>
+              <StatDesc>Orders that would have nothing to come from</StatDesc>
+            </>
+          ) : (
+            <>
+              <StatValue>Not yet</StatValue>
+              <StatDesc>Unknown rather than zero, until a pass has run</StatDesc>
+            </>
+          )}
         </Stat>
         <Stat>
           <StatTitle>Items to act on</StatTitle>
-          <StatValue>{rows.length}</StatValue>
-          <StatDesc>Ordered by what running out would cost</StatDesc>
+          {measured ? (
+            <>
+              <StatValue>{rows.length}</StatValue>
+              <StatDesc>Ordered by what running out would cost</StatDesc>
+            </>
+          ) : (
+            <>
+              <StatValue>Not yet</StatValue>
+              <StatDesc>Nothing has been looked at, so nothing can be counted</StatDesc>
+            </>
+          )}
         </Stat>
         <Stat>
           <StatTitle>Suppliers measured</StatTitle>
@@ -162,7 +191,7 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
           <EmptyState
             icon={<Icon glyph={faGauge} className="size-6" aria-hidden />}
             title="Nothing has been checked yet"
-            description="This list is empty because no pass has been made over your sales and deliveries — not because everything is fine. Press “Work it out now” above to find out which it is."
+            description="This list is empty because no pass has been made over your sales and deliveries, not because everything is fine. Press “Work it out now” above to find out which it is."
           />
         )
       ) : (

@@ -243,7 +243,7 @@ function DecisionDialog({
               title: isApprove
                 ? `Order ${decision.item.orderNumber} approved`
                 : `Order ${decision.item.orderNumber} rejected`,
-              description: isApprove ? 'The order is placed.' : 'The order has been cancelled.',
+              description: isApprove ? 'The order is placed.' : 'The order has been canceled.',
               type: 'success',
             });
           });
@@ -272,7 +272,7 @@ function DecisionDialog({
           <DialogDescription>
             {isApprove
               ? `Order ${decision.item.orderNumber} from ${buyer}, for ${formatCents(decision.item.totalCents, decision.item.currency)}, will be placed${''}. If they're on terms, it will be invoiced.`
-              : `Order ${decision.item.orderNumber} from ${buyer}, for ${formatCents(decision.item.totalCents, decision.item.currency)}, will be cancelled. This can't be undone.`}
+              : `Order ${decision.item.orderNumber} from ${buyer}, for ${formatCents(decision.item.totalCents, decision.item.currency)}, will be canceled. This can't be undone.`}
           </DialogDescription>
 
           <div className="py-2">
@@ -286,8 +286,8 @@ function DecisionDialog({
                     value={reason}
                     placeholder={
                       isApprove
-                        ? 'Optional — noted against the order.'
-                        : 'Optional — why it was turned down.'
+                        ? 'Optional: noted against the order.'
+                        : 'Optional: why it was turned down.'
                     }
                     onChange={(event) => {
                       setReason(event.target.value);
@@ -371,7 +371,7 @@ function RulesSection() {
   return (
     <FormSection
       title="When sign-off is needed"
-      description="Hold any order over a set amount for approval — across every account, or just one."
+      description="Hold any order over a set amount for approval: across every account, or just one."
       action={
         !adding ? (
           <Button
@@ -456,7 +456,7 @@ function RulesSection() {
       ) : rules.length === 0 ? (
         !adding ? (
           <Text className="text-sm">
-            No rules yet, so no orders are held — everything a trade account places goes straight
+            No rules yet, so no orders are held. Everything a trade account places goes straight
             through. Add a rule to hold big orders for sign-off.
           </Text>
         ) : null

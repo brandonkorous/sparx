@@ -114,7 +114,7 @@ async function aggregateB2bOrdersByDay(
     FROM orders o
     JOIN customers c ON c.id = o.customer_id
     WHERE c.company_id IS NOT NULL
-      AND o.status NOT IN ('cancelled', 'pending_approval')
+      AND o.status NOT IN ('canceled', 'pending_approval')
       AND o.placed_at >= ${from}
       AND o.placed_at < ${toExclusive}
     GROUP BY 1

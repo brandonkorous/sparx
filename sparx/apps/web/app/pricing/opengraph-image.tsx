@@ -11,7 +11,7 @@ import { OgWordmark } from '@/lib/og-wordmark';
 // LinkedIn rejects the chunked, no-Content-Length response an edge OG route
 // streams. See app/opengraph-image.tsx for the full reasoning.
 export const runtime = 'nodejs';
-export const alt = 'sparx — Switch on what you use. Per-module pricing from $10/mo.';
+export const alt = 'sparx. Switch on what you use. Per-module pricing from $10/mo.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -87,8 +87,8 @@ export default function Image() {
           </div>
         </div>
         <span style={{ fontSize: 28, lineHeight: 1.4, color: '#A1A1AA', maxWidth: 980 }}>
-          Per-module pricing from $10/mo. One platform, one invoice, a 14-day free trial — no card
-          to start.
+          Per-module pricing from $10/mo. One platform, one invoice, a 14-day free trial: no card to
+          start.
         </span>
       </div>
 

@@ -18,7 +18,7 @@
 // API actually needs — reordering the stages and renaming two of them is ONE thing
 // the operator did.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { useMutation } from '@wizeworks/query';
 import {
@@ -68,7 +68,11 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const confirm = useConfirm();
 
   const [draft, setDraft] = useState<WorkflowDraft>(emptyWorkflowDraft);
-  const [dirty, setDirty] = useState(false);
+  // What was last adopted from the server, serialized. Dirty is the comparison
+  // against it: a sticky boolean meant "somebody touched something" rather than
+  // "this differs from what is stored", so undoing an edit still left the pane
+  // claiming unsaved work and still confirmed on close (issue 507).
+  const baselineRef = useRef<string>(JSON.stringify(emptyWorkflowDraft()));
   // Once the operator has typed a reference name of their own, the name field
   // stops overwriting it — otherwise fixing a typo in the title silently rewrites
   // a slug that may already be linked to from elsewhere.
@@ -87,11 +91,14 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
    */
   const [original, setOriginal] = useState<DocumentWorkflowDetail | null>(null);
 
+  const dirty = JSON.stringify(draft) !== baselineRef.current;
   useDirtySource(dirty, 'This workflow has unsaved changes. Close it anyway?');
 
   /** Adopt a server state as both the draft and the baseline. */
   const adopt = (next: DocumentWorkflowDetail) => {
-    setDraft(toWorkflowDraft(next));
+    const adopted = toWorkflowDraft(next);
+    setDraft(adopted);
+    baselineRef.current = JSON.stringify(adopted);
     setOriginal(next);
     setSlugTouched(true);
     ctx.setTitle(next.name);
@@ -112,7 +119,6 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const update = (patch: Partial<WorkflowDraft>) => {
     setDraft((current) => ({ ...current, ...patch }));
-    setDirty(true);
   };
 
   // The stage list and which node the inspector is on — one job, its own file.
@@ -134,7 +140,7 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const save = useMutation({
     mutationFn: () => saveWorkflow({ id, draft, original }),
     onSuccess: (saved) => {
-      setDirty(false);
+      // `adopt` moves the baseline, so there is nothing else to clear.
       adopt(saved);
       invalidate();
       toast.add({ title: isNew ? 'Workflow created' : 'Workflow saved', type: 'success' });
@@ -156,7 +162,6 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
     archive.mutate(original.id, {
       onSuccess: () => {
         toast.add({ title: 'Workflow archived', type: 'success' });
-        setDirty(false);
         ctx.close();
       },
       onError: (error) => {
@@ -176,7 +181,7 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
       ? save.error.message
       : workflowErrorMessage(
           save.error,
-          'This workflow could not be saved. It may be a temporary problem — try again in a moment.'
+          'This workflow could not be saved. It may be a temporary problem. Try again in a moment.'
         )
     : null;
 

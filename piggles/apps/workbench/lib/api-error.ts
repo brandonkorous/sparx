@@ -25,9 +25,18 @@ export function isNotFound(error: unknown): boolean {
  * only ever fail. Deep-linking a record from another business, opening a saved
  * layout pinned to a deleted one, and following an old bookmark all land here
  * (persona issue 286).
+ *
+ * A 5xx is the THIRD case, and it was wearing the first one's sentence. The
+ * server WAS reached; it answered, and its answer was that it had failed. "The
+ * server could not be reached" sends a business owner to check their internet
+ * over a fault that is entirely ours, and no amount of checking it will help
+ * (persona issue 467, where every request the By-job screen made in its default
+ * filter answered 500 and the screen blamed the connection).
  */
-export function paneLoadReason(error: unknown): 'missing' | 'unreachable' {
-  return isNotFound(error) ? 'missing' : 'unreachable';
+export function paneLoadReason(error: unknown): 'missing' | 'unreachable' | 'failed' {
+  if (isNotFound(error)) return 'missing';
+  if (error instanceof ApiError && error.status >= 500) return 'failed';
+  return 'unreachable';
 }
 
 /**

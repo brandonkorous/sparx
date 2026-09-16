@@ -29,7 +29,7 @@
 // the company, the restore path exists too. Without it a mis-click costs the
 // message itself, since retyping it under a new name orphans the history.
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Badge,
   Button,
@@ -60,7 +60,6 @@ import { RefreshButton } from '../../components/refresh-button';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   engagementErrorMessage,
   formatRate,
@@ -88,7 +87,7 @@ interface Draft {
 
 const BLANK: Draft = { name: '', folder: '', subject: '', body: '', isShared: false };
 
-export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
+export function TemplatesListSurface() {
   // Archived ones are asked for deliberately: this is the screen that OWNS
   // them, so hiding what was put away here would leave it nowhere at all.
   const templates = useSalesTemplates({ includeArchived: true });
@@ -96,10 +95,6 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const { create, update, archive, restore } = useSalesTemplateMutations();
   const toast = useToast();
   const confirm = useConfirm();
-
-  useEffect(() => {
-    ctx.setTitle('Email templates');
-  }, [ctx]);
 
   const [open, setOpen] = useState(false);
   /** The template being changed, or null while the dialog writes a new one. */
@@ -222,7 +217,7 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
       title: `Put "${template.name}" away?`,
       description:
         template.sendCount > 0
-          ? `It disappears from everyone's picker. What it has already done — ${String(template.sendCount)} sent, ${String(template.replyCount)} answered — is kept, and you can bring it back at any time.`
+          ? `It disappears from everyone's picker. What it has already done, ${String(template.sendCount)} sent, ${String(template.replyCount)} answered, is kept, and you can bring it back at any time.`
           : 'It disappears from everyone’s picker. You can bring it back at any time.',
       confirmLabel: 'Put it away',
       cancelLabel: 'Keep using it',
@@ -312,7 +307,7 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 title: 'Write the email you keep retyping',
                 description: productCopy(
                   'crm.templates.description',
-                  'A template is a subject and a message your team can pick when they email a customer, so the fourth follow-up this week reads exactly like the first three. Piggles then counts how many were sent, opened and answered — which is how you find out which of your own words work.'
+                  'A template is a subject and a message your team can pick when they email a customer, so the fourth follow-up this week reads exactly like the first three. Piggles then counts how many were sent, opened and answered, which is how you find out which of your own words work.'
                 ),
                 actions: (
                   <Button color="module" onClick={startNew}>
@@ -549,7 +544,7 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     }
                   />
                   <FieldDescription>
-                    Only your team sees this — it is what they pick from a list, so say when to use
+                    Only your team sees this. It is what they pick from a list, so say when to use
                     it.
                   </FieldDescription>
                 </Field>
@@ -589,8 +584,8 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
                   }
                 />
                 <FieldDescription>
-                  The line that decides whether it gets opened at all — it is counted separately
-                  from replies for exactly that reason.
+                  The line that decides whether it gets opened at all. It is counted separately from
+                  replies for exactly that reason.
                 </FieldDescription>
               </Field>
 
@@ -603,7 +598,7 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       rows={10}
                       value={draft.body}
                       placeholder={
-                        'Hi — just checking whether you had a chance to look at the numbers we sent over.\n\nHappy to walk through any of it, or to adjust the quantities if that helps.'
+                        'Hi. Just checking whether you had a chance to look at the numbers we sent over.\n\nHappy to walk through any of it, or to adjust the quantities if that helps.'
                       }
                       onChange={(event) => {
                         set('body', event.target.value);
@@ -612,7 +607,7 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
                   }
                 />
                 <FieldDescription>
-                  Leave out the greeting name if you want to type it each time — nothing here is
+                  Leave out the greeting name if you want to type it each time. Nothing here is
                   filled in automatically.
                 </FieldDescription>
               </Field>
@@ -632,7 +627,7 @@ export function TemplatesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       Let the whole team use it
                     </Text>
                     <Text className="text-sm">
-                      Off, it stays in your own picker — which is what you want while you are still
+                      Off, it stays in your own picker, which is what you want while you are still
                       deciding whether it works. Turn it on and everyone gets it, and its
                       send/answer counts start describing the whole business rather than just you.
                     </Text>

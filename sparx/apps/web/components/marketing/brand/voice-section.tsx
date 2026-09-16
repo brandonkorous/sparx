@@ -30,7 +30,7 @@ export function VoiceSection() {
         <SectionHeader
           accent="var(--color-primary)"
           headline="sparx speaks directly"
-          lede="No hedging, no corporate softness, no “revolutionary” or “game-changing.” Short sentences — subject, verb, done. Second person, present tense. sparx doesn’t explain itself; it demonstrates."
+          lede="No hedging, no corporate softness, no “revolutionary” or “game-changing.” Short sentences: subject, verb, done. Second person, present tense. sparx doesn’t explain itself; it demonstrates."
         />
         <TaglineBand />
         <VoiceTable />
@@ -49,7 +49,7 @@ function TaglineBand() {
           <Spark />
         </Display>
         <Text size={17} className="max-w-[640px]">
-          The hero rotates the leading noun through the offerings — each landing on{' '}
+          The hero rotates the leading noun through the offerings. Each landing on{' '}
           <em className="not-italic">ignited.</em> with the Ember spark. Static form for titles, OG,
           and social: <strong className="font-medium">Your business, multiplied.</strong>
         </Text>
@@ -94,9 +94,9 @@ function PermanenceBand() {
           <Spark />
         </Display>
         <Text size={15} className="max-w-[680px]">
-          The durability story, for the era of disposable AI-generated sites. sparx is MCP-native —
-          this is AI <em className="text-base-content not-italic">plus</em> permanence, never AI
-          versus AI. Easy to create is table stakes now; easy to keep — maintain, enhance, own — is
+          The durability story, for the era of disposable AI-generated sites. sparx is MCP-native.
+          This is AI <em className="text-base-content not-italic">plus</em> permanence, never AI
+          versus AI. Easy to create is table stakes now; easy to keep (maintain, enhance, own) is
           ours.
         </Text>
         <ul className="m-0 flex list-none flex-col gap-2.5 p-0">

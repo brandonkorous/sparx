@@ -36,8 +36,8 @@ export default async function SignInPage({ searchParams }: { searchParams: Promi
           New here?{' '}
           <Link href="/signup" className="text-primary font-semibold">
             Create an account
-          </Link>{' '}
-          — fourteen days free, no card.
+          </Link>
+          . Fourteen days free, no card.
         </p>
       }
     >

@@ -24,9 +24,8 @@
 
 import { withTenant } from '@wizeworks/db';
 
+import { daysPastDue } from './billing-ar';
 import type { ServiceContext } from '../errors';
-
-const MS_PER_DAY = 86_400_000;
 
 /** Default ladder thresholds (oldest-overdue age in days). docs/10 §9. */
 const DEFAULTS = { creditHoldDays: 14, suspendDays: 30 } as const;
@@ -60,10 +59,12 @@ export interface EscalationThresholds {
   suspendDays?: number;
 }
 
-function daysPastDue(dueAt: Date, now: Date): number {
-  // Whole days, floored, never negative — matches the cron's
-  // GREATEST(0, EXTRACT(DAY FROM (now - due_at))::int).
-  return Math.max(0, Math.floor((now.getTime() - dueAt.getTime()) / MS_PER_DAY));
+/** Whole CALENDAR days past due, never negative — the same rule the aging report,
+ *  the receivables screen and the dunning ladder use. It was elapsed 24-hour
+ *  periods, which put an account's credit hold a day late whenever its oldest
+ *  invoice happened to be raised in the afternoon. */
+function pastDueDays(dueAt: Date, now: Date): number {
+  return Math.max(0, daysPastDue(dueAt, now));
 }
 
 /**
@@ -106,20 +107,28 @@ export async function escalateAccount(
     // (docs/87 §15 — `b2b_invoices` retired into the billing engine in Phase 8). A
     // net-terms document carries a `dueAt` (set on finalize) and an open `balance`;
     // past due, it's marked overdue and folds into the dunning ladder. `balance > 0`
-    // + `dueAt < now` excludes drafts/paid/void.
+    // + a due DATE before today excludes drafts/paid/void.
+    //
+    // The boundary is midnight UTC today, not `now`: a bill due TODAY is not late,
+    // whatever the clock says. Comparing against `now` marked an invoice overdue on
+    // its own due date the moment the hour passed the one it happened to be raised
+    // at, and stamped it `overdueDays: 0` — a row saying "overdue by no days".
+    const startOfToday = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+    );
     const documents = await tx.billingDocument.findMany({
       where: {
         companyId: accountId,
         deletedAt: null,
         status: { in: ['unpaid', 'partial', 'overdue'] },
-        dueAt: { not: null, lt: now },
+        dueAt: { not: null, lt: startOfToday },
         balance: { gt: 0 },
       },
       select: { id: true, status: true, dueAt: true, number: true, balance: true },
     });
     for (const doc of documents) {
       if (!doc.dueAt) continue; // narrows the type; the filter already guarantees it
-      const age = daysPastDue(doc.dueAt, now);
+      const age = pastDueDays(doc.dueAt, now);
       maxOverdueDays = Math.max(maxOverdueDays, age);
       const wasOverdue = doc.status === 'overdue';
       await tx.billingDocument.update({

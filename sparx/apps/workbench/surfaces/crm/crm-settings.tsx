@@ -40,7 +40,6 @@ import { SlidersHorizontal } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   MATCH_RULES,
   useCrmSettings,
@@ -57,7 +56,7 @@ const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 const THRESHOLDS: { value: number | null; label: string; description: string }[] = [
   {
     value: null,
-    label: 'Never — always ask me',
+    label: 'Never, ask me every time',
     description: 'Nothing is merged unless somebody looks at it first. Merging cannot be undone.',
   },
   {
@@ -69,7 +68,7 @@ const THRESHOLDS: { value: number | null; label: string; description: string }[]
     value: 90,
     label: 'Identical email, or the same phone number',
     description:
-      'Adds shared phone numbers, which are nearly always one person — but a family or a shared office line would be merged too.',
+      'Adds shared phone numbers, which are nearly always one person, but a family or a shared office line would be merged too.',
   },
 ];
 
@@ -77,7 +76,7 @@ function sameRules(a: DuplicateMatchRule[], b: DuplicateMatchRule[]): boolean {
   return a.length === b.length && a.every((rule) => b.includes(rule));
 }
 
-export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
+export function CrmSettingsSurface() {
   const query = useCrmSettings();
   const save = useUpdateCrmSettings();
   const toast = useToast();
@@ -88,10 +87,6 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
   useEffect(() => {
     if (saved && draft === null) setDraft(saved);
   }, [saved, draft]);
-
-  useEffect(() => {
-    ctx.setTitle('How the CRM behaves');
-  }, [ctx]);
 
   const dirty = useMemo(() => {
     if (!draft || !saved) return false;
@@ -143,7 +138,7 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="CRM behaviour actions"
+        label="CRM behavior actions"
         status={
           <Text as="span" className="text-sm">
             These apply to the business you are working in.
@@ -204,7 +199,7 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
                       <FieldLabel>Offer a company when the email domain matches one</FieldLabel>
                       <FieldDescription>
                         Add someone at <Text as="span">jo@northgatedental.com</Text> and we&rsquo;ll
-                        ask whether they belong under Northgate Dental Group — if you have told us
+                        ask whether they belong under Northgate Dental Group, if you have told us
                         that domain belongs to them. It is always a question, never done for you,
                         and personal addresses like gmail are ignored entirely.
                       </FieldDescription>
@@ -299,7 +294,7 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
                       <AlertTitle>Records will be merged without you seeing them</AlertTitle>
                       <AlertDescription>
                         The most recently updated record survives and absorbs the others. Anything
-                        it was missing gets filled in from them, so nothing is lost — but the merge
+                        it was missing gets filled in from them, so nothing is lost, but the merge
                         itself is permanent.
                       </AlertDescription>
                     </AlertContent>

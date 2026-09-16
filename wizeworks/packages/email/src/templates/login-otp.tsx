@@ -29,8 +29,8 @@ export function LoginOtpEmail({ code, expiresInMinutes = 5 }: LoginOtpEmailProps
       </EmailParagraph>
       <EmailCodeBlock code={code} />
       <EmailFinePrint>
-        If you didn&apos;t try to sign in, you can safely ignore this email — no one can sign in
-        with a code they don&apos;t have.
+        If you didn&apos;t try to sign in, you can safely ignore this email: no one can sign in with
+        a code they don&apos;t have.
       </EmailFinePrint>
     </PlatformEmailLayout>
   );

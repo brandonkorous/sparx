@@ -14,6 +14,7 @@ import { SilicaFunctionalBody } from '@/components/silica-chrome';
 import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { getPublishedSilicaPage, resolveSchedulingEnabled } from '@/lib/silica';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
+import { SUSPENDED_METADATA } from '@/lib/suspended';
 
 // KEEPS `force-dynamic` while the content routes dropped it (docs/127 §6). Appointment
 // availability is the one storefront read where a stale answer is visible to the
@@ -33,6 +34,10 @@ export const dynamic = 'force-dynamic';
 export async function generateMetadata(): Promise<Metadata> {
   const site = await resolveSite();
   if (!site) return { title: 'Book an appointment' };
+  // A dark site tells a crawler nothing about the tenant. The layout says the
+  // same, but a route's metadata overrides a layout's, so it has to be said
+  // here too (issue 503).
+  if (site.billingPhase === 'suspended') return SUSPENDED_METADATA;
   const published = await getPublishedSilicaPage(site.slug, 'book');
   const clean = (value: string | null | undefined): string | undefined => {
     const trimmed = value?.trim();

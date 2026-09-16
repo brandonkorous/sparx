@@ -76,7 +76,7 @@ export function SchedulingPage() {
             <Spark color={M.color} />
           </>
         }
-        lede="Pricing, deposits, calendars, no-shows, and how it fits the rest of sparx — answered straight. Still deciding? Read the scheduling docs or start the 14-day trial."
+        lede="Pricing, deposits, calendars, no-shows, and how it fits the rest of sparx: answered straight. Still deciding? Read the scheduling docs or start the 14-day trial."
       />
       <SchedulingCta />
     </>
@@ -94,13 +94,13 @@ const SCHEDULING_FAQ: FaqItem[] = [
     id: 'scheduling-pricing',
     question: 'How much does sparx Scheduling cost?',
     answer:
-      'A flat $29/mo for unlimited staff, resources, locations, and bookings. No per-seat, no per-staff, and no per-cover fee — the one flat fee beats every per-seat competitor the moment you have more than one person taking bookings. Every feature is included; nothing is ever gated into a higher tier. The only metered cost is SMS send volume, billed as a physical cost like email. Start on a 14-day free trial; no card required to begin.',
+      'A flat $29/mo for unlimited staff, resources, locations, and bookings. No per-seat, no per-staff, and no per-cover fee: the one flat fee beats every per-seat competitor the moment you have more than one person taking bookings. Every feature is included; nothing is ever gated into a higher tier. The only metered cost is SMS send volume, billed as a physical cost like email. Start on a 14-day free trial; no card required to begin.',
   },
   {
     id: 'scheduling-requires',
     question: 'Do I need any other module to use Scheduling?',
     answer:
-      'No. Scheduling requires nothing and is always standalone — a salon, a tutor, or a consultant can activate only Scheduling and run their whole booking operation. Taking deposits needs just one thing: a connected payment gateway (Stripe, sparx Pay, PayPal, or Square) at your own rates. That is a platform capability, not the Commerce module.',
+      'No. Scheduling requires nothing and is always standalone: a salon, a tutor, or a consultant can activate only Scheduling and run their whole booking operation. Taking deposits needs just one thing: a connected payment gateway (Stripe, sparx Pay, PayPal, or Square) at your own rates. That is a platform capability, not the Commerce module.',
   },
   {
     id: 'scheduling-types',
@@ -112,23 +112,23 @@ const SCHEDULING_FAQ: FaqItem[] = [
     id: 'scheduling-double-booking',
     question: 'How do you prevent double-booking?',
     answer:
-      'It is impossible by design, not by best effort. Every exclusive resource — a staff member, a table, a room, a bay, a piece of equipment — is protected by a database constraint that refuses two overlapping bookings outright. A racing second request fails cleanly and the customer is offered the next open slot. This holds even when an external calendar feed lags, because the guarantee lives in the database, not in app logic that has to win a race. Intentional overbooking (pooled capacity) is a separate, deliberate setting.',
+      'It is impossible by design, not by best effort. Every exclusive resource (a staff member, a table, a room, a bay, a piece of equipment) is protected by a database constraint that refuses two overlapping bookings outright. A racing second request fails cleanly and the customer is offered the next open slot. This holds even when an external calendar feed lags, because the guarantee lives in the database, not in app logic that has to win a race. Intentional overbooking (pooled capacity) is a separate, deliberate setting.',
   },
   {
     id: 'scheduling-calendar',
     question: 'Does it sync with Google, Apple, or Outlook calendars?',
     answer:
-      'Yes, in two honest ways. Outbound: every resource gets a private iCal feed you subscribe to once in Google, Apple, or Outlook, plus a per-booking .ics on every confirmation — so your sparx bookings show up in the calendar you already use. Inbound: import the busy time from the calendars you already keep, by secret iCal URL or a CalDAV connection, so outside commitments block your sparx availability. All connected calendars are checked, and a failing feed raises an alert rather than silently going stale.',
+      'Yes, in two honest ways. Outbound: every resource gets a private iCal feed you subscribe to once in Google, Apple, or Outlook, plus a per-booking .ics on every confirmation, so your sparx bookings show up in the calendar you already use. Inbound: import the busy time from the calendars you already keep, by secret iCal URL or a CalDAV connection, so outside commitments block your sparx availability. All connected calendars are checked, and a failing feed raises an alert rather than silently going stale.',
   },
   {
     id: 'scheduling-no-shows',
     question: 'How does it protect me from no-shows?',
     answer:
-      'Two ways, both first-class. First, a per-service policy: free, a card hold that captures a fee only if someone no-shows or late-cancels, a partial deposit applied to the bill, or full prepay. Second, automated email and SMS reminders on the cadence you set. When a fee fires, the policy the customer accepted, the timestamped reminder log, and the booking timeline are all on record — the evidence you need if you ever contest a chargeback. And if a cancellation does happen, the waitlist auto-promotes the next person before the slot sits empty.',
+      'Two ways, both first-class. First, a per-service policy: free, a card hold that captures a fee only if someone no-shows or late-cancels, a partial deposit applied to the bill, or full prepay. Second, automated email and SMS reminders on the cadence you set. When a fee fires, the policy the customer accepted, the timestamped reminder log, and the booking timeline are all on record: the evidence you need if you ever contest a chargeback. And if a cancellation does happen, the waitlist auto-promotes the next person before the slot sits empty.',
   },
   {
     id: 'scheduling-customer-record',
-    question: 'Where do bookings live — do they connect to my customers?',
+    question: 'Where do bookings live: do they connect to my customers?',
     answer:
       'Every booking writes to the customer you already have. Confirmations, no-shows, and preferences land on the CRM customer record or B2B account, so the next visit starts with full history. That is the whole point: the booking, the deposit, the reminder, the visit, and the follow-up are one loop on one platform, not five disconnected tools that never talk to each other.',
   },
@@ -136,7 +136,7 @@ const SCHEDULING_FAQ: FaqItem[] = [
     id: 'scheduling-verticals',
     question: 'Is this built for one industry?',
     answer:
-      'No — it is industry-agnostic by construction. A salon booking a stylist, a restaurant seating a party, a studio filling a class, a clinic running a recurring series, a makerspace renting a bay, and a fleet shop scheduling a service visit all drive the same engine. They differ only in which booking shapes and capabilities they switch on. Fleet and field service is one well-served context among many, not the assumption.',
+      'No. It is industry-agnostic by construction. A salon booking a stylist, a restaurant seating a party, a studio filling a class, a clinic running a recurring series, a makerspace renting a bay, and a fleet shop scheduling a service visit all drive the same engine. They differ only in which booking shapes and capabilities they switch on. Fleet and field service is one well-served context among many, not the assumption.',
   },
 ];
 
@@ -146,21 +146,21 @@ function SchedulingStandalone() {
     {
       tag: 'on its own',
       title: 'Standalone from day one',
-      body: 'Scheduling is a complete product by itself. Activate only this module, connect a gateway if you want deposits, and run your entire booking operation — no other module required.',
+      body: 'Scheduling is a complete product by itself. Activate only this module, connect a gateway if you want deposits, and run your entire booking operation: no other module required.',
       points: [
         'Unlimited staff, resources, locations, and bookings on one flat fee.',
-        'Every feature included — waitlists, recurring, policies, reports.',
+        'Every feature included: waitlists, recurring, policies, reports.',
         'Embed the booking widget on any site, on your brand, no “Powered by.”',
       ],
     },
     {
       tag: 'better together',
       title: 'Richer with the modules you run',
-      body: 'Because it shares the platform, Scheduling gets stronger the more of sparx you use — but it never depends on any of it. Each connection is a bonus, not a requirement.',
+      body: 'Because it shares the platform, Scheduling gets stronger the more of sparx you use, but it never depends on any of it. Each connection is a bonus, not a requirement.',
       points: [
-        'CRM — bookings and no-shows write to the customer record.',
-        'Payments — deposits, holds, and refunds at your own rates.',
-        'B2B + Inventory — link a booking to an account, asset, parts, work order.',
+        'CRM: bookings and no-shows write to the customer record.',
+        'Payments: deposits, holds, and refunds at your own rates.',
+        'B2B + Inventory: link a booking to an account, asset, parts, work order.',
       ],
     },
   ];
@@ -168,7 +168,7 @@ function SchedulingStandalone() {
     <Section surface="surface" padding="lg">
       <SectionHeader
         headline="Complete on its own, better with the rest"
-        lede="Scheduling is never bundled and never required by another module — it stands fully on its own. But it lives on the same platform as your customers, your money, and your messaging, so connecting them turns booking into a loop instead of an island."
+        lede="Scheduling is never bundled and never required by another module. It stands fully on its own. But it lives on the same platform as your customers, your money, and your messaging, so connecting them turns booking into a loop instead of an island."
       />
       <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2">
         {panels.map((p) => (
@@ -200,13 +200,13 @@ function SchedulingStandalone() {
 // ── DARK PROOF ──────────────────────────────────────────────────────────────
 function SchedulingProof() {
   const stats: { n: ReactNode; l: string }[] = [
-    { n: '$0', l: 'per seat — unlimited staff, resources, and locations on one flat fee' },
+    { n: '$0', l: 'per seat: unlimited staff, resources, and locations on one flat fee' },
     {
       n: <>1{<Spark color={M.color} />}</>,
-      l: 'engine — appointments, classes, reservations, and rentals on one record',
+      l: 'engine: appointments, classes, reservations, and rentals on one record',
     },
-    { n: 'DB', l: 'guaranteed — overlapping bookings of a resource can’t commit, ever' },
-    { n: 'all', l: 'features included — waitlists, deposits, reminders, reports, sync' },
+    { n: 'DB', l: 'guaranteed: overlapping bookings of a resource can’t commit, ever' },
+    { n: 'all', l: 'features included: waitlists, deposits, reminders, reports, sync' },
   ];
   return (
     <Section surface="dark" padding="lg">
@@ -216,8 +216,8 @@ function SchedulingProof() {
           <Spark color={M.color} />
         </Heading>
         <Text variant="lead" className="mt-[22px] max-w-[640px]">
-          The two things people hate most about booking software — features yanked into higher tiers
-          and per-seat pricing that punishes growth — are impossible here by policy. Add the staff,
+          The two things people hate most about booking software (features yanked into higher tiers
+          and per-seat pricing that punishes growth) are impossible here by policy. Add the staff,
           add the rooms, add the locations. The price doesn’t move.
         </Text>
       </div>
@@ -252,10 +252,10 @@ function SchedulingPricing() {
               </Stat>
             </Stats>
             <Text className="max-w-[660px]">
-              A flat $29/mo — unlimited staff, resources, locations, and bookings, with every
-              feature included and nothing ever tier-gated. No per-seat, per-staff, or per-cover
-              fee. Requires nothing else; always standalone. The only metered cost is SMS send
-              volume. Start free for 14 days; no card to begin.
+              A flat $29/mo: unlimited staff, resources, locations, and bookings, with every feature
+              included and nothing ever tier-gated. No per-seat, per-staff, or per-cover fee.
+              Requires nothing else; always standalone. The only metered cost is SMS send volume.
+              Start free for 14 days; no card to begin.
             </Text>
           </div>
           <div className="flex flex-wrap items-center gap-4">
@@ -282,7 +282,7 @@ function SchedulingCta() {
           <Spark color={M.color} />
         </Display>
         <Text variant="lead" className="max-w-[640px]">
-          Add a service, set your hours, embed the widget — and take a booking that reminds the
+          Add a service, set your hours, embed the widget, and take a booking that reminds the
           customer, holds a deposit, and writes to their record automatically. No per-seat math, no
           migration weekend. Turn Scheduling off the day you stop, and your bookings stay yours.
         </Text>

@@ -34,12 +34,12 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
+import { todayIso } from '../../lib/today';
 import { CalendarOff, Clock, Plus, Trash2, Users, X } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   WEEK_DAYS,
   customHoursOf,
@@ -154,7 +154,7 @@ function WeeklyHours({ week, onChange }: { week: WeekDraft; onChange: (next: Wee
               <Switch
                 color="module"
                 checked={open}
-                aria-label={`${day.label} — open for bookings`}
+                aria-label={`${day.label}: open for bookings`}
                 onCheckedChange={(next: boolean) => {
                   setDay(day.value, next ? [{ ...DEFAULT_WINDOW }] : []);
                 }}
@@ -177,7 +177,7 @@ function WeeklyHours({ week, onChange }: { week: WeekDraft; onChange: (next: Wee
                           type="time"
                           color={invalid ? 'error' : 'module'}
                           className="max-w-32 tabular-nums"
-                          aria-label={`${day.label} — start of hours ${String(index + 1)}`}
+                          aria-label={`${day.label}: start of hours ${String(index + 1)}`}
                           value={window.start}
                           onChange={(event) => {
                             setDay(
@@ -195,7 +195,7 @@ function WeeklyHours({ week, onChange }: { week: WeekDraft; onChange: (next: Wee
                           type="time"
                           color={invalid ? 'error' : 'module'}
                           className="max-w-32 tabular-nums"
-                          aria-label={`${day.label} — end of hours ${String(index + 1)}`}
+                          aria-label={`${day.label}: end of hours ${String(index + 1)}`}
                           value={window.end}
                           onChange={(event) => {
                             setDay(
@@ -249,9 +249,7 @@ function WeeklyHours({ week, onChange }: { week: WeekDraft; onChange: (next: Wee
 
 /* ── Closures & time off ────────────────────────────────────────────────── */
 
-function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
-}
+// `todayIso` comes from lib/today — the reader's calendar day, not UTC's.
 
 function Closures({
   resourceId,
@@ -360,7 +358,7 @@ function Closures({
   return (
     <FormSection
       title="Closures & special hours"
-      description="Days that break the weekly pattern — a holiday you are shut, a day off, or a date you open different hours (say Christmas Eve, 9am–1pm). These win over the weekly hours above for the dates they cover."
+      description="Days that break the weekly pattern: a holiday you are shut, a day off, or a date you open different hours (say Christmas Eve, 9am–1pm). These win over the weekly hours above for the dates they cover."
     >
       {relevant.length > 0 ? (
         <div className="divide-base-300 flex flex-col divide-y">
@@ -541,7 +539,7 @@ function Closures({
                   setScope(event.target.value as 'everyone' | 'resource');
                 }}
               >
-                <option value="everyone">Everyone — the whole business</option>
+                <option value="everyone">Everyone: the whole business</option>
                 <option value="resource">Just {resourceName}</option>
               </NativeSelect>
             }
@@ -573,16 +571,12 @@ function Closures({
 
 /* ── The surface ────────────────────────────────────────────────────────── */
 
-export function AvailabilitySurface({ ctx }: { ctx: SurfaceContext }) {
+export function AvailabilitySurface() {
   const confirm = useConfirm();
   const toast = useToast();
 
   const resources = useResources({ activeOnly: false });
   const [resourceId, setResourceId] = useState<string | null>(null);
-
-  useEffect(() => {
-    ctx.setTitle('Availability');
-  }, [ctx]);
 
   // Default to the first resource once they load; stay put after that.
   const resourceList = resources.data?.items ?? [];

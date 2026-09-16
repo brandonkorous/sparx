@@ -87,7 +87,7 @@ const SURFACES: Surface[] = [
   },
   {
     name: 'The workspace',
-    what: 'The place you do the work — customers, bookings, invoices, stock and your site.',
+    what: 'The place you do the work: customers, bookings, invoices, stock and your site.',
     host: PRODUCT.hosts.console,
     base:
       process.env.STATUS_CONSOLE_URL ?? (live ? `https://${PRODUCT.hosts.console}` : devPort(3022)),
@@ -179,9 +179,9 @@ export default async function StatusPage() {
             <h2 className="text-2xl font-extrabold sm:text-3xl">What a green row means</h2>
             <p className="mt-4 max-w-[60ch] text-lg">
               That this part of Piggles answered a moment ago. It does not promise that every
-              feature inside it is working — a service can answer while one thing in it is broken.
-              If something is wrong for you and this page looks fine, that is worth telling us
-              rather than doubting.
+              feature inside it is working: a service can answer while one thing in it is broken. If
+              something is wrong for you and this page looks fine, that is worth telling us rather
+              than doubting.
             </p>
           </div>
           <div>
@@ -199,7 +199,7 @@ export default async function StatusPage() {
                 empty list reads as a clean record; there has not been a clean
                 record, there has not been a record. */}
           <p className="mt-4 max-w-[70ch] text-lg">
-            Nothing recorded yet — and that means exactly what it says, which is that we have not
+            Nothing recorded yet, and that means exactly what it says, which is that we have not
             been keeping an incident history rather than that nothing has ever gone wrong. From the
             day {PRODUCT.name} opens to the public, anything that affects your business or your
             customers is written up here, in plain language, with what happened and what we did

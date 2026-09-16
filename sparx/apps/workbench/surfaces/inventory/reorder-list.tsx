@@ -27,8 +27,8 @@
 // have nowhere to come from before a replacement could land, priced at the
 // selling price. "Least in stock first" ranks by how empty a shelf looks, and a
 // buyer with forty rows and an hour does not need the emptiest shelf — they need
-// the one whose emptiness costs the most. A fast £40 line four days out beats a
-// dormant £2 one down to its last unit, every time.
+// the one whose emptiness costs the most. A fast $40 line four days out beats a
+// dormant $2 one down to its last unit, every time.
 //
 // Every row carries the sentence explaining its own figure, and the supplier's
 // delivery time says whether it was MEASURED from real deliveries or is just
@@ -52,6 +52,10 @@
 
 import { useState } from 'react';
 import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
   Badge,
   Button,
   Card,
@@ -112,8 +116,8 @@ function rowKey(row: Pick<ReorderRow, 'variantId' | 'warehouseId'>): string {
 function emptyAdvice(search: string, locationName: string | null, supplierName: string | null) {
   const parts: string[] = [];
   if (search) parts.push('Try part of a product name or code.');
-  if (locationName) parts.push(`You are only seeing ${locationName} — switch to every location.`);
-  if (supplierName) parts.push(`You are only seeing ${supplierName} — switch to every supplier.`);
+  if (locationName) parts.push(`You are only seeing ${locationName}. Switch to every location.`);
+  if (supplierName) parts.push(`You are only seeing ${supplierName}. Switch to every supplier.`);
   return parts.join(' ');
 }
 
@@ -221,7 +225,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
         orderCount,
         'draft order',
         'draft orders'
-      )}, grouped by supplier and location. Nothing is ordered yet — a draft is yours to check, change, or discard before you send it to the supplier.`,
+      )}, grouped by supplier and location. Nothing is ordered yet: a draft is yours to check, change, or discard before you send it to the supplier.`,
       confirmLabel: 'Create drafts',
       cancelLabel: 'Not yet',
       color: 'module',
@@ -234,7 +238,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
         toast.add({
           title: `${plural(result.count, 'draft order', 'draft orders')} created`,
           description: numbers
-            ? `${numbers} — find them under Purchase orders to review and send.`
+            ? `${numbers}. Find them under Purchase orders to review and send.`
             : 'Find them under Purchase orders to review and send.',
           type: 'success',
         });
@@ -268,7 +272,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<PackageX className="size-6" aria-hidden />}
           title="Could not work out what needs reordering"
-          description="This is a problem reaching the server. Your stock and orders are unaffected — the list just could not be read right now."
+          description="This is a problem reaching the server. Your stock and orders are unaffected: the list just could not be read right now."
         />
       );
     }
@@ -299,7 +303,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<SlidersHorizontal className="size-6" aria-hidden />}
             title="No reorder rules set up yet"
-            description="Nothing can be flagged as running low until you say when to reorder it. Open a product, and on its Stock panel set a reorder level and how many to buy — this list then fills itself in as those items run down."
+            description="Nothing can be flagged as running low until you say when to reorder it. Open a product, and on its Stock panel set a reorder level and how many to buy. This list then fills itself in as those items run down."
           />
         );
       }
@@ -380,7 +384,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
                     aria-label={
                       suppliable
                         ? `Choose ${row.title ?? row.sku ?? 'this item'} to reorder`
-                        : 'Cannot order this — it has no supplier yet'
+                        : 'Cannot order this: it has no supplier yet'
                     }
                     checked={selected.has(key)}
                     disabled={!suppliable}
@@ -406,7 +410,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
                       <span className="truncate text-sm @xl:hidden">Sells {sells}</span>
                     ) : null}
                     {/* The whole calculation in one sentence. It is the row's
-                        most useful line — it is what turns "at risk £412" from
+                        most useful line — it is what turns "at risk $412" from
                         an assertion into something a buyer can agree with. */}
                     {row.reasoning ? (
                       <span className="truncate text-sm">{row.reasoning}</span>
@@ -456,7 +460,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </td>
                 {/* A number, not a badge: it is the one thing on the row a buyer
                     compares straight down the column. Zero reads as a dash —
-                    "£0.00" would look like a measurement of nothing, when it
+                    "$0.00" would look like a measurement of nothing, when it
                     almost always means there is no deadline at all. */}
                 <td className="text-right font-medium whitespace-nowrap tabular-nums">
                   {row.revenueAtRiskCents > 0 ? formatCents(row.revenueAtRiskCents) : '—'}
@@ -580,6 +584,31 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
             Draft {plural(orderCount, 'order', 'orders')}
           </Button>
         </div>
+      ) : null}
+
+      {/* The fifth kind of nothing, and the one that actually reaches people.
+          This list only watches lines somebody has set a level for. With one
+          level set out of seventy-two it showed a single row, neither empty
+          state fired, and nothing said the other seventy-one were ineligible to
+          appear — while the At risk screen beside it was naming two of them as
+          $558 of orders about to have nothing to come from. */}
+      {summary.data &&
+      summary.data.policyCount > 0 &&
+      summary.data.levelCount - summary.data.policyCount > 0 ? (
+        <Alert color="warning">
+          <AlertContent>
+            <AlertTitle>
+              {summary.data.levelCount - summary.data.policyCount} of your {summary.data.levelCount}{' '}
+              stock lines have no reorder level
+            </AlertTitle>
+            <AlertDescription>
+              This list only watches the lines you have set a level for, so those are not on it
+              however low they get. Open a product and set a reorder level and how many to buy on
+              its Stock panel, and they start warning you here. At risk looks at everything
+              meanwhile, whether a level is set or not.
+            </AlertDescription>
+          </AlertContent>
+        </Alert>
       ) : null}
 
       {/* Full width — matches the house list convention: the table fills the pane. */}

@@ -55,7 +55,7 @@ export function UtmTool() {
     const found: string[] = [];
     if (base && !/^https?:\/\//i.test(base)) {
       found.push(
-        'The address needs to start with https:// — otherwise the link will not work when somebody taps it.'
+        'The address needs to start with https://, otherwise the link will not work when somebody taps it.'
       );
     }
     for (const [label, value] of [
@@ -70,7 +70,7 @@ export function UtmTool() {
       }
       if (/\s/.test(value)) {
         found.push(
-          `“${value}” has a space in it. Use a hyphen — spaces get mangled in a web address.`
+          `“${value}” has a space in it. Use a hyphen: spaces get mangled in a web address.`
         );
       }
       void label;
@@ -128,7 +128,7 @@ export function UtmTool() {
           <Panel title="The link" description="Where you want people to land.">
             <TextField
               label="Web address"
-              hint="The page on your own site. Never tag a link between two of your own pages — that wipes out the record of how they actually found you."
+              hint="The page on your own site. Never tag a link between two of your own pages. That wipes out the record of how they actually found you."
               value={base}
               onChange={setBase}
               spellCheck={false}
@@ -158,7 +158,7 @@ export function UtmTool() {
             />
 
             <TextField
-              label="Source — where exactly"
+              label="Source: where exactly"
               hint={
                 knownSources.length > 0
                   ? `You have used: ${knownSources.join(', ')}. Match one of those rather than inventing a new spelling.`
@@ -169,14 +169,14 @@ export function UtmTool() {
               spellCheck={false}
             />
             <TextField
-              label="Medium — what kind of thing"
+              label="Medium: what kind of thing"
               hint="social, email, print, cpc. The category it belongs to, so you can ask “how is social doing?” as well as “how is Instagram doing?”."
               value={medium}
               onChange={setMedium}
               spellCheck={false}
             />
             <TextField
-              label="Campaign — which push"
+              label="Campaign, which push"
               hint="spring-menu, opening-week. What ties several links together as one effort."
               value={campaign}
               onChange={setCampaign}
@@ -197,7 +197,7 @@ export function UtmTool() {
             />
             <TextField
               label="Term"
-              hint="The keyword, for paid search. Most ad platforms fill this in for you — leave it alone unless yours does not."
+              hint="The keyword, for paid search. Most ad platforms fill this in for you. Leave it alone unless yours does not."
               value={term}
               onChange={setTerm}
               spellCheck={false}
@@ -248,9 +248,9 @@ export function UtmTool() {
               ) : null}
 
               <Aside>
-                The tags are visible in the address bar and do nothing to the page — it opens
-                exactly as normal. For something printed or read aloud, point a QR code at the
-                tagged address instead; the tracking still works and nobody sees it.
+                The tags are visible in the address bar and do nothing to the page. It opens exactly
+                as normal. For something printed or read aloud, point a QR code at the tagged
+                address instead; the tracking still works and nobody sees it.
               </Aside>
             </CardBody>
           </Card>

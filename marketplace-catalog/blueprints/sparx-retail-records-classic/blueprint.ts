@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-records-classic',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Record Shop (Vintage)',
   summary:
-    'A complete, working shop for a warm neighbourhood record store: a real catalogue of vinyl LPs across the classic genres, a walnut turntable, a felt slipmat, a cleaning kit, a canvas tote and a monthly vinyl subscription, with categories, collections, a bespoke record-counter PDP and a full merchandised home page. Warm, nostalgic theme — faded-paper ground, burnt-sienna primary, dusty-teal accent, a vintage display serif. Shipped as Sunset Sounds.',
+    'A complete, working shop for a warm neighbourhood record store: a real catalogue of vinyl LPs across the classic genres, a walnut turntable, a felt slipmat, a cleaning kit, a canvas tote and a monthly vinyl subscription, with categories, collections, a bespoke record-counter PDP and a full merchandised home page. Warm, nostalgic theme, faded-paper ground, burnt-sienna primary, dusty-teal accent, a vintage display serif. Shipped as Sunset Sounds.',
   vertical: 'retail',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

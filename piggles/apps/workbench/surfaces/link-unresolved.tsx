@@ -27,7 +27,6 @@
 // expected. The access one is `info`: nothing is wrong, you are simply not the
 // audience.
 
-import { useEffect } from 'react';
 import { Icon } from '@piggles/ui';
 import { productCopy, productCopyWith, productHidesSurface } from '../lib/product';
 import { Button, Card, EmptyState } from '@wizeworks/silicaui-react';
@@ -75,12 +74,12 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
       description: name
         ? productCopyWith(
             'link.unresolved.bodyNamed',
-            `This link opens something in ${name}, and this business isn't using ${name} yet. You can turn it on whenever you like — you only pay for the parts you use.`,
+            `This link opens something in ${name}, and this business isn't using ${name} yet. You can turn it on whenever you like. You only pay for the parts you use.`,
             { name }
           )
         : productCopy(
             'link.unresolved.body',
-            'This link opens an app this business has not switched on yet. You can add it whenever you like, from All apps at the foot of the rail — every app is included, so it never changes what you pay.'
+            'This link opens an app this business has not switched on yet. You can add it whenever you like, from All apps at the foot of the rail: every app is included, so it never changes what you pay.'
           ),
       action: {
         label: productCopy('link.unresolved.action', 'See what sparx can do'),
@@ -106,7 +105,7 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
       icon: faBuilding,
       tone: 'warning',
       title: 'That link is for a different business',
-      description: `The link says it belongs to “${detail}”, which isn't one of the businesses you can open — or it has been renamed since the link was written. Whoever sent it can send a fresh one.`,
+      description: `The link says it belongs to “${detail}”, which isn't one of the businesses you can open, or it has been renamed since the link was written. Whoever sent it can send a fresh one.`,
     };
   }
 
@@ -116,7 +115,7 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
     title: "That link doesn't open anything",
     description: productCopyWith(
       'link.unknownAddress',
-      `Nothing in Piggles lives at “${detail}”. The address may have been cut short on its way here — links sometimes break when they travel through a chat or an email — so it is worth asking for it again.`,
+      `Nothing in Piggles lives at “${detail}”. The address may have been cut short on its way here (links sometimes break when they travel through a chat or an email) so it is worth asking for it again.`,
       { detail }
     ),
   };
@@ -139,10 +138,6 @@ export function LinkUnresolvedSurface({ ctx }: { ctx: SurfaceContext }) {
   // sentence above already says what to do, and inventing a destination here
   // would mean this file knowing which brand it is running under.
   const action = suggested && !productHidesSurface(suggested.surface) ? suggested : undefined;
-
-  useEffect(() => {
-    ctx.setTitle('Link');
-  }, [ctx]);
 
   return (
     // The message is this pane's whole content, so it sits on a card like every

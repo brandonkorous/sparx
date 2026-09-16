@@ -100,7 +100,7 @@ function InvoiceLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           error={invoiceQuery.error}
           noun="invoice"
           title="Could not load this invoice"
-          description="This is a problem reaching the server. The invoice itself is unaffected — nothing has been lost."
+          description="This is a problem reaching the server. The invoice itself is unaffected. Nothing has been lost."
           onRetry={() => {
             void invoiceQuery.refetch();
           }}
@@ -217,8 +217,8 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
               Raise an invoice
             </Heading>
             <Text>
-              Bill a trade account for work outside an order. Orders on terms invoice themselves —
-              this is for everything else.
+              Bill a trade account for work outside an order. Orders on terms invoice themselves.
+              This is for everything else.
             </Text>
           </div>
 
@@ -522,7 +522,7 @@ function InvoiceManage({ ctx, invoice }: { ctx: SurfaceContext; invoice: Invoice
               <FieldDescription>
                 {editable
                   ? 'When you expect to be paid by.'
-                  : 'This invoice is closed — its due date is fixed.'}
+                  : 'This invoice is closed. Its due date is fixed.'}
               </FieldDescription>
             </Field>
             <Field>
@@ -688,7 +688,7 @@ function MarkPaidDialog({ invoice }: { invoice: InvoiceRow }) {
                   />
                 }
               />
-              <FieldDescription>Optional — whatever helps you find it later.</FieldDescription>
+              <FieldDescription>Optional: whatever helps you find it later.</FieldDescription>
             </Field>
           </div>
 

@@ -450,7 +450,7 @@ function SeriesCreate({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="Who it is for (optional)"
-            description="Link a customer if every occurrence is for the same person — a standing weekly slot for one client. Leave blank otherwise."
+            description="Link a customer if every occurrence is for the same person: a standing weekly slot for one client. Leave blank otherwise."
           >
             <CustomerPicker value={customer} onChange={setCustomer} />
           </FormSection>
@@ -519,7 +519,7 @@ function SeriesManage({
             title: 'Repeating booking stopped',
             description:
               result.cancelled > 0
-                ? `${String(result.cancelled)} upcoming booking${result.cancelled === 1 ? '' : 's'} cancelled.`
+                ? `${String(result.cancelled)} upcoming booking${result.cancelled === 1 ? '' : 's'} canceled.`
                 : undefined,
             type: 'success',
           });

@@ -14,6 +14,7 @@ import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import { getTokenState, resolveToken } from '../../lib/api/token';
+import { readMoney } from '../../lib/read-money';
 
 /* ── Shapes ────────────────────────────────────────────────────────────────── */
 
@@ -91,6 +92,10 @@ export interface ExpensePage {
   nextCursor: string | null;
   /** The FILTER's total, not the page's — it must not move as someone scrolls. */
   totalCents: number;
+  /** How many costs match the FILTER, same whole-set grain as `totalCents`.
+   *  Ask for one row and read this when the only question is "is this period
+   *  empty?" — paging the lot to count them is the same answer, slower. */
+  totalCount: number;
 }
 
 export interface RecurringExpense {
@@ -122,6 +127,10 @@ export interface ProfitFigures {
   unallocatedCents: number;
   grossProfitCents: number;
   netProfitCents: number;
+  /** When these figures were last worked out — null when they never have been.
+   *  NOT when the browser last fetched: the rollup is rebuilt once a day, so the
+   *  two are hours apart and only this one is about the numbers. */
+  computedAt: string | null;
 }
 
 export interface ProfitResponse {
@@ -657,7 +666,7 @@ export async function downloadAccountingExport(params: {
   to: string;
   connectionId?: string | null;
   markSent?: boolean;
-}): Promise<{ filename: string; skipped: number }> {
+}): Promise<{ filename: string; rowCount: number; skipped: number }> {
   const state = await getTokenState();
   const token = await resolveToken();
 
@@ -696,6 +705,11 @@ export async function downloadAccountingExport(params: {
   const disposition = response.headers.get('content-disposition') ?? '';
   const filename = /filename="([^"]+)"/.exec(disposition)?.[1] ?? 'expenses.csv';
   const skipped = Number(response.headers.get('x-sparx-skipped-rows') ?? '0');
+  // How many rows the file actually carries. A header-only CSV downloads exactly
+  // like a full one, so without this the caller cannot tell a person which they
+  // just got — and "every cost in that period is in the file" is technically
+  // true of an empty one, which is the worst kind of true.
+  const rows = Number(response.headers.get('x-sparx-row-count') ?? 'NaN');
 
   const blob = await response.blob();
   const url = URL.createObjectURL(blob);
@@ -709,7 +723,14 @@ export async function downloadAccountingExport(params: {
     URL.revokeObjectURL(url);
   }, 1000);
 
-  return { filename, skipped: Number.isFinite(skipped) ? skipped : 0 };
+  return {
+    filename,
+    // -1, not 0, when the header is absent: an older server that does not send
+    // it has told us NOTHING about the row count, and reporting that as "no
+    // costs" would invent the very claim this exists to stop.
+    rowCount: Number.isFinite(rows) ? rows : -1,
+    skipped: Number.isFinite(skipped) ? skipped : 0,
+  };
 }
 
 export function useImportPreview() {
@@ -747,25 +768,18 @@ export function isNotFound(error: unknown): boolean {
 /**
  * A typed money string → integer cents, or null if it isn't money.
  *
- * Pure string arithmetic, NOT `Math.round(Number(x) * 100)`. That shortcut is
- * wrong for three-decimal input — `Number('0.145') * 100` is 14.499999999999998,
- * so it rounds DOWN to 14¢ — and a form is exactly where a person types one.
- * (The same bug was found and fixed in the CSV importer; this is the UI half.)
+ * This used to be its own parser, and it threw every comma away before looking:
+ * `.replace(/[,\s]/g, '')` reads "1,250" as twelve hundred and fifty, which is
+ * right, and "46,80" as four thousand six hundred and eighty, which is a cost a
+ * hundred times over, recorded without a murmur (issue 488). It kept the exact
+ * string arithmetic that `Math.round(Number(x) * 100)` gets wrong on three
+ * decimals — so THAT moved into `readMoney`, and this now asks it, which knows
+ * which of `.` and `,` separates the cents in the text in front of it.
  */
 export function parseMoneyToCents(input: string): number | null {
-  const trimmed = input.trim().replace(/[,\s]/g, '');
-  if (trimmed === '') return null;
-  const negative = trimmed.startsWith('-');
-  const unsigned = negative ? trimmed.slice(1) : trimmed;
-  if (!/^\d*\.?\d*$/.test(unsigned) || !/\d/.test(unsigned)) return null;
-
-  const [whole = '', fraction = ''] = unsigned.split('.');
-  const wholeCents = (whole === '' ? 0 : Number(whole)) * 100;
-  if (!Number.isSafeInteger(wholeCents)) return null;
-  const cents = Number(`${fraction}00`.slice(0, 2));
-  const roundUp = Number(fraction[2] ?? '0') >= 5 ? 1 : 0;
-  const total = wholeCents + cents + roundUp;
-  return negative ? -total : total;
+  if (input.trim() === '') return null;
+  const { amount } = readMoney(input, { allowZero: true });
+  return amount === null ? null : Math.round(amount * 100);
 }
 
 /** Cents → the string a money input shows. Fixed two places, no separators —

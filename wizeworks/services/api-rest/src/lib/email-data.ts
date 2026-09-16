@@ -695,16 +695,32 @@ async function resolveReturn(
         preferredOutcome: true,
         refundedAmountCents: true,
         refundIssuedAs: true,
+        // BOTH directions, newest first, split below. This relation used to
+        // hold one thing — the prepaid label the customer sends the goods back
+        // with — and now also holds the replacement travelling the other way.
+        // Taking "the newest" without asking which way it points would answer
+        // `return.labelUrl` with the replacement's tracking page, sending
+        // somebody who wants to post a parcel to a page about one already sent.
         labels: {
           orderBy: { createdAt: 'desc' },
-          take: 1,
-          select: { trackingUrl: true, labelMediaId: true },
+          select: {
+            direction: true,
+            carrier: true,
+            trackingNumber: true,
+            trackingUrl: true,
+            labelMediaId: true,
+          },
         },
       },
     })
   );
   if (!r) return {};
-  const label = r.labels[0];
+  const label = r.labels.find((row) => row.direction === 'inbound');
+  // How the replacement is travelling, read from the ROW rather than taken on
+  // trust from the send: a shop can record the tracking number a day after
+  // settling the swap, and a snapshot taken at settle time would still say
+  // there was none.
+  const sent = r.labels.find((row) => row.direction === 'outbound');
   const OUTCOME: Record<string, string> = {
     refund: 'refund',
     account_credit: 'account credit',
@@ -728,6 +744,25 @@ async function resolveReturn(
     labelUrl,
     hasLabel: hasLabel ? 'yes' : '',
     manageUrl: siteLink(slug, '/account/orders'),
+    // The two ENDING facts are not on the row and cannot be: a return has no
+    // column for the replacement that went out, and a denial reason is written to
+    // the same `staffNote` an approval uses, so reading it back could not tell a
+    // reason meant for a shopper from a note meant for the team. Both ride on the
+    // event and the send's snapshot overlays them here (persona issue 448).
+    // Empty rather than absent so the optional rows self-drop on the other three
+    // notices instead of rendering a raw token.
+    replacement: '',
+    deniedReason: '',
+    // The replacement's journey, which IS on the row: an outbound ReturnLabel
+    // written when the parcel went out. Empty until then, which drops the
+    // tracking rows rather than printing a heading over a blank.
+    // Through the same map the shipping confirmation reads, for the same reason:
+    // this column holds a code, and a customer told their replacement went by
+    // "usps" is the defect that map was written to end. A courier somebody typed
+    // by hand is not a code, so it comes back exactly as they typed it.
+    replacementCarrier: carrierLabel(sent?.carrier),
+    replacementTracking: sent?.trackingNumber ?? '',
+    replacementTrackingUrl: sent?.trackingUrl ?? '',
   };
 }
 

@@ -180,3 +180,86 @@ describe('a search score is about the site you are looking at', () => {
     }
   });
 });
+
+describe('the checklist speaks with one voice', () => {
+  /** One audit row carrying one check, with the wording and date given. */
+  async function card(
+    t: TestTenant,
+    opts: { label: string; category: string; status: string; computedAt: Date }
+  ): Promise<void> {
+    await withTenant({ tenantId: t.tenantId }, async (tx) => {
+      await tx.seoAudit.create({
+        data: {
+          tenantId: t.tenantId,
+          propertyId: t.propertyId,
+          entityType: 'builder_page',
+          entityId: crypto.randomUUID(),
+          score: 50,
+          grade: 'poor',
+          title: 'A page',
+          path: `/p-${crypto.randomUUID().slice(0, 8)}`,
+          card: {
+            checks: [
+              {
+                id: 'title-length',
+                label: opts.label,
+                category: opts.category,
+                status: opts.status,
+              },
+            ],
+          },
+          computedAt: opts.computedAt,
+        },
+      });
+    });
+  }
+
+  it('shows a reworded check once, in its newest wording, over every page', async () => {
+    // A stored card keeps the words the checks had on the day that page was
+    // scored, and a page is re-scored only when it is saved or scanned. So a
+    // site holds cards from several versions of the rules at once, and grouping
+    // on the WORDS split one check into two rows: the plain-English pass turned
+    // thirteen checks into twenty-six, each counting only the pages that happen
+    // to carry that wording.
+    const t = await createTestTenant('owner');
+    const app = await createApp();
+    try {
+      await enableSeo(t.tenantId);
+      const old = new Date('2026-01-01T00:00:00.000Z');
+      const recent = new Date('2026-09-01T00:00:00.000Z');
+      await card(t, { label: 'Title length', category: 'meta', status: 'fail', computedAt: old });
+      await card(t, {
+        label: 'How long the title is',
+        category: 'meta',
+        status: 'pass',
+        computedAt: recent,
+      });
+
+      const res = await app.inject({
+        method: 'GET',
+        url: '/v1/seo/reports/checklist',
+        headers: { ...authHeader(signToken(app, t)), 'x-sparx-property-id': t.propertyId },
+      });
+      const checks = res.json().data.checks as {
+        id: string;
+        label: string;
+        pagesScored: number;
+        pagesPass: number;
+        pagesFail: number;
+      }[];
+
+      const rows = checks.filter((c) => c.id === 'title-length');
+      // Group on (id, label) instead and this is 2 — one row reading
+      // "Title length, 1 of 1" above another reading "How long the title is,
+      // 0 of 1", for a site with one check and two pages.
+      expect(rows, 'one row per check, whatever it used to be called').toHaveLength(1);
+      expect(rows[0]!.label, 'the wording the product uses today').toBe('How long the title is');
+      expect(rows[0]!.pagesScored, 'every scored page, not just the recent ones').toBe(2);
+      expect(rows[0]!.pagesPass).toBe(1);
+      expect(rows[0]!.pagesFail).toBe(1);
+    } finally {
+      await app.close();
+      await dropTestTenant(t.tenantId);
+    }
+  });
+});

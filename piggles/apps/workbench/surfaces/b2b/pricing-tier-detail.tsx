@@ -62,7 +62,7 @@ const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 const SCOPE_OPTIONS: { value: ProductScope; label: string }[] = [
   { value: 'all', label: 'Everything you sell' },
-  { value: 'collections', label: 'Only certain collections' },
+  { value: 'collections', label: 'Only certain groups' },
   { value: 'products', label: 'Only certain products' },
 ];
 
@@ -114,7 +114,7 @@ function TierLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               error={tierQuery.error}
               noun="tier"
               title="Could not load this tier"
-              description="This is a problem reaching the server. The tier itself is unaffected — nothing has been lost."
+              description="This is a problem reaching the server. The tier itself is unaffected. Nothing has been lost."
               onRetry={() => {
                 void tierQuery.refetch();
               }}
@@ -319,7 +319,7 @@ function TierEditor({
         <div className={COLUMN}>
           {isNew ? (
             <Text>
-              Set a discount once and give it to every account you put on this tier — instead of
+              Set a discount once and give it to every account you put on this tier: instead of
               setting one per customer.
             </Text>
           ) : null}
@@ -345,7 +345,7 @@ function TierEditor({
                 <FieldStatus status="error">{nameError}</FieldStatus>
               ) : (
                 <FieldDescription>
-                  What you call this level — Trade, Distributor, Key account.
+                  What you call this level: Trade, Distributor, Key account.
                 </FieldDescription>
               )}
             </Field>

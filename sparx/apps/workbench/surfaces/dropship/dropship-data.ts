@@ -161,7 +161,7 @@ export function supplierState(status: SupplierStatus): {
       return {
         label: 'Connected',
         tone: 'success',
-        detail: 'Working normally — its catalog can be synced and orders can be routed to it.',
+        detail: 'Working normally. Its catalog can be synced and orders can be routed to it.',
       };
     case 'connecting':
       return {
@@ -174,7 +174,7 @@ export function supplierState(status: SupplierStatus): {
         label: 'Needs attention',
         tone: 'danger',
         detail:
-          'The connection is not working — usually a token that has expired or been revoked. Re-enter its details to fix it.',
+          'The connection is not working, usually a token that has expired or been revoked. Re-enter its details to fix it.',
       };
     case 'disconnected':
       return {
@@ -533,7 +533,7 @@ export function orderState(status: DropshipOrderStatus): {
       return {
         label: 'Cancelled',
         tone: 'neutral',
-        detail: 'This supplier order was cancelled.',
+        detail: 'This supplier order was canceled.',
       };
   }
 }

@@ -55,7 +55,6 @@ type SortDir = 'asc' | 'desc';
 const STATUS_FILTERS = [
   { value: 'all', label: 'All' },
   { value: 'unpaid', label: invoiceState('unpaid').label },
-  { value: 'overdue', label: invoiceState('overdue').label },
   { value: 'partial', label: invoiceState('partial').label },
   { value: 'paid', label: invoiceState('paid').label },
 ] as const;
@@ -76,6 +75,18 @@ const SENT_FILTERS = [
   { value: 'true', label: 'Sent' },
 ] as const;
 
+// LATE IS A DATE, NOT A STATUS. `overdue` used to sit in the Status list above,
+// which made it look like the answer to "who is late" and it was not: the status
+// column is written when something is DONE to a document, and a due date passing
+// is nobody doing anything, so it went on saying `unpaid` or `partial` for ever
+// (issue 522). Asking the due date is a different question from asking the money
+// state, the way `sent` is, so it gets its own control rather than a word in
+// somebody else's list.
+const LATE_FILTERS = [
+  { value: 'all', label: 'All' },
+  { value: 'true', label: 'Late only' },
+] as const;
+
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
@@ -86,6 +97,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [sent, setSent] = useState('all');
+  const [late, setLate] = useState('all');
   // Due soonest first — the question a receivables list exists to answer, and
   // the reason the endpoint needed a real `order` param rather than the
   // platform's usual hardcoded 'desc'.
@@ -116,7 +128,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
     queryKey: [
       'invoicing',
       'documents',
-      { q: search, status: activeStatus, sent, sort: sort.key, dir: sort.dir, take, skip },
+      { q: search, status: activeStatus, sent, late, sort: sort.key, dir: sort.dir, take, skip },
     ],
     queryFn: () =>
       api
@@ -124,6 +136,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
           ...(search ? { q: search } : {}),
           ...(activeStatus === 'all' ? {} : { status: activeStatus }),
           ...(sent === 'all' ? {} : { sent }),
+          ...(late === 'all' ? {} : { pastDue: late }),
           sort_by: sort.key,
           order: sort.dir,
           take,
@@ -245,13 +258,24 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
             options: SENT_FILTERS.map((f) => ({ value: f.value, label: f.label })),
             neutralValue: 'all',
           },
+          {
+            label: 'Late',
+            key: 'pastDue',
+            value: late,
+            onValueChange: (next) => {
+              setLate(next ?? 'all');
+              resetWindow();
+            },
+            options: LATE_FILTERS.map((f) => ({ value: f.value, label: f.label })),
+            neutralValue: 'all',
+          },
         ]}
         primary={
           <Button
             color="module"
             size="sm"
             className="ml-auto"
-            title="New invoice — hold Shift to open alongside, Alt for a new window"
+            title="New invoice: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('invoicing.invoice.edit', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -284,7 +308,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
         {error ? (
           <EmptyState
             title="Could not load invoices"
-            description="Something went wrong reaching the server. It may be temporary — try again in a moment."
+            description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">

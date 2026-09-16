@@ -82,7 +82,7 @@ const timezone = z
         return false;
       }
     },
-    { message: 'Not a recognised time zone. Use an IANA name such as America/Denver.' }
+    { message: 'Not a recognized time zone. Use an IANA name such as America/Denver.' }
   )
   .optional();
 

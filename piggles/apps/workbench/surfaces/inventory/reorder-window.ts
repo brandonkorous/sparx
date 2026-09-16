@@ -92,6 +92,7 @@ export function useReorderPane() {
     activeLocations,
     activeSuppliers,
     policyCount: summary.data?.policyCount,
+    levelCount: summary.data?.levelCount,
     locationName: activeLocations.find((l) => l.id === w.filters.locationId)?.name ?? null,
     supplierName: activeSuppliers.find((s) => s.id === w.filters.supplierId)?.name ?? null,
     // The selection is built from the rows the window returns, so narrowing

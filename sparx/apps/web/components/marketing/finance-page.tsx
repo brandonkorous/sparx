@@ -70,7 +70,7 @@ export function FinancePage() {
         src="/scenes/craft-bench.jpg"
         alt="Two makers working together at a studio bench, mid-project."
         headline="You have a feeling about last month. You don’t have a number."
-        lede="You know it was busy. You know the bank balance went up, or it didn’t. Somewhere in there is the job that took three days longer than you quoted and the supplier who put their prices up in January, and neither of them announced themselves — they just quietly came out of what you kept."
+        lede="You know it was busy. You know the bank balance went up, or it didn’t. Somewhere in there is the job that took three days longer than you quoted and the supplier who put their prices up in January, and neither of them announced themselves. They just quietly came out of what you kept."
       />
       {/* BEAT 3 — THE FALSE FIX. Concedes that the books are correct, then
           attacks the grain. Conceding first is what makes beat 4 credible. */}
@@ -95,7 +95,7 @@ export function FinancePage() {
         src="/scenes/workshop-plans.jpg"
         alt="Two people leaning over drawings spread across a workbench, working something out together."
         headline="Then hand your accountant a clean set of numbers"
-        lede="The conversation at the end of the quarter stops being a shoebox and a guess. They get every cost for the period, already posted to the account codes they gave you, in a file their software opens — and you get to spend that meeting on decisions instead of on data entry."
+        lede="The conversation at the end of the quarter stops being a shoebox and a guess. They get every cost for the period, already posted to the account codes they gave you, in a file their software opens, and you get to spend that meeting on decisions instead of on data entry."
       />
       <FinanceHandoff />
       <FinanceCapabilities />
@@ -110,7 +110,7 @@ export function FinancePage() {
             <Spark color={M.ink} />
           </>
         }
-        lede="What it does, what it deliberately doesn’t, and what it costs — answered straight. Still deciding? Start the 14-day trial, or turn Commerce on and get this for nothing."
+        lede="What it does, what it deliberately doesn’t, and what it costs: answered straight. Still deciding? Start the 14-day trial, or turn Commerce on and get this for nothing."
       />
       <FinanceCta />
     </>
@@ -148,8 +148,8 @@ function FinanceHero() {
             </span>
           </Display>
           <Text variant="lead" className="mt-7 max-w-[600px]">
-            Every cost your business has — parts, wages, rent, fuel, the software nobody remembers
-            signing up for — recorded against what actually came in, so “did we make money” has an
+            Every cost your business has (parts, wages, rent, fuel, the software nobody remembers
+            signing up for) recorded against what actually came in, so “did we make money” has an
             answer instead of a shrug. And because sparx already knows what you sold, it can go one
             better and tell you which jobs made it.
           </Text>
@@ -233,13 +233,13 @@ function FinanceProof() {
   const stats: { n: ReactNode; l: string }[] = [
     {
       n: <>1{<Spark color={M.ink} />}</>,
-      l: 'place your sales and your costs both live — profit is read, never reconciled',
+      l: 'place your sales and your costs both live: profit is read, never reconciled',
     },
     {
       n: '0',
       l: 'figures you enter twice · what a part cost is already recorded, at what you paid',
     },
-    { n: '2', l: 'dates on every cost — the month it belongs to, and the day the money left' },
+    { n: '2', l: 'dates on every cost: the month it belongs to, and the day the money left' },
     { n: '$0', l: 'what this costs if you already sell through sparx with Commerce or B2B' },
   ];
   return (
@@ -289,12 +289,12 @@ function FinancePricing() {
             <span className="text-[clamp(56px,7vw,80px)] leading-none font-medium tracking-[-0.03em]">
               $29
             </span>
-            <span className="text-2xl">/mo — or nothing at all</span>
+            <span className="text-2xl">/mo, or nothing at all</span>
           </div>
           <p className="max-w-[660px] text-2xl leading-[1.4]">
             Flat, whoever you are. And if you sell through sparx with Commerce or B2B, Finance is
-            included at no extra charge — you already paid for the half of this sum we subtract
-            from. Free for fourteen days regardless, and we don’t ask for a card.
+            included at no extra charge. You already paid for the half of this sum we subtract from.
+            Free for fourteen days regardless, and we don’t ask for a card.
           </p>
         </div>
         <a
@@ -319,7 +319,7 @@ function FinanceCta() {
         </Display>
         <Text variant="lead" className="m-0 max-w-[660px]">
           Fourteen days free, no card, and no contract at the end of it. Turn it off the day it
-          stops earning its $29 and every cost, receipt and figure you recorded stays yours —
+          stops earning its $29 and every cost, receipt and figure you recorded stays yours:
           exportable in full, from a button, without asking anyone.
         </Text>
         <div className="flex flex-wrap items-center gap-3">
@@ -348,36 +348,36 @@ const FINANCE_FAQ: FaqItem[] = [
     id: 'finance-not-accounting',
     question: 'Is this accounting software? Does it replace QuickBooks?',
     answer:
-      'No, and it is not going to. There is no general ledger here, no chart of accounts, no double entry, no bank reconciliation, no payroll and no tax filing — that is your accounting package’s job and your accountant’s, and both are better at it than a new platform would be. sparx answers the operational question instead: what did this month cost, and which work was worth doing. Then it hands your accountant a clean, mapped file for the statutory one.',
+      'No, and it is not going to. There is no general ledger here, no chart of accounts, no double entry, no bank reconciliation, no payroll and no tax filing. That is your accounting package’s job and your accountant’s, and both are better at it than a new platform would be. sparx answers the operational question instead: what did this month cost, and which work was worth doing. Then it hands your accountant a clean, mapped file for the statutory one.',
   },
   {
     id: 'finance-price',
     question: 'How much does Finance cost?',
     answer:
-      'A flat $29 a month on its own — no per-user charge and nothing metered by how many costs you record. If you sell through sparx with Commerce or B2B, it is included at no extra cost, the same way Invoicing and Inventory are. The reason is not a promotion: profit is what came in minus what went out, you already bought the revenue half, and billing you separately for the part we subtract from it would be charging twice for one number.',
+      'A flat $29 a month on its own: no per-user charge and nothing metered by how many costs you record. If you sell through sparx with Commerce or B2B, it is included at no extra cost, the same way Invoicing and Inventory are. The reason is not a promotion: profit is what came in minus what went out, you already bought the revenue half, and billing you separately for the part we subtract from it would be charging twice for one number.',
   },
   {
     id: 'finance-standalone',
     question: 'Can I use it if I don’t sell anything through sparx?',
     answer:
-      'Yes — it needs no other module to be useful. A consultancy, a nonprofit, a publisher, a landlord: anyone with costs can record them, group them their own way, track what they owe and see what it all came to, with no store and no site. That is the case the $29 standalone price is for. Add Commerce or B2B later and the charge simply stops.',
+      'Yes. It needs no other module to be useful. A consultancy, a nonprofit, a publisher, a landlord: anyone with costs can record them, group them their own way, track what they owe and see what it all came to, with no store and no site. That is the case the $29 standalone price is for. Add Commerce or B2B later and the charge simply stops.',
   },
   {
     id: 'finance-typing',
     question: 'Do I have to type in every single cost?',
     answer:
-      'Far less than you would expect. What you sold, what each part cost coming off the shelf, and what a marketplace or card processor took are already recorded by the rest of sparx, so none of that is re-entered. What you pay sparx records itself. Anything that repeats — rent, insurance, subscriptions, a vehicle lease — is set up once and then posts itself every month. You can also import a bank or card statement on whatever column layout your bank exports, with a preview of exactly what will be created before anything is. What is left is genuinely small, and the entry row takes about four seconds.',
+      'Far less than you would expect. What you sold, what each part cost coming off the shelf, and what a marketplace or card processor took are already recorded by the rest of sparx, so none of that is re-entered. What you pay sparx records itself. Anything that repeats (rent, insurance, subscriptions, a vehicle lease) is set up once and then posts itself every month. You can also import a bank or card statement on whatever column layout your bank exports, with a preview of exactly what will be created before anything is. What is left is genuinely small, and the entry row takes about four seconds.',
   },
   {
     id: 'finance-accountant',
     question: 'Will it work with my accountant, or with QuickBooks and Sage?',
     answer:
-      'Today you download a spreadsheet of any date range with every column labelled, already posted to the account codes you mapped once, filtered to one of your businesses or all of them. Any accounting package imports that, and an accountant who just wants the numbers can open it as it is. Direct sync to QuickBooks Online, Xero and FreshBooks and one-click layouts for QuickBooks Desktop and Sage 50 are on the way — each is listed inside sparx today with its honest status, rather than being implied and then absent. Nothing is ever sent dated before the day you tell us your books are closed through.',
+      'Today you download a spreadsheet of any date range with every column labelled, already posted to the account codes you mapped once, filtered to one of your businesses or all of them. Any accounting package imports that, and an accountant who just wants the numbers can open it as it is. Direct sync to QuickBooks Online, Xero and FreshBooks and one-click layouts for QuickBooks Desktop and Sage 50 are on the way. Each is listed inside sparx today with its honest status, rather than being implied and then absent. Nothing is ever sent dated before the day you tell us your books are closed through.',
   },
   {
     id: 'finance-inventory',
     question: 'Are the parts and stock I buy counted as expenses?',
     answer:
-      'Not when you buy them, and that is deliberate. Buying stock converts cash into stock — it becomes a cost on the day that stock sells, which sparx already records at what you actually paid for it. Filing purchase orders as expenses would count every part twice, once on arrival and again on sale, and quietly make a profitable month look terrible. So the cost of the work in your profit figure is read from your real stock movements rather than from your purchase orders.',
+      'Not when you buy them, and that is deliberate. Buying stock converts cash into stock. It becomes a cost on the day that stock sells, which sparx already records at what you actually paid for it. Filing purchase orders as expenses would count every part twice, once on arrival and again on sale, and quietly make a profitable month look terrible. So the cost of the work in your profit figure is read from your real stock movements rather than from your purchase orders.',
   },
 ];

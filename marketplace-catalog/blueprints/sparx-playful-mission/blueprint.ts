@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-playful-mission',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Playful Mission',
   summary:
-    'A playful, colorful, mission-driven DTC storefront for a give-back brand — a warm-cream page broken up by saturated color bands (a marigold buy-one-give-one band, a navy impact stat, a sage "the rest" band) over a rhythm of shoppable carousels, in a bright `romp` theme. Modelled on the playful give-back DTC archetype; shipped as Rally, a pet-supplies brand that gives one item to a shelter for every one sold.',
+    'A playful, colorful, mission-driven DTC storefront for a give-back brand: a warm-cream page broken up by saturated color bands (a marigold buy-one-give-one band, a navy impact stat, a sage "the rest" band) over a rhythm of shoppable carousels, in a bright `romp` theme. Modelled on the playful give-back DTC archetype; shipped as Rally, a pet-supplies brand that gives one item to a shelter for every one sold.',
   vertical: 'retail',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

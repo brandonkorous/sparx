@@ -55,7 +55,7 @@ export function SiteScope({
     >
       {available.length === 0 ? (
         <Text className="text-sm">
-          Nothing to choose yet — this account has no modules switched on beyond the site builder
+          Nothing to choose yet. This account has no modules switched on beyond the site builder
           itself.
         </Text>
       ) : (
@@ -95,9 +95,9 @@ export function SiteRareMoves({
     return (
       <div className="border-base-300 flex flex-col gap-3 border-t pt-4">
         <Text className="text-sm">
-          This is your primary site — the one that answers your account&apos;s main web address.
-          Make another site primary to move that role, which is also what has to happen before this
-          one can be deleted.
+          This is your primary site: the one that answers your account&apos;s main web address. Make
+          another site primary to move that role, which is also what has to happen before this one
+          can be deleted.
         </Text>
       </div>
     );

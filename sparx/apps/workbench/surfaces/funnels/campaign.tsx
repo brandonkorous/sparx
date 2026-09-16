@@ -311,7 +311,7 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           error={funnel.error}
           noun="campaign"
           title="Could not open this campaign"
-          description="This is a problem reaching the server. The campaign itself is unaffected — nothing has been changed or lost."
+          description="This is a problem reaching the server. The campaign itself is unaffected. Nothing has been changed or lost."
           onRetry={() => {
             void funnel.refetch();
           }}
@@ -460,7 +460,7 @@ function ExistingCampaign({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 
           <FormSection
             title="What this campaign is"
-            description="The name is yours, to recognise it by. Nobody outside your team sees either of these."
+            description="The name is yours, to recognize it by. Nobody outside your team sees either of these."
           >
             <Field>
               <FieldLabel>Name</FieldLabel>

@@ -156,6 +156,12 @@ export interface BillingDocument {
    *  the send route records that the customer has it — there is no column. */
   metadata?: Record<string, unknown> | null;
   taxRate: number;
+  /** The note printed on the document the customer receives —
+   *  `billing-document-html` renders it under a "Notes" heading. It was missing
+   *  from this interface, which is why the editor seeded its notes box from a
+   *  hardcoded `''`: the box read empty on every load, and the next save sent
+   *  `notes || null` over whatever was stored (issue 512). */
+  notes: string | null;
   subtotal: number;
   taxTotal: number;
   /** Document-level charges carried across from the order: not lines, not taxed,

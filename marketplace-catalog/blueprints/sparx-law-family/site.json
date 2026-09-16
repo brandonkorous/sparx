@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Hearth & Stone Law — family & estate attorneys",
+      "seoTitle": "Hearth & Stone Law: family & estate attorneys",
       "seoDescription": "Hearth & Stone Law is a warm, plain-English practice for wills, trusts, probate and family law. Book a free consultation with an attorney online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Wills, trusts, probate and family matters — handled by people who take the time to make it make sense. Start with a free, no-pressure conversation."
+                      "Wills, trusts, probate and family matters: handled by people who take the time to make it make sense. Start with a free, no-pressure conversation."
                     ],
                     "id": "13a10928-c210-438a-8991-b098582a889a",
                     "ord": "a1"
@@ -786,7 +786,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A few of the ways families work with us. Every consultation starts free — you only decide to go further once you understand your options."
+                          "A few of the ways families work with us. Every consultation starts free. You only decide to go further once you understand your options."
                         ],
                         "id": "da991608-32f2-49ce-8b45-26db683a3007",
                         "ord": "a1"
@@ -1084,7 +1084,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Hearth & Stone Law has helped families in this community plan, protect and move forward for more than twenty years. Most of our clients come from someone we’ve already helped — a neighbor, a parent, a friend."
+                          "Hearth & Stone Law has helped families in this community plan, protect and move forward for more than twenty years. Most of our clients come from someone we’ve already helped: a neighbor, a parent, a friend."
                         ],
                         "id": "0c252e33-4d11-4138-bd71-950b7f80dc46",
                         "ord": "a1"
@@ -1158,9 +1158,7 @@
                         "kind": "element",
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
-                        "children": [
-                          "Book by name — you’ll meet with the same attorney each time."
-                        ],
+                        "children": ["Book by name: you’ll meet with the same attorney each time."],
                         "id": "02441aeb-e169-49d6-83d9-4f17081213e7",
                         "ord": "a1"
                       }
@@ -1328,7 +1326,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Trusts and family businesses — protecting what you’ve built for the next generation."
+                                  "Trusts and family businesses: protecting what you’ve built for the next generation."
                                 ],
                                 "id": "21321ba0-efa2-4f5a-8427-dee8732abc9d",
                                 "ord": "a2"
@@ -1443,7 +1441,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Hearth & Stone Law",
+      "seoTitle": "Book: Hearth & Stone Law",
       "seoDescription": "See what Hearth & Stone Law offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1567,7 +1565,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "88e33252-9c3a-42ec-aa90-7923b01bf95f",
                         "ord": "a1"
@@ -1674,7 +1672,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Hearth & Stone Law",
+      "seoTitle": "About: Hearth & Stone Law",
       "seoDescription": "Who Hearth & Stone Law is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1723,7 +1721,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Hearth & Stone Law on a simple belief: that legal help for families should feel human. The moments that bring people to us — planning for children, losing a parent, protecting someone who can’t protect themselves — are tender ones, and they deserve care, not a cold desk."
+                          "We started Hearth & Stone Law on a simple belief: that legal help for families should feel human. The moments that bring people to us, planning for children, losing a parent, protecting someone who can’t protect themselves, are tender ones, and they deserve care, not a cold desk."
                         ],
                         "id": "aaa04fc5-8afe-4df4-9148-dec700584fe9",
                         "ord": "a1"
@@ -1811,7 +1809,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every matter starts with your story — what you’re worried about, who you’re protecting, and what a good outcome looks like to you."
+                              "Every matter starts with your story: what you’re worried about, who you’re protecting, and what a good outcome looks like to you."
                             ],
                             "id": "47236fbc-16d0-4286-b2f5-026d154d56ce",
                             "ord": "a1"
@@ -1893,7 +1891,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Hearth & Stone Law",
+      "seoTitle": "Visit: Hearth & Stone Law",
       "seoDescription": "Where to find Hearth & Stone Law, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1930,7 +1928,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Hearth & Stone Law will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Hearth & Stone Law will get back to you, usually the same day."
                         ],
                         "id": "983b12b7-520a-4520-810a-66d83bda614a",
                         "ord": "a1"
@@ -2382,7 +2380,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See who’s available and reserve your free consultation online — no phone tag, no waiting on hold."
+                      "See who’s available and reserve your free consultation online: no phone tag, no waiting on hold."
                     ],
                     "id": "d3f5afb2-1e43-4509-a5b9-2e3660ae3a86",
                     "ord": "a1"

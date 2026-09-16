@@ -12,10 +12,10 @@ function* walk(node: BuilderNode): Generator<BuilderNode> {
 const types = (root: BuilderNode): string[] => [...walk(root)].map((nd) => nd.type);
 
 describe('DEFAULT_EMAIL_TEMPLATES', () => {
-  it('ships exactly the 39 documented templates with unique keys', () => {
+  it('ships exactly the 42 documented templates with unique keys', () => {
     const keys = DEFAULT_EMAIL_TEMPLATES.map((t) => t.key);
-    expect(keys).toHaveLength(39);
-    expect(new Set(keys).size).toBe(39);
+    expect(keys).toHaveLength(42);
+    expect(new Set(keys).size).toBe(42);
     expect(keys).toEqual(
       expect.arrayContaining([
         'welcome-customer',
@@ -53,7 +53,13 @@ describe('DEFAULT_EMAIL_TEMPLATES', () => {
         // §4 P3 — returns / RMA + B2B order outcomes
         'return-approved',
         'return-received',
+        // All THREE endings. A return finishes by refunding, by swapping, or by
+        // being turned down, and only the first of those used to send anything
+        // (persona issue 448).
         'return-refunded',
+        'return-exchanged',
+        'return-replacement-shipped',
+        'return-denied',
         'b2b-order-approved',
         'b2b-order-rejected',
         // docs/79 — Scheduling module booking notifications (the legacy B2B-fleet

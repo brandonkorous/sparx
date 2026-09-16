@@ -38,7 +38,7 @@ export interface ServiceCtx {
 export class LockedAutomationError extends Error {
   readonly code = 'AUTOMATION_LOCKED' as const;
   constructor(public readonly automationId: string) {
-    super('this automation is platform-managed and cannot be edited — duplicate it to edit');
+    super('this automation is platform-managed and cannot be edited: duplicate it to edit');
     Object.setPrototypeOf(this, LockedAutomationError.prototype);
   }
 }
@@ -511,14 +511,31 @@ export interface SystemAutomationSpec {
   locked?: boolean;
   /** System automations are typically seeded `active`. */
   status?: 'draft' | 'active' | 'paused';
+  /**
+   * Names this rule used to ship under.
+   *
+   * The seed is matched on (origin, name), so the DISPLAY NAME is the identity.
+   * That makes a reword of the name indistinguishable from a brand new rule: the
+   * lookup misses, a second row is created, and the tenant now holds two active
+   * copies of the same rule. For an email rule that means the customer is sent
+   * the same message twice, and the daily reconcile does it to every tenant at
+   * once.
+   *
+   * So a rename declares what it used to be called here. The old row is adopted
+   * and renamed in place instead of being left behind. Keep an entry forever
+   * once it has shipped: a tenant seeded before the rename may not be reconciled
+   * for days, and a tenant restored from an old backup arrives later still.
+   */
+  previousNames?: readonly string[];
 }
 
 /**
- * Idempotently install a platform-managed (system) automation for a tenant —
+ * Idempotently install a platform-managed (system) automation for a tenant:
  * the seed path for the Locked / Managed tiers (Slice F). Matched by
- * (origin='system', name); re-running updates the existing row in place rather
- * than duplicating. NEVER reachable from a tenant write — origin/locked are set
- * here, never accepted from `createAutomation`.
+ * (origin='system', name), then by any name in `previousNames`; re-running
+ * updates the existing row in place rather than duplicating. NEVER reachable
+ * from a tenant write: origin/locked are set here, never accepted from
+ * `createAutomation`.
  */
 export async function upsertSystemAutomation(
   ctx: ServiceCtx,
@@ -526,9 +543,15 @@ export async function upsertSystemAutomation(
 ): Promise<Automation> {
   const { triggerType, triggerConfig } = triggerToColumns(spec.trigger);
   return withTenant({ tenantId: ctx.tenantId }, async (tx) => {
-    const existing = await tx.automation.findFirst({
-      where: { origin: 'system', name: spec.name },
-    });
+    // Current name first; a former name only if the current one finds nothing,
+    // so a rule that has already been renamed is never matched twice.
+    const existing =
+      (await tx.automation.findFirst({ where: { origin: 'system', name: spec.name } })) ??
+      (spec.previousNames?.length
+        ? await tx.automation.findFirst({
+            where: { origin: 'system', name: { in: [...spec.previousNames] } },
+          })
+        : null);
     const common = {
       description: spec.description ?? null,
       status: spec.status ?? 'active',
@@ -546,16 +569,40 @@ export async function upsertSystemAutomation(
       // Idempotent re-seed: refresh the live document in place. Don't bump the
       // version on every reconcile tick — system rules are platform-managed, not
       // tenant-versioned (no History panel; `version` only feeds run-stamping).
-      return tx.automation.update({ where: { id: existing.id }, data: common });
+      // `name` is written too: adopting a row found under a former name is what
+      // carries the rename onto the tenant's existing rule.
+      return tx.automation.update({
+        where: { id: existing.id },
+        data: { ...common, name: spec.name },
+      });
     }
-    return tx.automation.create({
-      data: {
-        tenantId: ctx.tenantId,
-        name: spec.name,
-        ...common,
-        version: 1,
-        publishedAt: new Date(),
-      },
-    });
+    try {
+      return await tx.automation.create({
+        data: {
+          tenantId: ctx.tenantId,
+          name: spec.name,
+          ...common,
+          version: 1,
+          publishedAt: new Date(),
+        },
+      });
+    } catch (err) {
+      // Lost the race to another seed run.
+      //
+      // The lookup above is check-then-insert, so two overlapping seeds both
+      // look, both find nothing, and both create. That is how one tenant came to
+      // hold two "Handle form submissions" rows a millisecond apart, and two
+      // ACTIVE copies of a rule that sends an email means the customer is sent
+      // it twice. `automations_system_name_key` (a partial unique index over the
+      // seeded rows) now refuses the second INSERT; losing it means the other
+      // run has already written exactly this row, so re-read it and apply this
+      // spec on top rather than failing a seed nobody is watching.
+      if (!(err instanceof Prisma.PrismaClientKnownRequestError) || err.code !== 'P2002') throw err;
+      const winner = await tx.automation.findFirst({
+        where: { origin: 'system', name: spec.name },
+      });
+      if (!winner) throw err;
+      return tx.automation.update({ where: { id: winner.id }, data: common });
+    }
   });
 }

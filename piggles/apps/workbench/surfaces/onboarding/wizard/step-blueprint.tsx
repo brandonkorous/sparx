@@ -165,9 +165,7 @@ export function StepBlueprint({
           <Icon glyph={faPencilRuler} className="text-module size-5 shrink-0" aria-hidden />
           <div className="min-w-0">
             <p className="font-medium">Start from a blank canvas</p>
-            <p className="text-sm">
-              Design every page yourself, or build headless against our API.
-            </p>
+            <p className="text-sm">Design every page yourself, from a blank canvas.</p>
           </div>
         </div>
         <Button

@@ -79,6 +79,16 @@ model PurchaseOrderCharge {
   // lost to rounding land somewhere rather than evaporating.
   allocatedCents Int @default(0) @map("allocated_cents")
 
+  /// True on the ONE charge this order's own `freightCents` owns.
+  ///
+  /// Freight typed on the order is kept here as a real charge rather than
+  /// handled by a second mechanism, because this is what already spreads across
+  /// part-deliveries without double-spending itself. The flag is how the
+  /// application finds the charge it maintains and leaves alone any freight
+  /// charge somebody added themselves. A partial unique index pins it to one
+  /// per order.
+  isOrderFreight Boolean @default(false) @map("is_order_freight")
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 

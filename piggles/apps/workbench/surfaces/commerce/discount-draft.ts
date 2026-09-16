@@ -9,6 +9,7 @@
 
 import type { DiscountCondition, DiscountInput, DiscountType } from './discounts-data';
 import { parseDiscountInput, type Discount } from './discounts-data';
+import { moneyCents } from '../../components/money-input';
 
 export const CREATABLE_TYPES: DiscountType[] = ['percent', 'fixed', 'free_shipping'];
 
@@ -24,12 +25,13 @@ export function centsToDollars(cents: number | null | undefined): string {
   return cents === null || cents === undefined ? '' : (cents / 100).toFixed(2);
 }
 
+/** Nothing typed is `undefined` — a different answer from zero. Everything else
+ *  goes through `moneyCents`, which reads "8,50", "$8.00" and "1,250.00" the way
+ *  a person writes them; `Number()` read exactly one spelling and quietly
+ *  returned NaN for the rest (issues 086 and 486). */
 export function dollarsToCents(value: string): number | undefined {
-  const trimmed = value.trim();
-  if (trimmed === '') return undefined;
-  const parsed = Number(trimmed);
-  if (!Number.isFinite(parsed) || parsed < 0) return undefined;
-  return Math.round(parsed * 100);
+  if (value.trim() === '') return undefined;
+  return moneyCents(value) ?? undefined;
 }
 
 export function isoToLocalInput(iso: string | null): string {

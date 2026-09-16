@@ -246,7 +246,7 @@ function TaskEditor({ ctx, id, task }: { ctx: SurfaceContext; id: string; task?:
     create.isError || update.isError
       ? taskErrorMessage(
           create.error ?? update.error,
-          'The server did not answer. Nothing was changed and your work is still on screen — try again in a moment.'
+          'The server did not answer. Nothing was changed and your work is still on screen. Try again in a moment.'
         )
       : null;
 
@@ -355,8 +355,8 @@ function TaskEditor({ ctx, id, task }: { ctx: SurfaceContext; id: string; task?:
                 Add a task
               </Heading>
               <Text>
-                A task is something to do for a customer or a deal — a call to make, a quote to
-                send. Give it to someone on your team and, if it matters, a date it is due.
+                A task is something to do for a customer or a deal: a call to make, a quote to send.
+                Give it to someone on your team and, if it matters, a date it is due.
               </Text>
             </div>
           ) : null}
@@ -465,7 +465,7 @@ function TaskEditor({ ctx, id, task }: { ctx: SurfaceContext; id: string; task?:
                 />
                 <FieldDescription>
                   Use “Mark done” in the bar to record who finished it and when; this dropdown is
-                  for reopening or cancelling.
+                  for reopening or canceling.
                 </FieldDescription>
               </Field>
             ) : null}

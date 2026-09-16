@@ -44,7 +44,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { holderLabel, movementReason, plural } from './data';
-import { humanDuration, stockAgeTone } from './integrity-data';
+import { countVerdict, humanDuration } from './integrity-data';
 import {
   actorLabel,
   bufferSourceLabel,
@@ -79,7 +79,7 @@ function ReconcileBanner({ data }: { data: StockProvenance }) {
         <AlertTitle>This number does not add up</AlertTitle>
         <AlertDescription>
           The record says {NUMBER.format(data.onHand)}, but adding up every change ever recorded
-          gives {NUMBER.format(data.derivedOnHand)} — a difference of{' '}
+          gives {NUMBER.format(data.derivedOnHand)}, a difference of{' '}
           {NUMBER.format(Math.abs(data.onHand - data.derivedOnHand))}. Nothing has been altered.
           Count this item to settle it, so the correction is recorded as a real count.
         </AlertDescription>
@@ -102,7 +102,7 @@ function Breakdown({ data }: { data: StockProvenance }) {
       value: -data.allocated,
       note:
         data.holds.length > 0
-          ? `Held by ${plural(data.holds.length, 'basket or order', 'baskets and orders')} — listed below.`
+          ? `Held by ${plural(data.holds.length, 'basket or order', 'baskets and orders')}: listed below.`
           : 'Nothing is holding any of it.',
     },
     {
@@ -182,16 +182,18 @@ function Breakdown({ data }: { data: StockProvenance }) {
 /* ── How old it is, and who last touched it ──────────────────────────────── */
 
 function Freshness({ data }: { data: StockProvenance }) {
-  const tone = stockAgeTone(data.ageSeconds);
+  const count = countVerdict(data.lastCountedAt, data.countIntervalDays);
   return (
     <section className="card bg-base-100 flex flex-col gap-3 p-4">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <Heading level={2} className="text-lg font-semibold">
           How current this is
         </Heading>
-        <Badge color={tone} variant="soft">
-          {humanDuration(data.ageSeconds)} old
-        </Badge>
+        {/* Stated, not judged. This is how long since the quantity last moved,
+            which is hours for a line that sells daily and months for one that
+            sells twice a year — neither is a fault, so neither wears a color.
+            The verdict below is the one with a standard behind it. */}
+        <Badge>{humanDuration(data.ageSeconds)} old</Badge>
       </div>
       <Text className="text-sm">
         Last established <Timestamp value={data.asOf} format="relative" />
@@ -204,9 +206,32 @@ function Freshness({ data }: { data: StockProvenance }) {
         .
       </Text>
 
+      {/* The question none of the above can answer: has anybody actually
+          LOOKED? A sale moves all three of those numbers without a single
+          person seeing the shelf, which is exactly how a book number drifts
+          away from what is really there (issue 498). */}
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <Text className="text-sm">
+          {data.lastCountedAt ? (
+            <>
+              Last counted against the shelf{' '}
+              <Timestamp value={data.lastCountedAt} format="relative" />.
+            </>
+          ) : (
+            'Nobody has counted this against the shelf yet.'
+          )}
+        </Text>
+        {count ? (
+          <Badge color={count.tone} variant="soft">
+            {count.label}
+          </Badge>
+        ) : null}
+      </div>
+      {count ? <Text className="text-sm">{count.detail}</Text> : null}
+
       {data.sources.length === 0 ? (
         <Text className="text-sm">
-          This number is kept in sparx — nothing outside is feeding it.
+          This number is kept in sparx. Nothing outside is feeding it.
         </Text>
       ) : (
         <ul className="flex flex-col gap-2">
@@ -234,8 +259,8 @@ function Freshness({ data }: { data: StockProvenance }) {
               </Text>
               {source.linkIsStale ? (
                 <Text className="text-warning text-sm">
-                  This item was missing from the last full update — it may have been removed at
-                  their end.
+                  This item was missing from the last full update. It may have been removed at their
+                  end.
                 </Text>
               ) : null}
             </li>
@@ -330,7 +355,7 @@ function Holds({ data }: { data: StockProvenance }) {
         </Heading>
         <Text className="text-sm">
           &ldquo;{NUMBER.format(data.allocated)} spoken for&rdquo; is a number. This is what is
-          holding them, and when — if ever — it frees up.
+          holding them, and when (if ever) it frees up.
         </Text>
       </div>
       <ul className="flex flex-col gap-2">
@@ -346,7 +371,7 @@ function Holds({ data }: { data: StockProvenance }) {
                   frees up <Timestamp value={hold.expiresAt} format="relative" />
                 </>
               ) : (
-                'held until it ships or is cancelled'
+                'held until it ships or is canceled'
               )}
             </Text>
           </li>

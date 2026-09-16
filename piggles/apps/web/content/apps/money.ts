@@ -7,12 +7,12 @@ import type { AppMarketing } from './types';
 
 export const MONEY: AppMarketing = {
   heading: 'What came in, what went out, what you kept.',
-  lede: 'Money is the plain answer to how the business is doing. It reads what already happened — sales, refunds, costs, wages, payouts — and states the result without asking you to be an accountant to read it.',
+  lede: 'Money is the plain answer to how the business is doing. It reads what already happened (sales, refunds, costs, wages, payouts) and states the result without asking you to be an accountant to read it.',
   alsoKnownAs: ['financial reporting', 'bookkeeping', 'profit and loss', 'accounting'],
   does: [
     {
       title: 'Kept, not just taken',
-      body: 'Revenue after refunds, discounts, fees and what the goods cost you — so the number on the screen is the one that matters.',
+      body: 'Revenue after refunds, discounts, fees and what the goods cost you, so the number on the screen is the one that matters.',
     },
     {
       title: 'What is actually profitable',
@@ -38,15 +38,15 @@ export const MONEY: AppMarketing = {
   chapters: [
     {
       heading: 'The half of the picture most software leaves out.',
-      body: 'Almost every business system is good at what came in and vague about what went out, which is why the figure on the dashboard is always cheerful and the bank balance never agrees with it. Money records what you spent as deliberately as what you took — the bills, the standing costs, the people you pay — so the result is arithmetic rather than optimism.',
+      body: 'Almost every business system is good at what came in and vague about what went out, which is why the figure on the dashboard is always cheerful and the bank balance never agrees with it. Money records what you spent as deliberately as what you took (the bills, the standing costs, the people you pay) so the result is arithmetic rather than optimism.',
       does: [
         {
           title: 'What you spent, against what caused it',
-          body: 'Costs recorded to a category and, where it matters, to the job they belong to — instead of a single line at the end of the month called "expenses".',
+          body: 'Costs recorded to a category and, where it matters, to the job they belong to: instead of a single line at the end of the month called "expenses".',
         },
         {
           title: 'Bills, before they are late',
-          body: 'What you owe, to whom, and when it falls due. Ageing that tells you what is about to become a problem rather than what already is.',
+          body: 'What you owe, to whom, and when it falls due. Aging that tells you what is about to become a problem rather than what already is.',
         },
         {
           title: 'The costs that come round every month',
@@ -64,11 +64,11 @@ export const MONEY: AppMarketing = {
     },
     {
       heading: 'Did that job make money, or just make noise?',
-      body: 'Turnover is the number people quote and the least useful one. What matters is what was left after the parts, the hours and the fees — per job, per product, per channel — and that is a question most businesses cannot answer without an evening and a spreadsheet. Because the sales, the stock cost and the hours are all here already, it is a screen rather than an exercise.',
+      body: 'Turnover is the number people quote and the least useful one. What matters is what was left after the parts, the hours and the fees (per job, per product, per channel) and that is a question most businesses cannot answer without an evening and a spreadsheet. Because the sales, the stock cost and the hours are all here already, it is a screen rather than an exercise.',
       does: [
         {
           title: 'Profit, with the costs actually taken off',
-          body: 'What was sold, less refunds, discounts, payment fees and what the goods cost — stated as one figure you can act on.',
+          body: 'What was sold, less refunds, discounts, payment fees and what the goods cost: stated as one figure you can act on.',
         },
         {
           title: 'By job',
@@ -84,13 +84,13 @@ export const MONEY: AppMarketing = {
         },
         {
           title: 'Payments and payouts, reconciled',
-          body: 'What was taken, what the provider actually deposited, and the fees in between — so the bank statement and the sales figure can be made to agree.',
+          body: 'What was taken, what the provider actually deposited, and the fees in between, so the bank statement and the sales figure can be made to agree.',
         },
       ],
     },
     {
       heading: 'Your accountant does not want a screenshot.',
-      body: 'At some point this has to leave Piggles and land wherever your books are kept. Connect one of the packages below and the journals, bills and expenses go across on their own; use anything else and you get a properly labelled spreadsheet rather than a print-out somebody has to retype. Both are real answers — which is the point, because the alternative is a year of retyping.',
+      body: 'At some point this has to leave Piggles and land wherever your books are kept. Connect one of the packages below and the journals, bills and expenses go across on their own; use anything else and you get a properly labelled spreadsheet rather than a print-out somebody has to retype. Both are real answers, which is the point, because the alternative is a year of retyping.',
       does: [
         {
           title: 'Connected, not exported',

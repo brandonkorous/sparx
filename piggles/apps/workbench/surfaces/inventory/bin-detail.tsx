@@ -218,7 +218,7 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       title: `Remove ${bin.data?.code ?? 'this shelf'}?`,
       description:
         held > 0
-          ? `It still holds ${plural(held, 'unit', 'units')}. Move them to another shelf first — otherwise they stay counted in your totals but nobody can find them.`
+          ? `It still holds ${plural(held, 'unit', 'units')}. Move them to another shelf first, otherwise they stay counted in your totals but nobody can find them.`
           : 'It will stop appearing in shelf pickers. Its history is kept.',
       confirmLabel: 'Remove it',
       cancelLabel: 'Keep it',
@@ -413,8 +413,8 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 Where it is
               </Heading>
               <Text className="text-sm">
-                Fill in whichever of these your place actually uses — they are only here to group
-                and find shelves, so blanks are fine.
+                Fill in whichever of these your place actually uses. They are only here to group and
+                find shelves, so blanks are fine.
               </Text>
             </div>
             <div className="grid grid-cols-1 gap-3 @lg:grid-cols-4">
@@ -471,8 +471,8 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             <Field>
               <FieldLabel>How much it holds</FieldLabel>
               <FieldDescription>
-                A guide, not a limit. Nothing is ever refused for going over — a system that will
-                not let you record where something actually is just gets worked around.
+                A guide, not a limit. Nothing is ever refused for going over: a system that will not
+                let you record where something actually is just gets worked around.
               </FieldDescription>
               <FieldControl
                 render={

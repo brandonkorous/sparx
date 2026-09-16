@@ -1,8 +1,8 @@
 # sparx Platform — Billing & Subscriptions
 
-**Version:** 2.7
+**Version:** 2.8
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-22
+**Last Updated:** 2026-09-14
 
 ---
 
@@ -186,7 +186,7 @@ The site stays live for visitors; the dashboard nudges daily. A lapsed **active*
 
 ### Day 21 — Suspend
 
-No active subscription past grace → the **site** (`wizeworks/apps/site`) serves a full-page, **non-bypassable** "site unavailable" overlay — a friendly sparx-flavored message (e.g. _"Catching a fresh spark — back in a flash"_) that never exposes a billing problem to the tenant's customers. The site is suspended to the public; **the dashboard stays fully open** so the owner can add a card or export. **Nothing is deleted.**
+No active subscription past grace → the **site** (`wizeworks/apps/site`) serves a full-page, **non-bypassable** "site unavailable" overlay that never exposes a billing problem to the tenant's customers. The message is deliberately **plain and brand-free** (_"Back soon"_ plus one sentence): `wizeworks/apps/site` serves every brand's tenants, so a sparx-flavored line is platform branding on somebody else's dark shop — the same advertisement the missing logo exists to avoid — and it tells a shopper who wanted a shirt nothing. (It read _"Catching a fresh spark"_ until 2026-09-14; the spark is the sparx mark.) **Every crawler-facing surface goes dark with it**: page metadata returns `Temporarily unavailable` + `noindex` on EVERY route (a route's metadata overrides the layout's, so the layout alone cannot hold the line), `robots.txt` becomes `Disallow: /`, and `sitemap.xml` / `llms.txt` 404 — otherwise a crawler re-indexes the whole shop as one blank page under the shop's own name, and the listings stay gone after the bill is paid. The site is suspended to the public; **the dashboard stays fully open** so the owner can add a card or export. **Nothing is deleted.**
 
 ### Anytime — Reactivate
 

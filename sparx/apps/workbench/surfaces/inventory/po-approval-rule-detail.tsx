@@ -7,19 +7,19 @@
 //
 // ── The defaults are the advice ───────────────────────────────────────────
 //
-// A new limit opens as "over £1,000, any supplier, any location, anybody who can
+// A new limit opens as "over $1,000, any supplier, any location, anybody who can
 // administer". That is the shape almost every small business wants first, and
 // somebody who has never set a purchasing control has no way to arrive at it
 // from an empty form. Every choice is still theirs.
 //
 // ── The one thing that is genuinely dangerous ─────────────────────────────
 //
-// A limit of £0 holds EVERY order, including the £4 one for a box of screws.
+// A limit of $0 holds EVERY order, including the $4 one for a box of screws.
 // That is legitimate — some businesses want exactly that — but it is also what
 // somebody types by accident, so the form says out loud what it will do before
 // they save it.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   AlertContent,
@@ -39,7 +39,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { Save, Trash2 } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
-import { PANE_SHELL } from '../../components/pane-toolbar';
+import { PANE_SHELL, PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
 import { useConfirm } from '../../lib/confirm';
 import { afterCommit } from '../../lib/defer';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -52,6 +52,7 @@ import {
   usePoApprovalRules,
   useUpdatePoApprovalRule,
 } from './po-approvals-data';
+import { MoneyTextInput, moneyCents } from '../../components/money-input';
 
 /** The column the form is laid out in — the house width for a settings form. */
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -67,7 +68,7 @@ interface Draft {
 }
 
 const NEW_DRAFT: Draft = {
-  name: 'Orders over £1,000',
+  name: 'Orders over $1,000',
   supplierId: '',
   warehouseId: '',
   minAmount: '1000',
@@ -96,32 +97,37 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
 
   const [draft, setDraft] = useState<Draft>(NEW_DRAFT);
-  const [dirty, setDirty] = useState(false);
+  // What was last seeded or saved. Dirty is the comparison against it, the way
+  // most of this console already works: a sticky boolean means "somebody
+  // touched something" rather than "this differs from what is stored", so
+  // undoing an edit left the pane still claiming unsaved work (issue 507).
+  const initialRef = useRef<string>(JSON.stringify(NEW_DRAFT));
 
   useEffect(() => {
     if (!existing) return;
-    setDraft({
+    const seeded: Draft = {
       name: existing.name,
       supplierId: existing.supplierId ?? '',
       warehouseId: existing.warehouseId ?? '',
       minAmount: (existing.minAmountCents / 100).toString(),
       requiredRole: existing.requiredRole ?? '',
       isActive: existing.isActive,
-    });
-    setDirty(false);
+    };
+    setDraft(seeded);
+    initialRef.current = JSON.stringify(seeded);
   }, [existing]);
 
+  const dirty = JSON.stringify(draft) !== initialRef.current;
   useDirtySource(dirty, 'This spending limit has unsaved changes. Close it anyway?');
 
   const patch = (next: Partial<Draft>) => {
     setDraft((current) => ({ ...current, ...next }));
-    setDirty(true);
   };
 
-  const parsedAmount = Number.parseFloat(draft.minAmount);
-  const minAmountCents = Number.isFinite(parsedAmount)
-    ? Math.round(parsedAmount * 100)
-    : Number.NaN;
+  // Blank is still no answer, but everything else is read the way a person
+  // writes money — "1,000", "$1,000.00", "1.000,00" (issue 486).
+  const minAmountCents =
+    draft.minAmount.trim() === '' ? Number.NaN : (moneyCents(draft.minAmount) ?? Number.NaN);
   const amountValid = Number.isFinite(minAmountCents) && minAmountCents >= 0;
   const canSave = draft.name.trim().length > 0 && amountValid && dirty;
 
@@ -135,7 +141,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       isActive: draft.isActive,
     };
     const done = (savedId: string) => {
-      setDirty(false);
+      initialRef.current = JSON.stringify(draft);
       afterCommit(() => {
         toast.add({
           title: isNew ? 'Spending limit set' : 'Spending limit saved',
@@ -182,7 +188,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Remove “${draft.name}”?`,
       description:
-        'Orders it has already held keep their record of who approved them — that history is not deleted. What stops is the holding: from now on, orders that would have matched go straight to the supplier.',
+        'Orders it has already held keep their record of who approved them. That history is not deleted. What stops is the holding: from now on, orders that would have matched go straight to the supplier.',
       confirmLabel: 'Remove the limit',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -190,7 +196,8 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     if (!ok) return;
     remove.mutate(id, {
       onSuccess: () => {
-        setDirty(false);
+        // No baseline update needed: a surface closing ITSELF goes through
+        // controller.close, which drops the guards before closing.
         afterCommit(() => {
           toast.add({ title: 'Spending limit removed', type: 'success' });
         });
@@ -229,7 +236,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   }
 
   return (
-    <div className={`${PANE_SHELL} overflow-y-auto`}>
+    <div className={PANE_SHELL_SCROLL}>
       <div className={COLUMN}>
         <Heading level={2} className="text-lg">
           {isNew ? 'Set a spending limit' : 'Spending limit'}
@@ -246,7 +253,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Input
                   color="module"
                   value={draft.name}
-                  placeholder="Orders over £1,000"
+                  placeholder="Orders over $1,000"
                   onChange={(event) => {
                     patch({ name: event.target.value });
                   }}
@@ -264,20 +271,18 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             <FieldLabel>Hold orders over</FieldLabel>
             <FieldControl
               render={
-                <Input
+                <MoneyTextInput
                   color="module"
-                  type="number"
-                  min={0}
-                  step="0.01"
-                  value={draft.minAmount}
-                  onChange={(event) => {
-                    patch({ minAmount: event.target.value });
+                  aria-label="Hold orders over"
+                  text={draft.minAmount}
+                  onTextChange={(minAmount) => {
+                    patch({ minAmount });
                   }}
                 />
               }
             />
             <FieldDescription>
-              The order&apos;s total, including shipping. Leave it at 0 to hold every order.
+              The order&apos;s total, including freight. Leave it at 0 to hold every order.
             </FieldDescription>
           </Field>
 
@@ -286,8 +291,8 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               <AlertContent>
                 <AlertTitle>This will hold every single order</AlertTitle>
                 <AlertDescription>
-                  Including a £4 order for a box of screws. That is a real thing some businesses
-                  want — but if you meant &ldquo;orders over £1,000&rdquo;, type 1000 above.
+                  Including a $4 order for a box of screws. That is a real thing some businesses
+                  want, but if you meant &ldquo;orders over $1,000&rdquo;, type 1000 above.
                 </AlertDescription>
               </AlertContent>
             </Alert>
@@ -314,7 +319,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               }
             />
             <FieldDescription>
-              A supplier-specific limit is how you put extra eyes on somebody you do not yet trust —
+              A supplier-specific limit is how you put extra eyes on somebody you do not yet trust,
               without slowing down everyone else.
             </FieldDescription>
           </Field>

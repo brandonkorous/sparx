@@ -13,7 +13,7 @@ import { withTenant } from '@wizeworks/db';
 
 import { toCsv } from './csv';
 import type { AccountingProvider } from '../schemas';
-import { utcMidnight } from '../rollup';
+import { endOfDayExclusive, utcMidnight } from '../rollup';
 
 export interface ExportRequest {
   from: Date;
@@ -241,7 +241,10 @@ export async function buildExport(
     tx.financeExpense.findMany({
       where: {
         deletedAt: null,
-        incurredAt: { gte: utcMidnight(request.from), lte: utcMidnight(request.to) },
+        // Half-open: `to` is an inclusive calendar DAY, and an lte-midnight bound
+        // sent the accountant every period one day short — see
+        // `endOfDayExclusive`.
+        incurredAt: { gte: utcMidnight(request.from), lt: endOfDayExclusive(request.to) },
         ...(request.propertyId !== undefined && request.propertyId !== null
           ? { propertyId: request.propertyId }
           : {}),
@@ -286,7 +289,18 @@ export async function buildExport(
   }
 
   return {
-    filename: `sparx-expenses-${provider}-${isoDate(request.from)}-to-${isoDate(request.to)}.csv`,
+    // NO PRODUCT NAME. This file leaves the product entirely and lands in an
+    // accountant's inbox, and it is downloaded by two consoles under two brands
+    // — so "sparx-expenses-…" told a Piggles shop's bookkeeper the name of a
+    // product their client has never heard of. Named for what it holds and the
+    // period it covers, which is what the person filing it needs; the timesheet
+    // export next door already does exactly this ("hours-…").
+    //
+    // The layout is in the name only when it is one, because two exports of the
+    // same month for different packages must not collide. The generic
+    // spreadsheet layout is not a package, and "expenses-csv-….csv" reads as a
+    // stutter.
+    filename: `expenses-${provider === 'csv' ? '' : `${provider}-`}${isoDate(request.from)}-to-${isoDate(request.to)}.csv`,
     contentType: 'text/csv; charset=utf-8',
     body: toCsv(layout.headers, rows),
     rowCount: rows.length,

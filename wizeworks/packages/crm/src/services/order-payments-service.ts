@@ -76,11 +76,6 @@ export async function recordPayment(ctx: ServiceContext, rawInput: unknown): Pro
       diff: { after: { amount: created.amount.toString(), status: created.status } },
     });
 
-    // "Total spent" is money received, so taking a payment is the moment it
-    // changes. Nothing updated it here before — the whole order total was
-    // credited to the buyer the instant the order was RAISED, paid or not.
-    await recomputeCustomerCommerce(tx, ctx.tenantId, order.customerId);
-
     return { payment: created, becamePaid };
   });
 
@@ -140,15 +135,9 @@ export async function voidPayment(ctx: ServiceContext, rawInput: unknown): Promi
         failureReason: input.reason ?? null,
       },
     });
+    // A voided payment drops the order's amountPaid, and the buyer's total drops
+    // with it inside the same call — see `recomputeOrderPaymentRollup`.
     await recomputeOrderPaymentRollup(tx, ctx.tenantId, before.orderId);
-    // A voided payment drops the order's amountPaid, so the buyer's total has to
-    // drop with it. `order.customerId` via the payment's order — voidPayment only
-    // ever holds the payment.
-    const order = await tx.order.findUnique({
-      where: { id: before.orderId },
-      select: { customerId: true },
-    });
-    if (order) await recomputeCustomerCommerce(tx, ctx.tenantId, order.customerId);
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -165,12 +154,34 @@ export async function voidPayment(ctx: ServiceContext, rawInput: unknown): Promi
   return payment;
 }
 
-/** Re-derive order.amountPaid / paymentStatus / paidAt from the current
- *  set of captured payments minus refunds. Called from every path that
- *  mutates a payment or a refund. Returns whether this recompute completed the
- *  order's balance (the unpaid→paid edge) so the caller can publish `order.paid`
- *  exactly once — detected here, the single chokepoint, so every payment path
- *  observes the transition identically. */
+/**
+ * Re-derive order.amountPaid / paymentStatus / paidAt from the current set of
+ * captured payments minus refunds, AND the buyer's lifetime figures with them.
+ * Called from every path that mutates a payment or a refund. Returns whether
+ * this recompute completed the order's balance (the unpaid→paid edge) so the
+ * caller can publish `order.paid` exactly once — detected here, the single
+ * chokepoint, so every payment path observes the transition identically.
+ *
+ * THE CUSTOMER ROLLUP IS INSIDE THIS FUNCTION, NOT BESIDE IT.
+ *
+ * `customer.totalSpent` is `SUM(order.amountPaid)`, so the moment this writes
+ * `amountPaid` the buyer's figures are stale by definition. That used to be the
+ * caller's job, and three of the five callers did it while two did not:
+ *
+ *   billing-payment-service.recordPayment   a payment taken against an INVOICE
+ *   payment-webhook-reconcile               a card settling at the gateway
+ *
+ * The first is how Devi's customer Anneliese Vogt came to read **$0.00 spent**
+ * on the Customers list after paying $180 — the order said Paid, the invoice
+ * said Paid, and the person who paid showed as having never spent anything. The
+ * second never ran here because no shop has a live gateway in development; in
+ * production it is every online sale.
+ *
+ * A data migration had already repaired exactly this drift once
+ * (`20270418000000_a_customers_lifetime_spend_agrees_with_their_orders`) while
+ * the paths that caused it went on shipping, so it came straight back. Pairing
+ * two calls by convention is what failed; there is one call now.
+ */
 export async function recomputeOrderPaymentRollup(
   tx: Prisma.TransactionClient,
   tenantId: string,
@@ -207,6 +218,11 @@ export async function recomputeOrderPaymentRollup(
       paidAt: becamePaid ? new Date() : order.paidAt,
     },
   });
+
+  // AFTER the order is written, never before: this reads `amountPaid` back off
+  // the orders it sums, so running it first would sum the figures this call just
+  // replaced.
+  await recomputeCustomerCommerce(tx, tenantId, order.customerId);
 
   return becamePaid;
 }

@@ -120,6 +120,7 @@ export function MoneyTextInput({
   className,
   size = 'md',
   color,
+  placeholder = '0.00',
   onTextChange,
   ...rest
 }: {
@@ -128,6 +129,9 @@ export function MoneyTextInput({
   'aria-label'?: string;
   className?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg';
+  /** Only where the field needs to say what the amount IS ("What you paid").
+   *  Everywhere else the shape of the number is the whole hint. */
+  placeholder?: string;
   /** Whatever the surrounding module uses, plus `error` for a field the caller
    *  has already decided is wrong for its own reasons. */
   color?: 'neutral' | 'primary' | 'module' | 'error';
@@ -141,7 +145,7 @@ export function MoneyTextInput({
       type="text"
       inputMode="decimal"
       disabled={disabled}
-      placeholder="0.00"
+      placeholder={placeholder}
       className={`tabular-nums ${className ?? ''}`}
       value={text}
       onChange={(event) => {

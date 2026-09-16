@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-plumbing-modern',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Plumbing (Modern)',
   summary:
-    'A modern, on-demand plumbing site — a crisp near-white palette with a vivid teal primary and warm amber accent, type-led with a "how it works" flow. Installs a working booking spine: flat-rate visits (same-day repair, drain clearing, water-heater swap, leak detection, emergency callout), three technicians dispatched by skill with their own weekly hours, and a same-day priority policy. Ships as "Rivet Plumbing Co.".',
+    'A modern, on-demand plumbing site: a crisp near-white palette with a vivid teal primary and warm amber accent, type-led with a "how it works" flow. Installs a working booking spine: flat-rate visits (same-day repair, drain clearing, water-heater swap, leak detection, emergency callout), three technicians dispatched by skill with their own weekly hours, and a same-day priority policy. Ships as "Rivet Plumbing Co.".',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

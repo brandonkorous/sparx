@@ -83,7 +83,7 @@ export function StoryGoLive({
           And… you’re live.
         </Heading>
         <Text className="max-w-[58ch] text-base">
-          Your story is out in the world at <span className="font-medium">{host}</span> — opening
+          Your story is out in the world at <span className="font-medium">{host}</span>, opening
           your workspace now so you can keep shaping it.
         </Text>
         <Button
@@ -116,7 +116,7 @@ export function StoryGoLive({
     <div className="flex min-w-0 flex-col gap-7">
       <div className="flex flex-col gap-2.5">
         <Heading level={2} className="text-2xl font-semibold tracking-tight">
-          {installId ? 'This is the moment — your story goes live' : 'Your workspace is ready'}
+          {installId ? 'This is the moment: your story goes live' : 'Your workspace is ready'}
         </Heading>
         <Text className="max-w-[58ch] text-base">
           {installId ? (
@@ -125,19 +125,19 @@ export function StoryGoLive({
                 <>
                   Your <span className="font-medium">{blueprint.name}</span> starting point is
                   waiting as a private draft
-                  {facts.length > 0 ? <> — {facts.join(', ')}, all in place</> : null}.{' '}
+                  {facts.length > 0 ? <> ({facts.join(', ')}, all in place)</> : null}.{' '}
                 </>
               ) : (
                 <>Your site is waiting as a private draft. </>
               )}
               Publish it and <span className="font-medium">{host}</span> is live for the world.
-              Nothing locks — keep shaping your {subjectNoun(story)} in the Builder whenever the
-              mood strikes.
+              Nothing locks. Keep shaping your {subjectNoun(story)} in the Builder whenever the mood
+              strikes.
             </>
           ) : builderEnabled ? (
             <>
               You’re starting from a blank canvas. Finish setup to open the Builder and design your{' '}
-              {subjectNoun(story)} — publish the moment it feels right.
+              {subjectNoun(story)}. Publish the moment it feels right.
             </>
           ) : (
             <>Everything is set up and ready to use. Finish setup to head into your workspace.</>
@@ -181,7 +181,7 @@ export function StoryGoLive({
               {String(moduleCount)} {moduleCount === 1 ? 'tool' : 'tools'}
             </span>{' '}
             on one platform for <span className="font-medium">${usd(monthlyTotal)}/mo</span> after
-            your free trial — saving{' '}
+            your free trial, saving{' '}
             <span className="text-success font-medium">${usd(monthlySavings)}/mo</span>, about{' '}
             <span className="font-medium">${usd(annualSavings)}</span> a year, versus stitching them
             together elsewhere.

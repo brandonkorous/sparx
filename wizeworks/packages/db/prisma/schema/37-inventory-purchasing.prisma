@@ -38,8 +38,17 @@ model PurchaseOrder {
   // Denormalized money — recomputed whenever lines change so list views + the
   // printed document read without re-summing. PO currency, minor units.
   subtotalCents Int @default(0) @map("subtotal_cents")
-  shippingCents Int @default(0) @map("shipping_cents")
-  totalCents    Int @default(0) @map("total_cents")
+
+  /// INBOUND transport: what it costs to get these goods from the supplier to
+  /// you. It is part of what the stock cost, so the application keeps a freight
+  /// PurchaseOrderCharge in step with it and every delivery picks up its share.
+  ///
+  /// Not "shipping" — that word is OUTBOUND, what a customer pays to have an
+  /// order sent to them, and it is a selling expense that never touches stock
+  /// value. Both were called shipping and the inbound one behaved like the
+  /// outbound one as a result (persona issue 496).
+  freightCents Int @default(0) @map("freight_cents")
+  totalCents   Int @default(0) @map("total_cents")
 
   // Multi-currency purchasing (docs/146 Phase 5.7). `currency` above is what the
   // supplier bills in; these two say what that is worth in the tenant's base

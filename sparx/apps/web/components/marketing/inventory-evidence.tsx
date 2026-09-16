@@ -43,7 +43,7 @@ import { M } from './inventory-ledger';
 const FIGURES: { n: string; l: string }[] = [
   {
     n: '85%',
-    l: 'still run their stock on spreadsheets — including half of the businesses with 500 or more staff',
+    l: 'still run their stock on spreadsheets, including half of the businesses with 500 or more staff',
   },
   { n: '44.8%', l: 'name inaccurate stock data as one of their biggest problems' },
   { n: '44%', l: 'run out of something at least once a month' },
@@ -62,7 +62,7 @@ export function InventoryEvidence() {
           lede={
             <>
               An independent survey of 400 people who run stock for a living, published in 2026,
-              found that the overwhelming majority still keep it in a spreadsheet — and that the
+              found that the overwhelming majority still keep it in a spreadsheet, and that the
               thing they complain about is not missing features. It is that the number is wrong, the
               supplier is late, and nobody can tell them why.
             </>
@@ -192,10 +192,10 @@ const HAVE: ParityGroup[] = [
       {
         what: 'Forecasts and reorder points that move',
         detail:
-          'Derived from what actually sells, how long a supplier really takes, and the time of year — recomputed nightly.',
+          'Derived from what actually sells, how long a supplier really takes, and the time of year: recomputed nightly.',
       },
       {
-        what: 'Valuation, turnover, ageing, dead stock, shrinkage, sell-through, fill rate',
+        what: 'Valuation, turnover, aging, dead stock, shrinkage, sell-through, fill rate',
         detail:
           'Nineteen reports, every one exportable and schedulable, every export re-importable.',
       },
@@ -241,7 +241,7 @@ const HAVE_NOT: ParityRow[] = [
   {
     what: 'The direct accounting connection is built, not switched on',
     detail:
-      'The QuickBooks Online and Xero connectors are complete, but this installation has no app registered with either vendor yet — so the screen tells you that and offers the export that works today, rather than a button that dies at the redirect.',
+      'The QuickBooks Online and Xero connectors are complete, but this installation has no app registered with either vendor yet, so the screen tells you that and offers the export that works today, rather than a button that dies at the redirect.',
   },
   {
     what: 'It is not on an EDI network',
@@ -251,7 +251,7 @@ const HAVE_NOT: ParityRow[] = [
   {
     what: 'It will not schedule a factory',
     detail:
-      'Recipes and build runs are here, and they move real stock. Production scheduling, machine capacity planning and shop-floor routing are not — that is a different product, and pretending otherwise would waste a manufacturer’s afternoon.',
+      'Recipes and build runs are here, and they move real stock. Production scheduling, machine capacity planning and shop-floor routing are not. That is a different product, and pretending otherwise would waste a manufacturer’s afternoon.',
   },
 ];
 
@@ -261,7 +261,7 @@ export function InventoryParity() {
       <div className="max-w-[860px]">
         <SectionHeader
           accent={M.ink}
-          headline={<>Everything the category agreed you need — and the four things this isn’t</>}
+          headline={<>Everything the category agreed you need, and the four things this isn’t</>}
           lede={
             <>
               Stock software has converged on a fairly settled list of what a serious system has to

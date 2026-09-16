@@ -3,8 +3,8 @@
 // STOCK VERSUS YOUR BOOKS (docs/146 Phase 10.9).
 //
 // The question an accountant asks every year end and nobody can answer: your
-// system says the stock is worth £182,400 and my inventory account says
-// £176,905 — where is the £5,495?
+// system says the stock is worth $182,400 and my inventory account says
+// $176,905 — where is the $5,495?
 //
 // ── Why this can be answered at all ──────────────────────────────────────
 //
@@ -12,7 +12,7 @@
 // differences a stock system knows about and a ledger does not: goods received
 // and not yet invoiced, invoiced and not yet received, consigned stock in the
 // building that is not an asset, units nobody costed, stock in transit between
-// two of your own places. Naming them turns "find the £5,495" into a list of
+// two of your own places. Naming them turns "find the $5,495" into a list of
 // figures with an explanation each.
 //
 // ── The one number that must never be zero by accident ───────────────────
@@ -185,8 +185,8 @@ export function GlReconciliationSurface(_props: { ctx: SurfaceContext }) {
                     <AlertTitle>Tell sparx what your books say</AlertTitle>
                     <AlertDescription>
                       sparx does not keep your ledger, so it cannot know what your inventory account
-                      holds. Enter the balance below — off your trial balance, or from whoever keeps
-                      the books — and the difference gets worked out and explained. Until then there
+                      holds. Enter the balance below (off your trial balance, or from whoever keeps
+                      the books) and the difference gets worked out and explained. Until then there
                       is nothing to compare against, which is why the figure is blank rather than
                       zero.
                     </AlertDescription>
@@ -209,7 +209,7 @@ export function GlReconciliationSurface(_props: { ctx: SurfaceContext }) {
                       {formatCents(Math.abs(data.unexplainedCents ?? 0), currency)} is unexplained
                     </AlertTitle>
                     <AlertDescription>
-                      Everything below is accounted for. What is left over is worth looking at — the
+                      Everything below is accounted for. What is left over is worth looking at: the
                       usual causes are a journal posted by hand, an opening balance that was never
                       matched, or stock written off in one system and not the other.
                     </AlertDescription>

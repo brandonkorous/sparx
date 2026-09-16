@@ -118,8 +118,8 @@ export function TimeEntryForm({
             }
           />
           <FieldDescription>
-            What you are paying for. 7.5 is seven and a half hours — take any unpaid break off
-            before you type it.
+            What you are paying for. 7.5 is seven and a half hours: take any unpaid break off before
+            you type it.
           </FieldDescription>
         </Field>
 
@@ -153,7 +153,7 @@ export function TimeEntryForm({
         <FieldControl
           render={
             <Input
-              placeholder="Forgot to clock in, callout on the Henderson job…"
+              placeholder="Forgot to clock in, early start on Saturday…"
               value={entryNote}
               onChange={(event) => {
                 setEntryNote(event.target.value);

@@ -38,27 +38,27 @@ export const SYMBOLOGIES: {
     label: 'EAN-13',
     blurb:
       'The thirteen-digit retail barcode used across most of the world. The numbers must be bought from GS1 to sell through shops.',
-    hint: '12 digits — the 13th is the check digit and is worked out for you.',
+    hint: '12 digits: the 13th is the check digit and is worked out for you.',
   },
   {
     value: 'upca',
     label: 'UPC-A',
     blurb:
       'The twelve-digit North American retail barcode. Same system as EAN-13, one digit shorter.',
-    hint: '11 digits — the 12th is the check digit and is worked out for you.',
+    hint: '11 digits: the 12th is the check digit and is worked out for you.',
   },
   {
     value: 'ean8',
     label: 'EAN-8',
     blurb:
-      'The short retail barcode, for packaging too small to carry a full one — lip balm, spice jars.',
-    hint: '7 digits — the 8th is the check digit and is worked out for you.',
+      'The short retail barcode, for packaging too small to carry a full one: lip balm, spice jars.',
+    hint: '7 digits: the 8th is the check digit and is worked out for you.',
   },
   {
     value: 'code39',
     label: 'Code 39',
     blurb:
-      'The older letters-and-numbers standard. Bulkier than Code 128 and still required by some warehouse and defence systems.',
+      'The older letters-and-numbers standard. Bulkier than Code 128 and still required by some warehouse and defense systems.',
     hint: 'A–Z, 0–9, and - . $ / + % and space.',
   },
 ];
@@ -486,7 +486,7 @@ export function encodeEan(input: string, kind: 'ean13' | 'upca' | 'ean8'): Barco
   // knowing before it goes on ten thousand labels.
   if (digits.length === fullLength && Number(digits[bodyLength]) !== check) {
     throw new BarcodeError(
-      `That number's check digit does not add up — it ends ${digits[bodyLength]} but should end ${check}. Either the number has a typo, or drop the last digit and let it be calculated.`
+      `That number's check digit does not add up: it ends ${digits[bodyLength]} but should end ${check}. Either the number has a typo, or drop the last digit and let it be calculated.`
     );
   }
 

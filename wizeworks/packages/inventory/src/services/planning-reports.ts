@@ -299,9 +299,9 @@ function explainRisk(input: {
   const cover = input.cover === null ? 'no measurable cover' : `${Math.round(input.cover)} days`;
 
   if (input.unitsAtRisk <= 0) {
-    return `Selling ${rate}. ${input.available} left${inbound} is ${cover} of cover, and ${lead} — so a replacement lands before it runs out.`;
+    return `Selling ${rate}. ${input.available} left${inbound} is ${cover} of cover, and ${lead}, so a replacement lands before it runs out.`;
   }
-  return `Selling ${rate}. ${input.available} left${inbound} is only ${cover} of cover, and ${lead} — so about ${input.unitsAtRisk} orders would have nothing to come from.`;
+  return `Selling ${rate}. ${input.available} left${inbound} is only ${cover} of cover, and ${lead}, so about ${input.unitsAtRisk} orders would have nothing to come from.`;
 }
 
 function leadTimePhrase(days: number, source: string): string {
@@ -387,6 +387,9 @@ interface SlowMoverSqlRow {
   costKnown: boolean;
   forecastPerDay: number | null;
   lastSaleAt: Date | null;
+  /** First movement on this line — how long it has been on the shelf. Null when
+      the line has never been measured, which is different from being new. */
+  stockedSince: Date | null;
   abcClass: string | null;
 }
 
@@ -434,6 +437,11 @@ export async function slowMoverReport(
                                                                            AS "costKnown",
         dv.forecast_per_day::float8                                        AS "forecastPerDay",
         dv.last_sale_at                                                    AS "lastSaleAt",
+        -- When this line first moved, which is when the shop actually got it.
+        -- "Nothing has ever sold" needs a length of time attached before it
+        -- means anything; without this the answer to "how long has it had to
+        -- sell?" is missing, and a missing length reads as a very long one.
+        dv.first_movement_at                                               AS "stockedSince",
         l.abc_class                                                        AS "abcClass"
       FROM inventory_levels l
       JOIN commerce_product_variants v ON v.id = l.variant_id AND v.deleted_at IS NULL
@@ -489,10 +497,32 @@ function classifySlowMover(
     ? Math.floor((Date.now() - r.lastSaleAt.getTime()) / DAY_MS)
     : null;
   const cover = velocity && velocity > 0 ? r.onHand / velocity : null;
+  const daysHeld = r.stockedSince
+    ? Math.floor((Date.now() - r.stockedSince.getTime()) / DAY_MS)
+    : null;
 
+  // ── Dead needs a WINDOW, and a line that has never sold has one too ────────
+  //
+  // The rule this list is named for is "nothing sold in the dead-stock window",
+  // and the window is a real number the owner sets — 180 days by default. That
+  // number was applied to every line that HAD sold and to none of the lines that
+  // had not: a null last sale went straight through as dead. So the window was
+  // 180 days for a shirt that sold in March and nought days for the one beside
+  // it that arrived on Tuesday.
+  //
+  // What that looks like on the screen is a two-week-old shop being told that 54
+  // of its 72 lines are not selling and should be discounted, returned to the
+  // supplier or written off. It is the same sentence a five-year-old shop gets
+  // about genuinely dead stock, and only one of the two should act on it.
+  //
+  // So a line with no sale is measured from when it arrived. If even that is
+  // unknown — nothing has ever been measured — then how long it has had to sell
+  // is unknown, and unknown is not "long enough". It drops out of the list, and
+  // the "nothing has been checked yet" empty state is finally the thing that
+  // shows.
+  const quietDays = daysSinceLastSale ?? daysHeld;
   const isDead =
-    (velocity === null || velocity <= 0) &&
-    (daysSinceLastSale === null || daysSinceLastSale >= deadStockDays);
+    (velocity === null || velocity <= 0) && quietDays !== null && quietDays >= deadStockDays;
 
   if (isDead) {
     return {
@@ -506,7 +536,7 @@ function classifySlowMover(
       daysSinceLastSale,
       suggestedAction:
         daysSinceLastSale === null
-          ? 'Nothing has ever sold from this. Discount it, bundle it, return it to the supplier, or write it off — it is not going to move on its own.'
+          ? `Nothing has sold from this in the ${quietDays} days you have had it. Discount it, bundle it, return it to the supplier, or write it off. It is not going to move on its own.`
           : `Nothing has sold in ${daysSinceLastSale} days. Discount it, bundle it, return it to the supplier, or write it off.`,
     };
   }
@@ -522,7 +552,7 @@ function classifySlowMover(
       velocityPerDay: velocity,
       daysOfCover: round1(cover),
       daysSinceLastSale,
-      suggestedAction: `At the current rate this is ${Math.round(cover)} days of stock. Skip the next order and let it run down — there is no need to buy any for about ${Math.round(cover - overstockCoverDays)} days.`,
+      suggestedAction: `At the current rate this is ${Math.round(cover)} days of stock. Skip the next order and let it run down. There is no need to buy any for about ${Math.round(cover - overstockCoverDays)} days.`,
     };
   }
 

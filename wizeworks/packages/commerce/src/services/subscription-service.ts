@@ -578,7 +578,7 @@ export async function pause(ctx: ServiceContext, rawInput: unknown): Promise<voi
   await withTenant(ctx, async (tx) => {
     const sub = await assertSubscription(tx, input.subscriptionId);
     if (sub.status === 'cancelled') {
-      throw new CommerceConflictError('Cannot pause a cancelled subscription');
+      throw new CommerceConflictError('Cannot pause a canceled subscription');
     }
     await tx.subscription.update({
       where: { id: sub.id },

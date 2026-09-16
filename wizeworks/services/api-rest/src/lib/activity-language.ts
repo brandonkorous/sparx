@@ -74,7 +74,7 @@ export const READ_ONLY_ACTION_PREFIXES = [
  */
 const OVERRIDE: Record<string, string> = {
   'sitebuilder.scheduled': 'Publish scheduled',
-  'sitebuilder.schedule_cancelled': 'Scheduled publish cancelled',
+  'sitebuilder.schedule_cancelled': 'Scheduled publish canceled',
   'content_type.upserted': 'Content type saved',
   'content_type.deleted': 'Content type deleted',
   'redirect.bulk_imported': 'Redirects imported',

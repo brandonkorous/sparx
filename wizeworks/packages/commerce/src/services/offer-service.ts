@@ -126,16 +126,25 @@ export async function offerFor(
       select: {
         priceCents: true,
         title: true,
-        isAvailable: true,
+        // Currency is the VARIANT's own column. `product.currency` does not
+        // exist, and naming it here threw on every offer rather than failing to
+        // compile — a `select` is a mapped type over a type parameter, so tsc
+        // never checks its keys.
+        currency: true,
         deletedAt: true,
-        product: { select: { title: true, status: true, currency: true } },
+        product: { select: { title: true, status: true } },
       },
     })
   );
-  // A deleted, unpublished or unavailable variant is not an offer. Silently
-  // showing nothing is right here: the customer is midway through paying and an
-  // apology about the shop's configuration helps nobody.
-  if (!variant || variant.deletedAt || !variant.isAvailable) return null;
+  // A deleted or unpublished variant is not an offer. Silently showing nothing
+  // is right here: the customer is midway through paying and an apology about
+  // the shop's configuration helps nobody.
+  //
+  // There is no per-variant "available" flag to read — sellability is stock
+  // against `inventoryPolicy`, and the cart owns that: taking a bump IS
+  // `cart.addItem`, which commits inventory and refuses what it cannot sell.
+  // The guard that used to be written here named a column that does not exist.
+  if (!variant || variant.deletedAt) return null;
   if (variant.product.status !== 'active') return null;
 
   const impression = await withTenant(ctx, (tx) =>
@@ -164,7 +173,7 @@ export async function offerFor(
   return {
     ...picked,
     priceCents: variant.priceCents,
-    currency: variant.product.currency,
+    currency: variant.currency,
     productTitle: variant.product.title,
     variantTitle: variant.title,
     impressionId: impression.id,

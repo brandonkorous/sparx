@@ -266,8 +266,8 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
               {plural(expired.lots, 'batch is', 'batches are')} already past their date
             </AlertTitle>
             <AlertDescription>
-              These are excluded from picking automatically, so nothing will ship them — but they
-              are still counted as stock you own until somebody writes them off.
+              These are excluded from picking automatically, so nothing will ship them, but they are
+              still counted as stock you own until somebody writes them off.
               {expired.valueCents !== null
                 ? ` That is ${formatCents(expired.valueCents)} on the books that is not really there.`
                 : ''}
@@ -303,9 +303,9 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
         <DialogContent>
           <DialogTitle>Mark down {acting?.lot.variantName ?? acting?.lot.lotNumber}</DialogTitle>
           <DialogDescription>
-            The price change applies to the ITEM, not just this batch — a price is a property of
-            what you sell, and per-batch pricing would have to reach the product page and the till
-            as well. The original price is kept as the struck-through one.
+            The price change applies to the ITEM, not just this batch: a price is a property of what
+            you sell, and per-batch pricing would have to reach the product page and the till as
+            well. The original price is kept as the struck-through one.
           </DialogDescription>
           <div className="flex flex-col gap-3 py-2">
             <Field>
@@ -381,7 +381,7 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
           <DialogTitle>Write off {acting?.lot.lotNumber}</DialogTitle>
           <DialogDescription>
             {acting
-              ? `${plural(acting.lot.quantity, 'unit', 'units')} comes off the shelf as a LOSS, not as damage — expired goods are a buying problem, and filing them as damage sends somebody looking for a thief who does not exist.`
+              ? `${plural(acting.lot.quantity, 'unit', 'units')} comes off the shelf as a LOSS, not as damage: expired goods are a buying problem, and filing them as damage sends somebody looking for a thief who does not exist.`
               : ''}
           </DialogDescription>
           <div className="flex flex-col gap-3 py-2">

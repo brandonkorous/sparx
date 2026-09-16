@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-chiro-sports',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Chiropractic (Sports & Rehab)',
   summary:
-    'A bold, athletic chiropractic & performance site — electric-blue palette, sturdy condensed type, built for athletes and active people. Installs a working booking flow: sports-injury visits, active-release, dry needling, rehab and a free performance consult, with providers AND treatment rooms as multi-requirement resources. Ships as "Kinetic Spine & Sport", a sports/rehab clinic that books online from day one.',
+    'A bold, athletic chiropractic & performance site: electric-blue palette, sturdy condensed type, built for athletes and active people. Installs a working booking flow: sports-injury visits, active-release, dry needling, rehab and a free performance consult, with providers AND treatment rooms as multi-requirement resources. Ships as "Kinetic Spine & Sport", a sports/rehab clinic that books online from day one.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

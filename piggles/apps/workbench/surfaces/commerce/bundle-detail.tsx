@@ -26,6 +26,7 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { MoneyTextInput, moneyCents } from '../../components/money-input';
 import { useConfirm } from '../../lib/confirm';
 import { faCubes, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -65,12 +66,13 @@ const INVENTORY_LABELS: Record<BundleInventoryMode, string> = {
   decrement_bundle_sku: 'Track stock on the bundle itself',
 };
 
+/** Nothing typed is `undefined` — a different answer from zero. Everything else
+ *  goes through `moneyCents`, which reads "8,50", "$8.00" and "1,250.00" the way
+ *  a person writes them; `Number()` read exactly one spelling and quietly
+ *  returned NaN for the rest (issues 086 and 486). */
 function dollarsToCents(value: string): number | undefined {
-  const trimmed = value.trim();
-  if (trimmed === '') return undefined;
-  const parsed = Number(trimmed);
-  if (!Number.isFinite(parsed) || parsed < 0) return undefined;
-  return Math.round(parsed * 100);
+  if (value.trim() === '') return undefined;
+  return moneyCents(value) ?? undefined;
 }
 
 function centsToDollars(cents: number | null): string {
@@ -322,7 +324,7 @@ function BundleEditor({
     const ok = await confirm({
       title: `Delete the ${bundle.bundleProductTitle} bundle?`,
       description:
-        'This removes the bundle grouping. The products in it, and the wrapper product it was sold as, are all kept — only the way they were packaged together goes. This cannot be undone.',
+        'This removes the bundle grouping. The products in it, and the wrapper product it was sold as, are all kept. Only the way they were packaged together goes. This cannot be undone.',
       confirmLabel: 'Delete this bundle',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -359,7 +361,7 @@ function BundleEditor({
         label:
           variant.isDefault || !variant.title
             ? variant.productTitle
-            : `${variant.productTitle} — ${variant.title}`,
+            : `${variant.productTitle} (${variant.title})`,
         sku: variant.sku,
         defaultQuantity: 1,
         isRequired: true,
@@ -596,16 +598,12 @@ function BundleEditor({
                       <Text as="span" className="text-lg">
                         $
                       </Text>
-                      <Input
+                      <MoneyTextInput
                         color={fixedError && touched ? 'error' : 'module'}
-                        type="number"
-                        min={0}
-                        step="0.01"
-                        inputMode="decimal"
-                        value={draft.fixedPriceDollars}
-                        placeholder="0.00"
-                        onChange={(event) => {
-                          set('fixedPriceDollars', event.target.value);
+                        aria-label="What the bundle costs"
+                        text={draft.fixedPriceDollars}
+                        onTextChange={(value) => {
+                          set('fixedPriceDollars', value);
                         }}
                       />
                     </div>
@@ -676,7 +674,7 @@ function BundleEditor({
           {!isNew && bundle ? (
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
               <Text className="text-sm">
-                Deleting removes only the bundle grouping — the products and the wrapper are kept.
+                Deleting removes only the bundle grouping: the products and the wrapper are kept.
               </Text>
               <Button
                 size="sm"

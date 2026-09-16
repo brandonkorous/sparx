@@ -35,6 +35,7 @@ import { withTenant } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { indexInventoryEntityOnCommit } from '../events';
 import {
   InventoryConflictError,
   InventoryNotFoundError,
@@ -459,7 +460,7 @@ export async function cancelSupplierReturn(
     const ret = await loadHeader(tx, id);
     if (ret.status !== 'draft') {
       throw new InventoryConflictError(
-        `Return ${ret.number} has already been sent and cannot be cancelled`,
+        `Return ${ret.number} has already been sent and cannot be canceled`,
         'status'
       );
     }
@@ -554,7 +555,7 @@ async function resolveLines(
         [
           {
             field: 'lines',
-            message: `enter a unit cost for ${input.variantId} — recording a return worth £0 would write the money off`,
+            message: `enter a unit cost for ${input.variantId}: recording a return worth £0 would write the money off`,
           },
         ]
       );
@@ -702,4 +703,5 @@ async function audit(
     entityId,
     diff: { after: diff },
   });
+  await indexInventoryEntityOnCommit(ctx, 'supplier_return', entityId);
 }

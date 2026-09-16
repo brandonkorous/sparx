@@ -170,9 +170,18 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
     [card]
   );
 
+  // Which page this scores rides the tab. The opener passes the page's own
+  // title; without one, the kind of page is the closest thing it has to a name,
+  // and the qualifier keeps a tab reading "Product" from looking like a product.
+  //
+  // It used to set the constant "Page check", which is what the catalog already
+  // calls this surface — so three open checks were three identical tabs and the
+  // only way to tell them apart was to click each one.
+  const paramTitle = typeof ctx.params.title === 'string' ? ctx.params.title : '';
+  const pageName = card ? paramTitle || entityLabel(card.entityType) : null;
   useEffect(() => {
-    if (card) ctx.setTitle('Page check');
-  }, [ctx, card]);
+    if (pageName) ctx.setTitle(`${pageName} · page check`);
+  }, [ctx, pageName]);
 
   return (
     <div className={PANE_SHELL}>
@@ -301,7 +310,7 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
                   <Heading level={2} className="text-lg font-semibold">
                     Already good
                   </Heading>
-                  <Text className="text-sm">Nothing to do here — these are set up correctly.</Text>
+                  <Text className="text-sm">Nothing to do here. These are set up correctly.</Text>
                 </div>
                 <ul>
                   {alreadyGood.map((check) => (

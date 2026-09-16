@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Blast Master Pressure Washing — driveways, siding & roofs",
-      "seoDescription": "Blast Master Pressure Washing cleans driveways, siding, decks and roofs the safe way — soft-wash where it matters, flat-rate quotes up front. Licensed, insured, and easy to book online. Get a free quote.",
+      "seoTitle": "Blast Master Pressure Washing: driveways, siding & roofs",
+      "seoDescription": "Blast Master Pressure Washing cleans driveways, siding, decks and roofs the safe way: soft-wash where it matters, flat-rate quotes up front. Licensed, insured, and easy to book online. Get a free quote.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -575,7 +575,7 @@
                 "class": "absolute inset-0 h-full w-full object-cover",
                 "attrs": {
                   "src": "https://images.unsplash.com/photo-1781637202423-33ec5b47e52e?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cHJlc3N1cmUlMjB3YXNoaW5nJTIwZHJpdmV3YXl8ZW58MHwwfHx8MTc4NjM5NTczMXww&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-                  "alt": "A driveway freshly pressure-washed to a clean, bright grey — the dirty half still visible",
+                  "alt": "A driveway freshly pressure-washed to a clean, bright grey: the dirty half still visible",
                   "loading": "eager"
                 },
                 "id": "4a70e87b-c95f-4039-ba23-c307dfaa0327",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Driveways, siding, decks and roofs washed the safe way — with a clear flat-rate quote up front and results you can see the moment we’re done."
+                      "Driveways, siding, decks and roofs washed the safe way, with a clear flat-rate quote up front and results you can see the moment we’re done."
                     ],
                     "id": "f27e2027-d8d7-4526-bc99-77b91dc58523",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We match the pressure to the surface — gentle soft-wash on siding and roofs, real power where concrete can take it. Deep-clean results, zero damage."
+                              "We match the pressure to the surface: gentle soft-wash on siding and roofs, real power where concrete can take it. Deep-clean results, zero damage."
                             ],
                             "id": "b72ce027-4ad7-4c3a-b48b-b1a46c7342d7",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A real, insured local company on your property — not a truck that shows up once and disappears with your deposit."
+                              "A real, insured local company on your property, not a truck that shows up once and disappears with your deposit."
                             ],
                             "id": "15e816a4-dde3-4533-8681-7a5e116e92f2",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "One clear price before we start — no hourly surprises, no add-ons at the end. You always know exactly what it costs."
+                              "One clear price before we start: no hourly surprises, no add-ons at the end. You always know exactly what it costs."
                             ],
                             "id": "feda893f-a827-466f-8a14-9f852d214529",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "If a spot isn’t right, we come back and make it right. You don’t pay to be happy — being happy is the whole job."
+                              "If a spot isn’t right, we come back and make it right. You don’t pay to be happy: being happy is the whole job."
                             ],
                             "id": "099b3bb3-4d84-4ccc-95a9-57774f28bcce",
                             "ord": "a1"
@@ -873,7 +873,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We walk your property and send a flat-rate price — no obligation."
+                              "We walk your property and send a flat-rate price: no obligation."
                             ],
                             "id": "5091791c-ae1b-49c4-ac29-1285822dc158",
                             "ord": "a2"
@@ -927,9 +927,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": [
-                              "Oil, algae and tire marks lifted — bright, even and new."
-                            ],
+                            "children": ["Oil, algae and tire marks lifted: bright, even and new."],
                             "id": "2e865ee0-b6c6-4f5d-83e0-6b8244a01c06",
                             "ord": "a2"
                           }
@@ -1090,7 +1088,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Black streaks and moss gone — no damage to shingles."],
+                            "children": ["Black streaks and moss gone: no damage to shingles."],
                             "id": "a0bbe46f-03b7-4736-b292-fcce49fb5bb2",
                             "ord": "a2"
                           }
@@ -1225,7 +1223,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "There’s a moment on every job — the clean line where the dirty half meets the fresh half — and it never stops being satisfying. Green turns to bright siding, grey concrete comes back, black streaks vanish off the roof."
+                          "There’s a moment on every job (the clean line where the dirty half meets the fresh half) and it never stops being satisfying. Green turns to bright siding, grey concrete comes back, black streaks vanish off the roof."
                         ],
                         "id": "eac8a990-b9a8-48f1-8c3c-76714e6b697c",
                         "ord": "a1"
@@ -1235,7 +1233,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "That transformation is the whole point. We finish, walk it with you, and you get to see your home look the way it did the day you moved in — sometimes better."
+                          "That transformation is the whole point. We finish, walk it with you, and you get to see your home look the way it did the day you moved in: sometimes better."
                         ],
                         "id": "f81adeef-a013-44e0-8af4-5e367cd7f4a5",
                         "ord": "a2"
@@ -1300,7 +1298,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The same friendly, careful faces on your property each visit — people who take real pride in a clean line."
+                          "The same friendly, careful faces on your property each visit: people who take real pride in a clean line."
                         ],
                         "id": "f916c69c-19a7-4ee5-b3ca-e26af09fb60c",
                         "ord": "a1"
@@ -1413,7 +1411,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Low-pressure siding and roof treatments — the safe, gentle side of getting your home spotless."
+                                  "Low-pressure siding and roof treatments: the safe, gentle side of getting your home spotless."
                                 ],
                                 "id": "3dd3119e-d2cb-4f6a-a0a6-635d1638ac93",
                                 "ord": "a2"
@@ -1584,7 +1582,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Blast Master Pressure Washing",
+      "seoTitle": "Book: Blast Master Pressure Washing",
       "seoDescription": "See what Blast Master Pressure Washing offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1708,7 +1706,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "feeea67a-d34e-40e5-80fd-5393f8b6c2b6",
                         "ord": "a1"
@@ -1777,7 +1775,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Maintenance plans bill per completed visit — no long-term contract, cancel any time with 24 hours’ notice. We confirm your first service the day before, then keep your home on the same schedule automatically."
+                              "Maintenance plans bill per completed visit: no long-term contract, cancel any time with 24 hours’ notice. We confirm your first service the day before, then keep your home on the same schedule automatically."
                             ],
                             "id": "f5e7c8fa-f83f-4cf6-ae9c-cefb5cd7961d",
                             "ord": "a1"
@@ -1815,7 +1813,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Blast Master Pressure Washing",
+      "seoTitle": "About: Blast Master Pressure Washing",
       "seoDescription": "Who Blast Master Pressure Washing is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1864,7 +1862,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Blast Master started with a simple belief: your home should look cared for, and getting it clean shouldn’t mean risking damage or chasing a vague bill. So we do it the right way — the right pressure for every surface, a flat price up front, and a finish we’re proud to stand behind."
+                          "Blast Master started with a simple belief: your home should look cared for, and getting it clean shouldn’t mean risking damage or chasing a vague bill. So we do it the right way, the right pressure for every surface, a flat price up front, and a finish we’re proud to stand behind."
                         ],
                         "id": "347eac97-cfb3-42e6-bcb6-d1aa22b93b7f",
                         "ord": "a1"
@@ -1952,7 +1950,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Soft-wash for siding and roofs, real power for concrete. We never blast something that can’t take it — and we get it cleaner anyway."
+                              "Soft-wash for siding and roofs, real power for concrete. We never blast something that can’t take it, and we get it cleaner anyway."
                             ],
                             "id": "9dcad54f-2645-4fba-9bc2-1fdbf91ff4bb",
                             "ord": "a1"
@@ -1979,7 +1977,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You know what the job costs before we start — no hourly meter, no surprise add-ons, no haggling at the door."
+                              "You know what the job costs before we start: no hourly meter, no surprise add-ons, no haggling at the door."
                             ],
                             "id": "9de849d1-c28e-40b4-9342-bd10fb5f7d11",
                             "ord": "a1"
@@ -2034,7 +2032,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Blast Master Pressure Washing",
+      "seoTitle": "Visit: Blast Master Pressure Washing",
       "seoDescription": "Where to find Blast Master Pressure Washing, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2071,7 +2069,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Blast Master Pressure Washing will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Blast Master Pressure Washing will get back to you, usually the same day."
                         ],
                         "id": "afa538a0-9bdf-4dc9-ab58-f251600bcfd2",
                         "ord": "a1"
@@ -2498,7 +2496,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Get a free quote and see the next available days online — no phone tag, no waiting on a callback."
+                      "Get a free quote and see the next available days online: no phone tag, no waiting on a callback."
                     ],
                     "id": "d14b6715-5eb4-430a-9783-4cdfb2648662",
                     "ord": "a1"

@@ -107,7 +107,7 @@ export function PartnerLoadError({
         <PaneLoadError
           icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
           title={`Could not load ${section}`}
-          description="This is a problem reaching the server. Nothing about your partner account has changed — try again in a moment."
+          description="This is a problem reaching the server. Nothing about your partner account has changed. Try again in a moment."
           onRetry={onRetry}
         />
       </Card>
@@ -126,7 +126,7 @@ export function NotAPartner({ section }: { section: string }) {
       title={productCopy('partner.gate.title', 'This account isn’t a sparx partner')}
       description={productCopyWith(
         'partner.gate.description',
-        `${section} is part of the partner programme, for agencies and consultants who bring clients onto sparx. An owner or admin can apply to join from your account settings; once sparx approves it, this section fills in.`,
+        `${section} is part of the partner program, for agencies and consultants who bring clients onto sparx. An owner or admin can apply to join from your account settings; once sparx approves it, this section fills in.`,
         { section }
       )}
     />

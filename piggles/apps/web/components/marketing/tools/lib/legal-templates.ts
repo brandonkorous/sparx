@@ -117,13 +117,13 @@ ${
     : 'Nobody outside this business, except where we are legally required to hand something over.'
 }
 
-We will also share information if a court or the law requires it — and we will tell you if that happens, unless we are forbidden from doing so.`);
+We will also share information if a court or the law requires it, and we will tell you if that happens, unless we are forbidden from doing so.`);
 
   sections.push(`## How long we keep it
 
 ${
   input.retentionMonths > 0
-    ? `We keep what you send us for about ${input.retentionMonths} months, unless we are legally required to keep it longer — records relating to a payment usually have to be kept for several years for tax reasons.`
+    ? `We keep what you send us for about ${input.retentionMonths} months, unless we are legally required to keep it longer: records relating to a payment usually have to be kept for several years for tax reasons.`
     : 'We keep it only for as long as we need it, and no longer.'
 }
 
@@ -132,9 +132,9 @@ When we no longer need something, we delete it.`);
   if (c.cookies) {
     sections.push(`## Cookies
 
-A cookie is a small file the site asks your browser to keep. We use them for the things the site cannot work without — remembering you are signed in, keeping what is in your basket${
+A cookie is a small file the site asks your browser to keep. We use them for the things the site cannot work without: remembering you are signed in, keeping what is in your basket${
       c.analytics
-        ? ' — and, if you agree, for counting visits so we can see which pages are useful'
+        ? ', and, if you agree, for counting visits so we can see which pages are useful'
         : ''
     }.
 
@@ -196,14 +196,14 @@ We may change or withdraw parts of the site. We will try not to do that without 
 
     sections.push(`## Orders and prices
 
-Prices are shown on the site and include or exclude tax as stated at checkout. We do our best to keep prices and descriptions accurate; if something is listed at an obviously wrong price we may cancel the order and refund you rather than honour it.
+Prices are shown on the site and include or exclude tax as stated at checkout. We do our best to keep prices and descriptions accurate; if something is listed at an obviously wrong price we may cancel the order and refund you rather than honor it.
 
 An order is accepted when we confirm it, not when you place it. If we cannot fulfil something you have paid for, you get your money back.`);
 
     sections.push(`## Payment
 
 Payment is taken at the time stated at checkout. We do not store your card details${
-      input.collects.payments ? ' — our payment processor handles them' : ''
+      input.collects.payments ? ': our payment processor handles them' : ''
     }.`);
 
     if (input.refundDays > 0) {
@@ -211,7 +211,7 @@ Payment is taken at the time stated at checkout. We do not store your card detai
 
 If you change your mind about ${what} you have bought, tell us within ${input.refundDays} days and we will refund you. Items should come back in the condition they went out in.
 
-This does not affect your legal rights. If something is faulty, not as described, or does not do what we said it would, you are entitled to a remedy regardless of what any policy of ours says — and we would rather sort it out than argue about it.`);
+This does not affect your legal rights. If something is faulty, not as described, or does not do what we said it would, you are entitled to a remedy regardless of what any policy of ours says, and we would rather sort it out than argue about it.`);
     }
 
     if (input.sells !== 'goods') {
@@ -251,4 +251,4 @@ Last updated ${input.effectiveDate}.`);
 /** Shown with the output, every time. The tool would be dishonest without it,
  *  and a caveat somebody has to go looking for is not a caveat. */
 export const LEGAL_DISCLAIMER =
-  'This is a solid starting point, not legal advice. It covers what a straightforward website or shop normally has to disclose. If you handle health information, work with children, trade in several countries with different rules, or do anything unusual with personal data, have a lawyer read it — that is a short conversation, and much cheaper than the alternative.';
+  'This is a solid starting point, not legal advice. It covers what a straightforward website or shop normally has to disclose. If you handle health information, work with children, trade in several countries with different rules, or do anything unusual with personal data, have a lawyer read it. That is a short conversation, and much cheaper than the alternative.';

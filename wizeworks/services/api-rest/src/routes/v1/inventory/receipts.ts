@@ -136,7 +136,7 @@ const inventoryReceiptRoutes: FastifyPluginAsync = async (app) => {
           ...(body.billed_at ? { billedAt: body.billed_at } : {}),
           ...(body.due_at ? { dueAt: body.due_at } : {}),
           ...(body.tax_cents !== undefined ? { taxCents: body.tax_cents } : {}),
-          ...(body.shipping_cents !== undefined ? { shippingCents: body.shipping_cents } : {}),
+          ...(body.freight_cents !== undefined ? { freightCents: body.freight_cents } : {}),
           ...(body.notes ? { notes: body.notes } : {}),
           ...(body.lines ? { lines: body.lines } : {}),
         })
@@ -152,7 +152,7 @@ const BillFromReceiptBody = z.object({
   billed_at: z.string().datetime().optional(),
   due_at: z.string().datetime().optional(),
   tax_cents: z.number().int().nonnegative().max(1_000_000_000).optional(),
-  shipping_cents: z.number().int().nonnegative().max(1_000_000_000).optional(),
+  freight_cents: z.number().int().nonnegative().max(1_000_000_000).optional(),
   notes: z.string().max(2000).optional(),
   lines: z
     .array(

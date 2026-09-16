@@ -239,7 +239,7 @@ const staffScheduleRoutes: FastifyPluginAsync = async (app) => {
     if (row.status !== 'cancelled') {
       // Defensive: a cancellation that reports success while the request is
       // still live would leave someone believing they are back on the rota.
-      throw badRequest('That request could not be cancelled.');
+      throw badRequest('That request could not be canceled.');
     }
     return ok(timeOffView(row));
   });

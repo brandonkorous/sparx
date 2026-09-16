@@ -101,7 +101,7 @@ export function ProductFields({
                 items={facets?.vendors ?? []}
                 value={draft.vendor}
                 placeholder="Who makes it"
-                emptyMessage="No match — type your own."
+                emptyMessage="No match. Type your own."
                 aria-label="Brand"
                 onValueChange={(next) => {
                   set('vendor', next);
@@ -110,8 +110,8 @@ export function ProductFields({
             }
           />
           <FieldDescription>
-            Who makes or supplies it. Type anything — the suggestions are just the ones you have
-            used before.
+            Who makes or supplies it. Type anything: the suggestions are just the ones you have used
+            before.
           </FieldDescription>
         </Field>
 
@@ -124,7 +124,7 @@ export function ProductFields({
                 items={facets?.productTypes ?? []}
                 value={draft.productType}
                 placeholder="Footwear, Furniture, Service…"
-                emptyMessage="No match — type your own."
+                emptyMessage="No match. Type your own."
                 aria-label="Kind of thing"
                 onValueChange={(next) => {
                   set('productType', next);
@@ -153,7 +153,7 @@ export function ProductFields({
             }
           />
           <FieldDescription>
-            Your own words for grouping products — “summer”, “clearance”, “gift”. Only you see these
+            Your own words for grouping products: “summer”, “clearance”, “gift”. Only you see these
             unless you use them on your website.
           </FieldDescription>
         </Field>

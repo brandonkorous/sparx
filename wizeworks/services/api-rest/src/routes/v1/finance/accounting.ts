@@ -255,6 +255,10 @@ const financeAccountingRoutes: FastifyPluginAsync = async (app) => {
         // Rows left out are surfaced in a header rather than silently dropped —
         // the download itself cannot carry a warning.
         .header('x-sparx-skipped-rows', String(result.skipped.length))
+        // And how many rows it DID write, for the same reason. A file with only
+        // its column headings looks identical to a full one until it is opened,
+        // so the sentence the browser shows has to be able to tell them apart.
+        .header('x-sparx-row-count', String(result.rowCount))
         .send(result.body)
     );
   });

@@ -299,7 +299,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -727,8 +727,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Mode & Object — a magazine of style and the made world",
-      "seoDescription": "Mode & Object is a style and design magazine covering fashion, beauty, the runway and the made world — image-first, credited, and looked at closely.",
+      "seoTitle": "Mode & Object: a magazine of style and the made world",
+      "seoDescription": "Mode & Object is a style and design magazine covering fashion, beauty, the runway and the made world: image-first, credited, and looked at closely.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -860,7 +860,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "New writing across fashion, beauty, runway and culture — the issue as it fills in."
+                      "New writing across fashion, beauty, runway and culture: the issue as it fills in."
                     ],
                     "id": "0b0d3040-dccd-4173-bc22-1ab239356a11",
                     "ord": "a2"
@@ -1420,9 +1420,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
-                                "children": [
-                                  "The wardrobe, edited — what to keep, what to let go."
-                                ],
+                                "children": ["The wardrobe, edited: what to keep, what to let go."],
                                 "id": "59f20eb3-7c4e-480e-abf1-c67863fe1ad4",
                                 "ord": "a1"
                               }
@@ -1570,7 +1568,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "The made world — objects, interiors, the design of desire."
+                                  "The made world: objects, interiors, the design of desire."
                                 ],
                                 "id": "aa4af518-005f-415c-a15d-55bcd2e4408e",
                                 "ord": "a1"
@@ -1808,7 +1806,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Mode & Object",
+      "seoTitle": "Shop: Mode & Object",
       "seoDescription": "Browse everything Mode & Object makes, with prices and options at a glance. Style, fashion & design.",
       "root": {
         "kind": "element",
@@ -1866,7 +1864,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Mode & Object",
+      "seoTitle": "Collections: Mode & Object",
       "seoDescription": "Explore the collections at Mode & Object, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1907,7 +1905,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Mode & Object",
+      "seoTitle": "Your cart: Mode & Object",
       "seoDescription": "Review what is in your cart and check out securely at Mode & Object.",
       "root": {
         "kind": "element",
@@ -1948,7 +1946,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Mode & Object",
+      "seoTitle": "Search: Mode & Object",
       "seoDescription": "Search Mode & Object for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1989,7 +1987,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Mode & Object",
+      "seoTitle": "Journal: Mode & Object",
       "seoDescription": "Stories, guides and notes from Mode & Object.",
       "root": {
         "kind": "element",
@@ -2029,7 +2027,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Fashion, beauty, runway and the made world — looked at closely, and photographed the way it deserves. Newest first."
+                      "Fashion, beauty, runway and the made world: looked at closely, and photographed the way it deserves. Newest first."
                     ],
                     "id": "2314a997-e457-40fb-b8aa-30a010d610fc",
                     "ord": "a2"
@@ -2162,8 +2160,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Mode & Object — a style & design magazine",
-      "seoDescription": "Who Mode & Object is and how it works — original photography, credited images, and one considered piece over ten filed to fill a feed.",
+      "seoTitle": "About Mode & Object: a style & design magazine",
+      "seoDescription": "Who Mode & Object is and how it works: original photography, credited images, and one considered piece over ten filed to fill a feed.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2194,7 +2192,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Mode & Object is a style and design magazine about the things people choose to keep. We write about fashion, beauty, the runway and the made world with the same attention — not as trends to chase, but as decisions made by real people with taste and a point of view."
+                      "Mode & Object is a style and design magazine about the things people choose to keep. We write about fashion, beauty, the runway and the made world with the same attention, not as trends to chase, but as decisions made by real people with taste and a point of view."
                     ],
                     "id": "e44954d4-d0ac-425b-894f-4a17341d2b80",
                     "ord": "a1"
@@ -2224,8 +2222,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Mode & Object",
-      "seoDescription": "Get in touch with Mode & Object — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Mode & Object",
+      "seoDescription": "Get in touch with Mode & Object: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2532,8 +2530,8 @@
       "kind": "collection",
       "recordType": "cms.blog_post",
       "isDefault": true,
-      "seoTitle": "Article — Mode & Object",
-      "seoDescription": "A story from Mode & Object — the writing, the reporting and the notes behind it.",
+      "seoTitle": "Article: Mode & Object",
+      "seoDescription": "A story from Mode & Object: the writing, the reporting and the notes behind it.",
       "root": {
         "kind": "element",
         "tag": "div",

@@ -30,6 +30,19 @@ function str(v: unknown): string {
   throw new Error(`expected string id on trigger payload, got ${typeof v}`);
 }
 
+/**
+ * A string the payload MIGHT carry, as an empty string when it does not.
+ *
+ * `str` above is for an ID the resolver cannot work without, so it throws. A
+ * fact that only some events in a group carry is different: one event's absent
+ * field must not take the whole resolve down with it — and empty is what the
+ * email layer wants anyway, since a bound row with an empty value self-drops
+ * where a MISSING key renders the raw `{{…}}` token to a customer.
+ */
+function maybeStr(v: unknown): string {
+  return typeof v === 'string' ? v : '';
+}
+
 // ─── customer ──────────────────────────────────────────────────────────────
 
 interface CustomerLike {
@@ -302,6 +315,24 @@ const SUBSCRIPTION_LINK_EVENTS = ['subscription.authentication_required', 'subsc
 // a shopper has asked to send something back and nobody is told until somebody
 // opens the returns screen. The other three report a decision already made.
 const RETURN_EVENTS = ['return.requested', 'return.approved', 'return.received', 'return.refunded'];
+// The two ENDINGS whose news is not on the return row.
+//
+// A return has no column for the replacement that went out, and the reason a
+// return was turned down is written to the shared `staffNote` an approval also
+// uses — so neither can be read back from the row afterwards. Both are facts
+// about THIS decision, carried in the payload and merged on top of the hydrated
+// return, exactly as a subscription's one-time links are above.
+//
+// Before this, `return.exchanged` had no resolver and `return.denied` had no
+// event, so the two most common ways a return ends reached nobody while the
+// "we've received it" email promised otherwise (persona issue 448).
+const RETURN_OUTCOME_EVENTS = ['return.exchanged', 'return.denied'];
+// The replacement is in the post. Its own event because it is its own MOMENT:
+// a shop settles the swap while the customer waits and posts the parcel
+// afterwards, so the tracking number does not exist when `return.exchanged`
+// fires. Settled WITH one, this never fires and the swap email carries the
+// number instead — one email either way.
+const REPLACEMENT_SHIPPED_EVENTS = ['return.replacement_shipped'];
 // B2B order approval outcomes (docs/impl transactional-email §4 P3) — the buyer's
 // pending order was approved (→ placed) or rejected (→ cancelled). Both carry
 // `orderId`, so they resolve through the order hydrator like any other order event.
@@ -370,6 +401,36 @@ export function installBuiltinResolvers(): void {
   }
   for (const ev of RETURN_EVENTS) {
     registerResolver(ev, (ctx, p) => hydrateReturn(ctx, str(p.returnId ?? p.id)));
+  }
+  for (const ev of RETURN_OUTCOME_EVENTS) {
+    registerResolver(ev, async (ctx, p) => {
+      const fields = await hydrateReturn(ctx, str(p.returnId ?? p.id));
+      // Empty string rather than undefined: a bound row with an empty value
+      // self-drops, where a missing key renders the raw `{{…}}` token.
+      // `maybeStr`, not `str`: a swap carries no reason and a refusal carries no
+      // replacement, so each event is missing exactly one of these by design.
+      fields['return.replacement'] = maybeStr(p.replacementLabel);
+      fields['return.deniedReason'] = maybeStr(p.reason);
+      // Present only when the parcel had already gone when she settled. Empty
+      // otherwise, which drops the tracking row rather than printing a heading
+      // over nothing.
+      fields['return.replacementCarrier'] = maybeStr(p.replacementCarrier);
+      fields['return.replacementTracking'] = maybeStr(p.replacementTracking);
+      fields['return.replacementTrackingUrl'] = maybeStr(p.replacementTrackingUrl);
+      return fields;
+    });
+  }
+  for (const ev of REPLACEMENT_SHIPPED_EVENTS) {
+    registerResolver(ev, async (ctx, p) => {
+      const fields = await hydrateReturn(ctx, str(p.returnId ?? p.id));
+      // The whole reason this email exists, so `str` rather than `maybeStr`
+      // would be defensible — except that a payload arriving without one should
+      // send a thinner email, never throw inside a worker nobody is watching.
+      fields['return.replacementCarrier'] = maybeStr(p.replacementCarrier);
+      fields['return.replacementTracking'] = maybeStr(p.replacementTracking);
+      fields['return.replacementTrackingUrl'] = maybeStr(p.replacementTrackingUrl);
+      return fields;
+    });
   }
   for (const ev of B2B_ORDER_EVENTS) {
     registerResolver(ev, (ctx, p) => hydrateOrder(ctx, str(p.orderId ?? p.id)));

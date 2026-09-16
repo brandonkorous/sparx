@@ -8,3 +8,5 @@
 
 export { isChunkLoadError, reloadOnceForStaleBuild } from './chunk-error';
 export { ChunkReloadGuard } from './chunk-reload-guard';
+export { type ClipMetrics, clippedTitleFor } from './clipped-text';
+export { ClippedTextReveal } from './clipped-text-reveal';

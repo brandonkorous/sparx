@@ -63,6 +63,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useConfirm } from '../../lib/confirm';
+import { todayIso } from '../../lib/today';
 import { afterPaneChange } from '../../lib/defer';
 import {
   downloadAccountingExport,
@@ -73,6 +74,7 @@ import {
   useDeleteConnection,
   useDisconnectAccounting,
   useExpenseCategories,
+  useExpenses,
   useImportPreview,
   useMappings,
   useSaveConnection,
@@ -104,6 +106,10 @@ function ExportPanel({
   const [busy, setBusy] = useState(false);
 
   const range = useMemo(() => rangeFor(period), [period]);
+  // One row, for its count. `totalCount` is the whole filter's, not the page's,
+  // so `limit: 1` is the cheapest way to ask "is this period empty, and if not
+  // how much is in it" without loading costs this screen never draws.
+  const inPeriod = useExpenses({ from: range.from, to: range.to, limit: 1 });
   const descriptor = catalog.find((entry) => entry.provider === provider);
   const usable = catalog.filter((entry) => entry.availability === 'available');
   const existing = connections.find((connection) => connection.provider === provider);
@@ -165,15 +171,24 @@ function ExportPanel({
         markSent,
       });
       afterPaneChange(() => {
+        // THREE outcomes, not two. "Every cost in that period is in the file"
+        // was said over an empty file as well as a full one, and it is true of
+        // both — a period with nothing in it has all of its nothing in there.
+        // Somebody sending last month to their accountant on the 9th reads that
+        // as "August is filed" and never opens the file to find out otherwise.
+        const empty = result.rowCount === 0;
         toast.add({
-          title: `${result.filename} downloaded`,
+          title: empty ? `${result.filename} has nothing in it` : `${result.filename} downloaded`,
           // Rows the server left out are surfaced, never dropped — a download
           // cannot carry a warning, and silence would read as "all of it".
-          description:
-            result.skipped > 0
-              ? `${String(result.skipped)} ${result.skipped === 1 ? 'cost was' : 'costs were'} left out — usually because they fall before your books-closed date.`
-              : 'Every cost in that period is in the file.',
-          type: result.skipped > 0 ? 'warning' : 'success',
+          description: empty
+            ? `No costs are recorded between ${formatDay(range.from)} and ${formatDay(range.to)}, so the file holds only its column headings. Change the period above and download it again.`
+            : result.skipped > 0
+              ? `${String(result.skipped)} ${result.skipped === 1 ? 'cost was' : 'costs were'} left out, usually because they fall before your books-closed date.`
+              : result.rowCount > 0
+                ? `${String(result.rowCount)} ${result.rowCount === 1 ? 'cost is' : 'costs are'} in the file.`
+                : 'Every cost in that period is in the file.',
+          type: empty || result.skipped > 0 ? 'warning' : 'success',
         });
       });
     } catch (error) {
@@ -212,8 +227,19 @@ function ExportPanel({
               </NativeSelect>
             }
           />
+          {/* The dates alone do not answer the question somebody is actually
+              asking, which is "will this file have my spending in it?". The
+              default period is LAST month, so on the 9th it is perfectly normal
+              for the answer to be no — and better said here than discovered in
+              a spreadsheet. Counting costs is free: the list endpoint already
+              aggregates them, so this asks for one row and reads the total. */}
           <FieldDescription>
             {formatDay(range.from)} to {formatDay(range.to)}
+            {inPeriod.data
+              ? inPeriod.data.totalCount === 0
+                ? ' · no costs recorded'
+                : ` · ${String(inPeriod.data.totalCount)} ${inPeriod.data.totalCount === 1 ? 'cost' : 'costs'}`
+              : ''}
           </FieldDescription>
         </Field>
 
@@ -280,7 +306,7 @@ function ExportPanel({
             </Text>
             <Text className="text-sm">
               Right now every cost goes out under your own category name, and somebody re-files it
-              at the other end. Map each one once and it arrives ready to post — and set the date
+              at the other end. Map each one once and it arrives ready to post, and set the date
               your books are closed through, so a re-send can never re-post a period they have
               already finished.
             </Text>
@@ -389,10 +415,7 @@ function ImportPanel({ categories }: { categories: { id: string; name: string }[
     },
     fallbackCategoryId,
     invertAmounts,
-    sourceKey:
-      sourceKey.trim() === ''
-        ? `import-${new Date().toISOString().slice(0, 10)}`
-        : sourceKey.trim(),
+    sourceKey: sourceKey.trim() === '' ? `import-${todayIso()}` : sourceKey.trim(),
   });
 
   const runPreview = () => {
@@ -601,7 +624,7 @@ function ImportPanel({ categories }: { categories: { id: string; name: string }[
               </Badge>
             ) : null}
             <Text className="text-sm">
-              Totalling {formatCents(result.totalCents)} — nothing has been saved yet.
+              Totaling {formatCents(result.totalCents)}. Nothing has been saved yet.
             </Text>
           </div>
 
@@ -760,7 +783,7 @@ function useAccountingConnect() {
         setPendingProvider(null);
         setFailure(
           event.data.error === 'access_denied'
-            ? 'You cancelled the sign-in, so nothing was connected.'
+            ? 'You canceled the sign-in, so nothing was connected.'
             : `Your accounting provider reported a problem: ${event.data.error}`
         );
         return;
@@ -923,7 +946,7 @@ function MappingTable({ connectionId }: { connectionId: string }) {
 
       <Text className="text-sm">
         Type the account code your accountant uses for each kind of cost. Leave any of them blank
-        and the export sends the category name instead — that still works, it just means someone
+        and the export sends the category name instead. That still works, it just means someone
         files it at the other end.
       </Text>
 
@@ -1039,7 +1062,7 @@ function ConnectionCard({
       title: `Sign out of ${name}?`,
       description: productCopy(
         'finance.accounting.signOut',
-        'Piggles forgets the sign-in and stops sending anything automatically. Your account codes, your books-closed date and everything already sent all stay exactly as they are — sign in again any time and nothing needs redoing.'
+        'Piggles forgets the sign-in and stops sending anything automatically. Your account codes, your books-closed date and everything already sent all stay exactly as they are. Sign in again any time and nothing needs redoing.'
       ),
       confirmLabel: 'Sign out',
       cancelLabel: 'Stay signed in',
@@ -1348,7 +1371,7 @@ export function AccountingSurface() {
               <Text className="mt-1 text-sm">
                 It records what you spend and what each job made, so you can run the business. Your
                 books, your tax and your filings stay with QuickBooks, Sage 50, Xero or your
-                accountant — and everything here leaves cleanly for them.
+                accountant, and everything here leaves cleanly for them.
               </Text>
             </Card>
 

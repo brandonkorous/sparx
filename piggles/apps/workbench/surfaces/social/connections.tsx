@@ -48,7 +48,6 @@ import { AccountAvatar } from './post-visuals';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useViewer } from '../../lib/api/shell-data';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   canApprove,
   catalogByPlatform,
@@ -154,8 +153,8 @@ function TargetRow({ target, canManage }: { target: SocialTarget; canManage: boo
           disabled={toggle.isPending}
           aria-label={
             target.enabled
-              ? `${target.name} is on — turn it off to stop posting here`
-              : `${target.name} is off — turn it on to post here`
+              ? `${target.name} is on: turn it off to stop posting here`
+              : `${target.name} is off: turn it on to post here`
           }
           onCheckedChange={onToggle}
         />
@@ -233,7 +232,7 @@ function ConnectionCard({
             <AlertTitle>This account needs reconnecting</AlertTitle>
             <AlertDescription>
               Its permission has run out, so posts to it will not go through. Connect {name} again
-              below to fix it — nothing already posted is affected.
+              below to fix it. Nothing already posted is affected.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -422,7 +421,7 @@ function PermissionCheck({ catalogMap }: { catalogMap: Map<string, CatalogEntry>
   );
 }
 
-export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
+export function SocialConnectionsSurface() {
   const toast = useToast();
   const confirm = useConfirm();
   const viewer = useViewer();
@@ -435,10 +434,6 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const [connectingPlatform, setConnectingPlatform] = useState<string | null>(null);
   const [connectFailure, setConnectFailure] = useState<string | null>(null);
-
-  useEffect(() => {
-    ctx.setTitle('Connections');
-  }, [ctx]);
 
   const canManage = canApprove(viewer.data?.role);
   const data = overview.data;
@@ -462,7 +457,7 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
               description:
                 result.targets.length > 0
                   ? 'Choose which destinations to post to below.'
-                  : 'No destinations were found — try again if this looks wrong.',
+                  : 'No destinations were found. Try again if this looks wrong.',
               type: 'success',
             });
           },
@@ -489,7 +484,7 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
         setConnectingPlatform(null);
         setConnectFailure(
           event.data.error === 'access_denied'
-            ? 'You cancelled the sign-in, so nothing was connected.'
+            ? 'You canceled the sign-in, so nothing was connected.'
             : `The platform reported a problem: ${event.data.error}`
         );
         return;
@@ -667,7 +662,7 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
                     <Icon glyph={faShieldCheck} className="mt-0.5 size-5 shrink-0" aria-hidden />
                     <Text className="text-sm">
                       Posts need an admin&rsquo;s approval before they go live. This keeps anything
-                      drafted — by a teammate or automatically — from reaching your real accounts
+                      drafted (by a teammate or automatically) from reaching your real accounts
                       until someone signs off.
                     </Text>
                   </div>
@@ -782,7 +777,7 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
               {comingSoon.length > 0 ? (
                 <FormSection
                   title="On the way"
-                  description="These platforms are not ready to connect yet — they will light up here when they are, with nothing for you to do."
+                  description="These platforms are not ready to connect yet. They will light up here when they are, with nothing for you to do."
                 >
                   <div className="flex flex-col gap-3">
                     {comingSoon.map((entry) => (

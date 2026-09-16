@@ -38,7 +38,7 @@ export const EMAIL_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'sparkles',
     description:
-      'A tinted banner with a bold headline, a supporting line, and a call-to-action button — centered.',
+      'A tinted banner with a bold headline, a supporting line, and a call-to-action button: centered.',
     surfaces: ['email'],
     tags: ['hero', 'banner', 'announcement', 'promo', 'email'],
     tree: atom('Section', 'flex flex-col gap-3 rounded-lg bg-base-200 p-8 text-center', {}, [
@@ -61,8 +61,7 @@ export const EMAIL_CATALOG: PlatformCatalogEntry[] = [
     category: 'marketing',
     kind: 'common',
     icon: 'align-left',
-    description:
-      'A headline, a couple of body paragraphs, and a button — the workhorse email body.',
+    description: 'A headline, a couple of body paragraphs, and a button: the workhorse email body.',
     surfaces: ['email'],
     tags: ['content', 'body', 'paragraph', 'text', 'email'],
     tree: atom('Section', 'flex flex-col gap-4 p-2', {}, [
@@ -115,7 +114,7 @@ export const EMAIL_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'receipt',
     description:
-      'A line-item table over the order/cart/quote/invoice items with a total — bound to `order.items` by default.',
+      'A line-item table over the order/cart/quote/invoice items with a total: bound to `order.items` by default.',
     surfaces: ['email'],
     tags: ['order', 'summary', 'receipt', 'line items', 'invoice', 'total', 'email'],
     tree: atom('Section', 'flex flex-col gap-3 p-2', {}, [
@@ -141,7 +140,7 @@ export const EMAIL_CATALOG: PlatformCatalogEntry[] = [
     category: 'marketing',
     kind: 'comprehensive',
     icon: 'layout-grid',
-    description: 'A two-column grid of product cards — image, name, price, and a shop link each.',
+    description: 'A two-column grid of product cards: image, name, price, and a shop link each.',
     surfaces: ['email'],
     tags: ['products', 'grid', 'showcase', 'featured', 'cross-sell', 'email'],
     tree: atom('Section', 'flex flex-col gap-4 p-2', {}, [
@@ -165,7 +164,7 @@ export const EMAIL_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'panel-bottom',
     description:
-      'The CAN-SPAM footer — a divider, a one-click unsubscribe link, and your mailing address. Required on marketing sends.',
+      'The CAN-SPAM footer: a divider, a one-click unsubscribe link, and your mailing address. Required on marketing sends.',
     surfaces: ['email'],
     tags: ['footer', 'unsubscribe', 'compliance', 'can-spam', 'address', 'email'],
     tree: atom('Section', 'flex flex-col gap-2 p-2 text-center', {}, [

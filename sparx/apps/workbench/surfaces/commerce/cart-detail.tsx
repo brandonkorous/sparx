@@ -8,7 +8,6 @@
 // belongs to the shopper. The one staff move is recovering an abandoned cart,
 // and it is offered only when the cart was actually abandoned.
 
-import { useEffect } from 'react';
 import {
   Alert,
   AlertContent,
@@ -78,17 +77,13 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data, isPending, isError, error, refetch } = useCart(id);
   const recover = useRecoverCart(id);
 
-  useEffect(() => {
-    ctx.setTitle('Basket');
-  }, [ctx]);
-
   if (isError) {
     return (
       <PaneLoadError
         error={error}
         noun="cart"
         title="Could not load this cart"
-        description="This is a problem reaching the server. The cart itself is unaffected — nothing has been changed or lost."
+        description="This is a problem reaching the server. The cart itself is unaffected. Nothing has been changed or lost."
         onRetry={() => {
           void refetch();
         }}
@@ -114,7 +109,7 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<ShoppingCart className="size-6" aria-hidden />}
             title="This cart is no longer here"
-            description="It may have been paid for and turned into an order, or cleared away after sitting untouched. Nothing is wrong — there is just nothing to show."
+            description="It may have been paid for and turned into an order, or cleared away after sitting untouched. Nothing is wrong. There is just nothing to show."
           />
         </div>
       </div>
@@ -133,7 +128,7 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       title: 'Mark this cart as recovered?',
       description:
         `This records that ${shopper} came back to this cart. Use it when you have confirmed the ` +
-        'sale went through another way — it does not charge anyone or send anything.',
+        'sale went through another way. It does not charge anyone or send anything.',
       confirmLabel: 'Mark as recovered',
       cancelLabel: 'Leave it',
       color: 'module',
@@ -195,7 +190,7 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection title="What’s in it">
             {cart.items.length === 0 ? (
-              <Text>This cart is empty — every line was removed before they left.</Text>
+              <Text>This cart is empty: every line was removed before they left.</Text>
             ) : (
               <ul className="flex flex-col">
                 {cart.items.map((item) => (
@@ -259,7 +254,7 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           ) : (
             <FormSection title="Whose cart it is">
               <Text className="text-base">
-                A guest — this cart was filled by someone who was not signed in, so there is no
+                A guest. This cart was filled by someone who was not signed in, so there is no
                 account attached to it.
               </Text>
             </FormSection>
@@ -271,7 +266,7 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Text className="text-base font-medium">Mark this cart as recovered</Text>
                 <Text className="text-sm">
                   Records that the shopper came back to it. It does not charge anyone or send any
-                  email — it just updates the cart’s state for your reports.
+                  email. It just updates the cart’s state for your reports.
                 </Text>
               </div>
               <Button

@@ -3,7 +3,7 @@
 
 import { z } from 'zod';
 
-import { Uuid } from '@wizeworks/crm-schemas';
+import { Carrier, Uuid } from '@wizeworks/crm-schemas';
 
 import { MoneyCents } from './common';
 
@@ -125,6 +125,32 @@ export const IssueReturnRefundInput = z.object({
 export type IssueReturnRefundInput = z.infer<typeof IssueReturnRefundInput>;
 
 /**
+ * How a replacement is travelling to the customer.
+ *
+ * The `carrier` vocabulary is the ORDER fulfillment one, deliberately: a shop
+ * that posts everything by USPS should pick USPS from the same list on both
+ * screens, and a second list would drift from the first the first time one
+ * gained a carrier.
+ *
+ * A tracking number is the point of the whole shape. Everything else can be
+ * absent and the record still answers "it went, here is how to follow it";
+ * without the number there is nothing to tell the customer, which is the state
+ * this was built to end.
+ */
+export const ReplacementShipment = z.object({
+  carrier: Carrier.optional(),
+  /** The name a person typed, when `carrier` is 'other'. Mirrors the order
+   *  fulfillment path's `carrierOther` rather than inventing a second way. */
+  carrierOther: z.string().max(63).optional(),
+  trackingNumber: z.string().min(1).max(127),
+  trackingUrl: z.string().url().max(2048).optional(),
+  /** When it was actually posted. A shop recording Monday's parcel on Tuesday
+   *  must not tell the customer it went today. */
+  shippedAt: z.string().datetime().optional(),
+});
+export type ReplacementShipment = z.infer<typeof ReplacementShipment>;
+
+/**
  * Settling an exchange: the replacement that goes out instead of money.
  *
  * `replacementVariantId` is required rather than optional — an exchange with no
@@ -136,5 +162,32 @@ export const SettleReturnExchangeInput = z.object({
   replacementVariantId: Uuid,
   quantity: z.number().int().positive().max(100).default(1),
   staffNote: z.string().max(2000).optional(),
+  /** How the replacement is travelling, when that is known at settle time.
+   *
+   *  All optional, because most shops settle the swap and walk to the post
+   *  office afterwards — blocking the settle on a tracking number nobody has yet
+   *  would make the common case the hard one. When it IS given here, the swap's
+   *  own email carries the tracking number and no second email is sent; when it
+   *  is not, it is added later through `RecordReplacementShipmentInput` and the
+   *  customer gets a tracking email at that point instead. */
+  shipment: ReplacementShipment.optional(),
 });
 export type SettleReturnExchangeInput = z.infer<typeof SettleReturnExchangeInput>;
+
+/**
+ * Recording how the replacement travelled, AFTER the swap was settled.
+ *
+ * The common path, not the exception. She decides what to send and settles it
+ * while the customer is waiting; the parcel goes out later that day or the next
+ * morning, and only then does a tracking number exist.
+ *
+ * Without this the tracking number had nowhere to go once the settle screen had
+ * closed, which is the same shape as a return whose goods could no longer be
+ * recorded after settling (persona issue 452): a fact about the world with no
+ * route into the product.
+ */
+export const RecordReplacementShipmentInput = z.object({
+  returnId: Uuid,
+  shipment: ReplacementShipment,
+});
+export type RecordReplacementShipmentInput = z.infer<typeof RecordReplacementShipmentInput>;

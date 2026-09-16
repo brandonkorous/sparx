@@ -29,8 +29,8 @@ function HeroCopy({ productCount, sellerCount }: { productCount?: number; seller
         Shop thousands of independent sellers.
       </h1>
       <p className="text-secondary-content/90 mt-5 text-[1.0625rem] leading-relaxed">
-        One cart for the whole network of independent shops on sparx — discover original products
-        you won’t find on the big marketplaces, and check out in a single place.
+        One cart for the whole network of independent shops on sparx: discover original products you
+        won’t find on the big marketplaces, and check out in a single place.
       </p>
       <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
         <Button render={<Link href="/products" />} color="neutral" variant="solid" size="lg">

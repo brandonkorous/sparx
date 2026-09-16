@@ -165,7 +165,7 @@ function ProviderEditor({
                 <AlertTitle>This is your active provider</AlertTitle>
                 <AlertDescription>
                   {descriptor.checkout === 'none'
-                    ? `Checkout places the order and charges nothing — you mark each one paid yourself. ${descriptor.feeNote}`
+                    ? `Checkout places the order and charges nothing. You mark each one paid yourself. ${descriptor.feeNote}`
                     : `Checkout uses ${descriptor.name} to take payments. ${descriptor.feeNote}`}
                 </AlertDescription>
               </AlertContent>
@@ -205,7 +205,7 @@ function ManualBody({
   return (
     <FormSection
       title="Manual payments"
-      description="Record check, cash, wire or bank transfer by hand. There are no card payments and no fee — you mark each order paid yourself."
+      description="Record check, cash, wire or bank transfer by hand. There are no card payments and no fee. You mark each order paid yourself."
     >
       {isActive ? (
         <Text className="text-sm">Manual payments are switched on for this site.</Text>
@@ -292,7 +292,7 @@ function SparxPayBody({
         <>
           <Text className="text-sm">
             {started
-              ? 'You started setting up sparx Pay but it is not finished. Continue where you left off — it opens on a secure page and brings you back here when it is done.'
+              ? 'You started setting up sparx Pay but it is not finished. Continue where you left off. It opens on a secure page and brings you back here when it is done.'
               : 'Setup takes a few minutes on a secure page (bank details and identity checks). You will be brought back here when it is finished.'}
           </Text>
           {sparxPay && started && !sparxPay.detailsSubmitted ? (
@@ -464,7 +464,7 @@ function ApiKeysBody({
     <>
       <FormSection
         title="Your keys"
-        description={`Paste these from your ${processorName} account. Saved keys are never shown again — leave a key blank to keep the one already saved.`}
+        description={`Paste these from your ${processorName} account. Saved keys are never shown again. Leave a key blank to keep the one already saved.`}
       >
         {descriptor.environments ? (
           <Field>
@@ -506,9 +506,7 @@ function ApiKeysBody({
                     autoComplete="off"
                     spellCheck={false}
                     value={draft.fields[field.key] ?? ''}
-                    placeholder={
-                      onFile ? '•••••••• saved — leave blank to keep' : field.placeholder
-                    }
+                    placeholder={onFile ? '•••••••• saved: leave blank to keep' : field.placeholder}
                     onChange={(event) => {
                       setField(field.key, event.target.value);
                     }}
@@ -542,13 +540,13 @@ function ApiKeysBody({
       {webhookUrl ? (
         <FormSection
           title={`Tell ${processorName} where to send updates`}
-          description={`Add this address in your ${processorName} account so it can tell us when a payment goes through. Until you do, cards will still be charged — but orders will keep showing as unpaid and your customers won't get a receipt.`}
+          description={`Add this address in your ${processorName} account so it can tell us when a payment goes through. Until you do, cards will still be charged, but orders will keep showing as unpaid and your customers won't get a receipt.`}
         >
           <CopyValue value={webhookUrl} label="webhook address" />
           <Text className="text-sm">
             In Stripe: Developers → Webhooks → Add endpoint. Paste the address above, then choose
             these updates: successful payments, failed payments, refunds, and disputes. Stripe then
-            shows you a signing secret — paste that into the <strong>Webhook signing secret</strong>{' '}
+            shows you a signing secret. Paste that into the <strong>Webhook signing secret</strong>{' '}
             field above.
           </Text>
         </FormSection>
@@ -559,7 +557,7 @@ function ApiKeysBody({
           <Text className="text-sm">
             {credential?.hasSecrets
               ? 'This is your active provider.'
-              : 'This is your chosen provider — save your keys above to start taking payments.'}
+              : 'This is your chosen provider. Save your keys above to start taking payments.'}
           </Text>
         ) : credential?.hasSecrets ? (
           <div className="flex flex-col gap-2">

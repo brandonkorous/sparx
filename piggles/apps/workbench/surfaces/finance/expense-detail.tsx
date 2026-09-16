@@ -28,7 +28,7 @@
 //
 // Spend pinned to a job is what makes "did THIS job make money" answerable, and
 // the unallocated remainder is overhead. Both halves are shown live as the
-// allocations change, because an owner splitting a £900 parts bill across three
+// allocations change, because an owner splitting a $900 parts bill across three
 // repairs needs to see what is left before they save, not after.
 
 import { useEffect, useMemo, useState } from 'react';
@@ -67,8 +67,13 @@ import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useConfirm } from '../../lib/confirm';
+import { dayStartUtc, todayIso } from '../../lib/today';
 import { afterPaneChange } from '../../lib/defer';
 import { useDebouncedValue, useRecordSearch } from '../../lib/api/search';
+// THE money field: it settles what she typed into two decimals when she
+// leaves it, so "46,80" reads back as 46.80 and a mis-typed amount is
+// visible before it is saved (issue 488).
+import { MoneyInput, MoneyTextInput } from '../../components/money-input';
 import { MediaPickerProvider, useMediaMultiPicker } from '../cms/media-picker';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -138,18 +143,17 @@ interface FormState {
 }
 
 function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  return todayIso();
 }
 
 function dateInput(iso: string | null): string {
   return iso ? iso.slice(0, 10) : '';
 }
 
-/** A `<input type="date">` value back to an instant. Midnight UTC, matching how
- *  the server buckets `incurredAt` — a local-midnight instant would land on the
- *  previous day for anyone east of UTC and quietly move the cost's month. */
+/** A `<input type="date">` value back to the instant the server keeps a day at.
+ *  See `lib/today` for why that is midnight UTC and not local midnight. */
 function dateValue(value: string): string | null {
-  return value === '' ? null : new Date(`${value}T00:00:00.000Z`).toISOString();
+  return value === '' ? null : dayStartUtc(value);
 }
 
 const EMPTY_FORM: FormState = {
@@ -267,17 +271,18 @@ function AllocationEditor({
               <Text className="min-w-0 flex-1 truncate font-medium">
                 {allocation.targetLabel ?? 'Untitled record'}
               </Text>
-              <Input
+              {/* `MoneyInput` owns the text it is being typed into. Rebuilding
+                  that text from the cents on every render rewrote each
+                  keystroke mid-word — see issue 484. */}
+              <MoneyInput
                 color="module"
                 size="sm"
-                inputMode="decimal"
                 aria-label={`Amount charged to ${allocation.targetLabel ?? 'this record'}`}
-                className="w-28 text-right tabular-nums"
-                value={centsToInput(allocation.amountCents)}
-                onChange={(event) => {
-                  const cents = parseMoneyToCents(event.target.value);
+                className="w-28"
+                value={allocation.amountCents / 100}
+                onValueChange={(value) => {
                   const next = [...allocations];
-                  next[index] = { ...allocation, amountCents: cents ?? 0 };
+                  next[index] = { ...allocation, amountCents: Math.round(value * 100) };
                   onChange(next);
                 }}
               />
@@ -517,7 +522,11 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
     ctx.setTitle(isNew ? 'New cost' : (expense.data?.description ?? 'Cost'));
   }, [ctx, isNew, expense.data?.description]);
 
+  // Whether anything on this form has been typed into yet — the difference
+  // between "you have not filled this in" and "you got this wrong" (issue 489).
+  const [touched, setTouched] = useState(false);
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => {
+    setTouched(true);
     setForm((current) => ({ ...current, [key]: value }));
   };
 
@@ -552,10 +561,16 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
     if (!canSave || !draft) return;
     save.mutate(draft, {
       onSuccess: (result) => {
+        // Rebased BEFORE the pane swap, and on BOTH paths. `target: 'replace'`
+        // changes this pane's params in place rather than remounting it, so the
+        // load effect never runs again and a baseline left at EMPTY keeps the
+        // pane dirty forever: an unsaved dot on the tab, "Not saved" in the
+        // status bar, and a leave-guard over a cost that is safely written
+        // (issue 483). Same rebase the update path already did; it was simply
+        // inside the `else`.
+        setBaseline(form);
         if (isNew) {
           ctx.open('finance.expense.detail', { id: result.id }, { target: 'replace' });
-        } else {
-          setBaseline(form);
         }
         afterPaneChange(() => {
           toast.add({ title: isNew ? 'Cost recorded' : 'Cost saved', type: 'success' });
@@ -736,8 +751,8 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
                   This cost came from {sourceLabel(expense.data.source).toLowerCase()}
                 </AlertTitle>
                 <AlertDescription>
-                  It is kept in step with wherever it came from, so it is not edited here — change
-                  it at the source and this updates with it. You can still see everything about it
+                  It is kept in step with wherever it came from, so it is not edited here. Change it
+                  at the source and this updates with it. You can still see everything about it
                   below.
                 </AlertDescription>
               </AlertContent>
@@ -754,18 +769,24 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
                       color="module"
                       value={form.description}
                       disabled={readOnly}
-                      placeholder="Brake pads for the Henderson job"
+                      placeholder="Boxes and tape from the packing supplier"
                       onChange={(event) => {
                         set('description', event.target.value);
                       }}
                     />
                   }
                 />
-                {form.description.trim() === '' && !readOnly ? (
+                {/* Waits for the first keystroke anywhere on the form. Empty IS
+                    this field's error, so it cannot use the "not empty and
+                    invalid" shape Amount uses beside it — and firing on sight
+                    told a person opening a blank form that they had already
+                    made a mistake (issues 479 and 489). The asterisk on the
+                    label says it is needed; this says it is missing. */}
+                {touched && form.description.trim() === '' && !readOnly ? (
                   <FieldStatus status="error">Say what the money was spent on.</FieldStatus>
                 ) : (
                   <FieldDescription>
-                    Write it the way you would say it out loud — this is what you will scan for
+                    Write it the way you would say it out loud. This is what you will scan for
                     later.
                   </FieldDescription>
                 )}
@@ -775,15 +796,14 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel required>Amount</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <MoneyTextInput
                       color="module"
-                      inputMode="decimal"
-                      value={form.amount}
+                      aria-label="Amount"
+                      text={form.amount}
                       disabled={readOnly}
-                      placeholder="0.00"
-                      className="text-right tabular-nums"
-                      onChange={(event) => {
-                        set('amount', event.target.value);
+                      className="text-right"
+                      onTextChange={(value) => {
+                        set('amount', value);
                       }}
                     />
                   }
@@ -799,15 +819,14 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
                 <FieldLabel>Tax included</FieldLabel>
                 <FieldControl
                   render={
-                    <Input
+                    <MoneyTextInput
                       color="module"
-                      inputMode="decimal"
-                      value={form.tax}
+                      aria-label="Tax included"
+                      text={form.tax}
                       disabled={readOnly}
-                      placeholder="0.00"
-                      className="text-right tabular-nums"
-                      onChange={(event) => {
-                        set('tax', event.target.value);
+                      className="text-right"
+                      onTextChange={(value) => {
+                        set('tax', value);
                       }}
                     />
                   }
@@ -840,7 +859,7 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
                   }
                 />
                 <FieldDescription>
-                  Decides where this lands in your profit — cost of the work, wages, or a running
+                  Decides where this lands in your profit: cost of the work, wages, or a running
                   cost.
                 </FieldDescription>
               </Field>
@@ -872,7 +891,7 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="Dates"
-            description="The day the cost belongs to and the day money actually left are different things, and both matter — a January bill paid in March is January's cost."
+            description="The day the cost belongs to and the day money actually left are different things, and both matter: a January bill paid in March is January's cost."
           >
             <div className="grid gap-3 @md:grid-cols-3">
               <Field>

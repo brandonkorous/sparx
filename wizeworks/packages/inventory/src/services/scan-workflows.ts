@@ -136,7 +136,7 @@ function envelopeDefaults(envelope: ScanEnvelope): {
 function duplicateResult(): ScanActionResult {
   return {
     outcome: 'duplicate',
-    message: 'Already counted — this scan had reached us before.',
+    message: 'Already counted. This scan had reached us before.',
     match: null,
     quantity: 0,
     sessionQuantity: null,
@@ -332,7 +332,7 @@ export async function scanToReceive(
     };
 
     if (!match) {
-      const message = `Nothing in the catalogue matches ${resolution.scanned}.`;
+      const message = `Nothing in the catalog matches ${resolution.scanned}.`;
       const id = await recordScan(tx, ctx.tenantId, {
         ...base,
         outcome: 'not_found',
@@ -396,7 +396,7 @@ export async function scanToReceive(
     if (contributed > outstanding) {
       const message =
         outstanding <= 0
-          ? `${match.title} is fully received — ${line.quantityOrdered} ordered, ${line.quantityReceived + already} accounted for.`
+          ? `${match.title} is fully received: ${line.quantityOrdered} ordered, ${line.quantityReceived + already} accounted for.`
           : `Only ${outstanding} more of ${match.title} were ordered. This scan is ${contributed}.`;
       const id = await recordScan(tx, ctx.tenantId, {
         ...base,
@@ -432,8 +432,8 @@ export async function scanToReceive(
       outcome: 'applied',
       message:
         damaged > 0
-          ? `${contributed} × ${match.title} (${damaged} damaged) — ${total} of ${line.quantityOrdered}.`
-          : `${contributed} × ${match.title} — ${total} of ${line.quantityOrdered}.`,
+          ? `${contributed} × ${match.title} (${damaged} damaged): ${total} of ${line.quantityOrdered}.`
+          : `${contributed} × ${match.title}: ${total} of ${line.quantityOrdered}.`,
       match,
       quantity: contributed,
       sessionQuantity: total,
@@ -588,7 +588,7 @@ export async function scanToCount(
     };
 
     if (!match) {
-      const message = `Nothing in the catalogue matches ${resolution.scanned}.`;
+      const message = `Nothing in the catalog matches ${resolution.scanned}.`;
       const id = await recordScan(tx, ctx.tenantId, {
         ...base,
         outcome: 'not_found',
@@ -654,7 +654,7 @@ export async function scanToCount(
 
     return {
       outcome: 'applied',
-      message: `${match.title} — ${total} counted.`,
+      message: `${match.title}: ${total} counted.`,
       match,
       quantity: contributed,
       sessionQuantity: total,
@@ -719,7 +719,7 @@ export async function scanToTransfer(
     };
 
     if (!match) {
-      const message = `Nothing in the catalogue matches ${resolution.scanned}.`;
+      const message = `Nothing in the catalog matches ${resolution.scanned}.`;
       const id = await recordScan(tx, ctx.tenantId, {
         ...base,
         outcome: 'not_found',
@@ -771,7 +771,7 @@ export async function scanToTransfer(
 
     return {
       outcome: 'applied',
-      message: `${match.title} — ${total} on the transfer.`,
+      message: `${match.title}: ${total} on the transfer.`,
       match,
       quantity: contributed,
       sessionQuantity: total,
@@ -846,7 +846,7 @@ export async function scanPutAway(
 
   const recorded = await withTenant(ctx, async (tx) => {
     if (!match) {
-      const message = `Nothing in the catalogue matches ${resolution.scanned}.`;
+      const message = `Nothing in the catalog matches ${resolution.scanned}.`;
       const id = await recordScan(tx, ctx.tenantId, {
         ...base,
         outcome: 'not_found',

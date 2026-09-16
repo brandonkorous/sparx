@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-warm-subscription',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Warm Subscription',
   summary:
-    'A warm, editorial storefront for a subscription food & drink brand — a full-bleed cream-and-terracotta hero over a "how the club works" trio, provenance editorial bands, shoppable carousels, a static subscription plan-selector and an inclusion list, in a bespoke warm `roastery` theme with an espresso footer island. Modelled on the warm-subscription / food-editorial archetype; shipped as Latitude Coffee Club, a single-origin coffee subscription and roastery.',
+    'A warm, editorial storefront for a subscription food & drink brand: a full-bleed cream-and-terracotta hero over a "how the club works" trio, provenance editorial bands, shoppable carousels, a static subscription plan-selector and an inclusion list, in a bespoke warm `roastery` theme with an espresso footer island. Modelled on the warm-subscription / food-editorial archetype; shipped as Latitude Coffee Club, a single-origin coffee subscription and roastery.',
   vertical: 'retail',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

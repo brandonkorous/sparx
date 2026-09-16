@@ -119,7 +119,7 @@ export const NOTIFICATION_CATEGORY_META: readonly CategoryMeta[] = [
   {
     key: 'bookings',
     label: 'Bookings & appointments',
-    description: 'An appointment is booked, moved, or cancelled.',
+    description: 'An appointment is booked, moved, or canceled.',
     icon: CalendarClock,
     module: 'scheduling',
   },
@@ -140,7 +140,7 @@ export const NOTIFICATION_CATEGORY_META: readonly CategoryMeta[] = [
   {
     key: 'system',
     label: 'Background tasks',
-    description: 'A long job you started — an import, an export, a bulk change — finishes.',
+    description: 'A long job you started (an import, an export, a bulk change) finishes.',
     icon: Wrench,
     module: 'platform',
   },

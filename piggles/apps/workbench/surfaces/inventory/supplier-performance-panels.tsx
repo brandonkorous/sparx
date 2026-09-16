@@ -58,6 +58,7 @@ import {
   useSupplierScorecard,
 } from './supplier-performance-data';
 import { InlineWaiting } from '../../components/inline-waiting';
+import { MoneyTextInput, moneyCents } from '../../components/money-input';
 
 /* ── How they have actually performed ───────────────────────────────────── */
 
@@ -92,7 +93,7 @@ export function SupplierScorecardPanel({ supplierId }: { supplierId: string }) {
     return (
       <FormSection
         title="How they have performed"
-        description="Worked out from your own orders and deliveries — nothing here is typed in by hand."
+        description="Worked out from your own orders and deliveries. Nothing here is typed in by hand."
       >
         <Text className="text-sm">
           Nobody has been measured yet. This is empty because no pass has been made over your orders
@@ -134,8 +135,8 @@ export function SupplierScorecardPanel({ supplierId }: { supplierId: string }) {
             <AlertTitle>Not enough to grade them on yet</AlertTitle>
             <AlertDescription>
               A grade needs at least two of the four measures below, and each needs something to
-              measure — a delivery with a date on it, an order that has finished, a price to
-              compare, or units received. What IS known is shown; the rest says so.
+              measure: a delivery with a date on it, an order that has finished, a price to compare,
+              or units received. What IS known is shown; the rest says so.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -157,7 +158,7 @@ export function SupplierScorecardPanel({ supplierId }: { supplierId: string }) {
           </StatValue>
           <StatDesc>
             {data.onTimeRate === null ? (
-              <Tooltip content="No delivery from this supplier has ever had a date to be judged against — either nobody set an expected arrival, or they never stated a delivery time.">
+              <Tooltip content="No delivery from this supplier has ever had a date to be judged against. Either nobody set an expected arrival, or they never stated a delivery time.">
                 <span>no dates to judge against</span>
               </Tooltip>
             ) : (
@@ -226,7 +227,7 @@ export function SupplierScorecardPanel({ supplierId }: { supplierId: string }) {
           Deliveries take {data.leadTimeMeanDays} days on average, measured across{' '}
           {plural(data.leadTimeSample, 'delivery', 'deliveries')}
           {data.leadTimePromisedDays !== null
-            ? ` — they say ${data.leadTimePromisedDays}, so they run ${
+            ? `, they say ${data.leadTimePromisedDays}, so they run ${
                 (data.leadTimeVarianceDays ?? 0) >= 0 ? 'slower' : 'faster'
               } than stated by ${Math.abs(data.leadTimeVarianceDays ?? 0)} days.`
             : ', and they have never stated a delivery time to compare it against.'}
@@ -259,7 +260,7 @@ export function PriceLadders({
   return (
     <FormSection
       title="Quantity prices"
-      description="“£4.10 each, or £3.60 if you take fifty.” Set the ladder here and a purchase order picks the right price for the quantity being ordered — and tells the buyer what the next step down would save."
+      description="“$4.10 each, or $3.60 if you take fifty.” Set the ladder here and a purchase order picks the right price for the quantity being ordered, and tells the buyer what the next step down would save."
     >
       {variants.map((link) => (
         <PriceLadderRow key={link.id} link={link} currency={currency} />
@@ -286,21 +287,32 @@ function PriceLadderRow({ link, currency }: { link: SupplierVariant; currency: s
     setRungs(
       ladder.data.breaks.map((step) => ({
         minQuantity: String(step.minQuantity),
-        unitCost: (step.unitCostCents / 100).toString(),
+        // Two decimals, always: a ladder rung reading "3.6" beside "$4.10 each"
+        // looks like a typo rather than a price (see money-input's header).
+        unitCost: (step.unitCostCents / 100).toFixed(2),
       }))
     );
     setDirty(false);
   }, [ladder.data]);
 
+  // Blank is no answer; everything else is read the way a person writes money,
+  // so "3,60" is three sixty rather than three hundred and sixty (issue 486).
+  const rungCents = (unitCost: string) => (unitCost.trim() === '' ? null : moneyCents(unitCost));
   const valid = rungs.every(
-    (rung) => Number.parseInt(rung.minQuantity, 10) >= 2 && Number.parseFloat(rung.unitCost) >= 0
+    (rung) => Number.parseInt(rung.minQuantity, 10) >= 2 && rungCents(rung.unitCost) !== null
   );
+
+  // An unread ladder is empty for the same reason an item priced the same at
+  // every quantity is: `rungs` is []. Those are not the same fact, and only one
+  // of them has been measured, so neither sentence is said until the read lands.
+  const ladderKnown = ladder.data !== undefined;
+  const hasSteps = ladderKnown && rungs.length > 0;
 
   const onSave = () => {
     save.mutate(
       rungs.map((rung) => ({
         minQuantity: Number.parseInt(rung.minQuantity, 10),
-        unitCostCents: Math.round(Number.parseFloat(rung.unitCost) * 100),
+        unitCostCents: rungCents(rung.unitCost) ?? 0,
       })),
       {
         onSuccess: () => {
@@ -333,11 +345,15 @@ function PriceLadderRow({ link, currency }: { link: SupplierVariant; currency: s
         <Text className="text-sm">
           {link.unitCostCents === null
             ? 'No price recorded'
-            : `${formatCents(link.unitCostCents, currency)} each below the first step`}
+            : hasSteps
+              ? `${formatCents(link.unitCostCents, currency)} each below the first step`
+              : `${formatCents(link.unitCostCents, currency)} each`}
         </Text>
       </div>
 
-      {rungs.length === 0 ? (
+      {!ladderKnown ? (
+        <InlineWaiting label="Reading their quantity prices…" />
+      ) : rungs.length === 0 ? (
         <Text className="text-sm">
           One price at every quantity. Add a step if they discount for volume.
         </Text>
@@ -371,16 +387,12 @@ function PriceLadderRow({ link, currency }: { link: SupplierVariant; currency: s
                   />
                 </td>
                 <td>
-                  <Input
+                  <MoneyTextInput
                     size="sm"
                     color="module"
-                    type="number"
-                    min={0}
-                    step="0.01"
                     aria-label="Price each at this quantity"
-                    value={rung.unitCost}
-                    onChange={(event) => {
-                      const unitCost = event.target.value;
+                    text={rung.unitCost}
+                    onTextChange={(unitCost) => {
                       setDirty(true);
                       setRungs((current) =>
                         current.map((r, i) => (i === index ? { ...r, unitCost } : r))
@@ -409,36 +421,38 @@ function PriceLadderRow({ link, currency }: { link: SupplierVariant; currency: s
         </Table>
       )}
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Button
-          size="sm"
-          variant="outline"
-          color="module"
-          onClick={() => {
-            setDirty(true);
-            setRungs((current) => [...current, { minQuantity: '', unitCost: '' }]);
-          }}
-        >
-          <Icon glyph={faPlus} className="size-4" aria-hidden />
-          Add a step
-        </Button>
-        {dirty ? (
+      {ladderKnown ? (
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             size="sm"
+            variant="outline"
             color="module"
-            disabled={!valid}
-            loading={save.isPending}
-            onClick={onSave}
+            onClick={() => {
+              setDirty(true);
+              setRungs((current) => [...current, { minQuantity: '', unitCost: '' }]);
+            }}
           >
-            Save quantity prices
+            <Icon glyph={faPlus} className="size-4" aria-hidden />
+            Add a step
           </Button>
-        ) : null}
-        {dirty && !valid ? (
-          <Text className="text-sm">
-            A step starts at 2 or more — a step at 1 is just the price above.
-          </Text>
-        ) : null}
-      </div>
+          {dirty ? (
+            <Button
+              size="sm"
+              color="module"
+              disabled={!valid}
+              loading={save.isPending}
+              onClick={onSave}
+            >
+              Save quantity prices
+            </Button>
+          ) : null}
+          {dirty && !valid ? (
+            <Text className="text-sm">
+              A step starts at 2 or more: a step at 1 is just the price above.
+            </Text>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }

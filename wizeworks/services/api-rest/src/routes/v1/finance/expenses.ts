@@ -184,6 +184,7 @@ const financeExpenseRoutes: FastifyPluginAsync = async (app) => {
       items: page.items.map(expenseView),
       nextCursor: page.nextCursor,
       totalCents: page.totalCents,
+      totalCount: page.totalCount,
     });
   });
 

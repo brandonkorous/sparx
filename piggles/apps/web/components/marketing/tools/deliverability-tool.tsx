@@ -41,10 +41,10 @@ import { useReportToolResult } from './tool-result-context';
  *  four states are the whole point of this tool. */
 const findingLabel = (kind: 'spf' | 'dkim' | 'dmarc'): string =>
   kind === 'spf'
-    ? 'SPF — who is allowed to send as you'
+    ? 'SPF, who is allowed to send as you'
     : kind === 'dkim'
-      ? 'DKIM — the signature on your mail'
-      : 'DMARC — what to do with fakes';
+      ? 'DKIM: the signature on your mail'
+      : 'DMARC: what to do with fakes';
 
 /**
  * Will your email actually arrive?
@@ -120,14 +120,14 @@ export function DeliverabilityTool() {
             { label: 'Domain checked', value: checked },
             ...findings.map((f) => ({
               label: findingLabel(f.kind),
-              value: f.record ? `${f.title} — ${f.record}` : f.title,
+              value: f.record ? `${f.title}: ${f.record}` : f.title,
             })),
           ]
         : []),
-      { label: 'SPF record — name it @ or leave the name blank', value: spfRecord },
-      { label: 'DMARC record — name it _dmarc', value: dmarcRecord },
+      { label: 'SPF record: name it @ or leave the name blank', value: spfRecord },
+      { label: 'DMARC record: name it _dmarc', value: dmarcRecord },
     ],
-    note: 'Both go in wherever your domain is managed, as TXT records. Leave DMARC on monitor for a couple of weeks and read what comes back before you tighten it — going straight to reject can bounce your own mail. DKIM is not here because your email provider makes that one for you.',
+    note: 'Both go in wherever your domain is managed, as TXT records. Leave DMARC on monitor for a couple of weeks and read what comes back before you tighten it: going straight to reject can bounce your own mail. DKIM is not here because your email provider makes that one for you.',
   });
 
   return (
@@ -176,7 +176,7 @@ export function DeliverabilityTool() {
 
           <Panel
             title="Generate what you are missing"
-            description="Nothing here is sent anywhere — the records are built in the page."
+            description="Nothing here is sent anywhere: the records are built in the page."
           >
             <Tabs defaultValue="spf">
               <TabsList>
@@ -187,7 +187,7 @@ export function DeliverabilityTool() {
               <TabsPanel value="spf">
                 <div className="flex flex-col gap-4 pt-4">
                   <p className="text-base">
-                    Tick everything that sends email using your address — your mail provider, your
+                    Tick everything that sends email using your address. Your mail provider, your
                     newsletter tool, your invoicing software.
                   </p>
 
@@ -216,7 +216,7 @@ export function DeliverabilityTool() {
                   />
                   <CheckField
                     label="Also allow my website's own server"
-                    hint="Only if your website sends email directly — a contact form on your own hosting, for instance."
+                    hint="Only if your website sends email directly: a contact form on your own hosting, for instance."
                     checked={allowA}
                     onChange={setAllowA}
                   />
@@ -226,12 +226,12 @@ export function DeliverabilityTool() {
                     value={spfPolicy}
                     onChange={(v) => setSpfPolicy(v)}
                     options={[
-                      { value: '~all', label: 'Treat as suspicious — start here' },
+                      { value: '~all', label: 'Treat as suspicious: start here' },
                       {
                         value: '-all',
-                        label: 'Reject outright — once you are sure the list is complete',
+                        label: 'Reject outright: once you are sure the list is complete',
                       },
-                      { value: '?all', label: 'No opinion — barely worth publishing' },
+                      { value: '?all', label: 'No opinion: barely worth publishing' },
                     ]}
                   />
                 </div>
@@ -244,7 +244,7 @@ export function DeliverabilityTool() {
                     value={dmarcPolicy}
                     onChange={(v) => setDmarcPolicy(v)}
                     options={[
-                      { value: 'none', label: 'Do nothing, just tell me — start here' },
+                      { value: 'none', label: 'Do nothing, just tell me: start here' },
                       { value: 'quarantine', label: 'Send it to spam' },
                       { value: 'reject', label: 'Refuse it outright' },
                     ]}
@@ -341,8 +341,8 @@ export function DeliverabilityTool() {
                   </div>
                   <p className="mt-2 text-base">
                     <strong>If you already have one, merge into it.</strong> A domain may only
-                    publish one SPF record — most mail servers treat two as an error and ignore
-                    both, which fails every message at once.
+                    publish one SPF record. Most mail servers treat two as an error and ignore both,
+                    which fails every message at once.
                   </p>
                 </div>
 
@@ -357,7 +357,7 @@ export function DeliverabilityTool() {
               </div>
 
               <p className="mt-5 text-base">
-                DKIM is the third, and it is the one you cannot generate here — the key has to come
+                DKIM is the third, and it is the one you cannot generate here: the key has to come
                 from your mail provider, because only they hold the other half of it. Look for
                 &ldquo;DKIM&rdquo; or &ldquo;authenticate your domain&rdquo; in their settings.
               </p>

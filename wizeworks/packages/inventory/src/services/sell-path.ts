@@ -343,7 +343,7 @@ export async function reverseOrderSale(
     await cancelBackordersForHolderOnTx(tx, ctx, {
       holderType: 'order',
       holderId: input.orderId,
-      reason: 'The order was cancelled.',
+      reason: 'The order was canceled.',
     });
   });
 

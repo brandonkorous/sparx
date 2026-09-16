@@ -43,7 +43,7 @@ const WHAT: Record<string, string> = {
   confirmation: 'The booking confirmation',
   reminder: 'A reminder',
   change: 'A note that it moved',
-  cancellation: 'A note that it was cancelled',
+  cancellation: 'A note that it was canceled',
   followup: 'A follow-up',
   waitlist_offer: 'A waiting-list offer',
 };
@@ -151,7 +151,7 @@ export function BookingNotices({
       {!reachable ? (
         <Text className="text-sm">
           Nothing was sent and nothing will be. Confirmations and reminders go to the email or phone
-          on a customer&apos;s record, and this booking has no account attached — a name written on
+          on a customer&apos;s record, and this booking has no account attached: a name written on
           it is not an address. Link a customer when you take the booking and both follow.
         </Text>
       ) : stillAhead && !reminderComing ? (

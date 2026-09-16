@@ -114,7 +114,7 @@ const sale = (delta: number, daysAgo: number): DemoMovement => ({
 const DEMO_PRODUCTS: DemoProduct[] = [
   {
     handle: 'inv-demo-fuel-filter-67',
-    title: 'Fuel Filter — 6.7L Power Stroke',
+    title: 'Fuel Filter: 6.7L Power Stroke',
     productType: 'Filters',
     attributes: {
       fitment:
@@ -175,11 +175,11 @@ const DEMO_PRODUCTS: DemoProduct[] = [
   },
   {
     handle: 'inv-demo-glow-plug-60',
-    title: 'Glow Plug Set (8) — 6.0L Power Stroke',
+    title: 'Glow Plug Set (8): 6.0L Power Stroke',
     productType: 'Ignition',
     attributes: {
       fitment:
-        'Fits 2003–2007 Ford 6.0L Power Stroke diesel. Complete set of 8 — one per cylinder. Torque to 15 lb-ft on install.',
+        'Fits 2003–2007 Ford 6.0L Power Stroke diesel. Complete set of 8. One per cylinder. Torque to 15 lb-ft on install.',
       specs: [
         { label: 'Set quantity', value: '8 plugs' },
         { label: 'Voltage', value: '12 V' },
@@ -211,7 +211,7 @@ const DEMO_PRODUCTS: DemoProduct[] = [
   },
   {
     handle: 'inv-demo-injector-67-cummins',
-    title: 'Fuel Injector — 6.7L Cummins',
+    title: 'Fuel Injector: 6.7L Cummins',
     productType: 'Fuel System',
     attributes: {
       fitment:
@@ -262,7 +262,7 @@ const DEMO_PRODUCTS: DemoProduct[] = [
   },
   {
     handle: 'inv-demo-turbo-lml',
-    title: 'Turbocharger — Duramax LML',
+    title: 'Turbocharger: Duramax LML',
     productType: 'Forced Induction',
     attributes: {
       fitment:
@@ -302,7 +302,7 @@ const DEMO_PRODUCTS: DemoProduct[] = [
     productType: 'Fluids',
     attributes: {
       fitment:
-        'For any heavy-duty diesel calling for a 15W-40 CK-4 engine oil — on-highway trucks, fleet pickups, and equipment. One US gallon.',
+        'For any heavy-duty diesel calling for a 15W-40 CK-4 engine oil: on-highway trucks, fleet pickups, and equipment. One US gallon.',
       specs: [
         { label: 'Viscosity', value: '15W-40' },
         { label: 'Spec', value: 'API CK-4 / CJ-4' },
@@ -340,11 +340,11 @@ const DEMO_PRODUCTS: DemoProduct[] = [
   },
   {
     handle: 'inv-demo-coolant-hd',
-    title: 'Heavy-Duty Coolant — Nitrite-Free (1 gal)',
+    title: 'Heavy-Duty Coolant: Nitrite-Free (1 gal)',
     productType: 'Fluids',
     attributes: {
       fitment:
-        'For heavy-duty diesel cooling systems that require a nitrite-free extended-life coolant (ELC). Pre-diluted 50/50 — ready to fill. One US gallon.',
+        'For heavy-duty diesel cooling systems that require a nitrite-free extended-life coolant (ELC). Pre-diluted 50/50: ready to fill. One US gallon.',
       specs: [
         { label: 'Type', value: 'ELC, nitrite-free (NOAT)' },
         { label: 'Concentration', value: '50/50 pre-mix' },
@@ -377,7 +377,7 @@ const DEMO_PRODUCTS: DemoProduct[] = [
   },
   {
     handle: 'inv-demo-serpentine-belt-73',
-    title: 'Serpentine Belt — 7.3L Power Stroke',
+    title: 'Serpentine Belt: 7.3L Power Stroke',
     productType: 'Belts',
     attributes: {
       fitment:
@@ -412,7 +412,7 @@ const DEMO_PRODUCTS: DemoProduct[] = [
   },
   {
     handle: 'inv-demo-water-pump-66',
-    title: 'Water Pump — 6.6L Duramax',
+    title: 'Water Pump: 6.6L Duramax',
     productType: 'Cooling',
     attributes: {
       fitment:
@@ -789,7 +789,7 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
           status: def.status,
           currency: 'USD',
           reference: 'Replenishment',
-          shippingCents: def.shipping,
+          freightCents: def.shipping,
           subtotalCents: subtotal,
           totalCents: subtotal + def.shipping,
           ...(submitted ? { orderedAt: daysAgoDate(3), expectedArrivalAt: daysAgoDate(-11) } : {}),
@@ -1013,7 +1013,7 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
         },
         status: 'active',
         syncIntervalSec: 0,
-        notes: 'Generic HTTP-API pull (Tier B) — demo config; manual sync only.',
+        notes: 'Generic HTTP-API pull (Tier B): demo config; manual sync only.',
       },
     });
     sourceCount += 1;
@@ -1228,7 +1228,7 @@ const DEMO_SERVICES: DemoService[] = [
     requiresApproval: true,
     // Any staff member can take an intro — round-robin balances them across the team.
     assignmentStrategy: 'round_robin',
-    description: 'A free 30-minute intro consultation (request — we confirm).',
+    description: 'A free 30-minute intro consultation (request, we confirm).',
     requirements: [{ role: 'staff', kind: 'staff' }],
   },
   {
@@ -1573,7 +1573,7 @@ const REVIEW_SPECS: ReviewSpec[] = [
     body: 'Showed up a day early and works perfectly. Would buy again without hesitation.',
     status: 'approved',
     author: 'Marcus T.',
-    response: 'Thanks so much, Marcus — glad it landed early!',
+    response: 'Thanks so much, Marcus: glad it landed early!',
     helpful: 8,
     daysAgo: 21,
   },
@@ -1630,7 +1630,7 @@ const REVIEW_SPECS: ReviewSpec[] = [
     status: 'approved',
     author: null,
     useCustomer: true,
-    response: 'You made our day — thank you!',
+    response: 'You made our day: thank you!',
     helpful: 11,
     daysAgo: 25,
   },
@@ -1655,7 +1655,7 @@ const REVIEW_SPECS: ReviewSpec[] = [
   {
     rating: 2,
     title: '',
-    body: 'Color didn’t match the photos at all — more grey than blue.',
+    body: 'Color didn’t match the photos at all: more gray than blue.',
     status: 'flagged',
     author: 'Lee H.',
     helpful: 4,
@@ -1697,7 +1697,7 @@ const QUESTION_SPECS: QuestionSpec[] = [
     body: 'Does this come with batteries, or do I need to buy them separately?',
     status: 'published',
     author: 'Renee',
-    answer: 'Great question — two AA batteries are included in the box.',
+    answer: 'Great question: two AA batteries are included in the box.',
     daysAgo: 20,
   },
   { body: 'Is this dishwasher safe?', status: 'pending', author: 'Tom B.', daysAgo: 5 },
@@ -1716,7 +1716,7 @@ const QUESTION_SPECS: QuestionSpec[] = [
     daysAgo: 3,
   },
   {
-    body: 'BUY FOLLOWERS cheap — click my profile',
+    body: 'BUY FOLLOWERS cheap: click my profile',
     status: 'rejected',
     author: 'spammer',
     daysAgo: 8,
@@ -1725,7 +1725,7 @@ const QUESTION_SPECS: QuestionSpec[] = [
     body: 'Do you ship to Canada, and how long does it usually take?',
     status: 'published',
     author: 'Marc',
-    answer: 'Yes — we ship across North America; Canada is typically 7–12 business days.',
+    answer: 'Yes. We ship across North America; Canada is typically 7–12 business days.',
     daysAgo: 13,
   },
   {
@@ -2158,7 +2158,7 @@ async function seedDemoCommerceOps(tenantId: string): Promise<void> {
         },
         {
           tenantId,
-          name: 'Premium line — 2× cost',
+          name: 'Premium line: 2× cost',
           method: 'multiplier',
           value: 2.0,
           costBasis: 'variant_cost',
@@ -2169,7 +2169,7 @@ async function seedDemoCommerceOps(tenantId: string): Promise<void> {
         },
         {
           tenantId,
-          name: 'Clearance — 15% margin target',
+          name: 'Clearance: 15% margin target',
           method: 'margin_target',
           value: 15,
           costBasis: 'variant_cost',
@@ -2583,7 +2583,7 @@ const ORDER_SPECS: OrderSpec[] = [
     channel: 'storefront',
     method: 'stripe',
     failedFirst: true,
-    failureReason: 'Card declined (insufficient funds) — retried and approved.',
+    failureReason: 'Card declined (insufficient funds): retried and approved.',
   },
   {
     customerIdx: 5,
@@ -2605,7 +2605,7 @@ const ORDER_SPECS: OrderSpec[] = [
     channel: 'storefront',
     method: 'stripe',
     failedFirst: true,
-    failureReason: 'Card declined (do not honour) — checkout not completed.',
+    failureReason: 'Card declined (do not honor): checkout not completed.',
   },
   {
     customerIdx: 2,
@@ -2831,7 +2831,7 @@ async function seedDemoOrders(tenantId: string): Promise<void> {
           productId: product.id,
           variantId: variant.id,
           sku: variant.sku,
-          name: variant.title ? `${product.title} — ${variant.title}` : product.title,
+          name: variant.title ? `${product.title}: ${variant.title}` : product.title,
           quantity,
           unitPrice,
           lineSubtotal,
@@ -3045,7 +3045,7 @@ async function seedDemoOrders(tenantId: string): Promise<void> {
                 quantity: 1,
                 approvedQuantity: isApproved ? 1 : 0,
                 reasonCode: spec.reasonCode,
-                customerNote: 'Please advise on next steps — thanks.',
+                customerNote: 'Please advise on next steps: thanks.',
               },
             ],
           },
@@ -3455,7 +3455,7 @@ async function seedDemoFeedback(tenantId: string): Promise<void> {
         source: 'button',
         category: 'problem',
         subject: 'CSV import failed silently',
-        body: 'I uploaded a customer CSV and nothing happened — no error, no rows. Took me a while to notice.',
+        body: 'I uploaded a customer CSV and nothing happened: no error, no rows. Took me a while to notice.',
         status: 'shipped',
         context: ctx('/crm/customers', 'crm', 'customers'),
         lastResponseAt: daysAgo(1),
@@ -3471,7 +3471,7 @@ async function seedDemoFeedback(tenantId: string): Promise<void> {
         authorKind: 'staff',
         authorId: owner.id,
         authorName: 'Brandon',
-        body: 'Thanks for the detailed report — we shipped a fix that now surfaces import errors inline. Give it another try!',
+        body: 'Thanks for the detailed report. We shipped a fix that now surfaces import errors inline. Give it another try!',
         createdAt: daysAgo(1),
       },
     });
@@ -3503,7 +3503,7 @@ async function seedDemoFeedback(tenantId: string): Promise<void> {
           authorKind: 'staff',
           authorId: owner.id,
           authorName: 'Brandon',
-          body: 'Yes — when creating a discount, set the "Starts" date to next Monday and it activates automatically.',
+          body: 'Yes, when creating a discount, set the "Starts" date to next Monday and it activates automatically.',
           createdAt: daysAgo(3),
         },
         {
@@ -3607,7 +3607,7 @@ async function seedDemoPartner(tenantId: string): Promise<void> {
       tier: 'certified',
       status: 'active',
       displayName: 'WizeWorks Studio',
-      bio: 'A full-service sparx partner — we design, build and run content-and-commerce sites for growing businesses, then stay on as their team.',
+      bio: 'A full-service sparx partner. We design, build and run content-and-commerce sites for growing businesses, then stay on as their team.',
       websiteUrl: 'https://wizeworks.example',
       kind: 'agency',
       locationCity: 'Portland',
@@ -3815,7 +3815,7 @@ async function seedDemoPartner(tenantId: string): Promise<void> {
         title: 'Launch Your Store in a Weekend',
         slug: 'launch-your-store-in-a-weekend',
         description:
-          '<p>A hands-on two-day cohort: leave with a live sparx site, a stocked catalog and your first checkout tested — no code, no jargon.</p>',
+          '<p>A hands-on two-day cohort: leave with a live sparx site, a stocked catalog and your first checkout tested, no code, no jargon.</p>',
         format: 'virtual',
         locationCountry: 'US',
         startsAt: daysAhead(21),

@@ -86,7 +86,9 @@ describe('export', () => {
 
     expect(result.rowCount).toBe(3);
     expect(result.contentType).toContain('text/csv');
-    expect(result.filename).toMatch(/^sparx-expenses-csv-2027-03-01-to-2027-03-31\.csv$/);
+    // No product name: this file goes to an accountant, and two consoles under
+    // two brands download it. No layout slug either, for the generic layout.
+    expect(result.filename).toMatch(/^expenses-2027-03-01-to-2027-03-31\.csv$/);
 
     const rows = parseCsvObjects(result.body);
     expect(rows).toHaveLength(3);

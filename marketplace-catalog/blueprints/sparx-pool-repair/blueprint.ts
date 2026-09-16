@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-pool-repair',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Pool & Spa (Repair)',
   summary:
-    'A deep, technical pool & spa REPAIR site — a navy-teal palette with a bright cyan signal accent, built around online booking. Homeowners book a service call, a free repair estimate or a specialist consult in about a minute; three technicians carry their own skills and hours as dispatchable resources. Leads with certified techs, all makes & models and upfront diagnostics. Ships as "AquaTech Pool & Spa", an equipment-and-renovation specialist.',
+    'A deep, technical pool & spa REPAIR site: a navy-teal palette with a bright cyan signal accent, built around online booking. Homeowners book a service call, a free repair estimate or a specialist consult in about a minute; three technicians carry their own skills and hours as dispatchable resources. Leads with certified techs, all makes & models and upfront diagnostics. Ships as "AquaTech Pool & Spa", an equipment-and-renovation specialist.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

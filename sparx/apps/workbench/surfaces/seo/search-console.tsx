@@ -206,7 +206,7 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
       if (event.data.error) {
         setConnectFailure(
           event.data.error === 'access_denied'
-            ? 'You cancelled the Google sign-in, so nothing was connected.'
+            ? 'You canceled the Google sign-in, so nothing was connected.'
             : `Google reported a problem: ${event.data.error}`
         );
         return;
@@ -378,8 +378,8 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
               </Heading>
               <Text>
                 Search Console is a free tool from Google. Connecting it lets us show you the real
-                numbers Google records — how many people saw your site in search results, and how
-                many clicked through — instead of an estimate.
+                numbers Google records (how many people saw your site in search results, and how
+                many clicked through) instead of an estimate.
               </Text>
             </div>
 
@@ -405,7 +405,7 @@ function SearchConsole({ ctx }: { ctx: SurfaceContext }) {
                 </Alert>
                 <FormSection
                   title="What you can see today"
-                  description={`Google's own figures are the only part missing. Everything measured here — how each page scores, and what is worth fixing — is on ${performanceTitle}, and it is up to date.`}
+                  description={`Google's own figures are the only part missing. Everything measured here (how each page scores, and what is worth fixing) is on ${performanceTitle}, and it is up to date.`}
                 >
                   <div>
                     <Button

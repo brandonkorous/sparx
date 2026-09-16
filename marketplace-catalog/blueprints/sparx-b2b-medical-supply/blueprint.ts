@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-medical-supply',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Medical Supply (B2B / Wholesale)',
   summary:
-    'A complete, working wholesale shop for a medical, dental & clinical supplies distributor: a real trade catalogue sold by the case — PPE, consumables, wound care and infection control — with categories, collections, a bespoke trade PDP (per-case pricing, volume breaks, net-30, lot traceability), and a full merchandised home page. Clean clinical theme — crisp cool ground, calm medical-blue, a teal accent. Shipped as Meridian Medical Supplies.',
+    'A complete, working wholesale shop for a medical, dental & clinical supplies distributor: a real trade catalogue sold by the case, PPE, consumables, wound care and infection control, with categories, collections, a bespoke trade PDP (per-case pricing, volume breaks, net-30, lot traceability), and a full merchandised home page. Clean clinical theme, crisp cool ground, calm medical-blue, a teal accent. Shipped as Meridian Medical Supplies.',
   vertical: 'b2b',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
@@ -27,7 +27,7 @@ const blueprint = {
   // itself rides site.theme + the theme decl below; the installing tenant rebrands the name.
   brand: {
     businessName: 'Meridian Medical Supplies',
-    tagline: 'Compliant, traceable, in stock — everything a practice needs on one account.',
+    tagline: 'Compliant, traceable, in stock. Everything a practice needs on one account.',
     colors: {
       primary: '#085b87',
       primaryForeground: '#f3faff',

@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-moving-local',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Moving (Local & Friendly)',
   summary:
-    'A friendly local-mover site — a clean off-white palette with a confident green primary and warm amber accent, a sturdy sans display and photo-led care. Installs a working online booking flow: customers book a free estimate or an in-home walkthrough and get a real time slot. Ships a full estimate menu (local, apartment, packing, loading help, furniture), three move coordinators as dispatchable crews with their own hours, and standard + move-date deposit policies. Ships as "Sure Hands Moving".',
+    'A friendly local-mover site: a clean off-white palette with a confident green primary and warm amber accent, a sturdy sans display and photo-led care. Installs a working online booking flow: customers book a free estimate or an in-home walkthrough and get a real time slot. Ships a full estimate menu (local, apartment, packing, loading help, furniture), three move coordinators as dispatchable crews with their own hours, and standard + move-date deposit policies. Ships as "Sure Hands Moving".',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

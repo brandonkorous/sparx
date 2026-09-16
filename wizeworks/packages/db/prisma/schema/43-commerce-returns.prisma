@@ -10,7 +10,9 @@ model ReturnRequest {
 
   status           String  @default("requested") @db.VarChar(20)
   // ^ requested | approved | denied | awaiting_shipment | in_transit |
-  //   received | inspecting | inspected | refunded | cancelled
+  //   received | inspecting | inspected | refunded | exchanged | cancelled
+  // `exchanged` is settled by SENDING rather than by paying: its own ending, not
+  // a refund of zero, so "how much did we give back" stays answerable.
   preferredOutcome String  @default("refund") @map("preferred_outcome") @db.VarChar(20)
   // ^ refund | account_credit | exchange | repair
   staffNote        String? @map("staff_note") @db.Text
@@ -119,16 +121,34 @@ model ReturnInspection {
   @@map("commerce_return_inspections")
 }
 
+/// A parcel that exists BECAUSE of a return, in either direction.
+///
+/// "inbound" is the label the customer uses to send the goods back, which is
+/// what every row was until a replacement got a journey of its own. "outbound"
+/// is the replacement travelling to them — the same six facts pointing the
+/// other way, which is why this is a direction rather than a second table.
 model ReturnLabel {
-  id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId       String  @map("tenant_id") @db.Uuid
-  returnId       String  @map("return_id") @db.Uuid
-  providerSlug   String  @map("provider_slug") @db.VarChar(63)
-  labelRef       String  @map("label_ref") @db.VarChar(255)
-  trackingNumber String? @map("tracking_number") @db.VarChar(127)
-  trackingUrl    String? @map("tracking_url") @db.VarChar(2048)
-  labelMediaId   String? @map("label_media_id") @db.Uuid
-  costCents      Int     @default(0) @map("cost_cents")
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId       String    @map("tenant_id") @db.Uuid
+  returnId       String    @map("return_id") @db.Uuid
+  /// "inbound" (goods coming back) or "outbound" (the replacement going out).
+  direction      String    @default("inbound") @db.VarChar(16)
+  providerSlug   String    @map("provider_slug") @db.VarChar(63)
+  /// Who carried it: a carrier CODE when it was one on the list (`usps`), or the
+  /// name somebody typed when it was not. `carrierLabel()` turns either into
+  /// words, and this column must never reach a screen or an email without it —
+  /// printing it raw is what told a customer their parcel went by "usps".
+  /// providerSlug answers "which integration bought this label" and says nothing
+  /// when she walked to the post office.
+  carrier        String?   @db.VarChar(63)
+  /// The carrier's own id for a label it issued. Null when nobody bought one.
+  labelRef       String?   @map("label_ref") @db.VarChar(255)
+  trackingNumber String?   @map("tracking_number") @db.VarChar(127)
+  trackingUrl    String?   @map("tracking_url") @db.VarChar(2048)
+  labelMediaId   String?   @map("label_media_id") @db.Uuid
+  costCents      Int       @default(0) @map("cost_cents")
+  /// When it was actually posted, which is not when the row was written.
+  shippedAt      DateTime? @map("shipped_at") @db.Timestamptz
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 
@@ -136,5 +156,6 @@ model ReturnLabel {
   return ReturnRequest @relation(fields: [returnId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, returnId])
+  @@index([tenantId, returnId, direction])
   @@map("commerce_return_labels")
 }

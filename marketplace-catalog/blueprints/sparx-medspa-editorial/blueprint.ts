@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-medspa-editorial',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Med Spa (Editorial)',
   summary:
-    'An editorial med-spa site — a champagne-and-gold palette, an antique-gold primary and a healing sage accent under a Fraunces serif, with soft-lit photography carrying calm, boutique-hotel pages. Installs a working booking flow: a real treatment menu (facial, peel, microneedling, IV drip, laser), a free consultation you request, providers you book by name, two treatment rooms and a deposit policy. Ships as "Aésthète", a calm aesthetics clinic.',
+    'An editorial med-spa site: a champagne-and-gold palette, an antique-gold primary and a healing sage accent under a Fraunces serif, with soft-lit photography carrying calm, boutique-hotel pages. Installs a working booking flow: a real treatment menu (facial, peel, microneedling, IV drip, laser), a free consultation you request, providers you book by name, two treatment rooms and a deposit policy. Ships as "Aésthète", a calm aesthetics clinic.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

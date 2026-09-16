@@ -43,6 +43,7 @@ import { withTenant } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { indexInventoryEntityOnCommit } from '../events';
 import { InventoryNotFoundError, InventoryValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 
@@ -107,6 +108,73 @@ export async function listCountSchedules(
     const items = await Promise.all(rows.map((r) => toScheduleRow(tx, ctx.tenantId, r)));
     return { items, total: items.length };
   });
+}
+
+/**
+ * How many stock lines a schedule WOULD cover, for a setup that is not saved yet.
+ *
+ * The same count `toRow` reports on a saved schedule, asked before the decision
+ * instead of after it. Without it the new-schedule form is a guess: the
+ * location list is alphabetical and the class list starts at "top value", so the
+ * pre-filled combination on a small catalogue is routinely a location holding
+ * nothing crossed with a class nothing is in. The form saved that silently, and
+ * a schedule covering nothing looks exactly like a schedule covering everything
+ * until the counts fail to appear — which is the one failure this whole feature
+ * exists to prevent (issue 499).
+ */
+export async function countScheduleCoverage(
+  ctx: ServiceContext,
+  input: { warehouseId: string; abcClass?: AbcClass | null; zoneName?: string | null }
+): Promise<{ coveredLevels: number }> {
+  return withTenant(ctx, async (tx) => ({
+    coveredLevels: await countCoveredLevels(tx, ctx.tenantId, {
+      warehouseId: input.warehouseId,
+      abcClass: input.abcClass ?? null,
+      zoneName: input.zoneName ?? null,
+    }),
+  }));
+}
+
+/**
+ * How many stock lines a filter covers, counted the way the generator selects.
+ *
+ * This deliberately mirrors `selectSliceToCount`'s WHERE clause, because the
+ * number is shown to somebody deciding whether a schedule is worth saving, and a
+ * coverage figure that counts differently from the generator is a promise the
+ * generator does not keep. Both callers previously counted by location and class
+ * with Prisma, which missed two things the generator honours: the ZONE (so a
+ * schedule narrowed to a zone holding nothing reported the whole location, which
+ * is the exact failure issue 499 added this number to catch), and deleted
+ * variants (counted as covered, never counted in practice).
+ *
+ * If `selectSliceToCount`'s filter changes, this changes with it.
+ */
+async function countCoveredLevels(
+  tx: TxClient,
+  tenantId: string,
+  filter: { warehouseId: string; abcClass: string | null; zoneName: string | null }
+): Promise<number> {
+  const rows = await tx.$queryRaw<{ covered: bigint }[]>`
+    SELECT COUNT(*)::bigint AS covered
+    FROM inventory_levels l
+    JOIN commerce_product_variants v ON v.id = l.variant_id AND v.deleted_at IS NULL
+    WHERE l.tenant_id = ${tenantId}::uuid
+      AND l.warehouse_id = ${filter.warehouseId}::uuid
+      AND (${filter.abcClass}::text IS NULL OR l.abc_class = ${filter.abcClass}::text)
+      AND (
+        ${filter.zoneName}::text IS NULL
+        OR EXISTS (
+          SELECT 1
+          FROM inventory_bin_levels bl
+          JOIN inventory_bins b ON b.id = bl.bin_id
+          WHERE bl.tenant_id = l.tenant_id
+            AND bl.variant_id = l.variant_id
+            AND b.warehouse_id = l.warehouse_id
+            AND b.zone = ${filter.zoneName}::text
+        )
+      )
+  `;
+  return Number(rows[0]?.covered ?? 0);
 }
 
 export async function getCountSchedule(ctx: ServiceContext, id: string): Promise<CountScheduleRow> {
@@ -379,7 +447,7 @@ async function runSchedule(
             zoneName: schedule.zoneName,
             isBlind: schedule.isBlind,
             scheduleId: schedule.id,
-            note: `${schedule.name} — scheduled count`,
+            note: `${schedule.name}: scheduled count`,
           },
           select: { id: true, number: true },
         });
@@ -419,6 +487,9 @@ async function runSchedule(
             },
           },
         });
+        // A schedule that raises a count creates a real document; it must be
+        // findable the same as one somebody started by hand.
+        await indexInventoryEntityOnCommit(ctx, 'inventory_count', count.id);
 
         return {
           kind: 'created' as const,
@@ -536,12 +607,10 @@ async function toScheduleRow(
           select: { number: true, status: true },
         })
       : Promise.resolve(null),
-    tx.inventoryLevel.count({
-      where: {
-        tenantId,
-        warehouseId: row.warehouseId,
-        ...(row.abcClass ? { abcClass: row.abcClass } : {}),
-      },
+    countCoveredLevels(tx, tenantId, {
+      warehouseId: row.warehouseId,
+      abcClass: row.abcClass,
+      zoneName: row.zoneName,
     }),
   ]);
 

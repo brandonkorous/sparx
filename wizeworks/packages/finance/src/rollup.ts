@@ -73,6 +73,29 @@ export function utcMidnight(date: Date): Date {
   return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
 }
 
+/**
+ * The EXCLUSIVE upper bound for a range whose end is an inclusive calendar DAY.
+ *
+ * Every spend surface sends `?from=&to=` as `YYYY-MM-DD`, and the picker that
+ * builds them says so: "Ranges are calendar-boundary DATES, not instants."
+ * `z.coerce.date()` turns "2026-09-09" into midnight, so a query written
+ * `lte: to` covers none of that last day at all.
+ *
+ * That is not a rounding error, it is a whole day missing. A shop recorded her
+ * first cost at 10:37, was told "Cost recorded", and the Spending list she had
+ * just used stayed at "$0.00 · 0 costs" — for "This month", whose range ends
+ * TODAY. Everything she entered would have been invisible until tomorrow. The
+ * accounting export carried the same bound, so the last day of every period she
+ * sent her accountant was silently short.
+ *
+ * Filter timestamp columns `gte: from, lt: endOfDayExclusive(to)`. A DAY column
+ * (`bucket`) is a different case and is correctly `lte: utcMidnight(to)`, because
+ * the stored values ARE midnights.
+ */
+export function endOfDayExclusive(date: Date): Date {
+  return utcDayRange(date).end;
+}
+
 /* ── Bucketing helpers ─────────────────────────────────────────────────────── */
 
 /** `null` is a real bucket (spend or revenue attributable to no one site), and it
@@ -309,7 +332,7 @@ export async function profitForRange(
   from: Date,
   to: Date,
   propertyId?: string | null
-): Promise<ProfitFigures> {
+): Promise<ProfitFigures & { computedAt: Date | null }> {
   return withTenant({ tenantId }, async (tx) => {
     const rows = await tx.rollupFinanceDailyProfit.findMany({
       where: {
@@ -318,7 +341,26 @@ export async function profitForRange(
       },
     });
 
-    return computeProfit({
+    /**
+     * WHEN these figures were worked out — null when they never have been.
+     *
+     * This is a cache, and it is filled ONCE A DAY: the revenue rollup at 06:00
+     * UTC, the profit rollup at 06:45. Everything a shop takes or spends after
+     * that is absent from this answer until tomorrow morning, or until somebody
+     * presses Rebuild.
+     *
+     * The screen had no way to say so. Its refresh marker showed the moment the
+     * BROWSER last fetched, so a page opened at 5pm read "updated just now" over
+     * figures from breakfast — a freshness marker measuring the wrong thing, and
+     * therefore worse than none. The column has been written on every rebuild
+     * from the start (`computedAt: new Date()`) and read by nobody.
+     */
+    const computedAt = rows.reduce<Date | null>(
+      (latest, row) => (latest === null || row.computedAt > latest ? row.computedAt : latest),
+      null
+    );
+
+    const figures = computeProfit({
       revenueCents: sum(rows, (r) => r.revenueCents),
       cogsCents: sum(rows, (r) => r.cogsCents),
       feeCents: sum(rows, (r) => r.feeCents),
@@ -327,6 +369,7 @@ export async function profitForRange(
       operatingCents: sum(rows, (r) => r.operatingCents),
       unallocatedCents: sum(rows, (r) => r.unallocatedCents),
     });
+    return { ...figures, computedAt };
   });
 }
 

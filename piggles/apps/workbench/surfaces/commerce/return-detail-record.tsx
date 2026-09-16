@@ -10,6 +10,7 @@ import { ModuleScope } from '../../components/module-scope';
 import { Text } from '@wizeworks/silicaui-react';
 import { ReturnDispositionPanel } from './return-disposition-panel';
 import { formatDateTime, formatMoney, type Order } from './data';
+import { ReturnParcels } from './return-parcels';
 import {
   conditionLabel,
   reasonLabel,
@@ -89,6 +90,8 @@ export function ReturnRecord({
               somebody has looked at them is how a damaged item ends up back on
               the shelf. */}
       {detail.inspections.length > 0 ? <ReturnDispositionPanel returnId={detail.id} /> : null}
+
+      <ReturnParcels labels={detail.labels} />
 
       {/* A swap settles with no money at all, and saying so out loud is the
               point — "nothing was given back" is the ANSWER on an even

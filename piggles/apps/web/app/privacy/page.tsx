@@ -62,7 +62,7 @@ import { DocumentFigure } from '@/components/marketing/hero/document-figure';
 export const metadata: Metadata = {
   title: 'Privacy',
   description:
-    'What information Piggles holds, why, where it is stored, and who else can touch it — described plainly, from what the software actually does.',
+    'What information Piggles holds, why, where it is stored, and who else can touch it: described plainly, from what the software actually does.',
 };
 
 const COLLECTED = [
@@ -76,7 +76,7 @@ const COLLECTED = [
   },
   {
     title: 'What your own customers give you',
-    body: 'When somebody buys from your site or books an appointment, their details land in your Piggles. Legally that is your responsibility and we are handling it on your behalf — same isolation, same encryption, same rules about who can see it.',
+    body: 'When somebody buys from your site or books an appointment, their details land in your Piggles. Legally that is your responsibility and we are handling it on your behalf: same isolation, same encryption, same rules about who can see it.',
   },
   {
     title: 'How much room you are using',
@@ -84,10 +84,10 @@ const COLLECTED = [
   },
   {
     title: 'How the workspace gets used',
-    body: 'Inside the workspace, which screens get opened and where something broke — so we can find out that a screen is confusing before you have to tell us. You are asked on the way in, the answer is kept with your account, and saying no means none of it runs.',
+    body: 'Inside the workspace, which screens get opened and where something broke, so we can find out that a screen is confusing before you have to tell us. You are asked on the way in, the answer is kept with your account, and saying no means none of it runs.',
   },
   {
-    title: 'How you found us — if you say yes',
+    title: 'How you found us: if you say yes',
     body: 'On this site only: whether you arrived from a search, an advert or somebody else’s link, and which campaign it was. It tells us what is worth doing more of. Nothing is recorded until you agree to it in the bar at the bottom of the page, the more precise half (which advert you clicked) is a separate question again, and either answer is changeable whenever you like.',
   },
 ];
@@ -99,7 +99,7 @@ const NEVER = [
   },
   {
     title: 'We do not train AI on it',
-    body: 'Not a model of ours, not a shared assistant, not anonymised, not aggregated. Any AI feature runs on a key you connect yourself, so the data goes where you agreed and nowhere else — and you can disconnect it whenever you want.',
+    body: 'Not a model of ours, not a shared assistant, not anonymised, not aggregated. Any AI feature runs on a key you connect yourself, so the data goes where you agreed and nowhere else, and you can disconnect it whenever you want.',
   },
   {
     title: 'We never hold your card',
@@ -107,7 +107,7 @@ const NEVER = [
   },
   {
     title: 'We do not advertise to you elsewhere',
-    body: 'Nothing on a Piggles site follows you onto somebody else’s website. There is no ad network and no advertising pixel on any of the three. If you agree to it, this site notes which advert brought you here — that is us reading the tag already on the link you arrived by, once, and it goes nowhere but our own records.',
+    body: 'Nothing on a Piggles site follows you onto somebody else’s website. There is no ad network and no advertising pixel on any of the three. If you agree to it, this site notes which advert brought you here. That is us reading the tag already on the link you arrived by, once, and it goes nowhere but our own records.',
   },
 ];
 
@@ -134,7 +134,7 @@ const NEVER = [
 const ALWAYS = [
   {
     who: 'Microsoft Azure and Google Cloud',
-    why: 'Run the servers, the databases and the file storage. Everything lives in managed data centres in a region we can tell you — not on a machine in an office.',
+    why: 'Run the servers, the databases and the file storage. Everything lives in managed data centres in a region we can tell you, not on a machine in an office.',
   },
   {
     who: 'Stripe and PayPal',
@@ -142,7 +142,7 @@ const ALWAYS = [
   },
   {
     who: 'Mailgun',
-    why: `Delivers the mail Piggles sends on your behalf — order confirmations, booking reminders, password resets, and anything you send from Messages — from ${PRODUCT.email}.`,
+    why: `Delivers the mail Piggles sends on your behalf (order confirmations, booking reminders, password resets, and anything you send from Messages) from ${PRODUCT.email}.`,
   },
   {
     who: 'Twilio',
@@ -169,7 +169,7 @@ const IF_YOU_CONNECT = [
     who: 'Sales channels',
     detail:
       'Amazon · eBay · Etsy · Walmart · TikTok Shop · Faire · Google Shopping · Meta · Pinterest',
-    why: 'Listing on a marketplace sends your products, prices and stock counts there, and brings orders back — which means the buyer’s name and delivery address come back with them.',
+    why: 'Listing on a marketplace sends your products, prices and stock counts there, and brings orders back, which means the buyer’s name and delivery address come back with them.',
   },
   {
     who: 'Suppliers and print-on-demand',
@@ -184,11 +184,11 @@ const IF_YOU_CONNECT = [
   {
     who: 'Sales tax',
     detail: 'Avalara · TaxJar',
-    why: 'Working out what tax to charge sends the amounts and the addresses involved — not who the customer is.',
+    why: 'Working out what tax to charge sends the amounts and the addresses involved, not who the customer is.',
   },
   {
     who: 'AI you bring yourself',
-    detail: 'Your own key — OpenAI, Anthropic, or another',
+    detail: 'Your own key: OpenAI, Anthropic, or another',
     why: 'Piggles never runs AI on our account. You connect your own provider, so anything an assistant reads goes to the company whose key you used, under your agreement with them. Disconnect it and it stops.',
   },
 ];
@@ -204,7 +204,7 @@ const RIGHTS = [
   },
   {
     title: 'Have it deleted',
-    body: 'Cancel and your information is kept for a short window in case you change your mind or forgot to export, then deleted — including from backups as those age out. Want it gone sooner? Ask.',
+    body: 'Cancel and your information is kept for a short window in case you change your mind or forgot to export, then deleted, including from backups as those age out. Want it gone sooner? Ask.',
   },
   {
     title: 'Ask who has looked at it',
@@ -330,16 +330,15 @@ export default function PrivacyPage() {
               <h3 className="text-xl font-bold">You are the one deciding</h3>
               <p className="mt-2 text-base">
                 If a supplier ships to your customer, that customer’s address has to reach the
-                supplier — there is no version where it does not. Telling your own customers what
-                you have connected, and having the right to send it, is yours to do rather than
-                ours.
+                supplier. There is no version where it does not. Telling your own customers what you
+                have connected, and having the right to send it, is yours to do rather than ours.
               </p>
             </div>
             <div>
               <h3 className="text-xl font-bold">Disconnecting stops it</h3>
               <p className="mt-2 text-base">
                 Revoke a connection and Piggles stops sending immediately, and the stored key is
-                deleted. What the other company already received is theirs to delete — ask them, and
+                deleted. What the other company already received is theirs to delete. Ask them, and
                 their policy says how.
               </p>
             </div>
@@ -353,9 +352,9 @@ export default function PrivacyPage() {
             <h2 className="text-3xl font-extrabold sm:text-4xl">Signing in with Google</h2>
             <p className="mt-6 max-w-[60ch] text-lg">
               You can create an account with an email and a password, or with Google. Choosing
-              Google means Google tells us your name, your email address and that the sign-in worked
-              — nothing else, and no access to anything in your Google account. It also means Google
-              knows you signed in to Piggles.
+              Google means Google tells us your name, your email address and that the sign-in
+              worked. Nothing else, and no access to anything in your Google account. It also means
+              Google knows you signed in to Piggles.
             </p>
             <p className="mt-4 max-w-[60ch] text-lg">
               A password works just as well and involves nobody else. Every cookie either route sets
@@ -371,7 +370,7 @@ export default function PrivacyPage() {
             <p className="mt-6 max-w-[60ch] text-lg">
               In managed data centres run by major cloud providers, in a region we can tell you.
               Several of the companies above operate internationally, so information reaching them
-              may be handled outside the country you are in — which is normal for software of this
+              may be handled outside the country you are in, which is normal for software of this
               kind and worth knowing rather than discovering.
             </p>
             <p className="mt-4 max-w-[60ch] text-lg">

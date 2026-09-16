@@ -202,7 +202,7 @@ function InviteModal({ open, onClose }: { open: boolean; onClose: () => void }) 
 
             <Text className="text-sm">
               They get an email with a link to join. After they accept, you can narrow exactly which
-              parts of your account they reach — and you can withdraw their access completely at any
+              parts of your account they reach, and you can withdraw their access completely at any
               time.
             </Text>
           </form>
@@ -346,10 +346,6 @@ export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
   const canManage = canManageTeam(viewer?.role);
   const [inviting, setInviting] = useState(false);
 
-  useEffect(() => {
-    ctx.setTitle('Partner access');
-  }, [ctx]);
-
   const busy = resend.isPending || revokeInvite.isPending || remove.isPending;
 
   const revokeAccess = (person: Extract<PartnerPerson, { kind: 'member' }>) => {
@@ -369,7 +365,7 @@ export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
         onError: (error) => {
           toast.add({
             title: `Could not withdraw ${name}'s access`,
-            description: partnerAccessError(error, 'Nothing changed — they still have access.'),
+            description: partnerAccessError(error, 'Nothing changed. They still have access.'),
             type: 'error',
           });
         },
@@ -381,7 +377,7 @@ export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
     void confirm({
       title: `Cancel the invitation to ${person.email}?`,
       description:
-        'The link in their email stops working straight away. If they have not accepted yet, nothing is lost — you can invite them again whenever you like.',
+        'The link in their email stops working straight away. If they have not accepted yet, nothing is lost. You can invite them again whenever you like.',
       confirmLabel: 'Cancel it',
       cancelLabel: 'Leave it open',
       color: 'danger',
@@ -389,7 +385,7 @@ export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
       if (!ok) return;
       revokeInvite.mutate(person.id, {
         onSuccess: () => {
-          toast.add({ title: `Invitation to ${person.email} cancelled`, type: 'success' });
+          toast.add({ title: `Invitation to ${person.email} canceled`, type: 'success' });
         },
         onError: (error) => {
           toast.add({
@@ -407,7 +403,7 @@ export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
       onSuccess: () => {
         toast.add({
           title: `Invitation sent to ${person.email} again`,
-          description: 'The previous link still works — this is the same invitation, resent.',
+          description: 'The previous link still works. This is the same invitation, resent.',
           type: 'success',
         });
       },
@@ -433,7 +429,7 @@ export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
             <AlertContent>
               <AlertTitle>Could not load partner access</AlertTitle>
               <AlertDescription>
-                No access has changed — this is a problem reaching the server, not with who can get
+                No access has changed. This is a problem reaching the server, not with who can get
                 into your account.
               </AlertDescription>
             </AlertContent>
@@ -520,7 +516,7 @@ export function PartnerAccessSurface({ ctx }: { ctx: SurfaceContext }) {
                 title="No partners have access yet"
                 description={
                   canManage
-                    ? 'When you work with an agency or a consultant, invite them here so they can help inside your account — with only the access you choose, and none you cannot take back.'
+                    ? 'When you work with an agency or a consultant, invite them here so they can help inside your account, with only the access you choose, and none you cannot take back.'
                     : 'Nobody outside your team has been given access to this account.'
                 }
                 actions={

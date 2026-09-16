@@ -15,7 +15,7 @@
 // it never overwrites a real post, and with approval on, what it schedules still waits for
 // a person. Those three sentences are in the UI, not just in this comment.
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Alert,
   AlertContent,
@@ -41,7 +41,6 @@ import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useViewer } from '../../lib/api/shell-data';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { canApprove, canCompose, socialErrorMessage, useSocialOverview } from './data';
 import {
   formatMinuteOfDay,
@@ -221,7 +220,7 @@ function AddSlot({
           })}
         </div>
         <FieldDescription>
-          Only needed if this time should fill itself — a reminder-only slot can leave it blank.
+          Only needed if this time should fill itself: a reminder-only slot can leave it blank.
         </FieldDescription>
       </Field>
 
@@ -358,7 +357,7 @@ function AddHashtagSet({ onDone }: { onDone: () => void }) {
           }
         />
         <FieldDescription>
-          Separate them with spaces or commas — the # is optional, we tidy them up.
+          Separate them with spaces or commas: the # is optional, we tidy them up.
         </FieldDescription>
       </Field>
       <div className="flex flex-wrap items-center gap-2">
@@ -416,7 +415,7 @@ function ImportPanel({ destinations }: { destinations: { id: string; name: strin
               result.created === 1 ? '1 post imported' : `${String(result.created)} posts imported`,
             description:
               result.problems.length > 0
-                ? `${String(result.problems.length)} row(s) were skipped — see the list.`
+                ? `${String(result.problems.length)} row(s) were skipped: see the list.`
                 : 'They are in your Posts list as drafts.',
             type: result.problems.length > 0 ? 'info' : 'success',
           });
@@ -544,7 +543,7 @@ function ImportPanel({ destinations }: { destinations: { id: string; name: strin
 
 /* ── The surface ──────────────────────────────────────────────────────────── */
 
-export function SocialCadenceSurface({ ctx }: { ctx: SurfaceContext }) {
+export function SocialCadenceSurface() {
   const toast = useToast();
   const confirm = useConfirm();
   const viewer = useViewer();
@@ -559,10 +558,6 @@ export function SocialCadenceSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const canManage = canCompose(viewer.data?.role);
   const isAdmin = canApprove(viewer.data?.role);
-
-  useEffect(() => {
-    ctx.setTitle('Cadence');
-  }, [ctx]);
 
   const destinations = useMemo(() => {
     const out: { id: string; name: string }[] = [];
@@ -698,7 +693,7 @@ export function SocialCadenceSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="Saved hashtags"
-            description="Drop a whole block into a post — or its first comment — in one click."
+            description="Drop a whole block into a post (or its first comment) in one click."
             action={
               canManage && !addingSet ? (
                 <Button
@@ -729,7 +724,7 @@ export function SocialCadenceSurface({ ctx }: { ctx: SurfaceContext }) {
                 size="sm"
                 icon={<Hash className="size-6" aria-hidden />}
                 title="No saved hashtags yet"
-                description="Save the tags you use every time so you stop retyping them — and stop getting one of them slightly wrong."
+                description="Save the tags you use every time so you stop retyping them, and stop getting one of them slightly wrong."
               />
             ) : (
               <div className="flex flex-col">

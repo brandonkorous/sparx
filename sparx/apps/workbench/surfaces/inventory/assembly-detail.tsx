@@ -188,7 +188,7 @@ function PlanRun({ ctx }: { ctx: SurfaceContext }) {
               Plan a run
             </Heading>
             <Text>
-              Say what you are making and how many. Nothing moves until you mark it made — this is
+              Say what you are making and how many. Nothing moves until you mark it made. This is
               the paper stage.
             </Text>
           </div>
@@ -198,7 +198,7 @@ function PlanRun({ ctx }: { ctx: SurfaceContext }) {
               <AlertContent>
                 <AlertTitle>No recipes in use yet</AlertTitle>
                 <AlertDescription>
-                  A run is built to a recipe. Write one and mark it as in use, then come back — a
+                  A run is built to a recipe. Write one and mark it as in use, then come back: a
                   draft cannot be built from, so that everyone builds to the same one.
                 </AlertDescription>
               </AlertContent>
@@ -356,7 +356,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           description={
             gone
               ? 'It may have been deleted. The stock it used and produced is unaffected.'
-              : 'This is a problem reaching the server. The run itself is unaffected — it just could not be read just now.'
+              : 'This is a problem reaching the server. The run itself is unaffected. It just could not be read just now.'
           }
           onRetry={() => {
             void run.refetch();
@@ -388,7 +388,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     const ok = await confirm({
       title: `Hold the parts for ${data.number}?`,
       description: isMaking
-        ? `The ${String(data.lines.length)} parts this needs stop being sellable, so nothing gets sold out from under the build. Nothing physically moves, and cancelling gives them straight back.`
+        ? `The ${String(data.lines.length)} parts this needs stop being sellable, so nothing gets sold out from under the build. Nothing physically moves, and canceling gives them straight back.`
         : `${plural(planned, 'unit', 'units')} of ${data.outputSku ?? 'the finished item'} stop being sellable so nobody sells what you are about to take apart.`,
       confirmLabel: 'Hold them',
       cancelLabel: 'Not yet',
@@ -410,7 +410,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     const ok = await confirm({
       title: `Mark ${data.number} as made?`,
       description: isMaking
-        ? `${plural(made, 'unit', 'units')} of ${data.outputSku ?? 'the finished item'} go onto the shelf, and the parts come off it. This moves real stock and cannot be undone by editing — a correction afterwards is a stock count.`
+        ? `${plural(made, 'unit', 'units')} of ${data.outputSku ?? 'the finished item'} go onto the shelf, and the parts come off it. This moves real stock and cannot be undone by editing: a correction afterwards is a stock count.`
         : `${plural(made, 'unit', 'units')} of ${data.outputSku ?? 'the finished item'} come off the shelf and its parts go back on. This moves real stock and cannot be undone by editing.`,
       confirmLabel: 'Mark it made',
       cancelLabel: 'Go back',
@@ -426,7 +426,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             description:
               finished.outputUnitCostCents === null
                 ? 'The stock has moved.'
-                : `${plural(finished.quantityCompleted, 'unit', 'units')} at ${formatCents(finished.outputUnitCostCents)} each — worked out from what actually came off the shelf, plus the time.`,
+                : `${plural(finished.quantityCompleted, 'unit', 'units')} at ${formatCents(finished.outputUnitCostCents)} each: worked out from what actually came off the shelf, plus the time.`,
             type: 'success',
           });
         },
@@ -600,7 +600,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               <AlertContent>
                 <AlertTitle>The parts are being held</AlertTitle>
                 <AlertDescription>
-                  They are no longer sellable, so nothing gets sold out from under this build — but
+                  They are no longer sellable, so nothing gets sold out from under this build, but
                   nothing has physically moved yet. Mark it made when the work is done, or call it
                   off to give the parts straight back.
                 </AlertDescription>
@@ -635,7 +635,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                 />
                 <FieldDescription>
                   Planned for {plural(planned, 'unit', 'units')}. To make more than that, plan
-                  another run — a run that quietly grew is one nobody scheduled the parts for.
+                  another run: a run that quietly grew is one nobody scheduled the parts for.
                 </FieldDescription>
               </Field>
             </FormSection>
@@ -646,7 +646,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             description={
               data.status === 'completed'
                 ? 'What actually moved, and what it cost.'
-                : 'Worked out from the recipe when this run was planned — editing the recipe now will not change it.'
+                : 'Worked out from the recipe when this run was planned: editing the recipe now will not change it.'
             }
           >
             {data.lines.length === 0 ? (

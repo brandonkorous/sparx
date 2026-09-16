@@ -13,6 +13,7 @@ import { SilicaFunctionalBody } from '@/components/silica-chrome';
 import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { getBookableService } from '@/lib/scheduling';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
+import { SUSPENDED_METADATA } from '@/lib/suspended';
 
 // KEEPS `force-dynamic` for the same reason as /book (docs/127 §6): a stale slot list
 // is visible to the customer as an appointment they can pick but not actually get.
@@ -23,6 +24,10 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props) {
+  // This one never asked about the site at all, and titles itself from the
+  // tenant's own service name (issue 503).
+  const site = await resolveSite();
+  if (site?.billingPhase === 'suspended') return SUSPENDED_METADATA;
   const { serviceId } = await params;
   const service = await getBookableService(serviceId);
   return { title: service ? `Book ${service.name}` : 'Book an appointment' };

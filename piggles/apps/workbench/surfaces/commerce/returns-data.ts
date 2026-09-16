@@ -20,6 +20,7 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 import type {
+  ReplacementShipmentBody,
   ReturnDetail,
   ReturnDispositionRow,
   ReturnSummary,
@@ -138,10 +139,26 @@ export function useRefundReturn(id: string) {
   );
 }
 
+/** What the swap is settled with. `shipment` is present only when the parcel had
+ *  already gone — most shops settle first and record the tracking number
+ *  afterwards, through `useRecordReplacementShipment` below. */
 export interface SettleExchangeBody {
   replacementVariantId: string;
   quantity: number;
   staffNote?: string;
+  shipment?: ReplacementShipmentBody;
+}
+
+/** What settling a swap actually did.
+ *
+ *  `unitsRestocked` exists because the screen cannot work it out. Goods go back
+ *  on the shelf only once an inspection says they are fit to sell, so a swap
+ *  settled without one puts nothing back — and this modal said "one came back on
+ *  the shelf" regardless, seconds before the pane behind it said nothing had
+ *  been written down about the goods. */
+export interface SettleExchangeResult {
+  returnId: string;
+  unitsRestocked: number;
 }
 
 /** Settling by SENDING something rather than by moving money. A separate
@@ -149,13 +166,26 @@ export interface SettleExchangeBody {
 export function useSettleExchange(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: SettleExchangeBody) => api.post(`/v1/commerce/returns/${id}/exchange`, body),
+    mutationFn: (body: SettleExchangeBody) =>
+      api.post<SettleExchangeResult>(`/v1/commerce/returns/${id}/exchange`, body),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: RETURNS_KEY });
       // Both halves of the swap moved stock, so every stock screen is stale.
       void queryClient.invalidateQueries({ queryKey: ['inventory'] });
     },
   });
+}
+
+/** Recording how the replacement travelled, AFTER the swap was settled.
+ *
+ *  The ordinary way round: she decides what to send while the customer waits and
+ *  the parcel goes out that afternoon, so the tracking number does not exist yet
+ *  when the swap is settled. This is what tells the customer. */
+export function useRecordReplacementShipment(id: string) {
+  return useReturnAction<{ shipment: ReplacementShipmentBody }>(
+    (returnId, body) => api.post(`/v1/commerce/returns/${returnId}/replacement-shipment`, body),
+    id
+  );
 }
 
 /**

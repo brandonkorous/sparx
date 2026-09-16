@@ -250,6 +250,34 @@ export function deadStockLevelCount(report: AgingReport): number {
     .reduce((sum, b) => sum + b.levels, 0);
 }
 
+/**
+ * The two halves of that count, kept apart.
+ *
+ * They add up to the same money and they are not the same sentence. "Not sold in
+ * over three months" is a judgement about a line that has had three months; a
+ * line that has never sold may have arrived on Tuesday. A shop sixteen days old
+ * was told **54 lines not sold in over 3 months** when the true number in that
+ * band was nought and all fifty-four were the never bucket, which the report
+ * keeps separate for exactly this reason.
+ */
+export function deadStockSplit(report: AgingReport): { stale: number; never: number } {
+  const levelsIn = (bucket: AgingBucketKey) =>
+    report.buckets.find((b) => b.bucket === bucket)?.levels ?? 0;
+  return { stale: levelsIn('90+'), never: levelsIn('never') };
+}
+
+/** The caption under "Money sitting still", which has to name which band it is
+ *  talking about rather than merging two that mean different things. */
+export function stillCaption(report: AgingReport): string {
+  const { stale, never } = deadStockSplit(report);
+  const stalePhrase = `${stale} ${stale === 1 ? 'line' : 'lines'} not sold in over 3 months`;
+  const neverPhrase = `${never} ${never === 1 ? 'line has' : 'lines have'} never sold`;
+  if (stale === 0 && never === 0) return 'Nothing has gone unsold for three months';
+  if (stale === 0) return neverPhrase;
+  if (never === 0) return stalePhrase;
+  return `${stalePhrase}, and ${neverPhrase}`;
+}
+
 /** An age band said the way an owner would say it. */
 export function agingBucketLabel(bucket: AgingBucketKey): string {
   switch (bucket) {
@@ -294,6 +322,19 @@ export function turnoverHeadline(report: TurnoverReport): { value: string; meani
     return {
       value: 'None sold',
       meaning: 'Nothing sold in this period, so there is no selling pace to measure yet.',
+    };
+  }
+  // A turn is what the sold goods COST divided by the value held, so a shop that
+  // has not recorded what anything cost divides nought by its stock and lands on
+  // 0.0x — which reads as "your stock never sells" to somebody who has just sold
+  // thirty-six units. Nought over something is a missing numerator, not a rate,
+  // and the band below about uncosted units says the figures are "short by"
+  // their cost, which does not cover a ratio that is entirely absent.
+  if (report.cogsCents === 0) {
+    return {
+      value: 'No cost yet',
+      meaning:
+        'Selling pace is what your sold goods cost you set against the value you hold, and nothing sold in this period has a cost recorded. Put in what those items cost and this fills itself in.',
     };
   }
   const times = report.turnoverAnnualized;

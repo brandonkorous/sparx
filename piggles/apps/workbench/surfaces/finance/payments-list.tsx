@@ -52,7 +52,7 @@ function PaymentRow({
   payment: Payment;
   onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
-  const state = paymentState(payment.status);
+  const state = paymentState(payment.status, payment.refundedAmount, payment.amount);
   const clickable = Boolean(payment.orderId);
   return (
     <tr
@@ -215,13 +215,21 @@ export function PaymentsListSurface({ ctx }: { ctx: SurfaceContext }) {
         ]}
         views={{
           target: '/finance/payments',
-          params: { q: search.trim(), sort: `${sort.key}:${sort.dir}` },
+          // The STATUS rides along. Saving "Failed payments" as a view and
+          // getting back every payment is the view not being the thing you
+          // saved. Omitted at 'all' so a plain view carries no dead parameter.
+          params: {
+            q: search.trim(),
+            sort: `${sort.key}:${sort.dir}`,
+            ...(status === 'all' ? {} : { status }),
+          },
           onApply: (next) => {
             setSearch(next.q ?? '');
             const [key, dir] = (next.sort ?? '').split(':');
             if ((key === 'createdAt' || key === 'amount') && (dir === 'asc' || dir === 'desc')) {
               setSort({ key, dir });
             }
+            setStatus(STATUS_FILTERS.some((f) => f.value === next.status) ? next.status! : 'all');
             resetWindow();
           },
         }}
@@ -241,7 +249,7 @@ export function PaymentsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faWallet} className="size-6" aria-hidden />}
             title="Could not load payments"
-            description="Something went wrong reaching the server. Your payments are unaffected — try again in a moment."
+            description="Something went wrong reaching the server. Your payments are unaffected. Try again in a moment."
           />
         ) : isLoading ? (
           <PaneWaiting label="Loading payments…" />
@@ -254,7 +262,7 @@ export function PaymentsListSurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               search || status !== 'all'
                 ? 'Try a different search, or switch the status back to All.'
-                : 'When a customer pays — on your website, a marketplace, or in person — it will show up here.'
+                : 'When a customer pays (on your website, a marketplace, or in person), it will show up here.'
             }
           />
         ) : (

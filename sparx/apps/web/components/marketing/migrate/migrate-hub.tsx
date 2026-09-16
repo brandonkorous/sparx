@@ -30,11 +30,11 @@ export function MigrateHub() {
   const steps = [
     {
       title: 'Export from where you are now',
-      body: 'Every platform on this page already makes the file — it is usually two clicks and it is already sitting in your downloads folder. We name the exact menu and the exact file on each page.',
+      body: 'Every platform on this page already makes the file. It is usually two clicks and it is already sitting in your downloads folder. We name the exact menu and the exact file on each page.',
     },
     {
       title: 'Drop it in',
-      body: 'We read it in your own browser and tell you which platform it came from and what is in it. Nothing is uploaded at this point — not one byte — so a file with a problem is rejected in the second you drop it, not after a failed job.',
+      body: 'We read it in your own browser and tell you which platform it came from and what is in it. Nothing is uploaded at this point (not one byte) so a file with a problem is rejected in the second you drop it, not after a failed job.',
     },
     {
       title: 'Do a practice run',
@@ -57,13 +57,13 @@ export function MigrateHub() {
       id: 'migrate-not-listed',
       question: 'What if my platform is not listed?',
       answer:
-        'Drop the CSV in anyway. Anything we do not recognise goes to a mapping screen that guesses what your columns mean and asks you to confirm — so any spreadsheet with labelled columns works, including one your bookkeeper has kept since 2011.',
+        'Drop the CSV in anyway. Anything we do not recognize goes to a mapping screen that guesses what your columns mean and asks you to confirm, so any spreadsheet with labelled columns works, including one your bookkeeper has kept since 2011.',
     },
     {
       id: 'migrate-run-both',
       question: 'Can I keep my old site running while I set this up?',
       answer:
-        'Yes, and most people do. Nothing here touches your existing account — you export a file, and it carries on exactly as it was. You switch the domain over when you are ready.',
+        'Yes, and most people do. Nothing here touches your existing account. You export a file, and it carries on exactly as it was. You switch the domain over when you are ready.',
     },
     {
       id: 'migrate-rankings',
@@ -81,7 +81,7 @@ export function MigrateHub() {
             The week you are dreading is an afternoon
           </Display>
           <Text size={20} className="max-w-2xl">
-            Your products, your customers, your stock, your orders and everything you have written —
+            Your products, your customers, your stock, your orders and everything you have written:
             brought over from the export file your current platform already makes. No developer, no
             agency, no re-typing, and nothing saved until you have seen exactly what would happen.
           </Text>
@@ -136,9 +136,9 @@ export function MigrateHub() {
 
       <Band tone="primary">
         <div className="mx-auto flex max-w-3xl flex-col gap-6 text-center">
-          <Display size={48}>Most importers take the catalogue and leave the business</Display>
+          <Display size={48}>Most importers take the catalog and leave the business</Display>
           <Text size={20}>
-            Products are the easy half. What actually costs you a month is everything else — the
+            Products are the easy half. What actually costs you a month is everything else: the
             stock counted per location, the order history, the blog you have written for nine years,
             the mailing list with its consent intact, the pipeline with your own stage names, and
             every old link still pointing at the right page. That is the half this does.
@@ -221,7 +221,7 @@ export function MigrateHub() {
               Somewhere else entirely
             </Display>
             <Text size={18}>
-              Drop any CSV in and tell us what the columns mean — we guess first, so on a
+              Drop any CSV in and tell us what the columns mean. We guess first, so on a
               well-labelled file there is usually nothing left to correct. Your own stock
               spreadsheet works exactly as well as a competitor&rsquo;s export.
             </Text>

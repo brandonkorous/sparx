@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "sparx-retail-coffee-craft",
   "name": "Coffee Roaster (Craft)",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "tagline": "A warm, working storefront for a craft coffee roaster.",
-  "description": "A complete, working shop for a small-batch coffee roaster: a real catalogue of single-origin bags, blends, decaf, brew gear and a flexible subscription, with categories, collections, a bespoke coffee-shop PDP and a full merchandised home page. Warm roastery theme — cream paper, deep coffee-brown, a terracotta accent. Shipped as Cairn Coffee Roasters.",
+  "description": "A complete, working shop for a small-batch coffee roaster: a real catalogue of single-origin bags, blends, decaf, brew gear and a flexible subscription, with categories, collections, a bespoke coffee-shop PDP and a full merchandised home page. Warm roastery theme, cream paper, deep coffee-brown, a terracotta accent. Shipped as Cairn Coffee Roasters.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "retail",
@@ -27,7 +27,7 @@
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "Coffee Roaster (Craft) — home page preview"
+      "alt": "Coffee Roaster (Craft): home page preview"
     }
   ],
   "author": {

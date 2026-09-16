@@ -51,7 +51,6 @@ import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterCommit } from '../../lib/defer';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, stockErrorMessage } from './data';
 import {
   usePlanningPolicy,
@@ -96,7 +95,7 @@ interface Form {
   autoApplyReorderPoints: boolean;
 }
 
-export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
+export function PlanningSettingsSurface() {
   const toast = useToast();
   const policy = usePlanningPolicy();
   const save = useUpdatePlanningPolicy();
@@ -104,10 +103,6 @@ export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const [form, setForm] = useState<Form | null>(null);
   const [baseline, setBaseline] = useState('');
-
-  useEffect(() => {
-    ctx.setTitle('Planning settings');
-  }, [ctx]);
 
   // Seed once the record lands. Re-seeding on every refetch would throw away
   // whatever the user was in the middle of choosing.
@@ -149,7 +144,7 @@ export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
           toast.add({
             title: 'Saved',
             description:
-              'Your figures are worked out this way from the next overnight run — or press “Work these out now”.',
+              'Your figures are worked out this way from the next overnight run, or press “Work these out now”.',
             type: 'success',
           });
         });
@@ -178,7 +173,7 @@ export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
               description:
                 failed.length === 0
                   ? `${plural(result.levelsPlanned, 'stock line', 'stock lines')} re-measured.`
-                  : `${plural(failed.length, 'step', 'steps')} could not finish — those figures are from the last good run.`,
+                  : `${plural(failed.length, 'step', 'steps')} could not finish. Those figures are from the last good run.`,
               type: failed.length === 0 ? 'success' : 'warning',
             });
           });
@@ -235,7 +230,7 @@ export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
               <AlertTitle>You are on the standard settings</AlertTitle>
               <AlertDescription>
                 Nobody has chosen here yet, so planning uses the figures most businesses land on
-                anyway. They are sensible defaults, not placeholders — change one when you know your
+                anyway. They are sensible defaults, not placeholders. Change one when you know your
                 own answer is different.
               </AlertDescription>
             </AlertContent>
@@ -244,7 +239,7 @@ export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
 
         <FormSection
           title="How often you want to be in stock"
-          description="The higher you set this, the more spare stock is kept to absorb a busy week or a late delivery — and the more money sits on the shelf."
+          description="The higher you set this, the more spare stock is kept to absorb a busy week or a late delivery, and the more money sits on the shelf."
         >
           <RadioGroup
             color="module"
@@ -343,9 +338,9 @@ export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
           description="Off by default, and deliberately."
         >
           <Text className="text-sm">
-            Any reorder level you have set by hand is left exactly as you set it, whatever this says
-            — the worked-out figure is shown beside it so you can see the difference and take it if
-            you want. Turning this on lets the overnight run set the level itself, but{' '}
+            Any reorder level you have set by hand is left exactly as you set it, whatever this
+            says: the worked-out figure is shown beside it so you can see the difference and take it
+            if you want. Turning this on lets the overnight run set the level itself, but{' '}
             <strong>only</strong> for items that have never had one.
           </Text>
           <Field>
@@ -399,7 +394,7 @@ export function PlanningSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
             {policy.data?.lastSweepAt ? (
               <>
                 Last run <Timestamp value={policy.data.lastSweepAt} format="relative" />. Changing a
-                setting here takes effect on the next run — nothing is recalculated while you are
+                setting here takes effect on the next run. Nothing is recalculated while you are
                 reading it.
               </>
             ) : (

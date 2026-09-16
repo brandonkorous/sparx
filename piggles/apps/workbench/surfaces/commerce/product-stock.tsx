@@ -84,6 +84,7 @@ import {
   useProductStock,
   useProductVariants,
   useSetReorderPolicy,
+  sellable,
   useSetStockCount,
   useStockLocations,
   type ProductStockLevel,
@@ -147,24 +148,6 @@ interface LevelState {
 }
 
 /**
- * How many a shopper could actually buy right now.
- *
- * NOT `level.available`, and the difference is the whole reason this function
- * exists. The API's `available` is `onHand − allocated` and stops there, but the
- * sell path also withholds the safety buffer — so on a buffered level `available`
- * is a number nobody can ever reach. Showing it beside a sentence saying units
- * are held back produced exactly the contradiction that sentence was written to
- * prevent: "3 units are held back" over two identical figures.
- *
- * Derived here rather than fixed in the API on purpose: `available` is a
- * documented public-API field that integrators already read, and quietly
- * changing what it means is not a call to make from a UI pane.
- */
-function sellable(level: ProductStockLevel): number {
-  return Math.max(0, level.onHand - level.allocated - level.safetyBuffer);
-}
-
-/**
  * What this level actually means for selling, in the words an owner would use.
  *
  * Derived from what a shopper can BUY — not from on-hand, which can be plentiful
@@ -213,7 +196,7 @@ function movementReason(movement: StockMovement): string {
     case 'return':
       return 'Came back from a customer';
     case 'cancel':
-      return 'Put back after a cancelled order';
+      return 'Put back after a canceled order';
     case 'recount':
       return 'Counted';
     case 'loss':
@@ -403,7 +386,7 @@ function CountForm({
         />
         <FieldDescription>
           {current
-            ? `We currently think there are ${plural(current.onHand, 'unit', 'units')} here. Put in what you actually counted — we work out the difference and record it.`
+            ? `We currently think there are ${plural(current.onHand, 'unit', 'units')} here. Put in what you actually counted. We work out the difference and record it.`
             : 'This version has never been counted here. Put in what is on the shelf.'}
         </FieldDescription>
       </Field>
@@ -675,7 +658,7 @@ function LevelRow({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Text className="text-sm">
           {level.reorderPoint === null
-            ? 'No reorder rule — nothing will warn you when this runs down.'
+            ? 'No reorder rule. Nothing will warn you when this runs down.'
             : `Warns at ${String(level.reorderPoint)}, then order ${String(
                 level.reorderQuantity ?? 0
               )}${level.leadTimeDays === null ? '' : ` · about ${plural(level.leadTimeDays, 'day', 'days')} to arrive`}`}
@@ -820,7 +803,7 @@ function HoldsSection({ reservations }: { reservations: StockReservation[] }) {
           <li key={hold.id} className="flex flex-wrap items-baseline justify-between gap-2">
             <Text className="min-w-0">
               <span className="font-semibold">{hold.quantity}</span> ×{' '}
-              {hold.variantSku ?? 'a version'} — {holderLabel(hold)}
+              {hold.variantSku ?? 'a version'}: {holderLabel(hold)}
               {hold.warehouseName === null ? '' : ` at ${hold.warehouseName}`}
             </Text>
             <Text className="text-sm">
@@ -867,7 +850,7 @@ function HistorySection({ movements }: { movements: StockMovement[] }) {
               </span>{' '}
               {movementReason(movement)} · {movement.variantSku ?? 'a version'}
               {movement.warehouseName === null ? '' : ` at ${movement.warehouseName}`}
-              {movement.note === null ? '' : ` — ${movement.note}`}
+              {movement.note === null ? '' : ` (${movement.note})`}
             </Text>
             <Text className="text-sm">
               <Timestamp value={movement.createdAt} format="relative" />
@@ -999,7 +982,7 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
             module={MODULE}
             icon={<Icon glyph={faBoxOpen} className="size-6" aria-hidden />}
             title="Could not load stock for this product"
-            description="This is a problem reaching the server. Nothing about your stock has changed — it just could not be read just now."
+            description="This is a problem reaching the server. Nothing about your stock has changed. It just could not be read just now."
             onRetry={() => {
               void stock.refetch();
               void variantsQuery.refetch();
@@ -1055,7 +1038,7 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
             module={MODULE}
             icon={<Icon glyph={faWarehouse} className="size-6" aria-hidden />}
             title="You have nowhere to keep stock yet"
-            description="Counts are always kept per place — a shop, a warehouse, a garage. Set up at least one and you can start recording how many of this product you have."
+            description="Counts are always kept per place: a shop, a warehouse, a garage. Set up at least one and you can start recording how many of this product you have."
             actions={
               <Button
                 size="sm"
@@ -1113,7 +1096,7 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
             <AlertContent>
               <AlertTitle>Nothing has been counted yet</AlertTitle>
               <AlertDescription>
-                Until you count it, your website sells this one without limit — nobody has told it
+                Until you count it, your website sells this one without limit. Nobody has told it
                 there is a number. Record a count against any version below and it starts keeping
                 track: it comes off sale at zero, and back on when you bring more in.
               </AlertDescription>

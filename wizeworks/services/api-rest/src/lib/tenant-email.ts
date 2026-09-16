@@ -50,9 +50,12 @@ import { resolvePrimaryPropertyId } from './property.js';
 export function buildFrom(
   tenantId: string,
   fromName: string | null,
-  fromAddress: string | null
+  fromAddress: string | null,
+  /** The site being sent from. A blank sender name falls back to THIS site's
+   *  name, so passing the wrong one signs a bookshop's newsletter as a bakery. */
+  propertyId?: string | null
 ): Promise<string> {
-  return buildTenantFrom(tenantId, fromName, fromAddress);
+  return buildTenantFrom(tenantId, fromName, fromAddress, propertyId);
 }
 
 /** The four fields that decide WHO a message is from: the visible sender, the
@@ -254,10 +257,7 @@ export async function sendTenantEmailByKey(
   const ctx = { tenantId };
   const doc = await emailService.getPublishedByKey(ctx, args.key, args.propertyId ?? null);
   if (!doc) {
-    logger.warn(
-      { tenantId, key: args.key },
-      'tenant-email: no published tree or default — skipped'
-    );
+    logger.warn({ tenantId, key: args.key }, 'tenant-email: no published tree or default, skipped');
     return { sent: false, reason: 'no-template' };
   }
 
@@ -290,7 +290,12 @@ export async function sendTenantEmailByKey(
     // publishers already carry. `satisfies RawEmailSendPayload` makes a future
     // omission a COMPILE error rather than a silent prod regression.
     to: args.to,
-    from: await buildFrom(tenantId, settings.fromName, settings.fromAddress),
+    from: await buildFrom(
+      tenantId,
+      settings.fromName,
+      settings.fromAddress,
+      args.propertyId ?? null
+    ),
     ...(settings.replyTo ? { replyTo: settings.replyTo } : {}),
     ...(args.variables ? { variables: args.variables } : {}),
   } satisfies RawEmailSendPayload);

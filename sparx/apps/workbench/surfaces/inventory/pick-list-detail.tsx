@@ -188,7 +188,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                       const ok = await confirm({
                         title: `Abandon walk ${walk.number}?`,
                         description:
-                          'Anything already picked stays picked — it is in a tote. The rest of the route is dropped and those orders can be put on a new walk.',
+                          'Anything already picked stays picked. It is in a tote. The rest of the route is dropped and those orders can be put on a new walk.',
                         confirmLabel: 'Abandon it',
                         cancelLabel: 'Keep it',
                         color: 'danger',
@@ -236,8 +236,8 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               </AlertTitle>
               <AlertDescription>
                 Those units have gone back into stock and are held for their orders, so nobody else
-                can buy them. Each shelf has been put on a blind count — settle those and the
-                numbers come right.
+                can buy them. Each shelf has been put on a blind count: settle those and the numbers
+                come right.
               </AlertDescription>
               {shorts[0]?.shortCountId ? (
                 <AlertActions>
@@ -373,7 +373,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                           {line.status === 'short' ? (
                             <span className="truncate text-sm">
                               {shortReasonLabel(line.shortReason)}
-                              {line.shortNote ? ` — ${line.shortNote}` : ''}
+                              {line.shortNote ? ` (${line.shortNote})` : ''}
                             </span>
                           ) : null}
                           <span className="truncate text-sm @lg:hidden">
@@ -418,7 +418,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         {walk.status === 'picked' ? (
           <Alert color="success" variant="soft">
             <AlertContent>
-              <AlertTitle>Picked — ready to pack</AlertTitle>
+              <AlertTitle>Picked: ready to pack</AlertTitle>
               <AlertDescription>
                 Open a box for each order and scan the items into it. Anything that does not belong
                 will be refused before it reaches the customer.

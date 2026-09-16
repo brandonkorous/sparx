@@ -43,6 +43,11 @@ export interface ReturnLine {
   id: string;
   orderItemId: string;
   orderItemName: string | null;
+  /** WHAT came back, from the order line it returns. Null on a hand-typed line
+   *  or a product since deleted. The replacement picker opens on this product,
+   *  because a swap is almost always another version of it (issue 450). */
+  productId: string | null;
+  variantId: string | null;
   quantity: number;
   approvedQuantity: number;
   reasonCode: string;
@@ -63,12 +68,32 @@ export interface ReturnInspectionRecord {
 
 export interface ReturnLabelRecord {
   id: string;
+  /** Which way this parcel is going. 'inbound' is the prepaid label the customer
+   *  sends the goods back with; 'outbound' is the replacement travelling to
+   *  them. Every row was inbound until a replacement got a journey of its own. */
+  direction: string;
   providerSlug: string;
-  labelRef: string;
+  /** The carrier as a person names it. Null on a label bought through a
+   *  provider, which carries the carrier inside the label itself. */
+  carrier: string | null;
+  labelRef: string | null;
   trackingNumber: string | null;
   trackingUrl: string | null;
   labelMediaId: string | null;
   costCents: number;
+  /** When it was actually posted, which is not when the row was written. */
+  shippedAt: string | null;
+}
+
+/** How a replacement is travelling. The tracking number is the point: everything
+ *  else can be absent and the record still answers "it went, here is how to
+ *  follow it". */
+export interface ReplacementShipmentBody {
+  carrier?: string;
+  carrierOther?: string;
+  trackingNumber: string;
+  trackingUrl?: string;
+  shippedAt?: string;
 }
 
 export interface ReturnDetail extends ReturnSummary {

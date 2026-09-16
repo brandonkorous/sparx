@@ -824,9 +824,15 @@ export const EMAIL_SOURCES: DataSource[] = [
     ],
   },
   {
-    // A return / RMA (docs/impl transactional-email P3) — the received / approved /
-    // refunded notices. `refundAmount` is empty until a refund settles, and `hasLabel`
-    // is non-empty only when a prepaid label exists (gates the "print your label" line).
+    // A return / RMA (docs/impl transactional-email P3) — the requested / approved /
+    // received notices plus all three ENDINGS: refunded, swapped, turned down.
+    // `refundAmount` is empty until a refund settles, and `hasLabel` is non-empty
+    // only when a prepaid label exists (gates the "print your label" line).
+    //
+    // `replacement` and `deniedReason` are facts about the DECISION, not about the
+    // return row — a return has no column for what went out instead, and a denial
+    // reason is written to the same `staffNote` an approval uses. Both arrive on
+    // the event and overlay through the send's snapshot (persona issue 448).
     key: 'return',
     label: 'Return',
     module: 'commerce',
@@ -840,6 +846,11 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('labelUrl', 'Return label link'),
       text('hasLabel', 'Has return label'),
       text('manageUrl', 'Manage link'),
+      text('replacement', 'Replacement sent'),
+      text('deniedReason', 'Why it was turned down'),
+      text('replacementCarrier', 'Replacement carrier'),
+      text('replacementTracking', 'Replacement tracking number'),
+      text('replacementTrackingUrl', 'Replacement tracking link'),
     ],
   },
   {

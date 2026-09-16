@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-law-family',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Law (Family & Estate)',
   summary:
-    'A warm, approachable family and estate law site — a cream ground, a deep-navy primary and a trustworthy serif — built around booking a free consultation. Installs a working booking flow: wills, trusts, probate, family-law and guardianship consults, three attorneys you book by name with their own hours, and a standard reschedule policy. Ships as "Hearth & Stone Law", a caring, plain-English practice.',
+    'A warm, approachable family and estate law site (a cream ground, a deep-navy primary and a trustworthy serif) built around booking a free consultation. Installs a working booking flow: wills, trusts, probate, family-law and guardianship consults, three attorneys you book by name with their own hours, and a standard reschedule policy. Ships as "Hearth & Stone Law", a caring, plain-English practice.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

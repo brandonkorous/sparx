@@ -207,7 +207,7 @@ export function eventList(): Node {
           '02',
           'Aug',
           'The riverside season opens',
-          'A free outdoor concert to start the summer programme. Bring a chair.',
+          'A free outdoor concert to start the summer program. Bring a chair.',
           'Riverside Stage · 7pm'
         ),
         event(

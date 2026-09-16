@@ -162,14 +162,14 @@ export function UtmTool() {
             ))}
           </div>
           <div className="tool-fieldgrid">
-            <Field label="Source" htmlFor="utm-source" hint="utm_source — e.g. google">
+            <Field label="Source" htmlFor="utm-source" hint="utm_source: e.g. google">
               <Input
                 id="utm-source"
                 value={p.source}
                 onChange={(e) => set('source', e.target.value)}
               />
             </Field>
-            <Field label="Medium" htmlFor="utm-medium" hint="utm_medium — e.g. cpc">
+            <Field label="Medium" htmlFor="utm-medium" hint="utm_medium: e.g. cpc">
               <Input
                 id="utm-medium"
                 value={p.medium}
@@ -177,7 +177,7 @@ export function UtmTool() {
               />
             </Field>
           </div>
-          <Field label="Campaign" htmlFor="utm-campaign" hint="utm_campaign — e.g. spring_sale">
+          <Field label="Campaign" htmlFor="utm-campaign" hint="utm_campaign: e.g. spring_sale">
             <Input
               id="utm-campaign"
               value={p.campaign}
@@ -185,14 +185,10 @@ export function UtmTool() {
             />
           </Field>
           <div className="tool-fieldgrid">
-            <Field label="Term" htmlFor="utm-term" hint="utm_term — paid keyword (optional)">
+            <Field label="Term" htmlFor="utm-term" hint="utm_term: paid keyword (optional)">
               <Input id="utm-term" value={p.term} onChange={(e) => set('term', e.target.value)} />
             </Field>
-            <Field
-              label="Content"
-              htmlFor="utm-content"
-              hint="utm_content — a/b variant (optional)"
-            >
+            <Field label="Content" htmlFor="utm-content" hint="utm_content: a/b variant (optional)">
               <Input
                 id="utm-content"
                 value={p.content}

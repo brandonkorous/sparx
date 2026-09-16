@@ -114,8 +114,8 @@ export const CURRENCY_OPTIONS: { value: string; label: string }[] = [
 // matchRetryPreset.
 export const RETRY_PRESETS: { value: string; label: string; hours: number[] }[] = [
   { value: 'standard', label: 'Spread over about 3 weeks', hours: [24, 72, 168, 336] },
-  { value: 'quick', label: 'Try again quickly — within a few days', hours: [4, 24, 72] },
-  { value: 'patient', label: 'Give them longer — about a month', hours: [48, 168, 336, 720] },
+  { value: 'quick', label: 'Try again quickly: within a few days', hours: [4, 24, 72] },
+  { value: 'patient', label: 'Give them longer: about a month', hours: [48, 168, 336, 720] },
   { value: 'daily', label: 'Once a day', hours: [24] },
 ];
 
@@ -167,7 +167,7 @@ export function describeDunningPolicy(policy: DunningPolicy): string {
 function finalOutcomeClause(outcome: DunningPolicy['finalOutcome']): string {
   switch (outcome) {
     case 'cancel':
-      return 'the repeat order is cancelled.';
+      return 'the repeat order is canceled.';
     case 'mark_past_due':
       return 'the repeat order keeps running and is flagged as overdue for you to deal with.';
     default:

@@ -40,7 +40,6 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import { ModuleScope } from '../../components/module-scope';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   iconForStarter,
   moduleHue,
@@ -111,17 +110,13 @@ function StarterCard({
   );
 }
 
-export function IndustrySurface({ ctx }: { ctx: SurfaceContext }) {
+export function IndustrySurface() {
   const toast = useToast();
   const confirm = useConfirm();
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useIndustryStarters();
   const apply = useApplyIndustry();
 
   const [selected, setSelected] = useState<string | null>(null);
-
-  useEffect(() => {
-    ctx.setTitle('Industry');
-  }, [ctx]);
 
   const activeSlug = useMemo(() => data?.find((s) => s.active)?.slug ?? null, [data]);
 
@@ -167,10 +162,10 @@ export function IndustrySurface({ ctx }: { ctx: SurfaceContext }) {
       description: isReapply
         ? `This tops up the starting setup in the parts of sparx you have switched on${
             enabledList ? ` (${enabledList})` : ''
-          }. It only fills empty spots — nothing you have already made is changed or removed.`
+          }. It only fills empty spots. Nothing you have already made is changed or removed.`
         : `This retunes the wording across sparx to match ${chosen.name}, and adds a tailored starting setup to the parts you have switched on${
             enabledList ? ` (${enabledList})` : ''
-          }. It only fills empty spots — nothing you have already made is changed or removed.`,
+          }. It only fills empty spots. Nothing you have already made is changed or removed.`,
       confirmLabel: isReapply ? 'Update setup' : 'Set my industry',
       cancelLabel: 'Not now',
       color: 'primary',
@@ -242,7 +237,7 @@ export function IndustrySurface({ ctx }: { ctx: SurfaceContext }) {
               </Heading>
               <Text>
                 Telling sparx your industry changes the wording you see and gives you a starting
-                setup built for that trade — example categories, sensible defaults, and a bit of
+                setup built for that trade: example categories, sensible defaults, and a bit of
                 content to build on. You can change it later, and picking one never removes anything
                 you have already made.
               </Text>
@@ -286,13 +281,13 @@ export function IndustrySurface({ ctx }: { ctx: SurfaceContext }) {
                             .map(moduleLabel)
                             .join(
                               ', '
-                            )}. Everything it adds is new — your own work is left exactly as it is.`
-                        : 'This only retunes the wording for now — you have no matching parts of sparx switched on yet, so there is nothing to set up until you do.'}
+                            )}. Everything it adds is new. Your own work is left exactly as it is.`
+                        : 'This only retunes the wording for now. You have no matching parts of sparx switched on yet, so there is nothing to set up until you do.'}
                     </Text>
                     {offModules.length > 0 ? (
                       <Text>
-                        It also has a setup ready for {offModules.map(moduleLabel).join(', ')} —
-                        that part waits quietly until you switch{' '}
+                        It also has a setup ready for {offModules.map(moduleLabel).join(', ')}, that
+                        part waits quietly until you switch{' '}
                         {offModules.length === 1 ? 'it' : 'them'} on.
                       </Text>
                     ) : null}
@@ -301,7 +296,7 @@ export function IndustrySurface({ ctx }: { ctx: SurfaceContext }) {
                   <FormSection title="Pick one to see what it sets up">
                     <Text>
                       Choose the closest match above. Nothing changes until you press the button in
-                      the bar — you can look before you commit.
+                      the bar. You can look before you commit.
                     </Text>
                   </FormSection>
                 )}
@@ -314,7 +309,7 @@ export function IndustrySurface({ ctx }: { ctx: SurfaceContext }) {
       {/* Sits on the pane, not in a docked strip. */}
       <p className="shrink-0 px-1 text-sm">
         <Compass className="mr-1 inline size-4 align-[-3px]" aria-hidden />
-        Not sure? Pick the closest — you can change your industry whenever you like.
+        Not sure? Pick the closest. You can change your industry whenever you like.
       </p>
     </div>
   );

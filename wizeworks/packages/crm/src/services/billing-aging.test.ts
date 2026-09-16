@@ -2,7 +2,7 @@
 
 import { describe, it, expect } from 'vitest';
 
-import { bucketAging, type AgingInputRow } from './billing-ar';
+import { bucketAging, daysPastDue, type AgingInputRow } from './billing-ar';
 
 const NOW = new Date('2026-06-12T00:00:00.000Z');
 const daysAgo = (n: number) => new Date(NOW.getTime() - n * 86_400_000);
@@ -54,5 +54,52 @@ describe('bucketAging', () => {
     ];
     const b = bucketAging(rows, NOW);
     expect(b.d1_30.balance).toBe(30.3);
+  });
+});
+
+// ── Due dates that are not midnight ────────────────────────────────────────
+//
+// Every case above uses a due date at exactly 00:00 UTC, which is why this file
+// passed while the rule was wrong: at midnight, "elapsed 24-hour periods" and
+// "calendar days apart" give the same answer for every input, so the buggy
+// reader satisfied every assertion. Real invoices are raised at whatever hour
+// somebody happened to raise them.
+describe('daysPastDue counts calendar days, not elapsed 24-hour periods', () => {
+  // 10:14 on the 9th — the moment a real shop's screen was read.
+  const MORNING = new Date('2026-09-09T10:14:00.000Z');
+
+  it('calls a bill due yesterday one day late, whatever hour it was due', () => {
+    // Two invoices, both printed "Due Sep 8". The second was raised at noon, so
+    // only 0.93 of a 24-hour period had passed: it read "Not yet due" on the same
+    // screen as the first, which read "1 day late".
+    expect(daysPastDue(new Date('2026-09-08T02:41:59.000Z'), MORNING)).toBe(1);
+    expect(daysPastDue(new Date('2026-09-08T12:00:00.000Z'), MORNING)).toBe(1);
+    expect(daysPastDue(new Date('2026-09-08T23:59:59.000Z'), MORNING)).toBe(1);
+  });
+
+  it('does not call a bill due TODAY late', () => {
+    expect(daysPastDue(new Date('2026-09-09T00:00:00.000Z'), MORNING)).toBe(0);
+    // Already past on the clock, still due today.
+    expect(daysPastDue(new Date('2026-09-09T09:00:00.000Z'), MORNING)).toBe(0);
+    expect(daysPastDue(new Date('2026-09-09T23:00:00.000Z'), MORNING)).toBe(0);
+  });
+
+  it('counts forward for a bill not due yet', () => {
+    expect(daysPastDue(new Date('2026-09-10T01:00:00.000Z'), MORNING)).toBe(-1);
+  });
+
+  it('has no answer to give when no deadline was ever set', () => {
+    expect(daysPastDue(null, MORNING)).toBe(0);
+  });
+
+  it('puts a noon-due bill in the late bucket, not in current', () => {
+    // The screen that started this: $234.60 sat under "Not yet due" beside seven
+    // invoices printed with the SAME due date under "1–30 days late".
+    const b = bucketAging(
+      [{ balance: 234.6, dueAt: new Date('2026-09-08T12:00:00.000Z') }],
+      MORNING
+    );
+    expect(b.current).toEqual({ count: 0, balance: 0 });
+    expect(b.d1_30).toEqual({ count: 1, balance: 234.6 });
   });
 });

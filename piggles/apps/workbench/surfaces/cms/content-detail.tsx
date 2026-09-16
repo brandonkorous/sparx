@@ -248,7 +248,7 @@ function EntryFields({
               }
             />
             <FieldDescription>
-              Only needed if the same content also lives at another address — this tells search
+              Only needed if the same content also lives at another address. This tells search
               engines which one counts. Usually leave it empty.
             </FieldDescription>
           </Field>
@@ -333,7 +333,7 @@ function CreateEntry({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           <Text>
-            Choose what kind of thing this is, then fill it in. It starts as a private draft — you
+            Choose what kind of thing this is, then fill it in. It starts as a private draft. You
             decide when to publish it.
           </Text>
 
@@ -646,7 +646,7 @@ function ManageBody({
       title: isScheduled ? 'Cancel the schedule?' : `Take “${entryTitle(entry)}” off your site?`,
       description: isScheduled
         ? 'This will not go live at the set time any more. It goes back to a private draft you can publish whenever you like.'
-        : 'Visitors will no longer be able to read this. It becomes a private draft again — nothing is deleted, and you can publish it back at any time.',
+        : 'Visitors will no longer be able to read this. It becomes a private draft again. Nothing is deleted, and you can publish it back at any time.',
       confirmLabel: isScheduled ? 'Cancel the schedule' : 'Take it down',
       cancelLabel: 'Leave it as it is',
       color: 'warning',
@@ -655,7 +655,7 @@ function ManageBody({
     unpublish.mutate(undefined, {
       onSuccess: () => {
         toast.add({
-          title: isScheduled ? 'Schedule cancelled' : `${entryTitle(entry)} taken down`,
+          title: isScheduled ? 'Schedule canceled' : `${entryTitle(entry)} taken down`,
           type: 'success',
         });
       },
@@ -673,7 +673,7 @@ function ManageBody({
     const ok = await confirm({
       title: `Delete “${entryTitle(entry)}”?`,
       description:
-        'This removes it for good. If it is on your site, it comes down. This cannot be undone — if you only want to take it off your site, take it down instead.',
+        'This removes it for good. If it is on your site, it comes down. This cannot be undone: if you only want to take it off your site, take it down instead.',
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -923,7 +923,7 @@ function RevisionHistory({
           Loading…
         </Text>
       ) : (revisions ?? []).length === 0 ? (
-        <Text className="text-sm">No earlier versions yet — this is the first.</Text>
+        <Text className="text-sm">No earlier versions yet. This is the first.</Text>
       ) : (
         <ul className="flex flex-col">
           {(revisions ?? []).map((revision, index) => (

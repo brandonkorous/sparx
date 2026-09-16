@@ -13,7 +13,7 @@ export const PARTNERS: AppMarketing = {
   does: [
     {
       title: 'Who supplies what',
-      body: 'Suppliers, the items they provide, their codes for them and their prices — including when more than one can supply the same thing.',
+      body: 'Suppliers, the items they provide, their codes for them and their prices, including when more than one can supply the same thing.',
     },
     {
       title: 'Purchase orders',
@@ -25,7 +25,7 @@ export const PARTNERS: AppMarketing = {
     },
     {
       title: 'How long they actually take',
-      body: 'Measured from your own orders, not from what they told you — which is what reorder timing should be based on.',
+      body: 'Measured from your own orders, not from what they told you, which is what reorder timing should be based on.',
     },
     {
       title: 'Price changes caught',
@@ -69,7 +69,7 @@ export const PARTNERS: AppMarketing = {
     },
     {
       heading: 'The price on the invoice is not the price you agreed.',
-      body: 'This is where margin leaks — quietly, a few percent at a time, in freight nobody apportioned and price rises nobody noticed. Partners keeps what you agreed, compares it with what you were actually charged, and spreads the cost of getting goods here across the goods, so an item’s cost is its real cost.',
+      body: 'This is where margin leaks: quietly, a few percent at a time, in freight nobody apportioned and price rises nobody noticed. Partners keeps what you agreed, compares it with what you were actually charged, and spreads the cost of getting goods here across the goods, so an item’s cost is its real cost.',
       does: [
         {
           title: 'Agreed price versus charged price',
@@ -85,7 +85,7 @@ export const PARTNERS: AppMarketing = {
         },
         {
           title: 'How they actually perform',
-          body: 'Scored on your own orders: on time, in full, at the agreed price. Not on the lead time printed in their catalogue.',
+          body: 'Scored on your own orders: on time, in full, at the agreed price. Not on the lead time printed in their catalog.',
         },
         {
           title: 'Their bills, matched to the delivery',
@@ -99,11 +99,11 @@ export const PARTNERS: AppMarketing = {
     },
     {
       heading: 'Selling things that never come near you.',
-      body: 'Dropshipping is a genuinely good idea that goes wrong in the accounting: it is easy to list a supplier’s catalogue and hard to know what you actually made on it once their price moved. Here the supplier’s products, your markup rules and the real cost stay visible together, and the order goes to them without you rekeying it.',
+      body: 'Dropshipping is a genuinely good idea that goes wrong in the accounting: it is easy to list a supplier’s catalog and hard to know what you actually made on it once their price moved. Here the supplier’s products, your markup rules and the real cost stay visible together, and the order goes to them without you rekeying it.',
       does: [
         {
-          title: 'Their catalogue, your prices',
-          body: 'Bring in a supplier’s products and apply markup rules — by margin, by category, by item — so a price rise on their side does not silently become your loss.',
+          title: 'Their catalog, your prices',
+          body: 'Bring in a supplier’s products and apply markup rules (by margin, by category, by item) so a price rise on their side does not silently become your loss.',
         },
         {
           title: 'The order goes straight to them',
@@ -115,7 +115,7 @@ export const PARTNERS: AppMarketing = {
         },
         {
           title: 'Sold beside everything else',
-          body: 'It is one catalogue and one order list. A customer buying a held item and a dropshipped one is placing one order, not two.',
+          body: 'It is one catalog and one order list. A customer buying a held item and a dropshipped one is placing one order, not two.',
         },
       ],
     },

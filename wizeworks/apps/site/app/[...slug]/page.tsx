@@ -5,6 +5,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
+import { SUSPENDED_METADATA } from '@/lib/suspended';
 import { getPageBySlug } from '@/lib/content';
 import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
@@ -41,6 +42,10 @@ const one = (v: string | string[] | undefined): string | undefined => (Array.isA
 export async function generateMetadata({ params, searchParams }: SlugPageProps): Promise<Metadata> {
   const site = await resolveSite();
   if (!site) return {};
+  // A dark site tells a crawler nothing about the tenant. The layout says the
+  // same, but a route's metadata overrides a layout's, so it has to be said
+  // here too (issue 503).
+  if (site.billingPhase === 'suspended') return SUSPENDED_METADATA;
   const slug = buildSlug((await params).slug);
   const sp = await searchParams;
   const previewToken = one(sp?.sparxPreview);

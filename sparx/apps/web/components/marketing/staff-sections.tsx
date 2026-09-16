@@ -48,7 +48,7 @@ export function StaffFalseFix() {
           headline={<>Your payroll report is correct. It still can’t tell you what Tuesday cost.</>}
           lede={
             <>
-              Not because it is bad at its job — because its job is a different one. Payroll exists
+              Not because it is bad at its job, because its job is a different one. Payroll exists
               to pay people accurately and file what has to be filed, and it does that. Then you ask
               the question you actually had, and it has nothing to answer with, because it has never
               heard of a job.
@@ -94,8 +94,8 @@ export function StaffFalseFix() {
               “Was the Farrow rebuild worth doing?”
             </Heading>
             <Text>
-              Payroll never saw a rebuild. It saw a fortnight, four people, and a gross figure — in
-              a month that also held nineteen other jobs, two warranty callbacks and a day everybody
+              Payroll never saw a rebuild. It saw a fortnight, four people, and a gross figure: in a
+              month that also held nineteen other jobs, two warranty callbacks and a day everybody
               spent tidying the yard. Nothing in that report knows which hours belong to which work,
               because nobody ever wrote it down anywhere it could be counted.
             </Text>
@@ -142,11 +142,11 @@ export function StaffTurn() {
     },
     {
       title: 'The hour knows what it was for',
-      body: 'Clocking in can name the job, and a typed entry can too — because the job is already in this database. That one field is the whole difference between a timesheet and a cost: without it you have hours, with it you have what the work took.',
+      body: 'Clocking in can name the job, and a typed entry can too, because the job is already in this database. That one field is the whole difference between a timesheet and a cost: without it you have hours, with it you have what the work took.',
     },
     {
       title: 'So the wages line stops being typed',
-      body: 'Approve a timesheet and those hours are costed at the rate in force on each day, marked up by your employer costs, and filed as spending under Wages — split by business, and charged to the jobs they named. Nobody estimates anything.',
+      body: 'Approve a timesheet and those hours are costed at the rate in force on each day, marked up by your employer costs, and filed as spending under Wages: split by business, and charged to the jobs they named. Nobody estimates anything.',
     },
   ];
   return (
@@ -156,7 +156,7 @@ export function StaffTurn() {
       </h2>
       <p className="mt-7 max-w-[880px] text-2xl leading-[1.45]">
         A time clock records the hour. A payroll bureau prices it. Neither has ever seen the job,
-        because the job lives in a different system — so the two halves never meet, and the biggest
+        because the job lives in a different system, so the two halves never meet, and the biggest
         number in your business stays an estimate. sparx is already holding the job.
       </p>
       <div className="mt-16 grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-3">
@@ -193,9 +193,9 @@ export function StaffClock() {
           lede={
             <>
               Somebody taps in on a phone in the yard, or types “3.5 on the Ellison job” back at the
-              desk on Friday. Both are real ways people work and both are first-class here — the
-              only thing that matters is that the hour lands somewhere with the job attached before
-              the memory of it goes.
+              desk on Friday. Both are real ways people work and both are first-class here: the only
+              thing that matters is that the hour lands somewhere with the job attached before the
+              memory of it goes.
             </>
           }
         />
@@ -206,7 +206,7 @@ export function StaffClock() {
           <CardBody className="gap-5">
             <div className="flex items-baseline justify-between gap-4">
               <Heading level={3} size={4}>
-                Ellison — brake overhaul
+                Ellison: brake overhaul
               </Heading>
               <HourState tone="warning">Waiting on you</HourState>
             </div>
@@ -249,7 +249,7 @@ export function StaffClock() {
             <Text className="mt-3">
               What you rostered and what actually happened are separate records here, on purpose.
               Every scheduling product eventually treats them as one number, and the moment it does,
-              the difference between the week you planned and the week you paid for disappears — and
+              the difference between the week you planned and the week you paid for disappears, and
               that difference is usually where the money went.
             </Text>
           </div>
@@ -284,10 +284,10 @@ export function StaffRates() {
           headline={<>What an hour costs you is not what it says on the payslip</>}
           lede={
             <>
-              Your share of payroll taxes, workers’ comp, insurance — the part that never appears on
+              Your share of payroll taxes, workers’ comp, insurance: the part that never appears on
               anybody’s wage but comes out of the same money. Tell sparx once what that adds up to
               as a percentage and every hour after it is costed honestly. Leave it out and your
-              labour figure runs fifteen to thirty percent light, which is exactly the kind of wrong
+              labor figure runs fifteen to thirty percent light, which is exactly the kind of wrong
               that feels fine right up until the year-end.
             </>
           }
@@ -304,7 +304,7 @@ export function StaffRates() {
               <HourRow who="On the payslip" detail="his hourly wage" cost="$28.00" />
               <HourRow
                 who="Employer costs"
-                detail="22% — the share that never reaches his pocket"
+                detail="22%: the share that never reaches his pocket"
                 cost="+ $6.16"
               />
             </div>
@@ -335,12 +335,12 @@ export function StaffRates() {
               So sparx does not cost them at zero. The timesheet says sixty-two hours are unpriced,
               the period total says “so far” instead of pretending to be finished, and the wage
               figure it files is short by exactly that much and says so. A zero here becomes a zero
-              in your profit — and you would read that as a fortnight where the work was free.
+              in your profit, and you would read that as a fortnight where the work was free.
             </Text>
             <div className="border-base-300 flex flex-col gap-2 border-t pt-5">
               <Text className="text-sm">
                 Add her rate afterwards, dated from her first day, and the fortnight prices itself.
-                Nothing else moves — everyone else’s March is untouched, because their rates were
+                Nothing else moves. Everyone else’s March is untouched, because their rates were
                 already the rates in force.
               </Text>
             </div>

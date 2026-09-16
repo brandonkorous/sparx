@@ -217,11 +217,11 @@ async function handleTimeApproved(
     // from the outside is the timesheet screen nobody may be looking at.
     logger.warn(
       { tenantId, unpricedMinutes, period },
-      'staff labour derived with unpriced hours — some people have no pay rate covering this period'
+      'staff labor derived with unpriced hours. Some people have no pay rate covering this period'
     );
   }
 
-  logger.info({ tenantId, people: results.length, expenses, totalCents }, 'staff labour derived');
+  logger.info({ tenantId, people: results.length, expenses, totalCents }, 'staff labor derived');
   return {
     outcome: expenses > 0 ? 'derived' : 'skipped',
     tenantId,

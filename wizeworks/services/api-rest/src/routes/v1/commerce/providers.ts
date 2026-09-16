@@ -234,6 +234,24 @@ const providerRoutes: FastifyPluginAsync = async (app) => {
     );
   });
 
+  // How the replacement is travelling. Its own route rather than a field on the
+  // exchange, because it is usually a SEPARATE MOMENT: a shop settles the swap
+  // while the customer is waiting and walks to the post office afterwards, so
+  // the tracking number does not exist yet when the swap is settled. Recording
+  // it here is what tells the customer.
+  app.post('/v1/commerce/returns/:id/replacement-shipment', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    const body = (request.body as Record<string, unknown>) ?? {};
+    return ok(
+      await returnService.recordReplacementShipment(toCommerceContext(request), {
+        ...body,
+        returnId: id,
+      })
+    );
+  });
+
   app.post('/v1/commerce/returns/:id/refund', async (request) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);

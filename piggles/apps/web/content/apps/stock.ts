@@ -18,7 +18,7 @@ export const STOCK: AppMarketing = {
   does: [
     {
       title: 'One number you can trust',
-      body: 'What is physically there, what is already spoken for, and what is genuinely available to sell — kept apart, because treating them as one number is how you oversell.',
+      body: 'What is physically there, what is already spoken for, and what is genuinely available to sell: kept apart, because treating them as one number is how you oversell.',
     },
     {
       title: 'More than one place',
@@ -34,7 +34,7 @@ export const STOCK: AppMarketing = {
     },
     {
       title: 'Reorder before you run out',
-      body: 'Reorder points worked out from what actually sells and how long a supplier actually takes — not a number somebody guessed in the first month.',
+      body: 'Reorder points worked out from what actually sells and how long a supplier actually takes, not a number somebody guessed in the first month.',
     },
     {
       title: 'What it really cost',
@@ -44,7 +44,7 @@ export const STOCK: AppMarketing = {
   chapters: [
     {
       heading: 'Four is not an answer. Four, on the second shelf, is.',
-      body: 'Most stock software will tell you a number. The number is only useful if somebody can walk to the thing, which means knowing which building, which aisle and which shelf — and knowing that when it moves, the record moved with it. Stock goes down to the shelf, and everything that changes a count leaves a trace with a name on it.',
+      body: 'Most stock software will tell you a number. The number is only useful if somebody can walk to the thing, which means knowing which building, which aisle and which shelf, and knowing that when it moves, the record moved with it. Stock goes down to the shelf, and everything that changes a count leaves a trace with a name on it.',
       does: [
         {
           title: 'As many places as you actually have',
@@ -74,7 +74,7 @@ export const STOCK: AppMarketing = {
     },
     {
       heading: 'A scanner beats a clipboard, and it beats memory entirely.',
-      body: 'Typing product codes is where stock records go wrong — not dramatically, but a digit at a time, until the number on the screen and the number on the shelf have quietly diverged and nobody knows when it started. Scanning removes the typing. Receiving, putting away, picking, packing, counting and transferring all work from a barcode, on a phone.',
+      body: 'Typing product codes is where stock records go wrong, not dramatically, but a digit at a time, until the number on the screen and the number on the shelf have quietly diverged and nobody knows when it started. Scanning removes the typing. Receiving, putting away, picking, packing, counting and transferring all work from a barcode, on a phone.',
       does: [
         {
           title: 'Every code a thing already has',
@@ -82,7 +82,7 @@ export const STOCK: AppMarketing = {
         },
         {
           title: 'Warehouse mode',
-          body: 'A stripped-back screen for a phone in a cold room with one hand free. Scan, confirm, next — not a desktop layout squeezed onto a handset.',
+          body: 'A stripped-back screen for a phone in a cold room with one hand free. Scan, confirm, next, not a desktop layout squeezed onto a handset.',
         },
         {
           title: 'When two things share a code',
@@ -96,7 +96,7 @@ export const STOCK: AppMarketing = {
     },
     {
       heading: 'Counting it without shutting for the day.',
-      body: 'A full stocktake is a day of trading lost, so it happens once a year and the records drift for the other 364. Rolling counts fix that: a handful of lines a week, chosen by what matters and what moves, entered as what was actually found — with the difference shown before anything is committed, and the correction approved by a person.',
+      body: 'A full stocktake is a day of trading lost, so it happens once a year and the records drift for the other 364. Rolling counts fix that: a handful of lines a week, chosen by what matters and what moves, entered as what was actually found, with the difference shown before anything is committed, and the correction approved by a person.',
       does: [
         {
           title: 'Count a corner, not the building',
@@ -148,7 +148,7 @@ export const STOCK: AppMarketing = {
     },
     {
       heading: 'The reorder point nobody guessed.',
-      body: 'Most reorder levels were typed in during the first month and never revisited, which is why businesses run out of the thing that sells and hold a year of the thing that does not. These are worked out from what this business actually sold and how long its suppliers actually took — and the screens are arranged around the question you have, which is usually "what should I be worried about".',
+      body: 'Most reorder levels were typed in during the first month and never revisited, which is why businesses run out of the thing that sells and hold a year of the thing that does not. These are worked out from what this business actually sold and how long its suppliers actually took, and the screens are arranged around the question you have, which is usually "what should I be worried about".',
       does: [
         {
           title: 'What is about to run out',
@@ -156,7 +156,7 @@ export const STOCK: AppMarketing = {
         },
         {
           title: 'What actually matters',
-          body: 'The small number of lines that make most of the money, separated from the long tail — so effort goes where it changes something.',
+          body: 'The small number of lines that make most of the money, separated from the long tail, so effort goes where it changes something.',
         },
         {
           title: 'What is not moving',
@@ -178,7 +178,7 @@ export const STOCK: AppMarketing = {
     },
     {
       heading: 'What it is worth, and what you built from it.',
-      body: 'Two things a spreadsheet cannot really do: value the stock consistently enough to hand to an accountant, and cope with a product that is made out of other products. Both are here — the valuation method is a stated choice rather than an accident, and a thing you assemble knows what it is made of and what that means for the parts.',
+      body: 'Two things a spreadsheet cannot really do: value the stock consistently enough to hand to an accountant, and cope with a product that is made out of other products. Both are here: the valuation method is a stated choice rather than an accident, and a thing you assemble knows what it is made of and what that means for the parts.',
       does: [
         {
           title: 'Valued a way you chose',
@@ -193,7 +193,7 @@ export const STOCK: AppMarketing = {
           body: 'Recipes for what goes into an assembly, how many you could build from what is on hand, and runs that consume the parts and produce the result.',
         },
         {
-          title: 'Sold by the metre, bought by the roll',
+          title: 'Sold by the meter, bought by the roll',
           body: 'Units of measure that convert, so buying and selling do not have to use the same one.',
         },
         {

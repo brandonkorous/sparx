@@ -84,7 +84,7 @@ function Funnel({ data }: { data: EnrollmentAnalytics }) {
           <Text className="text-base">
             did what you were aiming for
             {funnel.medianSecondsToGoal !== null
-              ? ` — usually within ${humanDuration(funnel.medianSecondsToGoal)}`
+              ? `, usually within ${humanDuration(funnel.medianSecondsToGoal)}`
               : ''}
             .
           </Text>
@@ -98,8 +98,8 @@ function Funnel({ data }: { data: EnrollmentAnalytics }) {
             </Heading>
             <Text className="text-base">
               This rule has run {funnel.entered.toLocaleString()} times. Whether any of that did
-              what you wanted is not something sparx can work out on its own — set a goal on the
-              rule and this becomes a number.
+              what you wanted is not something sparx can work out on its own. Set a goal on the rule
+              and this becomes a number.
             </Text>
           </div>
         </Card>
@@ -264,7 +264,7 @@ export function EnrollmentPanel({ automationId }: { automationId: string }) {
           </Heading>
           <Text className="text-base">
             Once it starts picking people up, this is where you’ll see how many of them do what you
-            were after — and which step loses the most.
+            were after, and which step loses the most.
           </Text>
         </div>
       </Card>

@@ -111,8 +111,8 @@ export default async function AccountPage() {
         {tenant?.name ?? 'Your account'}
       </h1>
       <p className="mt-2 text-lg">
-        Signed in as {session.user.email}. This is where you deal with {PRODUCT.name} — your
-        business itself lives at {PRODUCT.hosts.console}.
+        Signed in as {session.user.email}. This is where you deal with {PRODUCT.name}. Your business
+        itself lives at {PRODUCT.hosts.console}.
       </p>
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
@@ -131,7 +131,7 @@ export default async function AccountPage() {
                 <Badge color={trial.over ? 'warning' : 'success'} variant="soft" size="lg">
                   {trial.over
                     ? 'Trial finished'
-                    : `Free trial — ${trial.days} day${trial.days === 1 ? '' : 's'} left`}
+                    : `Free trial: ${trial.days} day${trial.days === 1 ? '' : 's'} left`}
                 </Badge>
               ) : (
                 <Badge

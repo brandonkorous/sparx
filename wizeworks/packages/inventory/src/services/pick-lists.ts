@@ -438,7 +438,7 @@ async function claimedUnits(
       JOIN inventory_pick_lists pl ON pl.id = l.pick_list_id
      WHERE l.tenant_id = ${tenantId}::uuid
        AND l.order_item_id = ANY(${orderItemIds}::uuid[])
-       AND pl.status <> 'cancelled'
+       AND pl.status <> 'canceled'
        AND l.status <> 'short'
      GROUP BY l.order_item_id
   `;

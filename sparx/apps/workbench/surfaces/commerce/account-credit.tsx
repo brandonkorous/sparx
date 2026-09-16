@@ -24,7 +24,6 @@ import {
   FieldDescription,
   FieldLabel,
   Heading,
-  Input,
   SearchInput,
   Select,
   Table,
@@ -51,15 +50,17 @@ import {
   type CustomerLite,
   type SortDir,
 } from './account-credit-data';
+import { MoneyTextInput, moneyCents } from '../../components/money-input';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
+/** Nothing typed is `undefined` — a different answer from zero. Everything else
+ *  goes through `moneyCents`, which reads "8,50", "$8.00" and "1,250.00" the way
+ *  a person writes them; `Number()` read exactly one spelling and quietly
+ *  returned NaN for the rest (issues 086 and 486). */
 function dollarsToCents(value: string): number | undefined {
-  const trimmed = value.trim();
-  if (trimmed === '') return undefined;
-  const parsed = Number(trimmed);
-  if (!Number.isFinite(parsed) || parsed < 0) return undefined;
-  return Math.round(parsed * 100);
+  if (value.trim() === '') return undefined;
+  return moneyCents(value) ?? undefined;
 }
 
 function formatDate(iso: string): string {
@@ -477,17 +478,12 @@ function CustomerCredit({
                   <Text as="span" className="text-lg">
                     $
                   </Text>
-                  <Input
+                  <MoneyTextInput
                     color="module"
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    inputMode="decimal"
-                    value={amount}
+                    aria-label="How much credit to give"
+                    text={amount}
                     placeholder="25.00"
-                    onChange={(event) => {
-                      setAmount(event.target.value);
-                    }}
+                    onTextChange={setAmount}
                   />
                 </div>
               }

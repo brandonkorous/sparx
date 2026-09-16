@@ -155,8 +155,7 @@ export function PrivacyTool() {
             </Button>
           </div>
           <Alert color="warning" size="sm">
-            A strong starting point — review and adapt it to your business. This is not legal
-            advice.
+            A strong starting point. Review and adapt it to your business. This is not legal advice.
           </Alert>
         </Panel>
       </OutputPane>

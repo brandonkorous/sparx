@@ -8,7 +8,7 @@
 // list is really FOR are lifetime value and how recently they last bought, so
 // those sort the list and sit on the right where the eye lands.
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Badge,
   Button,
@@ -110,10 +110,6 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
     setSortBy((view?.sort?.field ?? 'lastOrderAt') as CustomerSort);
   };
 
-  useEffect(() => {
-    ctx.setTitle('Customers');
-  }, [ctx]);
-
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useCustomers({
     q: search,
     lifecycleStage: stage === 'all' ? undefined : stage,
@@ -178,7 +174,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="Add a customer — hold Shift to open alongside, Alt for a new window"
+            title="Add a customer: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('crm.customer.detail', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -254,7 +250,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Users className="size-6" aria-hidden />}
             title="Could not load your customers"
-            description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
+            description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
             actions={
               <Button
                 size="sm"

@@ -96,7 +96,7 @@ export const TOOLS: readonly PigglesTool[] = [
     tagline:
       'The little picture in the browser tab. Drop your logo in and get every size a laptop, a phone and a bookmark bar quietly expect.',
     description:
-      'Free favicon generator. Drop in a PNG, SVG or JPG and download the whole set a real website needs — a multi-size .ico, the Apple touch icon phones use when somebody saves you to their home screen, the 192 and 512 pixel versions, a maskable icon for Android, a web manifest, and the exact lines of code to paste. It happens in your browser, so the picture never leaves your computer.',
+      'Free favicon generator. Drop in a PNG, SVG or JPG and download the whole set a real website needs: a multi-size .ico, the Apple touch icon phones use when somebody saves you to their home screen, the 192 and 512 pixel versions, a maskable icon for Android, a web manifest, and the exact lines of code to paste. It happens in your browser, so the picture never leaves your computer.',
     keywords: [
       'favicon generator',
       'png to ico',
@@ -111,16 +111,16 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faWindow,
     ladder: {
       headline: 'A tab icon is the smallest part of looking real.',
-      body: 'My Site is the rest of it — pages you can move around without touching code, your own web address, and the padlock beside it taken care of. The favicon you just made drops straight in.',
+      body: 'My Site is the rest of it: pages you can move around without touching code, your own web address, and the padlock beside it taken care of. The favicon you just made drops straight in.',
     },
   },
   {
     slug: 'qr-code',
     name: 'QR code maker',
     tagline:
-      'A code people scan with a phone camera — for a menu, a table, a shelf tag, your Wi-Fi, or your own contact details. Your colors, your logo, no expiry.',
+      'A code people scan with a phone camera, for a menu, a table, a shelf tag, your Wi-Fi, or your own contact details. Your colors, your logo, no expiry.',
     description:
-      'Free QR code generator. Turn a web address, a message, your Wi-Fi login, your contact details, an email or a phone number into a sharp, scannable code. Choose the colors, drop your logo in the middle, and download a PNG for printing or an SVG that stays crisp at any size — poster or business card. No sign-up, no watermark, and it never stops working.',
+      'Free QR code generator. Turn a web address, a message, your Wi-Fi login, your contact details, an email or a phone number into a sharp, scannable code. Choose the colors, drop your logo in the middle, and download a PNG for printing or an SVG that stays crisp at any size: poster or business card. No sign-up, no watermark, and it never stops working.',
     keywords: [
       'qr code generator',
       'free qr code',
@@ -135,16 +135,16 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faQrcode,
     ladder: {
       headline: 'A code is only as good as what it opens.',
-      body: 'Print one on a table card and point it at something that can actually take the order. Sell holds the products, the prices, the checkout and the stock count behind every scan — the same list whether somebody scans it, walks in, or rings you.',
+      body: 'Print one on a table card and point it at something that can actually take the order. Sell holds the products, the prices, the checkout and the stock count behind every scan: the same list whether somebody scans it, walks in, or rings you.',
     },
   },
   {
     slug: 'utm-builder',
     name: 'Link tracker',
     tagline:
-      'Build a link that tells you where somebody came from — the post, the newsletter, the flyer — so you can stop guessing which one is working.',
+      'Build a link that tells you where somebody came from (the post, the newsletter, the flyer) so you can stop guessing which one is working.',
     description:
-      'Free UTM link builder. Add the tags analytics tools read — source, medium, campaign — to any link, with ready-made presets for the places you actually post, live checks for the small mistakes that quietly break tracking, a saved history of every link you have built, and a one-tap QR code for the printed version.',
+      'Free UTM link builder. Add the tags analytics tools read (source, medium, campaign) to any link, with ready-made presets for the places you actually post, live checks for the small mistakes that quietly break tracking, a saved history of every link you have built, and a one-tap QR code for the printed version.',
     keywords: [
       'utm builder',
       'utm link builder',
@@ -158,7 +158,7 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faLink,
     ladder: {
       headline: 'Tagging the click is half of it.',
-      body: 'Get Found shows which posts, searches and links bring people in. And because it sits on the same customer list as your orders, a tagged click does not stop at a number — it carries on into who they turned out to be.',
+      body: 'Get Found shows which posts, searches and links bring people in. And because it sits on the same customer list as your orders, a tagged click does not stop at a number. It carries on into who they turned out to be.',
     },
   },
   {
@@ -167,7 +167,7 @@ export const TOOLS: readonly PigglesTool[] = [
     tagline:
       'The picture that shows up when somebody posts your link. Make one that looks chosen, instead of whatever the internet grabbed.',
     description:
-      'Free social share image maker. Design the 1200 × 630 preview card that appears when your link is pasted into a message, a post or a group chat — a headline, your color, your logo, light or dark — and download a PNG ready to use as your og:image. It is the difference between a link that looks published and one that looks pasted.',
+      'Free social share image maker. Design the 1200 × 630 preview card that appears when your link is pasted into a message, a post or a group chat (a headline, your color, your logo, light or dark) and download a PNG ready to use as your og:image. It is the difference between a link that looks published and one that looks pasted.',
     keywords: [
       'open graph image generator',
       'og image maker',
@@ -180,7 +180,7 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faShareNodes,
     ladder: {
       headline: 'A good cover in front of something worth opening.',
-      body: 'Content is where the thing behind the link lives — articles, pages and pictures you write once and use in several places, with the fiddly search bits filled in as you publish rather than afterwards.',
+      body: 'Content is where the thing behind the link lives: articles, pages and pictures you write once and use in several places, with the fiddly search bits filled in as you publish rather than afterwards.',
     },
   },
   {
@@ -189,7 +189,7 @@ export const TOOLS: readonly PigglesTool[] = [
     tagline:
       'The few tidy lines under everything you send. Build one, copy it, paste it into Gmail, Outlook or Apple Mail.',
     description:
-      'Free email signature generator. Put in your name, what you do, your phone number and your links, pick a layout and a color, and copy a clean signature straight into Gmail, Outlook or Apple Mail. Built the sturdy, old-fashioned way that survives every mail app — including the ones that break everything else.',
+      'Free email signature generator. Put in your name, what you do, your phone number and your links, pick a layout and a color, and copy a clean signature straight into Gmail, Outlook or Apple Mail. Built the sturdy, old-fashioned way that survives every mail app, including the ones that break everything else.',
     keywords: [
       'email signature generator',
       'html email signature',
@@ -202,14 +202,14 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faSignature,
     ladder: {
       headline: 'One email looks right. Now do the next four thousand.',
-      body: 'Messages sends the rest — the receipt, the reminder, the once-a-month note to everybody — from your own address, with the plumbing that keeps it out of spam already done.',
+      body: 'Messages sends the rest (the receipt, the reminder, the once-a-month note to everybody) from your own address, with the plumbing that keeps it out of spam already done.',
     },
   },
   {
     slug: 'invoice',
     name: 'Invoice maker',
     tagline:
-      'An itemised invoice with your logo, your tax and the totals worked out — as a PDF you can print or attach. No account, nothing stamped across it.',
+      'An itemised invoice with your logo, your tax and the totals worked out: as a PDF you can print or attach. No account, nothing stamped across it.',
     description:
       'Free invoice generator. Add your details and your customer’s, list what you did, set the tax and any discount, and download a clean, print-ready PDF with your logo on it. The totals add themselves, any currency works, and your own details are remembered on this device for next time. No sign-up and no watermark.',
     keywords: [
@@ -224,7 +224,7 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faReceipt,
     ladder: {
       headline: 'Invoice number one is a PDF. Number two hundred is a job.',
-      body: 'Invoices keeps the running list — who has been billed, who has paid, who is three weeks late — and sends the polite nudge for you, so chasing money stops being a Sunday evening activity.',
+      body: 'Invoices keeps the running list (who has been billed, who has paid, who is three weeks late) and sends the polite nudge for you, so chasing money stops being a Sunday evening activity.',
     },
   },
   {
@@ -233,7 +233,7 @@ export const TOOLS: readonly PigglesTool[] = [
     tagline:
       'Three settings on your domain decide whether your email lands in the inbox or the spam folder. Check yours, or generate the ones you are missing.',
     description:
-      'Free SPF, DKIM and DMARC checker and generator. Look up what your domain publishes today — live, from your browser — and see in plain words whether it is right. Missing one? Generate the exact record to paste into your domain settings. These three lines are the most common reason a real business’s email quietly stops arriving.',
+      'Free SPF, DKIM and DMARC checker and generator. Look up what your domain publishes today (live, from your browser) and see in plain words whether it is right. Missing one? Generate the exact record to paste into your domain settings. These three lines are the most common reason a real business’s email quietly stops arriving.',
     keywords: [
       'spf record generator',
       'dkim record',
@@ -247,7 +247,7 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faEnvelopeCircleCheck,
     ladder: {
       headline: 'Nobody should have to learn what DKIM is.',
-      body: 'Messages sets all three up when you connect your domain, then keeps an eye on them — so “is our email arriving?” is a screen you can look at, rather than something you find out from a customer.',
+      body: 'Messages sets all three up when you connect your domain, then keeps an eye on them, so “is our email arriving?” is a screen you can look at, rather than something you find out from a customer.',
     },
     leaves:
       'Checking a domain looks it up in public DNS, so the domain name you type is sent to a public lookup service. Nothing else is, and generating a record sends nothing at all.',
@@ -256,9 +256,9 @@ export const TOOLS: readonly PigglesTool[] = [
     slug: 'meta-tags',
     name: 'Search result preview',
     tagline:
-      'Write the title and the description Google shows, and see exactly how they will look — before the page goes live.',
+      'Write the title and the description Google shows, and see exactly how they will look: before the page goes live.',
     description:
-      'Free meta tag generator with a live search preview. Type your title and description and watch the Google result and the social card update as you go, with the character counts that decide whether your sentence gets cut off halfway thr… Then copy the finished block for your page — title, description, canonical, and the social tags.',
+      'Free meta tag generator with a live search preview. Type your title and description and watch the Google result and the social card update as you go, with the character counts that decide whether your sentence gets cut off halfway thr… Then copy the finished block for your page: title, description, canonical, and the social tags.',
     keywords: [
       'meta tag generator',
       'serp preview',
@@ -271,8 +271,8 @@ export const TOOLS: readonly PigglesTool[] = [
     app: 'get_found',
     icon: faFileMagnifyingGlass,
     ladder: {
-      headline: 'That little grey line is your shop window.',
-      body: 'Get Found writes one for every page you publish, finds the pages you forgot, and tells you which searches are actually bringing people in — instead of leaving you to guess at a hundred pages by hand.',
+      headline: 'That little gray line is your shop window.',
+      body: 'Get Found writes one for every page you publish, finds the pages you forgot, and tells you which searches are actually bringing people in: instead of leaving you to guess at a hundred pages by hand.',
     },
   },
   {
@@ -281,7 +281,7 @@ export const TOOLS: readonly PigglesTool[] = [
     tagline:
       'Press the space bar until something looks right. Keep the colors you like, shuffle the rest, and see the whole set on a real shop page before you commit to it.',
     description:
-      'Free brand color palette generator. Press space for a new set, keep the ones worth keeping and re-roll the rest, drag them into the order you want, and open any color for every lighter and darker step. Then see the palette on an actual shop page, a phone and an invoice — with which color is the button and which is the writing worked out for you, every readable pairing measured, and a check for how it all looks to somebody who is color blind. Take it away as a silicaui theme, CSS variables, Tailwind, SCSS, a picture, or just the link.',
+      'Free brand color palette generator. Press space for a new set, keep the ones worth keeping and re-roll the rest, drag them into the order you want, and open any color for every lighter and darker step. Then see the palette on an actual shop page, a phone and an invoice, with which color is the button and which is the writing worked out for you, every readable pairing measured, and a check for how it all looks to somebody who is color blind. Take it away as a silicaui theme, CSS variables, Tailwind, SCSS, a picture, or just the link.',
     keywords: [
       'color palette generator',
       'complementary color generator',
@@ -297,14 +297,14 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faPalette,
     ladder: {
       headline: 'Choosing the colors is the fun part.',
-      body: 'My Site is the other part — it takes a palette and puts it everywhere at once, every button and every heading and every page, and changes all of them again when you change your mind. Which you will.',
+      body: 'My Site is the other part. It takes a palette and puts it everywhere at once, every button and every heading and every page, and changes all of them again when you change your mind. Which you will.',
     },
   },
   {
     slug: 'margin-calculator',
     name: 'Pricing calculator',
     tagline:
-      'What should I charge? Put in any two numbers — what it costs, what you sell it for, the margin you want — and get the rest, including how many you need to sell to break even.',
+      'What should I charge? Put in any two numbers (what it costs, what you sell it for, the margin you want) and get the rest, including how many you need to sell to break even.',
     description:
       'Free margin and markup calculator. Enter what something costs you and what you sell it for, or what it costs and the margin you are aiming at, and see the margin, the markup, the profit on each one, and the price that gets you there. Add your fixed monthly costs and it works out how many you have to sell before you are actually ahead. The sum every owner redoes on the back of an envelope.',
     keywords: [
@@ -320,14 +320,14 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faCalculator,
     ladder: {
       headline: 'Working the number out is easy. Holding the line is the hard bit.',
-      body: 'Money shows what actually came in, what went out and what you kept — per product and overall — so the margin you calculated in January is something you can check in June rather than assume.',
+      body: 'Money shows what actually came in, what went out and what you kept (per product and overall) so the margin you calculated in January is something you can check in June rather than assume.',
     },
   },
   {
     slug: 'quote',
     name: 'Quote maker',
     tagline:
-      'A tidy, itemised quote with your logo, the totals and a date it runs out — as a PDF you can send today.',
+      'A tidy, itemised quote with your logo, the totals and a date it runs out: as a PDF you can send today.',
     description:
       'Free quote and estimate generator. Put in your details and the customer’s, list the work, add tax and a valid-until date, and download a professional PDF with your logo. Totals calculate themselves, any currency works, and your own details are kept on this device for the next one. No sign-up, no watermark.',
     keywords: [
@@ -342,16 +342,16 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faFileCircleCheck,
     ladder: {
       headline: 'The quote you send is the easy half. The four you are waiting on are not.',
-      body: 'Invoices keeps every quote in one list — sent, seen, accepted, gone quiet — and turns an accepted one into the actual bill without you retyping a single line.',
+      body: 'Invoices keeps every quote in one list (sent, seen, accepted, gone quiet) and turns an accepted one into the actual bill without you retyping a single line.',
     },
   },
   {
     slug: 'structured-data',
     name: 'Google business markup',
     tagline:
-      'The hidden lines that tell Google your opening hours, your prices and your ratings — so it can show them in the result instead of just a link.',
+      'The hidden lines that tell Google your opening hours, your prices and your ratings, so it can show them in the result instead of just a link.',
     description:
-      'Free structured data generator. Fill in a short form about your business, a product, an article or your common questions, and copy out the code search engines read to show the extra bits: opening hours, address, price, ratings, and questions that unfold right in the results. No knowledge of schema.org required — that is rather the point.',
+      'Free structured data generator. Fill in a short form about your business, a product, an article or your common questions, and copy out the code search engines read to show the extra bits: opening hours, address, price, ratings, and questions that unfold right in the results. No knowledge of schema.org required. That is rather the point.',
     keywords: [
       'json-ld generator',
       'structured data generator',
@@ -365,16 +365,16 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faBracketsCurly,
     ladder: {
       headline: 'Nobody should be hand-writing this, page by page.',
-      body: 'Get Found works it out from what you have already typed. Describe a product or an event once and the markup, the sitemap and the search tags come with it — on every page, kept current, without a second thought.',
+      body: 'Get Found works it out from what you have already typed. Describe a product or an event once and the markup, the sitemap and the search tags come with it: on every page, kept current, without a second thought.',
     },
   },
   {
     slug: 'contrast-checker',
     name: 'Contrast checker',
     tagline:
-      'Can everybody actually read that? Check a text color against its background — and find out what size it starts working at.',
+      'Can everybody actually read that? Check a text color against its background, and find out what size it starts working at.',
     description:
-      'Free color contrast checker. Put in a text color and a background color and get the exact ratio, whether it passes the accessibility standards for normal and large text, and a live preview at real sizes. Pale grey on white looks refined on your screen and disappears on a phone in daylight — this is how you find out before a customer does.',
+      'Free color contrast checker. Put in a text color and a background color and get the exact ratio, whether it passes the accessibility standards for normal and large text, and a live preview at real sizes. Pale gray on white looks refined on your screen and disappears on a phone in daylight. This is how you find out before a customer does.',
     keywords: [
       'contrast checker',
       'wcag contrast',
@@ -388,14 +388,14 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faCircleHalfStroke,
     ladder: {
       headline: 'One pair takes a second. A whole site takes a habit.',
-      body: 'My Site is built so this is handled already — readable text, focus outlines you can see, and headings in a sensible order come with the blocks, rather than being something you audit afterwards.',
+      body: 'My Site is built so this is handled already: readable text, focus outlines you can see, and headings in a sensible order come with the blocks, rather than being something you audit afterwards.',
     },
   },
   {
     slug: 'barcode',
     name: 'Barcode maker',
     tagline:
-      'Scannable barcodes for products, shelves and stock takes — Code128, UPC, EAN — with the check digit worked out for you.',
+      'Scannable barcodes for products, shelves and stock takes (Code128, UPC, EAN) with the check digit worked out for you.',
     description:
       'Free barcode generator. Make real, scannable Code128, UPC-A, EAN-13, EAN-8 and Code39 barcodes for products, shelf labels and stock counts, with the check digit calculated and validated so a scanner does not reject it at the till. Set the size and the label, then download a PNG or an SVG that stays sharp however big you print it.',
     keywords: [
@@ -411,14 +411,14 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faBarcode,
     ladder: {
       headline: 'A label is only useful if something is counting.',
-      body: 'Stock is what sits behind the scan — how many are left, where they are, which ones are about to run out, and a number that is the same whether it sold online, over the counter, or over the phone.',
+      body: 'Stock is what sits behind the scan: how many are left, where they are, which ones are about to run out, and a number that is the same whether it sold online, over the counter, or over the phone.',
     },
   },
   {
     slug: 'digital-card',
     name: 'Digital business card',
     tagline:
-      'Your details as a code somebody scans — landing straight in their phone’s contacts, spelt correctly.',
+      'Your details as a code somebody scans: landing straight in their phone’s contacts, spelt correctly.',
     description:
       'Free digital business card and vCard generator. Enter your name, what you do and how to reach you, and get a downloadable contact file plus a scannable code that drops the lot into anybody’s phone in one tap. No app to install, nothing to sign up for, and nobody typing your surname wrong.',
     keywords: [
@@ -433,16 +433,16 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faAddressBook,
     ladder: {
       headline: 'Getting the number is the start of it.',
-      body: 'Customers is where that person stops being a contact and becomes a history — what they bought, what you last said, what they asked for and never got. In one place, so the answer is not in somebody’s inbox.',
+      body: 'Customers is where that person stops being a contact and becomes a history: what they bought, what you last said, what they asked for and never got. In one place, so the answer is not in somebody’s inbox.',
     },
   },
   {
     slug: 'privacy-policy',
     name: 'Privacy policy writer',
     tagline:
-      'The privacy policy and terms every website is expected to have — written in plain English from a few questions, rather than copied off a competitor.',
+      'The privacy policy and terms every website is expected to have: written in plain English from a few questions, rather than copied off a competitor.',
     description:
-      'Free privacy policy and terms of service generator. Answer some straightforward questions about your business and what you collect, and get a clear, readable privacy policy and set of terms to copy or download. A genuine starting point for any website or shop — written to be understood rather than to be long. It is not legal advice, and for anything unusual you should get some.',
+      'Free privacy policy and terms of service generator. Answer some straightforward questions about your business and what you collect, and get a clear, readable privacy policy and set of terms to copy or download. A genuine starting point for any website or shop: written to be understood rather than to be long. It is not legal advice, and for anything unusual you should get some.',
     keywords: [
       'privacy policy generator',
       'free privacy policy',
@@ -455,16 +455,16 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faScroll,
     ladder: {
       headline: 'Writing it once is fine. Remembering to change it is not.',
-      body: 'Content publishes your policy as a real page with a proper address, keeps every previous version, and shows when it was last touched — which matters on the one page where “last updated 2019” is the whole problem.',
+      body: 'Content publishes your policy as a real page with a proper address, keeps every previous version, and shows when it was last touched, which matters on the one page where “last updated 2019” is the whole problem.',
     },
   },
   {
     slug: 'domain-checker',
     name: 'Domain name finder',
     tagline:
-      'Check whether the name you want is free — across .com, .co, .shop and the rest — before you print it on anything.',
+      'Check whether the name you want is free (across .com, .co, .shop and the rest) before you print it on anything.',
     description:
-      'Free domain availability checker. Type a name and see straight away which endings are still free, using live registry data rather than a guess. Find out before the signage, the cards and the packaging — and before you have told everybody what the business is called.',
+      'Free domain availability checker. Type a name and see straight away which endings are still free, using live registry data rather than a guess. Find out before the signage, the cards and the packaging, and before you have told everybody what the business is called.',
     keywords: [
       'domain availability checker',
       'domain name search',
@@ -477,7 +477,7 @@ export const TOOLS: readonly PigglesTool[] = [
     icon: faGlobe,
     ladder: {
       headline: 'A name you own, pointing at something.',
-      body: 'Buy it wherever you like, then point it at My Site. The certificate, the padlock and the renewals are handled — a real site on your own address, rather than a name parked at a registrar with nothing behind it.',
+      body: 'Buy it wherever you like, then point it at My Site. The certificate, the padlock and the renewals are handled: a real site on your own address, rather than a name parked at a registrar with nothing behind it.',
     },
     leaves:
       'There is no way to find out whether a name is taken without asking, so the name you type is sent to the public registry that knows. We do not keep it, and nobody is told you were interested.',

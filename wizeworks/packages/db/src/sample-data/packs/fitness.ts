@@ -55,7 +55,7 @@ export const fitnessPack: SampleDataPack = {
           helpText: 'What they pay for each month.',
           options: [
             { value: 'drop_in', label: 'Drop-in only' },
-            { value: 'basic', label: 'Basic — 8 classes' },
+            { value: 'basic', label: 'Basic: 8 classes' },
             { value: 'unlimited', label: 'Unlimited' },
             { value: 'founding', label: 'Founding member' },
           ],
@@ -122,8 +122,7 @@ export const fitnessPack: SampleDataPack = {
         membershipTier: 'basic',
         joinedOn: '2025-09-08',
         goal: 'Strength, three mornings a week, before work. Not interested in running.',
-        injuriesToKnowAbout:
-          'Left shoulder — nothing overhead above 20kg without warming up first.',
+        injuriesToKnowAbout: 'Left shoulder. Nothing overhead above 20kg without warming up first.',
       },
     },
     {
@@ -153,7 +152,7 @@ export const fitnessPack: SampleDataPack = {
       properties: {
         membershipTier: 'drop_in',
         joinedOn: '2026-04-14',
-        goal: 'Trying it out — came in with a friend and stayed.',
+        goal: 'Trying it out: came in with a friend and stayed.',
       },
     },
     {
@@ -198,7 +197,7 @@ export const fitnessPack: SampleDataPack = {
       attributes: {
         fabric:
           'A lightweight, sweat-wicking poly-spandex knit with flatlock seams to kill chafe, a tag-free neck, and a quick-dry finish. Screened with the studio mark at the left chest.',
-        fit: 'An athletic-but-relaxed cut — long enough to stay put through forward folds, loose enough to breathe on the bike. True to size; size up one for a looser fit.',
+        fit: 'An athletic-but-relaxed cut: long enough to stay put through forward folds, loose enough to breathe on the bike. True to size; size up one for a looser fit.',
         care: 'Machine wash cold and hang or tumble dry low. Skip fabric softener so the wicking finish keeps working.',
         materials: [
           { name: 'Polyester', percent: '88%' },
@@ -207,11 +206,11 @@ export const fitnessPack: SampleDataPack = {
         origin: 'Vietnam',
       },
       description:
-        '<p>Our house performance tee in a lightweight, sweat-wicking blend that moves with you through every flow and sprint. Cut for an athletic-but-relaxed fit — long enough to stay put through forward folds, loose enough to breathe on the bike.</p><p>Flatlock seams to kill chafe, a tag-free neck, and a quick-dry finish that comes out of the wash ready for the next class. Screened with the studio mark on the left chest.</p>',
+        '<p>Our house performance tee in a lightweight, sweat-wicking blend that moves with you through every flow and sprint. Cut for an athletic-but-relaxed fit: long enough to stay put through forward folds, loose enough to breathe on the bike.</p><p>Flatlock seams to kill chafe, a tag-free neck, and a quick-dry finish that comes out of the wash ready for the next class. Screened with the studio mark on the left chest.</p>',
       productType: 'Apparel',
       vendor: 'House Label',
       tags: ['tee', 'apparel', 'performance', 'unisex'],
-      seoTitle: 'Studio Performance Tee — Sweat-Wicking Workout Shirt',
+      seoTitle: 'Studio Performance Tee: Sweat-Wicking Workout Shirt',
       seoDescription:
         'Lightweight, quick-dry performance tee built for class. Flatlock seams, tag-free neck, athletic fit.',
       categoryKeys: ['apparel'],
@@ -322,7 +321,7 @@ export const fitnessPack: SampleDataPack = {
           title: 'My go-to class shirt',
           body: 'Stays put through every flow and never gets that swampy feel. Bought a second in Sand.',
           authorPersona: 'maya',
-          response: 'Love hearing it, Maya — see you in Vinyasa!',
+          response: 'Love hearing it, Maya: see you in Vinyasa!',
           helpfulCount: 7,
           daysAgo: 14,
         },
@@ -340,7 +339,7 @@ export const fitnessPack: SampleDataPack = {
           body: 'Is this true to size or should I size up for a looser fit?',
           authorPersona: 'jordan',
           answer:
-            'It is true to size with an athletic cut. If you want it loose, size up one — the fabric has a little give either way.',
+            'It is true to size with an athletic cut. If you want it loose, size up one: the fabric has a little give either way.',
           daysAgo: 10,
         },
       ],
@@ -353,7 +352,7 @@ export const fitnessPack: SampleDataPack = {
       attributes: {
         fabric:
           'A brushed four-way-stretch nylon-spandex knit that stays opaque through every squat and inversion, with a wide no-dig high-rise waistband and a hidden waistband pocket.',
-        fit: 'A compressive high-rise that lands above the navel and stays there — no rolling. Single ankle-length inseam on most. True to size; size up for a relaxed compression.',
+        fit: 'A compressive high-rise that lands above the navel and stays there: no rolling. Single ankle-length inseam on most. True to size; size up for a relaxed compression.',
         care: 'Machine wash cold inside out and hang dry. Avoid the dryer and fabric softener to protect the stretch and the brushed hand.',
         materials: [
           { name: 'Nylon', percent: '75%' },
@@ -366,7 +365,7 @@ export const fitnessPack: SampleDataPack = {
       productType: 'Apparel',
       vendor: 'House Label',
       tags: ['leggings', 'apparel', 'high-rise', 'squat-proof'],
-      seoTitle: 'High-Rise Studio Leggings — Squat-Proof & Buttery Soft',
+      seoTitle: 'High-Rise Studio Leggings: Squat-Proof & Buttery Soft',
       seoDescription:
         'High-rise, four-way-stretch leggings with a no-dig waistband and hidden pocket. Squat-proof and opaque.',
       categoryKeys: ['apparel'],
@@ -456,7 +455,7 @@ export const fitnessPack: SampleDataPack = {
         {
           rating: 5,
           title: 'Actually squat-proof',
-          body: 'Tested in the mirror at the squat rack — fully opaque. The waistband never rolls down during burpees.',
+          body: 'Tested in the mirror at the squat rack: fully opaque. The waistband never rolls down during burpees.',
           authorPersona: 'sofia',
           helpfulCount: 12,
           daysAgo: 16,
@@ -476,7 +475,7 @@ export const fitnessPack: SampleDataPack = {
           body: 'How high does the waistband sit? I do a lot of inversions in yoga.',
           authorPersona: 'maya',
           answer:
-            'True high-rise — it lands above the navel and stays there in headstands and forward folds. No rolling.',
+            'True high-rise. It lands above the navel and stays there in headstands and forward folds. No rolling.',
           daysAgo: 12,
         },
       ],
@@ -499,7 +498,7 @@ export const fitnessPack: SampleDataPack = {
       productType: 'Gear',
       vendor: 'House Label',
       tags: ['bottle', 'shaker', 'gear', 'hydration'],
-      seoTitle: 'Insulated Shaker Bottle 24 oz — Leak-Proof Stainless',
+      seoTitle: 'Insulated Shaker Bottle 24 oz: Leak-Proof Stainless',
       seoDescription:
         'Double-wall stainless shaker with agitator ball and leak-proof lid. Keeps drinks cold for hours.',
       categoryKeys: ['gear'],
@@ -562,7 +561,7 @@ export const fitnessPack: SampleDataPack = {
         {
           rating: 5,
           title: 'No more clumps',
-          body: 'The metal ball actually works — my protein mixes smooth and the lid has never leaked in my bag.',
+          body: 'The metal ball actually works: my protein mixes smooth and the lid has never leaked in my bag.',
           authorPersona: 'noah',
           helpfulCount: 4,
           daysAgo: 11,
@@ -586,17 +585,17 @@ export const fitnessPack: SampleDataPack = {
       productTypeKey: 'home_goods',
       attributes: {
         materials:
-          'Three natural-latex loop bands — light, medium, and heavy — with a fabric-free finish that grips without rolling. Includes a mesh carry pouch.',
+          'Three natural-latex loop bands (light, medium, and heavy) with a fabric-free finish that grips without rolling. Includes a mesh carry pouch.',
         dimensions: 'Flat loops, 12 in × 2 in · light / medium / heavy',
         care: 'Wipe clean with a damp cloth and let dry fully before storing. Keep out of direct sun and away from sharp edges to protect the latex.',
         origin: 'Malaysia',
       },
       description:
-        '<p>A three-band set — light, medium, and heavy — that covers everything from glute activation to assisted pull-ups. Made from natural latex with a fabric-free finish that grips without rolling or snapping on the skin.</p><p>Color-coded by resistance and small enough to live in your bag, these are the most-used tool in the studio for warm-ups and at-home days. Comes with a mesh carry pouch.</p>',
+        '<p>A three-band set (light, medium, and heavy) that covers everything from glute activation to assisted pull-ups. Made from natural latex with a fabric-free finish that grips without rolling or snapping on the skin.</p><p>Color-coded by resistance and small enough to live in your bag, these are the most-used tool in the studio for warm-ups and at-home days. Comes with a mesh carry pouch.</p>',
       productType: 'Gear',
       vendor: 'House Label',
       tags: ['resistance bands', 'gear', 'mobility', 'strength'],
-      seoTitle: 'Resistance Band Set (3-Pack) — Light, Medium, Heavy',
+      seoTitle: 'Resistance Band Set (3-Pack): Light, Medium, Heavy',
       seoDescription:
         'Three color-coded latex resistance bands for activation, strength, and mobility. Includes carry pouch.',
       categoryKeys: ['gear'],
@@ -627,7 +626,7 @@ export const fitnessPack: SampleDataPack = {
         {
           rating: 5,
           title: 'Use them every single day',
-          body: 'Glute activation before squats, banded pull-aparts at my desk — these live in my bag now.',
+          body: 'Glute activation before squats, banded pull-aparts at my desk. These live in my bag now.',
           authorPersona: 'devon',
           helpfulCount: 9,
           daysAgo: 13,
@@ -666,11 +665,11 @@ export const fitnessPack: SampleDataPack = {
         ],
       },
       description:
-        '<p>A clean 24g-per-scoop whey isolate blend that mixes smooth and actually tastes good. No artificial dyes, no gritty aftertaste — just a recovery shake you will look forward to after class.</p><p>Roughly 28 servings per tub. Mix one scoop with 8–10 oz of water or milk; pairs perfectly with the studio shaker bottle. Choose your flavor below.</p>',
+        '<p>A clean 24g-per-scoop whey isolate blend that mixes smooth and actually tastes good. No artificial dyes, no gritty aftertaste. Just a recovery shake you will look forward to after class.</p><p>Roughly 28 servings per tub. Mix one scoop with 8–10 oz of water or milk; pairs perfectly with the studio shaker bottle. Choose your flavor below.</p>',
       productType: 'Supplements',
       vendor: 'House Label',
       tags: ['protein', 'supplements', 'whey', 'recovery'],
-      seoTitle: 'Whey Protein Powder (2 lb) — 24g Clean Whey Isolate',
+      seoTitle: 'Whey Protein Powder (2 lb): 24g Clean Whey Isolate',
       seoDescription:
         '24g-per-scoop whey isolate that mixes smooth and tastes great. No artificial dyes. ~28 servings.',
       categoryKeys: ['supplements'],
@@ -753,14 +752,14 @@ export const fitnessPack: SampleDataPack = {
           title: 'Cookies & Cream is dangerous',
           body: 'Mixes clean in the shaker with just water and tastes like a milkshake. No bloat, which is rare for me.',
           authorPersona: 'jordan',
-          response: 'Cookies & Cream is the front-desk favorite too — thanks Jordan!',
+          response: 'Cookies & Cream is the front-desk favorite too: thanks Jordan!',
           helpfulCount: 8,
           daysAgo: 12,
         },
         {
           rating: 4,
           title: 'Solid whey',
-          body: 'Vanilla is a clean base — I add it to oats and coffee. Wish the tub were a little bigger.',
+          body: 'Vanilla is a clean base: I add it to oats and coffee. Wish the tub were a little bigger.',
           authorPersona: 'sofia',
           helpfulCount: 3,
           daysAgo: 7,
@@ -790,11 +789,11 @@ export const fitnessPack: SampleDataPack = {
         origin: 'Taiwan',
       },
       description:
-        '<p>A 24-inch high-density foam roller that holds its shape under real bodyweight pressure — no mushy collapse after a month. The molded ridges target knots and trigger points along the IT band, calves, and upper back without being punishing.</p><p>Light enough to carry to class, firm enough to make a difference. The single best tool for the recovery day you keep skipping.</p>',
+        '<p>A 24-inch high-density foam roller that holds its shape under real bodyweight pressure: no mushy collapse after a month. The molded ridges target knots and trigger points along the IT band, calves, and upper back without being punishing.</p><p>Light enough to carry to class, firm enough to make a difference. The single best tool for the recovery day you keep skipping.</p>',
       productType: 'Gear',
       vendor: 'House Label',
       tags: ['foam roller', 'gear', 'recovery', 'mobility'],
-      seoTitle: 'High-Density Foam Roller (24") — Recovery & Mobility',
+      seoTitle: 'High-Density Foam Roller (24"): Recovery & Mobility',
       seoDescription:
         '24-inch high-density foam roller with molded ridges for trigger-point release. Holds its shape under load.',
       categoryKeys: ['gear'],
@@ -844,7 +843,7 @@ export const fitnessPack: SampleDataPack = {
         details: [
           {
             label: 'What’s inside',
-            body: 'The Studio Performance Tee, a 3-pack of resistance bands, and a 24 oz insulated shaker bottle — the essentials for your first week of classes.',
+            body: 'The Studio Performance Tee, a 3-pack of resistance bands, and a 24 oz insulated shaker bottle: the essentials for your first week of classes.',
           },
           {
             label: 'Sizing',
@@ -852,12 +851,12 @@ export const fitnessPack: SampleDataPack = {
           },
           {
             label: 'Why buy the kit',
-            body: 'Bundled at a saving versus buying the three pieces separately — the simplest answer to “where do I start?”',
+            body: 'Bundled at a saving versus buying the three pieces separately: the simplest answer to “where do I start?”',
           },
         ],
       },
       description:
-        '<p>Everything a new member needs to walk in ready on day one: our Studio Performance Tee, a 3-pack of resistance bands for warm-ups, and an insulated shaker bottle to keep you hydrated. Buy the kit and save versus picking the pieces individually.</p><p>A standing welcome gift at the front desk — and the easiest "where do I start?" answer we have.</p>',
+        '<p>Everything a new member needs to walk in ready on day one: our Studio Performance Tee, a 3-pack of resistance bands for warm-ups, and an insulated shaker bottle to keep you hydrated. Buy the kit and save versus picking the pieces individually.</p><p>A standing welcome gift at the front desk, and the easiest "where do I start?" answer we have.</p>',
       productType: 'Kits',
       vendor: 'House Label',
       tags: ['starter kit', 'bundle', 'new member', 'welcome'],
@@ -1006,7 +1005,7 @@ export const fitnessPack: SampleDataPack = {
         key: 'vinyasa-yoga',
         name: 'Vinyasa Yoga',
         description:
-          'A breath-linked flow that builds heat and mobility — all levels welcome. Bring a mat or borrow one at the desk.',
+          'A breath-linked flow that builds heat and mobility. All levels welcome. Bring a mat or borrow one at the desk.',
         durationMinutes: 60,
         priceCents: 2200,
         capacity: 18,
@@ -1036,7 +1035,7 @@ export const fitnessPack: SampleDataPack = {
         key: 'hiit',
         name: 'HIIT Circuit',
         description:
-          'High-intensity intervals across stations — strength and conditioning in 45 minutes. Modifications offered for every move.',
+          'High-intensity intervals across stations: strength and conditioning in 45 minutes. Modifications offered for every move.',
         durationMinutes: 45,
         priceCents: 2400,
         capacity: 16,
@@ -1066,7 +1065,7 @@ export const fitnessPack: SampleDataPack = {
         key: 'personal-training',
         name: 'Personal Training (1-on-1)',
         description:
-          'A private 60-minute session built around your goals — strength, mobility, or sport-specific work with a dedicated trainer.',
+          'A private 60-minute session built around your goals: strength, mobility, or sport-specific work with a dedicated trainer.',
         durationMinutes: 60,
         priceCents: 8500,
         capacity: 1,
@@ -1098,11 +1097,11 @@ export const fitnessPack: SampleDataPack = {
       slug: 'beginners-guide-to-strength-training',
       title: "A beginner's guide to strength training",
       excerpt:
-        'You do not need a perfect program to start — you need to show up, move well, and add a little each week.',
+        'You do not need a perfect program to start. You need to show up, move well, and add a little each week.',
       daysAgo: 6,
       body: doc(
         p(
-          'Strength training is the single highest-return habit you can build for long-term health: it protects your bones, defends your metabolism, and makes everyday life — carrying groceries, getting off the floor, hauling a kid — easier for decades. The hard part is not the science. It is starting without overthinking it.'
+          'Strength training is the single highest-return habit you can build for long-term health: it protects your bones, defends your metabolism, and makes everyday life (carrying groceries, getting off the floor, hauling a kid) easier for decades. The hard part is not the science. It is starting without overthinking it.'
         ),
         h2('Start with the big movements'),
         p(
@@ -1110,18 +1109,18 @@ export const fitnessPack: SampleDataPack = {
         ),
         ul(
           'A squat (sit down and stand up)',
-          'A hinge (deadlift pattern — hips back, flat back)',
+          'A hinge (deadlift pattern: hips back, flat back)',
           'A push (push-up or overhead press)',
-          'A pull (row or assisted pull-up — our resistance bands are perfect here)',
+          'A pull (row or assisted pull-up, our resistance bands are perfect here)',
           'A carry (just walk while holding something heavy)'
         ),
         h2('How much, how often'),
         p(
-          'Two to three sessions a week is plenty to start. Pick a weight you can move with good form for 8–12 reps, leaving a rep or two in the tank. When that gets easy, add a little — a rep, a set, or a small jump in load. That slow, boring progression is the whole secret.'
+          'Two to three sessions a week is plenty to start. Pick a weight you can move with good form for 8–12 reps, leaving a rep or two in the tank. When that gets easy, add a little: a rep, a set, or a small jump in load. That slow, boring progression is the whole secret.'
         ),
         h2('Form first, ego last'),
         p(
-          'A clean rep at a lighter weight beats a sloppy rep at a heavy one every time. If you are unsure what good form feels like, book an intro consultation or a 1-on-1 — twenty minutes with a trainer will save you months of guessing and a few avoidable tweaks.'
+          'A clean rep at a lighter weight beats a sloppy rep at a heavy one every time. If you are unsure what good form feels like, book an intro consultation or a 1-on-1: twenty minutes with a trainer will save you months of guessing and a few avoidable tweaks.'
         )
       ),
     },
@@ -1129,7 +1128,7 @@ export const fitnessPack: SampleDataPack = {
       slug: 'why-recovery-matters',
       title: 'Why recovery matters as much as the workout',
       excerpt:
-        'You do not get stronger in the gym — you get stronger recovering from it. Here is how to actually do it.',
+        'You do not get stronger in the gym. You get stronger recovering from it. Here is how to actually do it.',
       daysAgo: 13,
       body: doc(
         p(
@@ -1141,11 +1140,11 @@ export const fitnessPack: SampleDataPack = {
         ),
         h2('Move on your rest days'),
         p(
-          'Rest does not mean lying still. Gentle movement — a walk, an easy Pilates mat class, five minutes on the foam roller — pushes blood to sore muscles and speeds the process. We call it active recovery, and it is why our mobility tools are the most-borrowed gear at the desk.'
+          'Rest does not mean lying still. Gentle movement (a walk, an easy Pilates mat class, five minutes on the foam roller) pushes blood to sore muscles and speeds the process. We call it active recovery, and it is why our mobility tools are the most-borrowed gear at the desk.'
         ),
         ul(
           'Foam-roll the areas that are tight, not the ones that hurt sharply',
-          'Hydrate — recovery stalls when you are even mildly dry',
+          'Hydrate: recovery stalls when you are even mildly dry',
           'Eat enough protein to give your body something to rebuild with',
           'Take at least one genuinely easy day a week'
         ),
@@ -1167,11 +1166,11 @@ export const fitnessPack: SampleDataPack = {
         ),
         h2('If you want to build calm and mobility'),
         p(
-          'Start with Vinyasa Yoga. It links breath to movement, builds flexibility and balance, and scales to any level — you can hold back or push as far as you like. A great choice if you sit at a desk all day.'
+          'Start with Vinyasa Yoga. It links breath to movement, builds flexibility and balance, and scales to any level. You can hold back or push as far as you like. A great choice if you sit at a desk all day.'
         ),
         h2('If you want cardio without the pounding'),
         p(
-          'Try Spin. It is a joint-friendly, high-energy ride driven by the music, and the resistance is entirely in your hands — you control how hard the climb gets.'
+          'Try Spin. It is a joint-friendly, high-energy ride driven by the music, and the resistance is entirely in your hands. You control how hard the climb gets.'
         ),
         h2('If you want maximum work in minimum time'),
         p(
@@ -1183,7 +1182,7 @@ export const fitnessPack: SampleDataPack = {
         ),
         h2('Still not sure?'),
         p(
-          'Book a free intro consultation. We will talk through your goals, watch how you move, and point you to the class that fits — then see you on the floor.'
+          'Book a free intro consultation. We will talk through your goals, watch how you move, and point you to the class that fits, then see you on the floor.'
         )
       ),
     },

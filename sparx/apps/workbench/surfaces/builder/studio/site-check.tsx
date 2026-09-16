@@ -211,12 +211,12 @@ function placeOf(finding: CheckFinding): string {
   const { scope, ownerName, seenOn } = finding.location;
   if (scope === 'frame') {
     return seenOn.length > 1
-      ? `your header & footer — on all ${String(seenOn.length)} pages`
+      ? `your header & footer: on all ${String(seenOn.length)} pages`
       : 'your header & footer';
   }
   if (scope === 'symbol') {
     return seenOn.length > 1
-      ? `the saved piece “${ownerName}” — used on ${String(seenOn.length)} pages`
+      ? `the saved piece “${ownerName}”, used on ${String(seenOn.length)} pages`
       : `the saved piece “${ownerName}”`;
   }
   if (scope === 'site') return ownerName;
@@ -515,7 +515,7 @@ export function SiteCheck({ open, onOpenChange, report, stale, running, error, o
                 {running
                   ? 'Checking every page…'
                   : 'This looks over every page, your header and footer, and everything inside ' +
-                    'your saved pieces — for links that go nowhere, words that cannot be read, ' +
+                    'your saved pieces, for links that go nowhere, words that cannot be read, ' +
                     'and pictures with nothing in them. Nothing it finds can stop you publishing.'}
               </p>
             ) : (
@@ -538,7 +538,7 @@ export function SiteCheck({ open, onOpenChange, report, stale, running, error, o
                       </AlertTitle>
                       <AlertDescription>
                         All {report.pagesChecked} page{report.pagesChecked === 1 ? '' : 's'} came
-                        back clean — every link goes somewhere, every image is described, and the
+                        back clean: every link goes somewhere, every image is described, and the
                         words can be read against what is behind them.
                       </AlertDescription>
                     </AlertContent>
@@ -717,7 +717,7 @@ function RowLabel({ finding }: { finding: CheckFinding }) {
   return (
     <span className="block truncate text-base">
       <span className="font-medium">{finding.title}</span>
-      <span> — in {placeOf(finding)}</span>
+      <span>, in {placeOf(finding)}</span>
     </span>
   );
 }
@@ -765,7 +765,7 @@ function PageWeights({
         <>
           <p className="text-base">
             Everything on a page has to be downloaded before a visitor sees it, and people on a
-            phone leave if that takes too long. Nothing here is a problem to fix — a page full of
+            phone leave if that takes too long. Nothing here is a problem to fix: a page full of
             large photographs may be exactly what you meant. It is at least this much: your styling,
             fonts and anything embedded from elsewhere are on top.
           </p>
@@ -781,13 +781,13 @@ function PageWeights({
                   <span className="text-base">
                     {formatBytes(page.totalBytes)}
                     {page.imageCount > 0
-                      ? ` — ${formatBytes(page.imageBytes)} of that is ${plural(page.imageCount, 'picture', 'pictures')}`
-                      : ' — no pictures on it'}
+                      ? `, ${formatBytes(page.imageBytes)} of that is ${plural(page.imageCount, 'picture', 'pictures')}`
+                      : ', no pictures on it'}
                   </span>
                   {page.imagesUnsized > 0 ? (
                     <span className="text-base">
-                      Plus {plural(page.imagesUnsized, 'picture', 'pictures')} we could not weigh —
-                      either stored somewhere other than your library, or filled in from your
+                      Plus {plural(page.imagesUnsized, 'picture', 'pictures')} we could not weigh.
+                      Either stored somewhere other than your library, or filled in from your
                       products when the page loads.
                     </span>
                   ) : null}
@@ -819,10 +819,10 @@ function PageWeights({
               <ul className="flex flex-col gap-1">
                 {budget.heavyImages.map((image) => (
                   <li key={image.src} className="text-base">
-                    <span className="font-semibold">{formatBytes(image.bytes)}</span> —{' '}
+                    <span className="font-semibold">{formatBytes(image.bytes)}</span>:{' '}
                     <span className="break-all">{fileNameOf(image.src)}</span>
                     {image.pageCount > 1
-                      ? `, on ${plural(image.pageCount, 'page', 'pages')} — one change fixes all of them`
+                      ? `, on ${plural(image.pageCount, 'page', 'pages')}: one change fixes all of them`
                       : ''}
                   </li>
                 ))}

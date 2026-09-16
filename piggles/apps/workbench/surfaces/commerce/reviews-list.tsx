@@ -71,11 +71,14 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 function preview(review: { title: string; body: string }): string {
-  const flat = (review.title ? `${review.title} — ${review.body}` : review.body)
+  const flat = (review.title ? `${review.title}: ${review.body}` : review.body)
     .replace(/\s+/g, ' ')
     .trim();
   return flat.length > 120 ? `${flat.slice(0, 120)}…` : flat;
 }
+
+/** What this pane opens on: the queue of reviews waiting for a decision. */
+const DEFAULT_STATUS = 'pending';
 
 export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
@@ -85,7 +88,9 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const bulkDelete = useBulkDeleteReviews();
 
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('pending');
+  // Named, because the empty state has to tell this default apart from a filter
+  // somebody chose.
+  const [status, setStatus] = useState(DEFAULT_STATUS);
   const [sort, setSort] = useState<{ key: ReviewSort; dir: ModerationSortDir }>({
     key: 'createdAt',
     dir: 'desc',
@@ -110,7 +115,17 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const rows = data?.items ?? [];
   const total = data?.total;
-  const anyFilter = search.trim() !== '' || status !== 'all';
+  // THREE STATES, NOT TWO. This pane opens on `pending` — a queue, which is the
+  // right default — and `anyFilter` counted that default as the person having
+  // filtered. So a shop with two published reviews and nothing waiting clicked
+  // Reviews, saw an empty screen, and was told "Nothing matches those filters.
+  // Try a different word, or switch the filter back to All" about a filter it
+  // had never touched, and sent looking for a control that was already off.
+  //
+  // A filter the PANE set is not a filter the person set.
+  const searching = search.trim() !== '';
+  const atDefaultQueue = !searching && status === DEFAULT_STATUS;
+  const showingEverything = !searching && status === 'all';
 
   const selectedIds = rows.filter((r) => selected.has(r.id)).map((r) => r.id);
   const allSelected = rows.length > 0 && selectedIds.length === rows.length;
@@ -266,7 +281,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
             variant="soft"
             size="sm"
             className="ml-auto"
-            title="Work the queue — read and reply to reviews one at a time. Hold Shift to open alongside, Alt for a new window"
+            title="Work the queue. Read and reply to reviews one at a time. Hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               openQueue(event);
             }}
@@ -368,7 +383,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faMessage} className="size-6" aria-hidden />}
             title="Could not load the reviews"
-            description="Something went wrong reaching the server. Nothing customers wrote has been lost — try again in a moment."
+            description="Something went wrong reaching the server. Nothing customers wrote has been lost. Try again in a moment."
             onRetry={() => {
               void refetch();
             }}
@@ -378,11 +393,19 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : rows.length === 0 ? (
           <EmptyState
             icon={<Icon glyph={faMessage} className="size-6" aria-hidden />}
-            title={anyFilter ? 'Nothing matches those filters' : 'No reviews yet'}
+            title={
+              atDefaultQueue
+                ? 'Nothing waiting for you'
+                : showingEverything
+                  ? 'No reviews yet'
+                  : 'Nothing matches those filters'
+            }
             description={
-              anyFilter
-                ? 'Try a different word, or switch the filter back to All.'
-                : 'When a customer reviews one of your products, it appears here for you to publish or hide before it goes on your website.'
+              atDefaultQueue
+                ? 'No review is waiting to be published. Switch the filter to All to see the ones already on your website.'
+                : showingEverything
+                  ? 'When a customer reviews one of your products, it appears here for you to publish or hide before it goes on your website.'
+                  : 'Try a different word, or switch the filter back to All.'
             }
           />
         ) : (

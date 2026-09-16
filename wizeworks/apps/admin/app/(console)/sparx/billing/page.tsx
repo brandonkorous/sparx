@@ -55,7 +55,7 @@ export default async function BillingPage() {
     <Stack gap={6}>
       <PageHeader
         title="Billing operations"
-        description="Cross-tenant platform billing — failed payments, coupons, and the Stripe event feed. Refunds and enterprise invoices live on each tenant’s billing tab."
+        description="Cross-tenant platform billing: failed payments, coupons, and the Stripe event feed. Refunds and enterprise invoices live on each tenant’s billing tab."
       />
 
       <Card>
@@ -74,7 +74,7 @@ export default async function BillingPage() {
           <Heading level={3}>Coupons</Heading>
           {coupons.length === 0 ? (
             <Text variant="muted">
-              No coupons on the platform account{canAct ? ' yet — create one below.' : '.'}
+              No coupons on the platform account{canAct ? ' yet: create one below.' : '.'}
             </Text>
           ) : (
             <Table>
@@ -145,7 +145,7 @@ export default async function BillingPage() {
           {codes.length === 0 ? (
             <Text variant="muted">
               No promotion codes yet
-              {canAct ? ' — create one below to hand out to a tenant.' : '.'}
+              {canAct ? ': create one below to hand out to a tenant.' : '.'}
             </Text>
           ) : (
             <Table>
@@ -224,8 +224,8 @@ export default async function BillingPage() {
           <Heading level={3}>Recent Stripe events</Heading>
           {events.length === 0 ? (
             <Text variant="muted">
-              No recent platform events — Stripe isn’t configured yet, or nothing has happened in
-              the last 30 days.
+              No recent platform events: Stripe isn’t configured yet, or nothing has happened in the
+              last 30 days.
             </Text>
           ) : (
             <Stack gap={2}>

@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-yoga-studio',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Yoga Studio',
   summary:
-    'A warm, grounded yoga-studio site — a terracotta-and-clay palette over a cream ground, a soft sage accent and humanist type. Installs a live class schedule with capacity: vinyasa, yin, hot, restorative, foundations and prenatal, each a bookable class with a drop-in price, plus four teachers and two studio rooms (including a hot room) as bookable resources with weekly hours. Ships as "Prana", an all-levels studio where you belong wherever you’re starting.',
+    'A warm, grounded yoga-studio site: a terracotta-and-clay palette over a cream ground, a soft sage accent and humanist type. Installs a live class schedule with capacity: vinyasa, yin, hot, restorative, foundations and prenatal, each a bookable class with a drop-in price, plus four teachers and two studio rooms (including a hot room) as bookable resources with weekly hours. Ships as "Prana", an all-levels studio where you belong wherever you’re starting.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

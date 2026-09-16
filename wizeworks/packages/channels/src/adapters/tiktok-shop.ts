@@ -104,9 +104,7 @@ export class TikTokShopAdapter implements ChannelAdapter {
     });
     const shop = shopList.shops[0];
     if (!shop) {
-      throw new Error(
-        'TikTok authorization returned no shops — the seller has no authorized shop.'
-      );
+      throw new Error('TikTok authorization returned no shops: the seller has no authorized shop.');
     }
 
     return {
@@ -453,7 +451,7 @@ export class TikTokShopAdapter implements ChannelAdapter {
   private requireCipher(auth: ChannelAuth): string {
     const shopCipher = auth.params?.shopCipher;
     if (!shopCipher) {
-      throw new Error('TikTok connection is missing its shop cipher — reconnect the shop.');
+      throw new Error('TikTok connection is missing its shop cipher: reconnect the shop.');
     }
     return shopCipher;
   }
@@ -471,7 +469,7 @@ export class TikTokShopAdapter implements ChannelAdapter {
     });
     const warehouseId = list.warehouses[0]?.id;
     if (!warehouseId) {
-      throw new Error('TikTok shop has no warehouse — a fulfillment warehouse is required.');
+      throw new Error('TikTok shop has no warehouse: a fulfillment warehouse is required.');
     }
     return warehouseId;
   }

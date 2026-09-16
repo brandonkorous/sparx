@@ -8,7 +8,7 @@
 //
 //   scorecards    on time, in full, at the agreed price, undamaged
 //   late orders   what is overdue right now, worst first
-//   price breaks  "£4.10 each, or £3.60 if you take fifty"
+//   price breaks  "$4.10 each, or $3.60 if you take fifty"
 //
 // ── The rule that shapes every type in here ───────────────────────────────
 //

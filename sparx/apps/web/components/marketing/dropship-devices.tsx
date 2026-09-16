@@ -25,7 +25,7 @@ export function DropshipRouting() {
   const stages = [
     {
       title: 'An order comes in',
-      body: 'A customer checks out as normal — through your store or the API. The order can mix dropship lines with stock you hold; sparx sorts that out next.',
+      body: 'A customer checks out as normal: through your store or the API. The order can mix dropship lines with stock you hold; sparx sorts that out next.',
     },
     {
       title: 'Split by supplier',
@@ -33,7 +33,7 @@ export function DropshipRouting() {
     },
     {
       title: 'Routed to each supplier',
-      body: 'Every group is submitted automatically through its supplier adapter — idempotent on the order id, so a retry never double-orders. A failure holds and alerts you, never drops.',
+      body: 'Every group is submitted automatically through its supplier adapter: idempotent on the order id, so a retry never double-orders. A failure holds and alerts you, never drops.',
     },
     {
       title: 'Tracking flows back',
@@ -45,7 +45,7 @@ export function DropshipRouting() {
       <SectionHeader
         accent={M.color}
         headline="Orders route themselves"
-        lede="This is the part you stop doing by hand. When an order lands, sparx splits it by supplier, submits each group, and pulls tracking back to the customer — automatically, whether one supplier fills it or three."
+        lede="This is the part you stop doing by hand. When an order lands, sparx splits it by supplier, submits each group, and pulls tracking back to the customer: automatically, whether one supplier fills it or three."
       />
       <div className="mkt-pipeline bg-base-100 mt-13">
         {stages.map((s, i) => (
@@ -85,7 +85,7 @@ export function DropshipInventory() {
     },
     {
       title: 'Made-to-order is unlimited',
-      body: 'Print-on-demand suppliers have no finite stock, so there is nothing to count — those products never go out of stock for a sync reason.',
+      body: 'Print-on-demand suppliers have no finite stock, so there is nothing to count. Those products never go out of stock for a sync reason.',
     },
   ];
   return (
@@ -95,9 +95,9 @@ export function DropshipInventory() {
         headline={<>Never sell what the supplier can&rsquo;t ship</>}
         lede={
           <>
-            Stock you don&rsquo;t hold is stock you can&rsquo;t see &mdash; unless it syncs. sparx
-            pulls live availability from each supplier, so a sold-out item comes off the shelf
-            before a customer can order it, and a back-in-stock combo returns on its own.
+            Stock you don&rsquo;t hold is stock you can&rsquo;t see, unless it syncs. sparx pulls
+            live availability from each supplier, so a sold-out item comes off the shelf before a
+            customer can order it, and a back-in-stock combo returns on its own.
           </>
         }
       />
@@ -130,7 +130,7 @@ export function DropshipTracking() {
           <>
             When the supplier ships, sparx forwards the tracking to your customer in a branded email
             from your own domain, and moves the order through its status. They never see the
-            supplier&rsquo;s name &mdash; to them, it&rsquo;s your store, start to finish.
+            supplier&rsquo;s name: to them, it&rsquo;s your store, start to finish.
           </>
         }
       />

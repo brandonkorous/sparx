@@ -260,27 +260,36 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
       // named separately so a total loss reads truthfully.
       const fullyDamaged = toBook.filter((row) => row.received === 0 && row.damaged > 0);
       const partlyDamaged = toBook.filter((row) => row.received > 0 && row.damaged > 0);
+      // Counted in WORDS, not `n line(s)`. The helper that does it is
+      // imported at the top of this file and used twenty lines below, and
+      // these four were the ones it never reached — so a delivery two metres
+      // short told a dressmaker "1 line(s) are short" (issue 495). The verb
+      // has to agree too, which is why the count is asked twice.
       const notes: string[] = [];
       if (shorts.length > 0) {
-        notes.push(`${String(shorts.length)} line(s) are short of what was outstanding`);
+        notes.push(
+          `${plural(shorts.length, 'line', 'lines')} ${shorts.length === 1 ? 'is' : 'are'} short of what was outstanding`
+        );
       }
       if (overs.length > 0) {
-        notes.push(`${String(overs.length)} line(s) have more than was expected`);
+        notes.push(
+          `${plural(overs.length, 'line', 'lines')} ${overs.length === 1 ? 'has' : 'have'} more than was expected`
+        );
       }
       if (fullyDamaged.length > 0) {
         const units = fullyDamaged.reduce((sum, row) => sum + row.damaged, 0);
         notes.push(
-          `${String(units)} unit(s) across ${String(fullyDamaged.length)} line(s) arrived fully damaged — nothing received against the order; recorded and written off, and the order stays open for them`
+          `${plural(units, 'unit', 'units')} across ${plural(fullyDamaged.length, 'line', 'lines')} arrived fully damaged. Nothing received against the order; recorded and written off, and the order stays open for them`
         );
       }
       if (partlyDamaged.length > 0) {
         notes.push(
-          `${String(partlyDamaged.length)} line(s) had some damaged units — recorded and written off, not added to sellable stock or counted against the order`
+          `${plural(partlyDamaged.length, 'line', 'lines')} had some damaged units: recorded and written off, not added to sellable stock or counted against the order`
         );
       }
       const ok = await confirm({
         title: 'Book this delivery as counted?',
-        description: `${notes.join('; ')}. Booking moves your stock numbers and cannot be undone by editing — a later correction is a stock count. Post it exactly as you have entered it?`,
+        description: `${notes.join('; ')}. Booking moves your stock numbers and cannot be undone by editing: a later correction is a stock count. Post it exactly as you have entered it?`,
         confirmLabel: 'Book it in',
         cancelLabel: 'Go back',
         color: 'warning',
@@ -426,7 +435,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
                 <AlertTitle>Could not load that order</AlertTitle>
                 <AlertDescription>
                   {isNotFound(poDetail.error)
-                    ? 'The order could not be found. It may have been cancelled.'
+                    ? 'The order could not be found. It may have been canceled.'
                     : 'This is a problem reaching the server. Try again.'}
                 </AlertDescription>
               </AlertContent>
@@ -453,7 +462,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
 
               <FormSection
                 title="What turned up"
-                description="Enter how many good units arrived for each line. Put anything that turned up damaged in the Damaged box — it is recorded and written off, so it never joins your sellable stock and the order stays open for it."
+                description="Enter how many good units arrived for each line. Put anything that turned up damaged in the Damaged box. It is recorded and written off, so it never joins your sellable stock and the order stays open for it."
                 action={
                   <Button size="sm" variant="outline" color="neutral" onClick={fillOutstanding}>
                     Fill in what&apos;s outstanding
@@ -564,29 +573,27 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
                   </Text>
                 ) : totalDamaged > 0 ? (
                   <Text className="text-sm">
-                    No good units to add — booking a total loss of{' '}
+                    No good units to add. This books a total loss of{' '}
                     <span className="font-semibold tabular-nums">{String(totalDamaged)}</span>{' '}
                     damaged unit{totalDamaged === 1 ? '' : 's'} across {String(toBook.length)} line
                     {toBook.length === 1 ? '' : 's'}. Nothing is added to stock and the order stays
                     open for these units.
                   </Text>
                 ) : (
-                  <Text className="text-sm">
-                    Nothing to book in yet — enter what arrived above.
-                  </Text>
+                  <Text className="text-sm">Nothing to book in yet. Enter what arrived above.</Text>
                 )}
 
                 <Text className="text-sm">
                   <span className="font-medium">Damaged units.</span> Count anything that arrived
                   broken or unsellable. Your stock records it turning up and then being written off,
-                  so it is never added to what you can sell — and because the supplier still owes
-                  you those units, the order stays open until they are replaced.
+                  so it is never added to what you can sell, and because the supplier still owes you
+                  those units, the order stays open until they are replaced.
                 </Text>
 
                 <Text className="text-sm">
                   <span className="font-medium">Batch / lot number.</span> If this delivery is a
-                  batch you need to trace later — something with an expiry date, or that could be
-                  recalled — give it a code here so you can find these exact units again. Leave it
+                  batch you need to trace later (something with an expiry date, or that could be
+                  recalled), give it a code here so you can find these exact units again. Leave it
                   blank for anything ordinary.
                 </Text>
               </FormSection>
@@ -596,7 +603,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
                   goods it is routinely a fifth of what a unit really costs. */}
               <FormSection
                 title="What getting it here cost"
-                description="Shipping, import duty, customs fees — anything you paid on top of the goods. It is spread across the lines above so each item's real cost includes its share. Leave it empty if there was nothing, and add the bill later if it has not arrived yet."
+                description="Freight, import duty, customs fees: anything you paid on top of the goods. It is spread across the lines above so each item's real cost includes its share. Leave it empty if there was nothing, and add the bill later if it has not arrived yet."
                 action={
                   <Button
                     size="sm"
@@ -763,8 +770,8 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
  * The three-line story of a delivery's cost: goods → getting them here → total.
  *
  * This is the feature in one card. A business looks at a supplier invoice, sees
- * £4.00 a unit and prices at £6.00, and never learns that the shipping and duty
- * made it £4.62 — so a line they believe carries 33% margin carries 23%. Adding
+ * $4.00 a unit and prices at $6.00, and never learns that the freight and duty
+ * made it $4.62 — so a line they believe carries 33% margin carries 23%. Adding
  * up the extra costs and dividing them across the things they arrived with is
  * arithmetic nobody does by hand, which is exactly why it does not get done.
  *
@@ -875,7 +882,7 @@ function LandedCostSection({ receipt }: { receipt: GoodsReceiptDetail }) {
           </Text>
           <Text className="text-sm">
             {receipt.chargeTotalCents > 0
-              ? `Getting them here — ${String(sharePercent)}% of the total`
+              ? `Getting them here: ${String(sharePercent)}% of the total`
               : 'Nothing recorded for getting them here'}
           </Text>
         </div>
@@ -893,7 +900,7 @@ function LandedCostSection({ receipt }: { receipt: GoodsReceiptDetail }) {
             <AlertTitle>Billed in {receipt.currency}</AlertTitle>
             <AlertDescription>
               Converted at {receipt.fxRate} on the day it arrived, so everything above is in{' '}
-              {receipt.baseCurrency}. That rate is fixed to this delivery — a later rate change does
+              {receipt.baseCurrency}. That rate is fixed to this delivery: a later rate change does
               not alter what these goods cost you.
             </AlertDescription>
           </AlertContent>
@@ -950,9 +957,26 @@ function LandedCostSection({ receipt }: { receipt: GoodsReceiptDetail }) {
             ))}
           </tbody>
         </Table>
-      ) : adding ? null : (
+      ) : adding ? null : receipt.chargeTotalCents > 0 ? (
+        /* Nothing was added HERE, but something did land — this delivery's share
+           of the freight on the order, which the summary above is already
+           showing. Saying "nothing has been recorded" over a printed figure is
+           the same contradiction as issue 496, on the other screen. */
         <Text className="text-sm">
-          Nothing has been recorded on top of the supplier&apos;s invoice. If a shipping or customs
+          {/* ONE template literal, not JSX text around an expression. The JSX
+              form rendered "The $1.25above is its share": the space that starts
+              the text after the expression does not survive compilation inside a
+              <Text>, and prettier reformats an explicit {' '} straight back out
+              again, so the fix does not stay fixed. A literal string has literal
+              spaces and neither tool can take them. */}
+          {`Nothing has been recorded against this delivery on its own. The ${formatCents(
+            receipt.chargeTotalCents,
+            receipt.currency
+          )} above is its share of the freight on the order, spread across the items as they arrived. If a customs or duty bill turns up for this delivery, add it here and every item's cost is corrected.`}
+        </Text>
+      ) : (
+        <Text className="text-sm">
+          Nothing has been recorded on top of the supplier&apos;s invoice. If a freight or customs
           bill turns up for this delivery, add it here and every item&apos;s cost is corrected.
         </Text>
       )}
@@ -1208,14 +1232,30 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                       <td className="hidden text-right tabular-nums @md:table-cell">
                         {formatCents(line.unitCostCents, data.currency)}
                       </td>
+                      {/* PER UNIT, because the columns either side of it are per
+                          unit and a table is read across. This held the line's
+                          whole share, so 58 buckles read "$3.60 invoiced, plus
+                          $14.00, really cost $3.84 each" — three numbers that
+                          cannot be added (issue 502). The line's total is still
+                          said underneath whenever more than one unit landed. */}
                       <td className="hidden text-right tabular-nums @lg:table-cell">
-                        {line.allocatedChargeCents > 0 ? (
-                          <span className="inline-flex items-center justify-end gap-1.5">
-                            {formatCents(line.allocatedChargeCents, data.baseCurrency)}
-                            {share !== null && share > 0 ? (
-                              <Badge color={chargeShareTone(share)} variant="soft" size="sm">
-                                {share}%
-                              </Badge>
+                        {line.allocatedChargeCents > 0 && line.quantityReceived > 0 ? (
+                          <span className="flex flex-col items-end gap-0.5">
+                            <span className="inline-flex items-center gap-1.5">
+                              {formatCents(
+                                Math.round(line.allocatedChargeCents / line.quantityReceived),
+                                data.baseCurrency
+                              )}
+                              {share !== null && share > 0 ? (
+                                <Badge color={chargeShareTone(share)} variant="soft" size="sm">
+                                  {share}%
+                                </Badge>
+                              ) : null}
+                            </span>
+                            {line.quantityReceived > 1 ? (
+                              <span className="text-sm">
+                                {formatCents(line.allocatedChargeCents, data.baseCurrency)} in all
+                              </span>
                             ) : null}
                           </span>
                         ) : (
@@ -1237,8 +1277,8 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             </Table>
             <Text className="text-sm">
               {data.quantityReceived} unit{data.quantityReceived === 1 ? '' : 's'} in total were
-              added to your stock. This receipt is a permanent record — a correction is a later
-              stock count, not a change here.
+              added to your stock. This receipt is a permanent record: a correction is a later stock
+              count, not a change here.
             </Text>
           </FormSection>
 

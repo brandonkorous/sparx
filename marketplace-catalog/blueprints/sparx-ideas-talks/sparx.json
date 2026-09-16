@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "sparx-ideas-talks",
   "name": "Ideas & Talks",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "tagline": "A talks-hub template for a nonprofit that shares ideas and asks for support.",
-  "description": "A video-forward home for an ideas-and-talks nonprofit — a big idea-statement hero over a grid of talk cards, a themes browse, a live journal of essays, and a bespoke bylined talk page, in a clean warm-white one-coral theme. Modelled on the talks-hub archetype; shipped as The Commons. Ships a light membership store (an annual membership, an anthology, a notebook) to demonstrate content + commerce together.",
+  "description": "A video-forward home for an ideas-and-talks nonprofit: a big idea-statement hero over a grid of talk cards, a themes browse, a live journal of essays, and a bespoke bylined talk page, in a clean warm-white one-coral theme. Modelled on the talks-hub archetype; shipped as The Commons. Ships a light membership store (an annual membership, an anthology, a notebook) to demonstrate content + commerce together.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "content",
@@ -27,7 +27,7 @@
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "Ideas & Talks — home page preview"
+      "alt": "Ideas & Talks: home page preview"
     }
   ],
   "author": {

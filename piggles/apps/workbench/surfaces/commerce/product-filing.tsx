@@ -142,7 +142,7 @@ function CategorySection({
       title="Categories"
       // The whole difference between the two words, said once, in the place
       // where someone is about to have to choose between them.
-      description="The part of your website's menu this product sits in — like an aisle in a shop. Pick as many as fit; most products belong in one."
+      description="The part of your website's menu this product sits in, like an aisle in a shop. Pick as many as fit; most products belong in one."
     >
       {tree.isError ? (
         <LoadFailure
@@ -171,7 +171,7 @@ function CategorySection({
       ) : (
         <>
           <ChosenSummary
-            empty="Not filed in any category yet — shoppers browsing your menu will not come across it."
+            empty="Not filed in any category yet: shoppers browsing your menu will not come across it."
             label="Filed in"
             items={chosen.map((category) => ({
               id: category.id,
@@ -280,11 +280,11 @@ function CollectionSection({
   return (
     <FormSection
       title="Collections"
-      description="A themed set of products you show together — a summer sale, a gift guide, this month's arrivals. Unlike a category, a collection is not part of your menu: it is a group you can put wherever you like."
+      description="A themed set of products you show together: a summer sale, a gift guide, this month's arrivals. Unlike a category, a group is not part of your menu: you can put it wherever you like."
     >
       {collections.isError ? (
         <LoadFailure
-          title="Could not load your collections"
+          title="Could not load your groups"
           detail={productErrorMessage(
             collections.error,
             'The list could not be read just now. Nothing about this product has changed.'
@@ -294,12 +294,12 @@ function CollectionSection({
           }}
         />
       ) : collections.isPending ? (
-        <InlineWaiting label="Loading your collections…" />
+        <InlineWaiting label="Loading your groups…" />
       ) : (all ?? []).length === 0 ? (
         <Nothing
           icon={<Icon glyph={faLayerGroup} className="size-5" aria-hidden />}
-          line="You have not made any collections yet. They are how you show a themed group of products on your website."
-          actionLabel="Set up collections"
+          line="You have not made any groups yet. They are how you show a themed set of products on your website."
+          actionLabel="Set up groups of products"
           onAction={(event) => {
             ctx.open('commerce.collections.list', undefined, {
               target: event.shiftKey ? 'beside' : 'tab',
@@ -309,7 +309,7 @@ function CollectionSection({
       ) : (
         <>
           <ChosenSummary
-            empty="Not in any collection you picked."
+            empty="Not in any group you picked."
             label="You put it in"
             items={chosen.map((collection) => ({ id: collection.id, label: collection.name }))}
             onRemove={(id) => {
@@ -323,8 +323,8 @@ function CollectionSection({
             <div className="border-base-300 flex flex-col gap-2 rounded border p-3">
               <Heading level={3} className="text-base font-semibold">
                 {automatic.length === 1
-                  ? 'It also matched a collection on its own'
-                  : 'It also matched some collections on its own'}
+                  ? 'It also matched a group on its own'
+                  : 'It also matched some groups on its own'}
               </Heading>
               {/* Written out in full per plurality rather than stitched from
                   fragments — interpolating "fill"/"fills" around a shared tail
@@ -332,8 +332,8 @@ function CollectionSection({
                   fill itself". */}
               <Text>
                 {automatic.length === 1
-                  ? 'This collection fills itself from conditions you wrote, and this product fits them. You cannot take it out from here — either change what that collection looks for, or change the product so it no longer fits.'
-                  : 'These collections fill themselves from conditions you wrote, and this product fits them. You cannot take it out from here — either change what those collections look for, or change the product so it no longer fits.'}
+                  ? 'This group fills itself from conditions you wrote, and this product fits them. You cannot take it out from here. Either change what that group looks for, or change the product so it no longer fits.'
+                  : 'These groups fill themselves from conditions you wrote, and this product fits them. You cannot take it out from here. Either change what those groups look for, or change the product so it no longer fits.'}
               </Text>
               <ul className="flex flex-col gap-2">
                 {automatic.map((collection) => (
@@ -358,7 +358,7 @@ function CollectionSection({
                     });
                   }}
                 >
-                  Open collections
+                  Open groups of products
                 </Button>
               </div>
             </div>
@@ -367,14 +367,14 @@ function CollectionSection({
           {unknownIds.length > 0 ? (
             <Text>
               {unknownIds.length === 1
-                ? 'This product is also in one collection that is no longer in your list — most likely it was deleted. Saving here leaves it exactly as it is.'
-                : `This product is also in ${String(unknownIds.length)} collections that are no longer in your list — most likely they were deleted. Saving here leaves them exactly as they are.`}
+                ? 'This product is also in one group that is no longer in your list. Most likely it was deleted. Saving here leaves it exactly as it is.'
+                : `This product is also in ${String(unknownIds.length)} collections that are no longer in your list. Most likely they were deleted. Saving here leaves them exactly as they are.`}
             </Text>
           ) : null}
 
           <Picker
-            label="Search collections"
-            placeholder="Search collections…"
+            label="Search groups"
+            placeholder="Search groups…"
             value={search}
             onValueChange={setSearch}
             total={(all ?? []).length}

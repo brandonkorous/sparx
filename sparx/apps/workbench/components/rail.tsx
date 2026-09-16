@@ -39,7 +39,7 @@
 // arbitrary-property utility (never an inline style), and the content padding
 // tightens with it so the icons sit in a column rather than a corridor.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { LayoutGrid, PanelLeftIcon, Trash2, X } from 'lucide-react';
 import {
   Button,
@@ -133,6 +133,26 @@ export function Rail({ browsing, siteKey, expanded, onBrowse }: RailProps) {
   const reachable = useReachableModules();
   const known = useKnownModules();
 
+  // ── THE RAIL SCROLLS, AND WHAT IT MARKS CAN BE BELOW THE FOLD ─────────────
+  //
+  // A pinned panel REOPENS where it was left (workbench-shell restores
+  // `state.module`), and the row for that module is marked `aria-current`
+  // while the scroller starts at zero. On a laptop the lower half of the rail
+  // is clipped, so the mark can sit hundreds of pixels below the fold — and a
+  // rail whose selection you cannot see is indistinguishable from a rail with
+  // nothing selected.
+  //
+  // `block: 'nearest'` moves the minimum distance and does nothing when the row
+  // is already in view, so this never yanks a rail somebody has scrolled.
+  const contentRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    // Also keyed on the module count: `browsing` is restored from storage on
+    // mount, which can land BEFORE the rail has any rows to find.
+    contentRef.current
+      ?.querySelector('[aria-current="true"]')
+      ?.scrollIntoView({ block: 'nearest' });
+  }, [browsing, visibleNav.length]);
+
   const resolveVisible = (actionId: string): SurfaceDefinition | null => {
     const definition = getSurface(actionId);
     if (!definition || definition.listed === false) return null;
@@ -204,7 +224,7 @@ export function Rail({ browsing, siteKey, expanded, onBrowse }: RailProps) {
     const ok = await confirm({
       title: `Delete the "${workspace.name}" workspace?`,
       description:
-        'Only the saved arrangement is deleted — nothing that was open in it is touched. There is no undo.',
+        'Only the saved arrangement is deleted. Nothing that was open in it is touched. There is no undo.',
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -219,7 +239,7 @@ export function Rail({ browsing, siteKey, expanded, onBrowse }: RailProps) {
     const ok = await confirm({
       title: 'Close every panel and start empty?',
       description: controller.hasUnsavedWork()
-        ? 'Something here has unsaved edits — starting empty discards them. There is no undo.'
+        ? 'Something here has unsaved edits: starting empty discards them. There is no undo.'
         : 'Every open panel closes and the workbench reloads empty. Your saved workspaces are not affected.',
       confirmLabel: 'Start empty',
       cancelLabel: 'Keep my panels',
@@ -254,7 +274,7 @@ export function Rail({ browsing, siteKey, expanded, onBrowse }: RailProps) {
       >
         {/* Padding tracks the width: the stock 0.75rem would leave a 48px rail
             with 24px of usable row. */}
-        <SidebarContent className={expanded ? 'pt-2' : 'px-1.5 pt-2'}>
+        <SidebarContent ref={contentRef} className={expanded ? 'pt-2' : 'px-1.5 pt-2'}>
           <SidebarGroup>
             {visibleNav.map((entry) => (
               <ModuleScope key={entry.module} module={entry.module}>
@@ -570,8 +590,8 @@ function SaveWorkspaceDialog({
       <DialogContent className="max-w-sm">
         <DialogTitle>Save this as a workspace</DialogTitle>
         <DialogDescription>
-          Everything open right now — panes, splits, sizes — saved as an arrangement you can come
-          back to.
+          Everything open right now (panes, splits, sizes) saved as an arrangement you can come back
+          to.
         </DialogDescription>
         <Field className="py-2">
           <FieldLabel>Name</FieldLabel>

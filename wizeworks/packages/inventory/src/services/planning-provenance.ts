@@ -289,7 +289,7 @@ function describeInputs(params: {
       key: 'demand',
       label: 'How fast it sells',
       value: `${v.forecastPerDay} a day`,
-      source: `Measured over the last ${windowLabel(v.forecastBasis)} — ${v.units90} sold in 90 days across ${v.daysWithDemand} days`,
+      source: `Measured over the last ${windowLabel(v.forecastBasis)}: ${v.units90} sold in 90 days across ${v.daysWithDemand} days`,
       confidence: v.historyDays < 30 ? 'thin' : 'measured',
       ...(v.historyDays < 30
         ? {
@@ -364,7 +364,7 @@ function describeInputs(params: {
       }`,
       confidence: params.sampleCount >= MIN_RELIABLE_SAMPLES * 2 ? 'measured' : 'thin',
       ...(params.sampleCount < MIN_RELIABLE_SAMPLES * 2
-        ? { caveat: `${params.sampleCount} deliveries is a small sample — expect this to settle.` }
+        ? { caveat: `${params.sampleCount} deliveries is a small sample: expect this to settle.` }
         : {}),
     });
   } else if (params.leadTimeSource === 'default') {
@@ -384,7 +384,7 @@ function describeInputs(params: {
       value: `${round2(days)} days`,
       source:
         params.leadTimeSource === 'supplier'
-          ? `${params.supplierName ?? 'The supplier'} states this — it has not been checked against real deliveries`
+          ? `${params.supplierName ?? 'The supplier'} states this: it has not been checked against real deliveries`
           : 'Set on this stock line',
       confidence: 'assumed',
       caveat: 'A stated lead time carries no spread, so the cushion covers demand only.',
@@ -398,7 +398,7 @@ function describeInputs(params: {
     value: serviceLevelLabel(params.serviceLevel),
     source:
       params.safetyStockOverride !== null
-        ? 'Overridden — you set the cushion by hand'
+        ? 'Overridden: you set the cushion by hand'
         : 'Your planning settings',
     confidence: params.safetyStockOverride !== null ? 'assumed' : 'measured',
     ...(params.safetyStockOverride !== null
@@ -474,13 +474,11 @@ function improvements(inputs: PlanningInput[]): string[] {
   for (const i of inputs) {
     if (i.confidence === 'measured') continue;
     if (i.key === 'demand' && i.confidence === 'missing') {
-      out.push(
-        'Nothing has measured this item yet — it will be picked up on the next nightly run.'
-      );
+      out.push('Nothing has measured this item yet. It will be picked up on the next nightly run.');
     }
     if (i.key === 'lead_time' && i.confidence === 'assumed') {
       out.push(
-        'Link a supplier and record deliveries against purchase orders — a measured lead time is the single biggest improvement to this number.'
+        'Link a supplier and record deliveries against purchase orders: a measured lead time is the single biggest improvement to this number.'
       );
     }
     if (i.key === 'seasonality' && i.confidence === 'missing') {

@@ -59,7 +59,7 @@ function PriceCard() {
                 one sentence on this page a competitor cannot copy without
                 restructuring their business. */}
         <p className="mt-6 text-base">
-          Your bill changes when the <em>business</em> needs more room — more people, more storage,
+          Your bill changes when the <em>business</em> needs more room: more people, more storage,
           more email going out. Never because you switched Bookings on.
         </p>
 
@@ -84,7 +84,7 @@ export function Pricing() {
             How much is your time worth?
           </h2>
           <p className="mt-6 max-w-[46ch] text-xl font-semibold">
-            Then why is so much of it spent joining up your own information &mdash; checking one app
+            Then why is so much of it spent joining up your own information, checking one app
             against another to work out what your business actually did this week?
           </p>
           <p className="mt-5 max-w-[46ch] text-lg">

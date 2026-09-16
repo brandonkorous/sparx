@@ -269,11 +269,7 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
               }}
             >
               {SIZES.map((s) => (
-                <ToggleGroupItem
-                  key={s.value}
-                  value={s.value}
-                  aria-label={`${s.label} — ${s.hint}`}
-                >
+                <ToggleGroupItem key={s.value} value={s.value} aria-label={`${s.label}: ${s.hint}`}>
                   {s.label}
                 </ToggleGroupItem>
               ))}
@@ -289,7 +285,7 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
             >
               {PRESETS.map((p) => (
                 <option key={p.value} value={p.value}>
-                  {p.label} — {p.hint}
+                  {p.label}: {p.hint}
                 </option>
               ))}
             </NativeSelect>
@@ -334,7 +330,7 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               search.trim()
                 ? 'Try part of a code, a SKU, or a product name.'
-                : 'Items need a barcode before a label can be printed. sparx can create one for anything that arrived without a manufacturer code — a real UPC that any scanner reads, in the range reserved for in-house use.'
+                : 'Items need a barcode before a label can be printed. sparx can create one for anything that arrived without a manufacturer code: a real UPC that any scanner reads, in the range reserved for in-house use.'
             }
             actions={
               search.trim() ? undefined : (
@@ -353,7 +349,7 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : (
           <div className="flex flex-col gap-3">
             <Text className="text-sm print:hidden">
-              {plural(rows.length, 'label', 'labels')} at {sizeSpec.label.toLowerCase()} size —{' '}
+              {plural(rows.length, 'label', 'labels')} at {sizeSpec.label.toLowerCase()} size:{' '}
               {sizeSpec.hint.toLowerCase()}. What you see here is exactly what prints.
             </Text>
 
@@ -378,7 +374,7 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
             </PrintSheet>
 
             <Text className="text-sm print:hidden">
-              Set your printer to actual size — scaling a barcode to fit the page narrows the bars
+              Set your printer to actual size: scaling a barcode to fit the page narrows the bars
               and is the commonest reason a printed label will not scan.
             </Text>
           </div>
@@ -405,7 +401,7 @@ export function GenerateBarcodesButton({
 }) {
   const generate = useGenerateBarcodes();
   return (
-    <Tooltip content="Creates a real UPC for anything without one — any scanner reads it, and it can never clash with a manufacturer's code">
+    <Tooltip content="Creates a real UPC for anything without one: any scanner reads it, and it can never clash with a manufacturer's code">
       <Button
         color="module-inventory"
         size="sm"

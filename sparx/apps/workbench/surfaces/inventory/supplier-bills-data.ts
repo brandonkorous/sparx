@@ -34,13 +34,17 @@ export type MatchVerdict =
 
 export interface MatchResult {
   verdict: MatchVerdict;
-  /** Billed minus received. Null when there is nothing to compare against. */
+  /** Billed minus what was LEFT to invoice — what arrived, less whatever other
+   *  live invoices already charged for. Null when there is nothing to compare
+   *  against. */
   quantityVarianceUnits: number | null;
   /** Billed minus agreed, per unit. */
   priceVarianceCents: number | null;
-  /** What the variance is worth. Positive = the bill is higher than the goods
-   *  justify. */
+  /** The money wrongly charged on this line. Positive = the bill is higher than
+   *  the goods justify. A shortfall contributes nothing to it. */
   amountVarianceCents: number | null;
+  /** What the units that arrived and are on no invoice yet are worth. */
+  uninvoicedCents: number | null;
   needsReview: boolean;
 }
 
@@ -59,6 +63,10 @@ export interface SupplierBillLine {
   orderedQuantity: number | null;
   orderedUnitCostCents: number | null;
   receivedQuantity: number | null;
+  /** Units of this order line already charged for on other live invoices.
+   *  Without it a row reading "arrived 40, billed 2, agrees" cannot explain
+   *  itself. */
+  alreadyBilledQuantity: number | null;
   match: MatchResult;
 }
 
@@ -67,7 +75,11 @@ export interface BillMatch {
   ok: boolean | null;
   linesMatched: number;
   linesFlagged: number;
+  /** The money riding on THIS invoice: the flagged lines only. */
   totalVarianceCents: number | null;
+  /** What the goods that arrived and are on no invoice yet are worth. Never
+   *  part of the figure above — an invoice nobody has sent is not at stake. */
+  uninvoicedCents: number | null;
   /** Lines billed that were never ordered. Not a variance to net off. */
   unorderedLines: number;
 }
@@ -86,7 +98,7 @@ export interface SupplierBill {
   dueAt: string | null;
   subtotalCents: number;
   taxCents: number;
-  shippingCents: number;
+  freightCents: number;
   totalCents: number;
   /** Null until paid — not 0. */
   paidCents: number | null;
@@ -171,7 +183,7 @@ export interface SupplierBillInput {
   dueAt?: string;
   currency?: string;
   taxCents?: number;
-  shippingCents?: number;
+  freightCents?: number;
   notes?: string;
   lines: {
     purchaseOrderLineId?: string;
@@ -227,6 +239,19 @@ export function useDisputeSupplierBill(id: string) {
   return useMutation({
     mutationFn: (note: string) =>
       api.post<SupplierBillDetail>(`/v1/inventory/supplier-bills/${id}/dispute`, { note }),
+    onSuccess: invalidate,
+  });
+}
+
+/** The way back out of a query. Without it, querying an invoice was a one-way
+ *  door whose only other exit was cancelling the invoice altogether: approve
+ *  and pay both refuse while it is disputed. Settling returns it to a draft, so
+ *  the figures can be corrected off whatever the supplier sent back. */
+export function useSettleBillQuery(id: string) {
+  const invalidate = useInvalidateBills();
+  return useMutation({
+    mutationFn: () =>
+      api.post<SupplierBillDetail>(`/v1/inventory/supplier-bills/${id}/settle-query`, {}),
     onSuccess: invalidate,
   });
 }
@@ -296,8 +321,11 @@ export function verdictLabel(verdict: MatchVerdict): string {
       return 'Billed but nothing arrived';
     case 'over_billed':
       return 'Billed for more than arrived';
+    // NOT "billed for less than arrived", which reads as an accusation. On an
+    // order that turns up in more than one drop this is simply where the
+    // paperwork is: these units are here and their invoice has not come yet.
     case 'under_billed':
-      return 'Billed for less than arrived';
+      return 'Rest still to be invoiced';
     case 'price_higher':
       return 'Charged more than agreed';
     case 'price_lower':
@@ -319,8 +347,9 @@ export function verdictTone(verdict: MatchVerdict): Tone {
     case 'over_billed':
     case 'price_higher':
       return 'warning';
-    // In the tenant's favour — still worth a look, because an under-bill today
-    // is a correction next month, but it is not an alarm.
+    // Neither is an alarm. `price_lower` is worth a look, because a supplier who
+    // undercharges today issues a correction next month; `under_billed` is not
+    // a look at all, just a note that another invoice is still to come.
     case 'under_billed':
     case 'price_lower':
       return 'info';
@@ -341,6 +370,17 @@ export function matchSummary(match: BillMatch): { label: string; tone: Tone; det
     };
   }
   if (match.ok) {
+    // A partial invoice passes, and it must not be described as matching what
+    // arrived, because it does not: it charges for part of it. What it matches
+    // is the agreed price, on goods that are here.
+    if (match.uninvoicedCents !== null && match.uninvoicedCents > 0) {
+      return {
+        label: 'Agrees with the delivery',
+        tone: 'success',
+        detail:
+          'Everything charged here is at the agreed price, for goods that arrived. The rest of this order has not been invoiced yet.',
+      };
+    }
     return {
       label: 'Agrees with the delivery',
       tone: 'success',

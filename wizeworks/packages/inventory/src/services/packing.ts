@@ -102,7 +102,7 @@ export async function createPackage(
     if (!order) throw new InventoryNotFoundError('Order', input.orderId);
     if (order.status === 'cancelled' || order.status === 'refunded') {
       throw new InventoryValidationError(
-        `Order ${order.orderNumber} is ${order.status} — nothing should be boxed for it.`
+        `Order ${order.orderNumber} is ${order.status}: nothing should be boxed for it.`
       );
     }
 
@@ -138,7 +138,7 @@ export async function updatePackage(
   await withTenant(ctx, async (tx) => {
     const box = await loadBox(tx, ctx.tenantId, packageId);
     if (box.status === 'cancelled') {
-      throw new InventoryConflictError('That box is cancelled.', 'status');
+      throw new InventoryConflictError('That box is canceled.', 'status');
     }
     await tx.shipmentPackage.update({
       where: { id: packageId },
@@ -199,7 +199,7 @@ export async function packItem(
         JOIN inventory_shipment_packages pk ON pk.id = pl.package_id
        WHERE pl.tenant_id     = ${ctx.tenantId}::uuid
          AND pl.order_item_id = ${input.orderItemId}::uuid
-         AND pk.status <> 'cancelled'
+         AND pk.status <> 'canceled'
          AND pk.id <> ${packageId}::uuid
     `;
     const packedElsewhere = elsewhere[0]?.units ?? 0;
@@ -292,7 +292,7 @@ export async function closePackage(
       .slice(0, 5)
       .join(', ');
     throw new InventoryValidationError(
-      `This box does not complete order ${detail.orderNumber} — still to pack: ${missing}. Close it as a partial shipment if that is deliberate.`
+      `This box does not complete order ${detail.orderNumber}, still to pack: ${missing}. Close it as a partial shipment if that is deliberate.`
     );
   }
 
@@ -474,7 +474,7 @@ export async function loadPackageDetail(
           FROM inventory_shipment_package_lines x
           JOIN inventory_shipment_packages xp ON xp.id = x.package_id
          WHERE x.order_item_id = oi.id
-           AND xp.status <> 'cancelled'
+           AND xp.status <> 'canceled'
            AND xp.id <> ${packageId}::uuid
       ) other ON TRUE
      WHERE oi.tenant_id = ${tenantId}::uuid

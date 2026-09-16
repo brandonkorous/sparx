@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-natural-clean',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Natural Clean',
   summary:
-    'A calm, oat-tinted storefront for a natural or sustainable brand — a full-bleed hero over color-blocked category tiles and a repeating shoppable-carousel and material-story rhythm that closes on a quiet mission moment, in a warm paper-ground theme. Modelled on the natural/sustainable-clean archetype; shipped as Fernwood Goods.',
+    'A calm, oat-tinted storefront for a natural or sustainable brand: a full-bleed hero over color-blocked category tiles and a repeating shoppable-carousel and material-story rhythm that closes on a quiet mission moment, in a warm paper-ground theme. Modelled on the natural/sustainable-clean archetype; shipped as Fernwood Goods.',
   vertical: 'retail',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

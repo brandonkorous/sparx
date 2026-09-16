@@ -45,7 +45,6 @@ import { useViewer } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
 import {
   AI_PROVIDERS,
@@ -157,7 +156,7 @@ function HoursEditor({
                   color="module"
                   checked={open}
                   disabled={disabled}
-                  aria-label={`${day.label} — open`}
+                  aria-label={`${day.label}: open`}
                   onCheckedChange={(next: boolean) => {
                     setDay(day.value, next ? { ...DEFAULT_DAY } : null);
                   }}
@@ -196,7 +195,7 @@ function HoursEditor({
                 </div>
               ) : (
                 <Text as="span" className="text-sm">
-                  Closed — the away message shows instead
+                  Closed: the away message shows instead
                 </Text>
               )}
             </div>
@@ -209,7 +208,7 @@ function HoursEditor({
 
 /* ── The surface ──────────────────────────────────────────────────────────── */
 
-export function ChatSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
+export function ChatSettingsSurface() {
   const toast = useToast();
   const { data: config, isPending, isError, isFetching, dataUpdatedAt, refetch } = useChatConfig();
   const { data: viewer } = useViewer();
@@ -220,10 +219,6 @@ export function ChatSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
   const [draft, setDraft] = useState<Draft | null>(null);
   const [keyInput, setKeyInput] = useState('');
   const [disconnectKey, setDisconnectKey] = useState(false);
-
-  useEffect(() => {
-    ctx.setTitle('Chat settings');
-  }, [ctx]);
 
   // Seed the draft once the config loads. Reruns only when the server copy
   // changes (a save writes the cache), which also discards a stale local edit
@@ -349,7 +344,7 @@ export function ChatSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
               Chat settings
             </Heading>
             <Text>
-              Set up the chat box that greets people on your site — how it looks, when you are
+              Set up the chat box that greets people on your site: how it looks, when you are
               around, and what happens when you are not.
             </Text>
           </div>
@@ -469,7 +464,7 @@ export function ChatSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
               <FieldDescription>
                 {hoursOn
                   ? 'Outside these hours the chat shows your away message instead of a reply box.'
-                  : 'Chat is always available — there is no away state.'}
+                  : 'Chat is always available. There is no away state.'}
               </FieldDescription>
             </Field>
 
@@ -486,7 +481,7 @@ export function ChatSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="AI first responder"
-            description="An assistant that answers new messages instantly using your own AI account. It only ever runs on a provider key you connect below — sparx never answers on your behalf without one."
+            description="An assistant that answers new messages instantly using your own AI account. It only ever runs on a provider key you connect below: sparx never answers on your behalf without one."
           >
             <Field>
               <FieldLabel>Let AI answer new messages</FieldLabel>
@@ -522,7 +517,7 @@ export function ChatSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
                   set('aiProvider', next === '' ? null : (next as AiProvider));
                 }}
               />
-              <FieldDescription>Whose AI answers — you bring your own account.</FieldDescription>
+              <FieldDescription>Whose AI answers. You bring your own account.</FieldDescription>
             </Field>
 
             <Field>
@@ -536,7 +531,7 @@ export function ChatSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
                     disabled={!canEdit || disconnectKey}
                     placeholder={
                       config.aiKeyConfigured
-                        ? 'A key is saved — paste a new one to replace it'
+                        ? 'A key is saved: paste a new one to replace it'
                         : 'Paste your key'
                     }
                     autoComplete="off"

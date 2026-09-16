@@ -53,8 +53,7 @@ export function ThemeMarket({ onInstalled }: { onInstalled: (id: string) => void
     <section className="mt-6">
       <h3 className="text-base-content text-sm font-medium">From other people</h3>
       <p className="text-base-content mb-2 text-sm">
-        Add one and it becomes yours — a copy you can change, which nobody else can alter
-        afterwards.
+        Add one and it becomes yours: a copy you can change, which nobody else can alter afterwards.
       </p>
       {/* One stylesheet for the shelf, scoped per look, so each swatch means THAT
           look's colors. No inline style and no runtime-computed class name. */}
@@ -102,7 +101,7 @@ function LookRow({
         <span className="text-base-content block truncate text-sm">{look.name}</span>
         <span className="text-base-content block truncate text-sm">
           {look.publisher.displayName}
-          {look.tagline ? ` — ${look.tagline}` : ''}
+          {look.tagline ? ` (${look.tagline})` : ''}
         </span>
       </span>
       {look.publisher.verified ? (

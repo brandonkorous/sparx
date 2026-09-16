@@ -159,7 +159,7 @@ const DESCRIPTIONS: Record<string, string> = {
   receive: 'Goods received',
   sale: 'Cost of goods sold',
   return: 'Customer returns back to stock',
-  cancel: 'Cancelled orders back to stock',
+  cancel: 'Canceled orders back to stock',
   loss: 'Stock losses',
   damage: 'Damaged stock written off',
   recount: 'Stock count corrections',
@@ -294,7 +294,7 @@ export function checkJournalSendable(
   }
   if (journal.imbalanceCents !== 0) {
     reasons.push(
-      `The entry does not balance — debits and credits differ by ${journal.imbalanceCents} cents`
+      `The entry does not balance: debits and credits differ by ${journal.imbalanceCents} cents`
     );
   }
   for (const line of journal.lines) {

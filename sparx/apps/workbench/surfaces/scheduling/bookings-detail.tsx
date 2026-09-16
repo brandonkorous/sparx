@@ -140,7 +140,7 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
   const saveError = create.isError
     ? schedulingErrorMessage(
         create.error,
-        'Nothing was booked. That time may have just been taken — try another.'
+        'Nothing was booked. That time may have just been taken. Try another.'
       )
     : null;
 
@@ -201,8 +201,8 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
               <AlertContent>
                 <AlertTitle>Set up something to book first</AlertTitle>
                 <AlertDescription>
-                  A booking is a time against one of your services. Add a service — what people can
-                  book you for, and how long it takes — and it will appear here to choose.
+                  A booking is a time against one of your services. Add a service (what people can
+                  book you for, and how long it takes) and it will appear here to choose.
                 </AlertDescription>
               </AlertContent>
               <Button
@@ -280,7 +280,7 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="Who it is for"
-            description="Link the customer this is booked for, so it shows on their record and their reminders reach them. Leave it blank for a booking with no account — a walk-in you are writing down."
+            description="Link the customer this is booked for, so it shows on their record and their reminders reach them. Leave it blank for a booking with no account: a walk-in you are writing down."
           >
             <CustomerPicker value={customer} onChange={setCustomer} />
 
@@ -302,7 +302,7 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
                 }
               />
               <FieldDescription>
-                For a table or a group — how many are coming. Leave blank for one.
+                For a table or a group: how many are coming. Leave blank for one.
               </FieldDescription>
             </Field>
           </FormSection>
@@ -351,7 +351,7 @@ function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="A note (optional)"
-            description="Anything the customer should see about this booking — where to park, what to bring."
+            description="Anything the customer should see about this booking: where to park, what to bring."
           >
             <Textarea
               color="module"
@@ -469,7 +469,7 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
       { reason: null, waiveFee: false, notifyCustomer: true },
       {
         onSuccess: () => {
-          toast.add({ title: 'Booking cancelled', type: 'success' });
+          toast.add({ title: 'Booking canceled', type: 'success' });
         },
       }
     );
@@ -673,7 +673,7 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
                     color="module"
                     rows={3}
                     value={staffNotes}
-                    placeholder="Regular — prefers the bay by the window."
+                    placeholder="Regular: prefers the bay by the window."
                     onChange={(event) => {
                       setStaffNotes(event.target.value);
                     }}
@@ -721,7 +721,7 @@ function BookingManage({ ctx, booking }: { ctx: SurfaceContext; booking: Booking
 
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Text className="text-sm">
-                  Cancelling releases the slot and lets the customer know. It cannot be undone.
+                  Canceling releases the slot and lets the customer know. It cannot be undone.
                 </Text>
                 <Button
                   size="sm"

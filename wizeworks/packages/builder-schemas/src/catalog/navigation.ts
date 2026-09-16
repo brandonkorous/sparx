@@ -60,7 +60,7 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'panel-top',
     description:
-      'Just the bar: a navbar with empty navbar-start, navbar-center, and navbar-end zones. Drop your brand, nav, and actions into the zones. Anything in navbar-center sits dead-centre.',
+      'Just the bar: a navbar with empty navbar-start, navbar-center, and navbar-end zones. Drop your brand, nav, and actions into the zones. Anything in navbar-center sits dead-center.',
     surfaces: ['page', 'site'],
     tags: ['navbar', 'bar', 'appbar', 'topbar', 'zones', 'navigation'],
     tree: el('nav', 'navbar border-b border-base-200 bg-base-100', {
@@ -171,7 +171,7 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'chevron-down',
     description:
-      'A navigation dropdown — a labelled trigger that reveals a panel of links. Each item inside is a normal nav link you can retarget, add, or remove.',
+      'A navigation dropdown: a labelled trigger that reveals a panel of links. Each item inside is a normal nav link you can retarget, add, or remove.',
     surfaces: ['page', 'site'],
     tags: ['nav', 'dropdown', 'submenu', 'menu', 'navitem', 'navigation'],
     tree: atom('NavItem', '', { label: 'Menu', href: '#' }, [
@@ -192,7 +192,7 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'columns-3',
     description:
-      'A navigation mega-menu — a labelled trigger that opens a wide, multi-column panel of grouped links. Every column heading and link is individually editable.',
+      'A navigation mega-menu: a labelled trigger that opens a wide, multi-column panel of grouped links. Every column heading and link is individually editable.',
     surfaces: ['page', 'site'],
     tags: ['nav', 'megamenu', 'mega menu', 'dropdown', 'columns', 'menu', 'navigation'],
     tree: atom('NavMegamenu', '', { label: 'Products', columns: '3' }, [
@@ -225,7 +225,7 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'circle-user',
     description:
-      'The storefront sign-in / account affordance — Sign in / Sign up when signed out, an avatar dropdown (Account, Orders, Wishlist, Sign out) when signed in. Reads the live customer session.',
+      'The storefront sign-in / account affordance. Sign in / Sign up when signed out, an avatar dropdown (Account, Orders, Wishlist, Sign out) when signed in. Reads the live customer session.',
     surfaces: ['site'],
     tags: ['account', 'auth', 'sign in', 'sign up', 'login', 'user', 'customer', 'navigation'],
     tree: atom('AccountMenu', '', {
@@ -260,7 +260,7 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
     category: 'navigation',
     kind: 'common',
     icon: 'menu',
-    description: 'A stacked navigation list — a sidebar or in-page section menu.',
+    description: 'A stacked navigation list: a sidebar or in-page section menu.',
     surfaces: ['page', 'site'],
     tags: ['menu', 'sidebar', 'list', 'navigation', 'vertical'],
     // The real Menu atom (st-menu) — the first item renders active. (Was a hand-rolled

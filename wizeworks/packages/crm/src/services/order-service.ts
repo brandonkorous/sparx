@@ -374,7 +374,7 @@ export async function cancel(ctx: ServiceContext, rawInput: unknown): Promise<Or
     return updated;
   });
 
-  await afterCommit('publish order.cancelled', () =>
+  await afterCommit('publish order.canceled', () =>
     publishPlatformEvent({
       id: crypto.randomUUID(),
       topic: 'order.cancelled',

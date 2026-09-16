@@ -106,7 +106,7 @@ export function ConsentChoice({
 
       <p className="text-base">
         Either way you get the whole of {PRODUCT.name}, and either way you can change your mind from
-        your account. The full list —{' '}
+        your account. The full list (
         <a
           className="font-semibold underline"
           href={marketingUrl('cookies')}
@@ -114,8 +114,8 @@ export function ConsentChoice({
           rel="noreferrer"
         >
           every cookie we set
-        </a>{' '}
-        — runs to four.
+        </a>
+        ) runs to four.
       </p>
     </form>
   );

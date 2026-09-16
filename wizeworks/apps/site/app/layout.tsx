@@ -28,6 +28,7 @@ import { PreviewBridge } from '@/components/preview-bridge';
 import { RevealController } from '@/components/reveal-controller';
 import { MotionController } from '@/components/motion-controller';
 import { SiteSuspended } from '@/components/site-suspended';
+import { SUSPENDED_METADATA } from '@/lib/suspended';
 import { SilicaChrome } from '@/components/silica-chrome';
 import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { SilicaBehaviors } from '@/components/silica-behaviors';
@@ -81,14 +82,17 @@ export async function generateMetadata(): Promise<Metadata> {
       robots: { index: false, follow: false },
     };
   }
-  // A suspended site (docs/17 §6) serves the overlay, not its content — so it must
-  // NOT be indexed while dark (and its title must not leak the tenant/billing state).
-  if (site.billingPhase === 'suspended') {
-    return {
-      title: 'Temporarily unavailable',
-      robots: { index: false, follow: false },
-    };
-  }
+  // A suspended site (docs/17 §6) serves the overlay, not its content, so its
+  // title must not leak the tenant or the billing state.
+  //
+  // What a dark site says to a machine is decided in ONE place, lib/suspended,
+  // and this is why: these eight lines used to be a SECOND copy of that
+  // decision. Route metadata overrides a layout's, so the two copies were the
+  // only thing standing between a crawler and two different answers, and when
+  // the shared one stopped sending `noindex` this one went on sending it,
+  // asking for every page of a shop that is coming back to be removed from
+  // search. The measurement caught it; reading the diff could not have.
+  if (site.billingPhase === 'suspended') return SUSPENDED_METADATA;
   const favicon = mediaUrl(site.theme?.faviconMediaId ?? null, site.slug);
 
   // metadataBase makes every page's relative OG image (the `/api/og` fallback

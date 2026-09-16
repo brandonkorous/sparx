@@ -29,7 +29,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { Dialog, DialogContent, DialogTitle, Kbd, SearchInput } from '@wizeworks/silicaui-react';
 import { useNavEntries, useRecordEntries } from './launcher-entries';
 import { rankEntries, rankRecords, type Entry } from './launcher-match';
-import { groupEntries, LauncherEmpty, LauncherGroup } from './launcher-rows';
+import { groupEntries, LauncherEmpty, LauncherGroup, RecordSearchNote } from './launcher-rows';
 
 export function Launcher({
   open,
@@ -147,7 +147,7 @@ export function Launcher({
               onValueChange={setQuery}
               onKeyDown={onKeyDown}
               aria-label="Search everything"
-              placeholder="Search for anything — orders, customers, products…"
+              placeholder="Search for anything: orders, customers, products…"
             />
           </div>
 
@@ -166,6 +166,11 @@ export function Launcher({
               ))
             )}
           </div>
+
+          {/* The record half's own result — see RecordSearchNote. Outside the
+              scrolling list, because it is a statement ABOUT the list rather
+              than a row in it, and it must not scroll out of sight. */}
+          <RecordSearchNote searching={searching} found={recordEntries.length} query={query} />
 
           {/* The modifier contract, spelled out — the same three destinations for
               a surface and a record. */}

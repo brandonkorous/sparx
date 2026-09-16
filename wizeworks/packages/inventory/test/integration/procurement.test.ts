@@ -71,6 +71,8 @@ import {
   approveSupplierBill,
   acceptBillVariance,
   createSupplierBill,
+  disputeSupplierBill,
+  settleBillQuery,
   getSupplierBill,
 } from '../../src/services/supplier-bills.js';
 import {
@@ -853,6 +855,165 @@ describe('supplier performance + procurement — DB-backed', () => {
       });
       expect(bill.match.unorderedLines).toBe(1);
       expect(bill.match.ok).toBe(false);
+    });
+
+    it('passes a partial invoice, and does not offer to dispute it', async () => {
+      // Forty arrived, the supplier has invoiced two of them. This is the normal
+      // state of an order that turns up in more than one drop, and blocking it
+      // leaves only two wrong doors: sign off a variance that never happened, or
+      // query a supplier who did nothing unusual (issue 510).
+      const s = await setup({ ordered: 40, received: 40, cost: 1800 });
+      const bill = await createSupplierBill(ctx(), {
+        supplierId: s.supplierId,
+        purchaseOrderId: s.orderId,
+        number: nextNumber(),
+        billedAt: new Date().toISOString(),
+        lines: [{ purchaseOrderLineId: s.lineId, quantity: 2, unitCostCents: 1800 }],
+      });
+
+      expect(bill.lines[0]?.match.verdict).toBe('under_billed');
+      expect(bill.match.ok).toBe(true);
+      expect(bill.match.linesFlagged).toBe(0);
+      // Nothing wrongly charged, so nothing at stake...
+      expect(bill.match.totalVarianceCents).toBe(0);
+      // ...but the 38 metres still to be invoiced are worth saying out loud.
+      expect(bill.match.uninvoicedCents).toBe(38 * 1800);
+
+      // And it pays, with no override and nobody's name against it.
+      const approved = await approveSupplierBill(ctx(), bill.id);
+      expect(approved.status).toBe('approved');
+      expect(approved.varianceAcceptedAt).toBeNull();
+    });
+
+    it('catches the same delivery invoiced twice', async () => {
+      // Neither invoice on its own exceeds what arrived, so nothing but the
+      // OTHER invoice can tell the second one apart from the first. Before this
+      // counted them, a supplier could invoice one drop twice and both bills
+      // matched perfectly (issue 510).
+      const s = await setup({ ordered: 40, received: 40, cost: 1800 });
+      const first = await createSupplierBill(ctx(), {
+        supplierId: s.supplierId,
+        purchaseOrderId: s.orderId,
+        number: nextNumber(),
+        billedAt: new Date().toISOString(),
+        lines: [{ purchaseOrderLineId: s.lineId, quantity: 38, unitCostCents: 1800 }],
+      });
+      expect(first.lines[0]?.match.verdict).toBe('under_billed');
+      expect(first.lines[0]?.alreadyBilledQuantity).toBe(0);
+
+      const duplicate = await createSupplierBill(ctx(), {
+        supplierId: s.supplierId,
+        purchaseOrderId: s.orderId,
+        number: nextNumber(),
+        billedAt: new Date().toISOString(),
+        lines: [{ purchaseOrderLineId: s.lineId, quantity: 38, unitCostCents: 1800 }],
+      });
+      expect(duplicate.lines[0]?.alreadyBilledQuantity).toBe(38);
+      expect(duplicate.lines[0]?.match.verdict).toBe('over_billed');
+      expect(duplicate.lines[0]?.match.quantityVarianceUnits).toBe(36);
+      expect(duplicate.match.ok).toBe(false);
+      await expect(approveSupplierBill(ctx(), duplicate.id)).rejects.toThrow(
+        /do not agree|differ/i
+      );
+    });
+
+    it('stops a queried invoice from counting against the correct one', async () => {
+      // The duplicate above gets queried, which is the right thing to do with
+      // it. A bill nobody is going to pay must not consume any of what the other
+      // invoices may legitimately charge for - otherwise disputing the duplicate
+      // makes the CORRECT invoice read as over-billed (issue 511).
+      const s = await setup({ ordered: 40, received: 40, cost: 1800 });
+      const good = await createSupplierBill(ctx(), {
+        supplierId: s.supplierId,
+        purchaseOrderId: s.orderId,
+        number: nextNumber(),
+        billedAt: new Date().toISOString(),
+        lines: [{ purchaseOrderLineId: s.lineId, quantity: 2, unitCostCents: 1800 }],
+      });
+      const duplicate = await createSupplierBill(ctx(), {
+        supplierId: s.supplierId,
+        purchaseOrderId: s.orderId,
+        number: nextNumber(),
+        billedAt: new Date().toISOString(),
+        lines: [{ purchaseOrderLineId: s.lineId, quantity: 38, unitCostCents: 1800 }],
+      });
+      const third = await createSupplierBill(ctx(), {
+        supplierId: s.supplierId,
+        purchaseOrderId: s.orderId,
+        number: nextNumber(),
+        billedAt: new Date().toISOString(),
+        lines: [{ purchaseOrderLineId: s.lineId, quantity: 38, unitCostCents: 1800 }],
+      });
+      // With 2 + 38 + 38 = 78 on the paper against 40 that arrived, the correct
+      // first invoice reads as over-billed.
+      expect((await getSupplierBill(ctx(), good.id)).lines[0]?.match.verdict).toBe('over_billed');
+
+      await disputeSupplierBill(ctx(), third.id, 'Same 38 as the one before it.');
+
+      const settled = await getSupplierBill(ctx(), good.id);
+      expect(settled.lines[0]?.alreadyBilledQuantity).toBe(38);
+      expect(settled.lines[0]?.match.verdict).toBe('matched');
+      expect(settled.match.ok).toBe(true);
+      void duplicate;
+    });
+
+    it('will not accept a difference on an invoice that is out with the supplier', async () => {
+      // It would write over the query's reason, stamp the variance accepted, and
+      // leave the status on `disputed` - after which approve and pay both refuse
+      // and the bill is stranded with no record of why (issue 511).
+      const s = await setup({ ordered: 10, received: 8, cost: 400 });
+      const bill = await createSupplierBill(ctx(), {
+        supplierId: s.supplierId,
+        purchaseOrderId: s.orderId,
+        number: nextNumber(),
+        billedAt: new Date().toISOString(),
+        lines: [{ purchaseOrderLineId: s.lineId, quantity: 10, unitCostCents: 400 }],
+      });
+      const queried = await disputeSupplierBill(ctx(), bill.id, 'Two never arrived.');
+      expect(queried.status).toBe('disputed');
+      expect(queried.notes).toBe('Two never arrived.');
+
+      await expect(acceptBillVariance(ctx(), bill.id, { note: 'Fine, pay it.' })).rejects.toThrow(
+        /out with the supplier/i
+      );
+      // The reason it was queried is untouched.
+      expect((await getSupplierBill(ctx(), bill.id)).notes).toBe('Two never arrived.');
+    });
+
+    it('lets a query be settled, and the bill carry on', async () => {
+      // `disputed` used to be a one-way door: approve refuses on it, pay refuses
+      // on it, and the only other transition in the service is `cancelled`. So
+      // the ordinary ending of a query had nowhere to go (issue 511).
+      const s = await setup({ ordered: 10, received: 8, cost: 400 });
+      const bill = await createSupplierBill(ctx(), {
+        supplierId: s.supplierId,
+        purchaseOrderId: s.orderId,
+        number: nextNumber(),
+        billedAt: new Date().toISOString(),
+        lines: [{ purchaseOrderLineId: s.lineId, quantity: 10, unitCostCents: 400 }],
+      });
+      await disputeSupplierBill(ctx(), bill.id, 'Two never arrived.');
+      await expect(approveSupplierBill(ctx(), bill.id)).rejects.toThrow();
+
+      const settled = await settleBillQuery(ctx(), bill.id);
+      expect(settled.status).toBe('draft');
+      // Settling is not accepting: the difference still has to be explained.
+      await expect(approveSupplierBill(ctx(), bill.id)).rejects.toThrow(/do not agree|differ/i);
+
+      await acceptBillVariance(ctx(), bill.id, { note: 'They credited the two.' });
+      expect((await approveSupplierBill(ctx(), bill.id)).status).toBe('approved');
+    });
+
+    it('refuses to settle a query on an invoice that is not out with anybody', async () => {
+      const s = await setup({ ordered: 1, received: 1, cost: 100 });
+      const bill = await createSupplierBill(ctx(), {
+        supplierId: s.supplierId,
+        purchaseOrderId: s.orderId,
+        number: nextNumber(),
+        billedAt: new Date().toISOString(),
+        lines: [{ purchaseOrderLineId: s.lineId, quantity: 1, unitCostCents: 100 }],
+      });
+      await expect(settleBillQuery(ctx(), bill.id)).rejects.toThrow(/not out with the supplier/i);
     });
 
     it('refuses the same invoice number from one supplier twice', async () => {

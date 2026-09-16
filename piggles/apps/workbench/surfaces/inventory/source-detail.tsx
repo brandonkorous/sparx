@@ -213,7 +213,7 @@ function PairingKeyDialog({ result, onClose }: { result: EnrollResult; onClose: 
       const ok = await confirm({
         title: 'Close without saving the key?',
         description:
-          'This key is shown only this once. If you close now you will not be able to see it again — you would have to make a new one and update the bridge with it.',
+          'This key is shown only this once. If you close now you will not be able to see it again. You would have to make a new one and update the bridge with it.',
         confirmLabel: 'Close anyway',
         cancelLabel: 'Keep it open',
         color: 'danger',
@@ -242,7 +242,7 @@ function PairingKeyDialog({ result, onClose }: { result: EnrollResult; onClose: 
                 <AlertTitle>You will only see this once</AlertTitle>
                 <AlertDescription>
                   Copy it now and paste it into the bridge program on your computer. For safety we
-                  never show it again — if you lose it, just make a new one here.
+                  never show it again: if you lose it, just make a new one here.
                   {result.rotated
                     ? ' The bridge’s old key has already stopped working, so update it with this one.'
                     : ''}
@@ -551,7 +551,7 @@ function SourceEditor({
     const ok = await confirm({
       title: `Remove ${source.name}?`,
       description:
-        'This stops the connection and takes it off your list. Any stock numbers it has already brought in stay exactly as they are — only the link is removed. You can set it up again later.',
+        'This stops the connection and takes it off your list. Any stock numbers it has already brought in stay exactly as they are. Only the link is removed. You can set it up again later.',
       confirmLabel: 'Remove it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -600,7 +600,7 @@ function SourceEditor({
     const ok = await confirm({
       title: `Unpair ${source.name}?`,
       description:
-        'This switches off the key the bridge uses to sign in, so it stops sending stock straight away. The connection stays on your list — you can pair it again with a fresh key whenever you like.',
+        'This switches off the key the bridge uses to sign in, so it stops sending stock straight away. The connection stays on your list. You can pair it again with a fresh key whenever you like.',
       confirmLabel: 'Unpair it',
       cancelLabel: 'Keep it paired',
       color: 'danger',
@@ -772,7 +772,7 @@ function SourceEditor({
               <AlertContent>
                 <AlertTitle>This connection needs an access key</AlertTitle>
                 <AlertDescription>
-                  You chose a sign-in method that sends a key, so add the key below — or switch the
+                  You chose a sign-in method that sends a key, so add the key below, or switch the
                   method to “No key needed” if the system is open.
                 </AlertDescription>
               </AlertContent>
@@ -819,7 +819,7 @@ function SourceEditor({
                 }
               />
               <FieldDescription>
-                A name you will recognize on your list — where it comes from or who looks after it.
+                A name you will recognize on your list: where it comes from or who looks after it.
               </FieldDescription>
             </Field>
 
@@ -1077,7 +1077,7 @@ function SourceEditor({
                       <option value="cents">In smallest units, like 1250</option>
                     </NativeSelect>
                     <FieldDescription>
-                      So a cost of “1250” is not mistaken for twelve hundred when it means £12.50.
+                      So a cost of “1250” is not mistaken for twelve hundred when it means $12.50.
                     </FieldDescription>
                   </Field>
                 ) : null}
@@ -1089,7 +1089,7 @@ function SourceEditor({
             <FormSection title="How the bridge connects">
               <Text className="text-sm">
                 An on-site bridge is a small program you install on your own computers. It sends
-                stock to us whenever something changes — we never reach into your network.
+                stock to us whenever something changes. We never reach into your network.
               </Text>
 
               {source == null ? (
@@ -1104,8 +1104,8 @@ function SourceEditor({
                     <Text className="text-sm">
                       This bridge is paired
                       {source.apiKeyPrefix ? ` with a key starting ${source.apiKeyPrefix}…` : ''}.
-                      If that key is ever lost, or you reinstall the bridge, make a new one — the
-                      old key stops working the moment you do.
+                      If that key is ever lost, or you reinstall the bridge, make a new one: the old
+                      key stops working the moment you do.
                     </Text>
                   ) : (
                     <Alert color="info">
@@ -1113,8 +1113,8 @@ function SourceEditor({
                         <AlertTitle>Not paired yet</AlertTitle>
                         <AlertDescription>
                           Install the bridge on your computer, then pair it here. You will get a
-                          one-time key to paste into the bridge — until it is paired, no numbers
-                          will arrive.
+                          one-time key to paste into the bridge: until it is paired, no numbers will
+                          arrive.
                         </AlertDescription>
                       </AlertContent>
                     </Alert>
@@ -1154,8 +1154,8 @@ function SourceEditor({
                     <AlertTitle>Pairing is an admin job</AlertTitle>
                     <AlertDescription>
                       {source.enrolledAt
-                        ? 'This bridge is paired and sending stock. Replacing its key or unpairing it is done by an account admin or the owner — ask one of them if it needs changing.'
-                        : 'This bridge is not paired yet. Setting it up is done by an account admin or the owner — ask one of them to pair it and send you the key for the bridge.'}
+                        ? 'This bridge is paired and sending stock. Replacing its key or unpairing it is done by an account admin or the owner. Ask one of them if it needs changing.'
+                        : 'This bridge is not paired yet. Setting it up is done by an account admin or the owner. Ask one of them to pair it and send you the key for the bridge.'}
                     </AlertDescription>
                   </AlertContent>
                 </Alert>

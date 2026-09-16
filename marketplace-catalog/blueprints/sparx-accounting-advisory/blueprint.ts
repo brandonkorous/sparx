@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-accounting-advisory',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Accounting (Advisory)',
   summary:
-    'A premium CPA advisory and wealth site — a deep-navy palette with a refined gold accent and a data-forward layout. Installs a working consultation-booking flow: a real menu of advisory sessions (tax strategy, CFO advisory, business valuation, wealth and retirement planning), three CPAs and advisors you book by name with their own hours, and a complimentary initial strategy call. Ships as "Northpoint CPA", a modern firm for established businesses and high earners.',
+    'A premium CPA advisory and wealth site: a deep-navy palette with a refined gold accent and a data-forward layout. Installs a working consultation-booking flow: a real menu of advisory sessions (tax strategy, CFO advisory, business valuation, wealth and retirement planning), three CPAs and advisors you book by name with their own hours, and a complimentary initial strategy call. Ships as "Northpoint CPA", a modern firm for established businesses and high earners.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

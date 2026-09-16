@@ -88,10 +88,21 @@ export function useBundle(id: string) {
 
 /** A specific, sellable version of a product — what a bundle component and a
  *  configurator add-on both point at. */
+/** One axis of a version: "Size" = "L". */
+export interface VariantOption {
+  name: string;
+  value: string;
+}
+
 export interface VariantChoice {
   id: string;
   sku: string;
   title: string | null;
+  /** The option values that make this version the one it is, in the shop's own
+   *  option order. What actually tells two rows apart when `title` is blank,
+   *  which on a seeded catalog is always (issue 182). The endpoint has always
+   *  sent these; this console typed them away and drew ten identical rows. */
+  options: VariantOption[];
   isDefault: boolean;
   priceCents: number;
   currency: string;

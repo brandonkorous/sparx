@@ -126,8 +126,8 @@ function SettingsPanel({ draft, onName, onSlug, onDefault }: StageInspectorProps
           }
         />
         <FieldDescription>
-          A short version with no spaces, used behind the scenes. Filled in from the name — change
-          it only if you have a reason to.
+          A short version with no spaces, used behind the scenes. Filled in from the name. Change it
+          only if you have a reason to.
         </FieldDescription>
       </Field>
 
@@ -145,7 +145,7 @@ function SettingsPanel({ draft, onName, onSlug, onDefault }: StageInspectorProps
           <Text as="span">Use this one by default</Text>
           <Text as="span" className="text-sm">
             New documents start on this workflow unless someone picks another. Only one workflow can
-            be the default — turning this on turns it off elsewhere.
+            be the default: turning this on turns it off elsewhere.
           </Text>
         </span>
       </label>
@@ -186,7 +186,7 @@ function StagePanel({
             }
           />
           <FieldDescription>
-            The word printed at the top of the document at this stage — Estimate, Invoice, Work
+            The word printed at the top of the document at this stage: Estimate, Invoice, Work
             order, Receipt.
           </FieldDescription>
         </Field>
@@ -205,7 +205,7 @@ function StagePanel({
             }
           />
           <FieldDescription>
-            Only ever shown inside sparx. Often the same as above — make it different when your
+            Only ever shown inside sparx. Often the same as above. Make it different when your
             team&apos;s word for the step isn&apos;t the customer&apos;s.
           </FieldDescription>
         </Field>
@@ -269,7 +269,7 @@ function StagePanel({
               }
             />
             <FieldDescription>
-              Goes in front of the number — “INV-” gives you INV-000001. Leave it empty for plain
+              Goes in front of the number: “INV-” gives you INV-000001. Leave it empty for plain
               numbers.
             </FieldDescription>
           </Field>
@@ -288,8 +288,8 @@ function StagePanel({
           <span className="flex flex-col gap-0.5">
             <Text as="span">Freeze a permanent copy</Text>
             <Text as="span" className="text-sm">
-              Saves the document exactly as it stands, forever. Later edits never change it — this
-              is what you show a customer who disputes what they agreed to.
+              Saves the document exactly as it stands, forever. Later edits never change it. This is
+              what you show a customer who disputes what they agreed to.
             </Text>
           </span>
         </label>
@@ -307,8 +307,8 @@ function StagePanel({
           <span className="flex flex-col gap-0.5">
             <Text as="span">Stop it being edited</Text>
             <Text as="span" className="text-sm">
-              The charges can no longer be changed. Payments can still be recorded — a locked
-              invoice is exactly the one getting paid.
+              The charges can no longer be changed. Payments can still be recorded: a locked invoice
+              is exactly the one getting paid.
             </Text>
           </span>
         </label>

@@ -5,6 +5,7 @@ import type { WorkbenchController } from '@/lib/workbench/controller';
 import type { PaneDescriptor } from '@/lib/surfaces/descriptor';
 import { loadModeLayout, saveModeLayout } from './mode-layouts';
 import { boxAtPoint, cascadeBox, type FloatPoint, type FloatViewport } from './window-placement';
+import { retitleFromDescriptors } from './dock/dock-wiring';
 
 // Windows or tabs — how the console presents what you have open.
 //
@@ -78,13 +79,45 @@ export function applyWindowMode(api: DockviewApi, mode: WindowMode, view: FloatV
   }
 
   // Snapshot first — moving a group mutates the collection being iterated.
-  for (const group of [...api.groups]) {
-    if (group.api.location.type !== 'floating') continue;
-    // No target group + a position docks it against the grid's edge — the same
-    // call the tear-off control uses to bring a popout back, so a window
-    // returning to the grid behaves identically however it left.
+  const floating = [...api.groups].filter((group) => group.api.location.type === 'floating');
+
+  // What somebody was looking at, read BEFORE anything moves. Merging groups
+  // leaves the host with every tab INACTIVE — nineteen tabs across the top and
+  // dockview's "nothing open" watermark underneath, which reads as the whole
+  // workspace having collapsed the moment tabs were switched on. Restored at
+  // the bottom of this function.
+  const focused = api.activePanel?.id ?? null;
+
+  // WHERE a returning window lands, and it is the whole difference between a
+  // grid and a row of slivers.
+  //
+  // `moveTo({ position })` with no target group asks dockview for a NEW grid
+  // group and docks the window into that. Windows mode gives every pane a
+  // window of its own, so "one new group each" means one COLUMN each: eighteen
+  // panes open turned the workspace into eighteen ~90px columns whose tab
+  // strips had no room for a single word, which is what a person sees as their
+  // tabs having been minimised (issue 492).
+  //
+  // A window coming back joins a group that already exists, as a TAB. The saved
+  // tabs arrangement is restored before this runs, so the groups that
+  // photograph placed are the homes on offer and this only has to house what it
+  // never saw. The host is re-read each time because moving a group can dispose
+  // it, and because the first window back is what creates the grid when the
+  // photograph placed nothing at all.
+  for (const group of floating) {
+    const host = api.groups.find((other) => other !== group && other.api.location.type === 'grid');
+    if (host) {
+      group.api.moveTo({ group: host, position: 'center' });
+      continue;
+    }
     group.api.moveTo({ position: 'right' });
   }
+
+  // Back onto the pane they had open. A group with no active panel is not a
+  // state a person can reach by clicking, so it is never one to leave them in;
+  // if the pane they were on is gone, the first tab is the honest fallback.
+  const landing = (focused ? api.getPanel(focused) : undefined) ?? api.panels[0];
+  landing?.focus();
 }
 
 /**
@@ -189,6 +222,12 @@ export function switchWindowMode(
   }
 
   reconcile(api, controller, to, openBefore, view);
+  // The snapshot carries dockview own copy of every tab label, so a name frozen
+  // in an OLD photograph outlives the descriptors that were already swept — a
+  // pane read "Your social accounts" in tabs and "Connections" the moment the
+  // same workspace was switched to windows. Same rule as the cold restore: the
+  // photograph supplies the ARRANGEMENT, the descriptors supply the names.
+  retitleFromDescriptors(api, controller);
   controller.hostChanged();
 }
 
@@ -220,9 +259,21 @@ function reconcile(
   // Panes opened while the other presentation was on screen — absent from the
   // photograph, and re-opened rather than dropped. Closing something because it
   // was opened at an awkward moment is the one outcome nobody would forgive.
+  //
+  // A pane the photograph never saw has no remembered home, and `addPanel` with
+  // no position mints a GROUP for it rather than a tab. Sixteen of those is
+  // sixteen slivers, the same failure `applyWindowMode` above exists to avoid
+  // (issue 492) — so in tabs a homeless pane joins a group that is already on
+  // screen. In WINDOWS a group of its own is right: `applyWindowMode` turns each
+  // one into its own window a moment later, which is what that presentation is.
   for (const descriptor of Object.values(openBefore)) {
     if (api.getPanel(descriptor.id)) continue;
-    controller.open(descriptor.surface, descriptor.params, { focus: false });
+    const host = mode === 'tabs' ? (api.activePanel?.id ?? api.panels[0]?.id) : undefined;
+    controller.open(descriptor.surface, descriptor.params, {
+      focus: false,
+      target: 'tab',
+      fromPaneId: host,
+    });
   }
 
   // Those re-openings land wherever `open` puts them, which is the grid — so

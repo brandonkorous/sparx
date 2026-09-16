@@ -382,7 +382,7 @@ export const CreatePurchaseOrderInput = z.object({
   paymentTerms: z.string().max(20).optional(),
   reference: z.string().max(120).optional(),
   expectedArrivalAt: z.string().datetime().optional(),
-  shippingCents: z.number().int().nonnegative().default(0),
+  freightCents: z.number().int().nonnegative().default(0),
   notes: z.string().max(5000).optional(),
   lines: z.array(PurchaseOrderLineInput).max(500).default([]),
 });
@@ -397,7 +397,7 @@ export const UpdatePurchaseOrderInput = z.object({
   paymentTerms: z.string().max(20).nullable().optional(),
   reference: z.string().max(120).nullable().optional(),
   expectedArrivalAt: z.string().datetime().nullable().optional(),
-  shippingCents: z.number().int().nonnegative().optional(),
+  freightCents: z.number().int().nonnegative().optional(),
   notes: z.string().max(5000).nullable().optional(),
 });
 export type UpdatePurchaseOrderInput = z.infer<typeof UpdatePurchaseOrderInput>;

@@ -380,18 +380,43 @@ export const ROUTES: readonly AppRoute[] = [
     entityLabel: 'Locations',
   },
   { path: '/inventory/transfers', surface: 'inventory.transfers.list' },
-  { path: '/inventory/transfers/:id', surface: 'inventory.transfers.detail' },
+  {
+    path: '/inventory/transfers/:id',
+    surface: 'inventory.transfers.detail',
+    entity: 'inventory_transfer',
+    entityLabel: 'Stock moves',
+  },
   { path: '/inventory/counts', surface: 'inventory.counts.list' },
-  { path: '/inventory/counts/:id', surface: 'inventory.counts.detail' },
+  {
+    path: '/inventory/counts/:id',
+    surface: 'inventory.counts.detail',
+    entity: 'inventory_count',
+    entityLabel: 'Stock checks',
+  },
   { path: '/inventory/movements', surface: 'inventory.movements.list' },
   { path: '/inventory/lots', surface: 'inventory.lots.list' },
   { path: '/inventory/lots/:id', surface: 'inventory.lots.detail' },
   { path: '/inventory/suppliers', surface: 'inventory.suppliers.list' },
-  { path: '/inventory/suppliers/:id', surface: 'inventory.suppliers.detail' },
+  {
+    path: '/inventory/suppliers/:id',
+    surface: 'inventory.suppliers.detail',
+    entity: 'supplier',
+    entityLabel: 'Suppliers',
+  },
   { path: '/inventory/purchase-orders', surface: 'inventory.purchase-orders.list' },
-  { path: '/inventory/purchase-orders/:id', surface: 'inventory.purchase-orders.detail' },
+  {
+    path: '/inventory/purchase-orders/:id',
+    surface: 'inventory.purchase-orders.detail',
+    entity: 'purchase_order',
+    entityLabel: 'Orders to suppliers',
+  },
   { path: '/inventory/receiving', surface: 'inventory.receiving.list' },
-  { path: '/inventory/receiving/:id', surface: 'inventory.receiving.detail' },
+  {
+    path: '/inventory/receiving/:id',
+    surface: 'inventory.receiving.detail',
+    entity: 'goods_receipt',
+    entityLabel: 'Deliveries',
+  },
   // Scanning a delivery in (docs/146 Phase 3.5). Addressed by the PURCHASE ORDER
   // rather than by a receipt: the receipt does not exist until the session is
   // posted, so a session link that survives a reload can only be the order's.
@@ -476,9 +501,19 @@ export const ROUTES: readonly AppRoute[] = [
     surface: 'inventory.advance-ship-notices.detail',
   },
   { path: '/inventory/supplier-returns', surface: 'inventory.supplier-returns' },
-  { path: '/inventory/supplier-returns/:id', surface: 'inventory.supplier-returns.detail' },
+  {
+    path: '/inventory/supplier-returns/:id',
+    surface: 'inventory.supplier-returns.detail',
+    entity: 'supplier_return',
+    entityLabel: 'Returns to suppliers',
+  },
   { path: '/inventory/supplier-bills', surface: 'inventory.supplier-bills' },
-  { path: '/inventory/supplier-bills/:id', surface: 'inventory.supplier-bills.detail' },
+  {
+    path: '/inventory/supplier-bills/:id',
+    surface: 'inventory.supplier-bills.detail',
+    entity: 'supplier_bill',
+    entityLabel: 'Supplier invoices',
+  },
   { path: '/inventory/reports/suppliers', surface: 'inventory.suppliers.scorecards' },
   // Demand-side commitments (docs/146 Phase 9). The URLs keep the words an
   // integrator would search for — `backorders`, `preorders`, `consignment` —

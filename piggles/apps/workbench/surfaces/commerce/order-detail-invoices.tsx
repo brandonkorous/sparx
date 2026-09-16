@@ -97,7 +97,7 @@ function InvoiceRow({ invoice, ctx }: { invoice: OrderInvoice; ctx: SurfaceConte
  *  return an error is worse than no control. */
 function reasonNotToAsk(order: Order): string | null {
   if (order.status === 'cancelled') {
-    return 'This order was cancelled, so there is nothing to ask for.';
+    return 'This order was canceled, so there is nothing to ask for.';
   }
   if (order.status === 'refunded') {
     return 'This order was refunded, so there is nothing to ask for.';
@@ -121,7 +121,7 @@ export function InvoicesSection({ order, ctx }: { order: Order; ctx: SurfaceCont
       description="The invoices you have raised for this order, whether they went out, and what has come back."
       isPending={invoices.isPending}
       isError={invoices.isError}
-      errorText="We could not load the invoices just now. Anything already sent is unaffected — try reopening this order in a moment."
+      errorText="We could not load the invoices just now. Anything already sent is unaffected. Try reopening this order in a moment."
       emptyText={blocked ?? 'You have not asked for the money on this order yet.'}
       count={rows.length}
       footer={

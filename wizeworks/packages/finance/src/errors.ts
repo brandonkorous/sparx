@@ -71,6 +71,30 @@ export class CategoryInUseError extends FinanceError {
 }
 
 /**
+ * Two categories with the same name cannot be told apart at the moment it
+ * matters. The picker where a cost is filed is a flat list of names, so a second
+ * "Packaging" sits directly under the first with nothing to choose between them
+ * — and because a category's KIND decides which side of the gross-profit line
+ * its spend falls on, the two can send the same cost to different answers.
+ *
+ * The clash has two causes with different remedies, so it gets two sentences. A
+ * live category wants a different name here. An ARCHIVED one wants bringing
+ * back, and telling somebody "you already have one" about a row that is not on
+ * their screen sends them hunting for something they cannot see.
+ */
+export class DuplicateCategoryNameError extends FinanceError {
+  constructor(name: string, archived: boolean) {
+    super(
+      'CATEGORY_NAME_TAKEN',
+      archived
+        ? `You already have a category called "${name}", but it is archived. Switch on "Include archived" and bring that one back, rather than making a second one with the same name.`
+        : `You already have a category called "${name}". Two categories with the same name cannot be told apart when you file a cost, so give this one a different name.`
+    );
+    this.name = 'DuplicateCategoryNameError';
+  }
+}
+
+/**
  * Allocations may not exceed the expense they split.
  *
  * Note the asymmetry, which is intentional: allocating LESS than the total is

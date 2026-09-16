@@ -23,6 +23,8 @@ import {
   type TenantCtx,
 } from '@wizeworks/automation';
 
+import { daysPastDue } from '@wizeworks/crm';
+
 import { fieldValueToString } from './entity.js';
 
 const MS_PER_DAY = 86_400_000;
@@ -61,7 +63,7 @@ function byId(
     }
     ctx.deps.logger.warn(
       { keys, payloadKeys: Object.keys(p) },
-      'automation resolver: trigger payload carries no known entity id — skipping (no fields resolved)'
+      'automation resolver: trigger payload carries no known entity id, skipping (no fields resolved)'
     );
     return Promise.resolve({});
   };
@@ -184,11 +186,19 @@ interface BillingLike {
 
 /** Field map for a billing document. `overdueDays` / `daysUntilDue` are COMPUTED
  *  from `dueAt` (not the stored `overdue_days`, which only the B2B AR escalation
- *  maintains) so the standalone-invoicing dunning seeds fire for every workflow. */
+ *  maintains) so the standalone-invoicing dunning seeds fire for every workflow.
+ *
+ *  Both in CALENDAR days, through the shared `daysPastDue`. The dunning ladder
+ *  matches these on an EXACT day (`daysUntilDue == 3`, `overdueDays == 7/14/30`),
+ *  so counting elapsed 24-hour periods instead made the day a customer got
+ *  chased depend on the hour the invoice happened to be raised at rather than
+ *  the date printed on it. An invoice raised at 4pm was chased a day later than
+ *  the identical one raised at 9am. */
 function billingFields(d: BillingLike, now: number): ResolvedFields {
-  const dueMs = d.dueAt ? d.dueAt.getTime() : null;
-  const daysUntilDue = dueMs !== null ? Math.floor((dueMs - now) / MS_PER_DAY) : null;
-  const overdueDays = dueMs !== null && dueMs < now ? Math.floor((now - dueMs) / MS_PER_DAY) : 0;
+  const at = new Date(now);
+  const past = d.dueAt ? daysPastDue(d.dueAt, at) : null;
+  const daysUntilDue = past === null ? null : -past;
+  const overdueDays = past === null ? 0 : Math.max(0, past);
   return {
     'invoice.id': d.id,
     'invoice.number': d.number,
@@ -442,8 +452,12 @@ async function hydrateTicket(
       assignedToUserId: true,
       stageId: true,
       firstRespondedAt: true,
-      resolveDueAt: true,
-      respondDueAt: true,
+      // The SLA columns are `resolutionDueAt` / `firstResponseDueAt`
+      // (37-crm-tickets.prisma). They were spelled `resolveDueAt` /
+      // `respondDueAt` here, which tsc cannot catch inside a `select`, so every
+      // ticket trigger threw before it resolved a single field.
+      resolutionDueAt: true,
+      firstResponseDueAt: true,
       resolvedAt: true,
       createdAt: true,
       stage: { select: { name: true, stageType: true } },
@@ -472,8 +486,8 @@ async function hydrateTicket(
     'ticket.isAssigned': ticket.assignedToUserId !== null,
     'ticket.hasReplied': ticket.firstRespondedAt !== null,
     'ticket.isResolved': ticket.resolvedAt !== null,
-    'ticket.minutesToRespond': minutesUntil(ticket.respondDueAt),
-    'ticket.minutesToResolve': minutesUntil(ticket.resolveDueAt),
+    'ticket.minutesToRespond': minutesUntil(ticket.firstResponseDueAt),
+    'ticket.minutesToResolve': minutesUntil(ticket.resolutionDueAt),
     'ticket.ageMinutes': Math.round((now - ticket.createdAt.getTime()) / 60_000),
     // Which promise the SLA sweep was announcing when it fired — `respond` or
     // `resolve`. Absent on every other ticket trigger, so a rule that references
@@ -780,7 +794,7 @@ async function hydrateFormSubmission(
     'form.autoresponderMessage': cfgStr(
       cfg,
       'autoresponderMessage',
-      "Thanks for reaching out — we've received your message and will get back to you shortly."
+      "Thanks for reaching out: we've received your message and will get back to you shortly."
     ),
     // The submitter as an addressable contact for an email/CRM action.
     'customer.email': s.email,

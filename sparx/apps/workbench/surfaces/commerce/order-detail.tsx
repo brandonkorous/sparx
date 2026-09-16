@@ -204,7 +204,7 @@ function invoiceState(invoice: OrderInvoice): { label: string; tone: string } {
  *  error is worse than no control. */
 function reasonNotToAsk(order: Order): string | null {
   if (order.status === 'cancelled') {
-    return 'This order was cancelled, so there is nothing to ask for.';
+    return 'This order was canceled, so there is nothing to ask for.';
   }
   if (order.status === 'refunded') {
     return 'This order was refunded, so there is nothing to ask for.';
@@ -228,7 +228,7 @@ function OrderInvoicesSection({ order, ctx }: { order: Order; ctx: SurfaceContex
       description="The invoices you have raised for this order, whether they went out, and what has come back."
       isPending={invoices.isPending}
       isError={invoices.isError}
-      errorText="We could not load the invoices just now. Anything already sent is unaffected — try reopening this order in a moment."
+      errorText="We could not load the invoices just now. Anything already sent is unaffected. Try reopening this order in a moment."
       emptyText={blocked ?? 'You have not asked for the money on this order yet.'}
       count={rows.length}
       footer={
@@ -504,7 +504,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         error={error}
         noun="order"
         title="Could not load this order"
-        description="This is a problem reaching the server. The order itself is unaffected — nothing has been changed or lost."
+        description="This is a problem reaching the server. The order itself is unaffected. Nothing has been changed or lost."
         onRetry={() => {
           void refetch();
         }}
@@ -564,7 +564,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       description:
         `This sends ${formatMoney(refundableAmount, currency)} back to the card used for order ` +
         `${order.orderNumber}. The money leaves your account straight away and this cannot be ` +
-        `undone. Stock is NOT taken back in — if you expect the items returned, process a return ` +
+        `undone. Stock is NOT taken back in: if you expect the items returned, process a return ` +
         `instead so the goods come back on the shelf.`,
       confirmLabel: `Refund ${formatMoney(refundableAmount, currency)}`,
       cancelLabel: 'Leave it as it is',
@@ -580,7 +580,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         onSuccess: () => {
           toast.add({
             title: `Refunded ${formatMoney(refundableAmount, currency)}`,
-            description: `Order ${order.orderNumber} — the customer's card has been credited.`,
+            description: `Order ${order.orderNumber}: the customer's card has been credited.`,
             type: 'success',
           });
         },
@@ -602,13 +602,13 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Cancel order ${order.orderNumber}?`,
       description:
-        `This marks the order as cancelled for ${customerName(order.customer)} — ` +
+        `This marks the order as canceled for ${customerName(order.customer)}: ` +
         `${String(items.length)} ${items.length === 1 ? 'item' : 'items'} worth ` +
         `${formatMoney(order.total, currency)} will no longer be sent. ` +
         (order.amountPaid > 0
-          ? `${formatMoney(order.amountPaid, currency)} has already been paid and is NOT refunded by this — you refund that separately.`
+          ? `${formatMoney(order.amountPaid, currency)} has already been paid and is NOT refunded by this. You refund that separately.`
           : 'No money has come in, so there is nothing to refund.') +
-        ' A cancelled order cannot be reopened.',
+        ' A canceled order cannot be reopened.',
       confirmLabel: 'Cancel the order',
       cancelLabel: 'Leave it as it is',
       color: 'danger',
@@ -621,7 +621,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     await deferTick();
     cancel.mutate(undefined, {
       onSuccess: () => {
-        toast.add({ title: `Order ${order.orderNumber} cancelled`, type: 'success' });
+        toast.add({ title: `Order ${order.orderNumber} canceled`, type: 'success' });
       },
       onError: (error) => {
         toast.add({
@@ -886,7 +886,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             description="Every attempt to take payment for this order, including the ones that did not work."
             isPending={payments.isPending}
             isError={payments.isError}
-            errorText="We could not load the payments just now. The order and its money are unaffected — try reopening this order in a moment."
+            errorText="We could not load the payments just now. The order and its money are unaffected. Try reopening this order in a moment."
             emptyText="No payment has been recorded against this order yet."
             count={payments.data?.length ?? 0}
             footer={
@@ -942,7 +942,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             }
             isPending={fulfillments.isPending}
             isError={fulfillments.isError}
-            errorText="We could not load the deliveries just now. Anything already shipped is unaffected — try reopening this order in a moment."
+            errorText="We could not load the deliveries just now. Anything already shipped is unaffected. Try reopening this order in a moment."
             emptyText={
               plan.collected
                 ? 'This order has not been collected yet.'
@@ -1071,7 +1071,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                       refund, which is not a place to be vague. */}
                   {refundGoesBackToACard
                     ? `Sends ${formatMoney(refundableAmount, currency)} back to the card it was paid with. The money leaves your account straight away and this cannot be undone.`
-                    : `Marks ${formatMoney(refundableAmount, currency)} as given back. You hand the money over yourself — nothing is sent anywhere, and this cannot be undone.`}{' '}
+                    : `Marks ${formatMoney(refundableAmount, currency)} as given back. You hand the money over yourself. Nothing is sent anywhere, and this cannot be undone.`}{' '}
                   To give back only part of it, or to take stock back in, use a return instead.
                 </Text>
               </div>
@@ -1098,7 +1098,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               <div className="flex min-w-0 flex-col gap-0.5">
                 <Text className="text-base font-medium">Cancel this order</Text>
                 <Text className="text-sm">
-                  Marks it as cancelled so nothing more is sent. Any money already taken stays until
+                  Marks it as canceled so nothing more is sent. Any money already taken stays until
                   you refund it, and the order cannot be reopened afterwards.
                 </Text>
               </div>

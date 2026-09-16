@@ -42,7 +42,6 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   MATCH_RULES,
   useCrmSettings,
@@ -59,7 +58,7 @@ const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 const THRESHOLDS: { value: number | null; label: string; description: string }[] = [
   {
     value: null,
-    label: 'Never — always ask me',
+    label: 'Never, ask me every time',
     description: 'Nothing is merged unless somebody looks at it first. Merging cannot be undone.',
   },
   {
@@ -71,7 +70,7 @@ const THRESHOLDS: { value: number | null; label: string; description: string }[]
     value: 90,
     label: 'Identical email, or the same phone number',
     description:
-      'Adds shared phone numbers, which are nearly always one person — but a family or a shared office line would be merged too.',
+      'Adds shared phone numbers, which are nearly always one person, but a family or a shared office line would be merged too.',
   },
 ];
 
@@ -79,7 +78,7 @@ function sameRules(a: DuplicateMatchRule[], b: DuplicateMatchRule[]): boolean {
   return a.length === b.length && a.every((rule) => b.includes(rule));
 }
 
-export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
+export function CrmSettingsSurface() {
   const query = useCrmSettings();
   const save = useUpdateCrmSettings();
   const toast = useToast();
@@ -91,10 +90,6 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
     if (saved && draft === null) setDraft(saved);
   }, [saved, draft]);
 
-  useEffect(() => {
-    ctx.setTitle('How the CRM behaves');
-  }, [ctx]);
-
   const dirty = useMemo(() => {
     if (!draft || !saved) return false;
     return (
@@ -104,7 +99,7 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   }, [draft, saved]);
 
-  useDirtySource(dirty, 'Your changes to how the CRM behaves have not been saved. Close anyway?');
+  useDirtySource(dirty, 'Your changes to how this app behaves have not been saved. Close anyway?');
 
   const set = <K extends keyof CrmSettings>(key: K, value: CrmSettings[K]): void => {
     setDraft((current) => (current ? { ...current, [key]: value } : current));
@@ -145,7 +140,7 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="CRM behavior actions"
+        label="Customer settings actions"
         status={
           <>
             <Icon glyph={faSliders} className="size-4 shrink-0" aria-hidden />
@@ -213,7 +208,7 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
                       <FieldLabel>Offer a company when the email domain matches one</FieldLabel>
                       <FieldDescription>
                         Add someone at <Text as="span">jo@northgatedental.com</Text> and we&rsquo;ll
-                        ask whether they belong under Northgate Dental Group — if you have told us
+                        ask whether they belong under Northgate Dental Group, if you have told us
                         that domain belongs to them. It is always a question, never done for you,
                         and personal addresses like gmail are ignored entirely.
                       </FieldDescription>
@@ -308,7 +303,7 @@ export function CrmSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
                       <AlertTitle>Records will be merged without you seeing them</AlertTitle>
                       <AlertDescription>
                         The most recently updated record survives and absorbs the others. Anything
-                        it was missing gets filled in from them, so nothing is lost — but the merge
+                        it was missing gets filled in from them, so nothing is lost, but the merge
                         itself is permanent.
                       </AlertDescription>
                     </AlertContent>

@@ -39,6 +39,20 @@ export function groupEntries(entries: Entry[]): EntryGroup[] {
  *
  * So the record half states its own result, always, the moment anything is
  * typed. "Nothing in your records matches" is an answer. Silence is not.
+ *
+ * It used to name what it looked through, and got that wrong twice over. The
+ * sentence read "Nothing in your orders, customers or products matches", so an
+ * owner holding a delivery note and typing PO-000002 was told her ORDERS did not
+ * contain it. They do. It was never searched: the universal index carried twenty
+ * kinds of record and not one of them came from purchasing. The sentence was
+ * then corrected to say so out loud, and purchasing has since been indexed —
+ * suppliers, orders to suppliers, deliveries, supplier invoices, returns, stock
+ * moves and stock checks — which made the caveat false in the other direction
+ * (issue 508).
+ *
+ * So it no longer lists anything. A list of what was searched is a promise that
+ * goes stale every time the index grows, and the useful fact is simply that the
+ * record half found nothing and the rows below are screens.
  */
 export function RecordSearchNote({
   searching,
@@ -55,8 +69,8 @@ export function RecordSearchNote({
       {searching
         ? 'Looking through your records…'
         : found > 0
-          ? `${String(found)} ${found === 1 ? 'record' : 'records'} matched — the rest are screens.`
-          : `Nothing in your orders, customers or products matches “${query.trim()}”.`}
+          ? `${String(found)} ${found === 1 ? 'record' : 'records'} matched. The rest are screens.`
+          : `Nothing in your records matches “${query.trim()}”. Everything below is a screen.`}
     </p>
   );
 }
@@ -68,7 +82,7 @@ export function LauncherEmpty({ searching, typed }: { searching: boolean; typed:
         ? 'Searching…'
         : typed
           ? 'Nothing matches that. Try a different word.'
-          : 'Type to search across every module — or pick a screen to open.'}
+          : 'Type to search across every app, or pick a screen to open.'}
     </p>
   );
 }

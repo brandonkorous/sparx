@@ -42,6 +42,7 @@ import { Icon } from '@piggles/ui';
 import { useMutation, useQuery } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import { FormSection } from '../../components/form-section';
+import { MoneyTextInput, moneyCents } from '../../components/money-input';
 import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, stockErrorMessage } from './data';
@@ -116,18 +117,32 @@ export function ReceiptBillPanel({
   const [billedAt, setBilledAt] = useState('');
   const [dueAt, setDueAt] = useState('');
   const [tax, setTax] = useState('');
-  const [shipping, setShipping] = useState('');
+  const [freight, setFreight] = useState('');
+  // What the paper says, per line. Seeded from the delivery and then hers to
+  // change: the whole point of this panel is that the supplier's numbers may not
+  // be ours, and until this existed there was nowhere to say so.
+  const [rows, setRows] = useState<{ qty: string; cost: string }[]>([]);
   const [seeded, setSeeded] = useState(false);
 
-  // Seed the dates from the draft ONCE. Guarded so a background refetch cannot
-  // reset a date somebody has just corrected off the paper.
+  // Seed the dates and the lines from the draft ONCE. Guarded so a background
+  // refetch cannot reset something somebody has just corrected off the paper.
   useEffect(() => {
     const data = draft.data;
     if (!data || seeded) return;
     setBilledAt(toDateInput(data.suggestedBilledAt));
     setDueAt(toDateInput(data.suggestedDueAt));
+    setRows(
+      data.lines.map((line) => ({
+        qty: String(line.quantity),
+        cost: (line.unitCostCents / 100).toFixed(2),
+      }))
+    );
     setSeeded(true);
   }, [draft.data, seeded]);
+
+  const setRow = (index: number, patch: { qty?: string; cost?: string }) => {
+    setRows((current) => current.map((row, i) => (i === index ? { ...row, ...patch } : row)));
+  };
 
   if (draft.isError) {
     return (
@@ -144,8 +159,21 @@ export function ReceiptBillPanel({
   if (!data) return null;
 
   const taxCents = toCents(tax);
-  const shippingCents = toCents(shipping);
-  const totalCents = data.subtotalCents + taxCents + shippingCents;
+  const freightCents = toCents(freight);
+
+  // Every figure below is computed from what is TYPED, not from the draft, so
+  // the total on the button is the total she is about to record.
+  const editedLines = data.lines.map((line, index) => {
+    const row = rows[index];
+    const quantity = row === undefined ? line.quantity : Math.trunc(Number(row.qty) || 0);
+    const unitCostCents = row === undefined ? line.unitCostCents : (moneyCents(row.cost) ?? 0);
+    return { ...line, quantity, unitCostCents, amountCents: quantity * unitCostCents };
+  });
+  const subtotalCents = editedLines.reduce((sum, line) => sum + line.amountCents, 0);
+  const totalCents = subtotalCents + taxCents + freightCents;
+  // The API requires a positive quantity on every line, so a half-typed "0"
+  // would be refused by the server with nothing on screen to explain it.
+  const linesUsable = editedLines.every((line) => line.quantity > 0);
 
   return (
     <FormSection
@@ -162,7 +190,7 @@ export function ReceiptBillPanel({
       description={
         data.existingBillId
           ? undefined
-          : 'Filled in from what was actually delivered. Correct anything the paper says differently — where the two disagree, the match will tell you.'
+          : 'Filled in from what was actually delivered. Correct anything the paper says differently: where the two disagree, the match will tell you.'
       }
     >
       {data.existingBillId ? (
@@ -236,13 +264,15 @@ export function ReceiptBillPanel({
         <thead>
           <tr>
             <th>Item</th>
-            <th className="text-right">Received</th>
+            {/* BILLED, not received. These are the paper's numbers now that they
+                can be typed; the delivery's are what they start at. */}
+            <th className="text-right">Billed</th>
             <th className="hidden text-right @md:table-cell">Each</th>
             <th className="text-right">Amount</th>
           </tr>
         </thead>
         <tbody>
-          {data.lines.map((line, index) => (
+          {editedLines.map((line, index) => (
             <tr key={`${line.purchaseOrderLineId ?? 'line'}-${index}`}>
               <td className="w-full max-w-0">
                 <span className="flex min-w-0 flex-col">
@@ -250,9 +280,30 @@ export function ReceiptBillPanel({
                   <span className="truncate font-mono text-sm">{line.sku ?? 'No code'}</span>
                 </span>
               </td>
-              <td className="text-right tabular-nums">{line.quantity}</td>
+              <td className="text-right tabular-nums">
+                <Input
+                  color="module"
+                  size="sm"
+                  className="w-16 text-right"
+                  inputMode="numeric"
+                  aria-label={`Units billed for ${line.description}`}
+                  value={rows[index]?.qty ?? String(line.quantity)}
+                  onChange={(event) => {
+                    setRow(index, { qty: event.target.value });
+                  }}
+                />
+              </td>
               <td className="hidden text-right tabular-nums @md:table-cell">
-                {formatCents(line.unitCostCents, data.currency)}
+                <MoneyTextInput
+                  color="module"
+                  size="sm"
+                  className="w-24 text-right"
+                  aria-label={`Price each billed for ${line.description}`}
+                  text={rows[index]?.cost ?? (line.unitCostCents / 100).toFixed(2)}
+                  onTextChange={(text) => {
+                    setRow(index, { cost: text });
+                  }}
+                />
               </td>
               <td className="text-right font-medium tabular-nums">
                 {formatCents(line.amountCents, data.currency)}
@@ -276,14 +327,14 @@ export function ReceiptBillPanel({
           />
         </Field>
         <Field>
-          <FieldLabel>Delivery charge</FieldLabel>
+          <FieldLabel>Freight</FieldLabel>
           <Input
             color="module"
-            value={shipping}
+            value={freight}
             inputMode="decimal"
             placeholder="0.00"
             onChange={(event) => {
-              setShipping(event.target.value);
+              setFreight(event.target.value);
             }}
           />
         </Field>
@@ -295,13 +346,15 @@ export function ReceiptBillPanel({
             {formatCents(totalCents, data.currency)}
           </Text>
           <Text className="text-sm">
-            {plural(data.lines.length, 'line', 'lines')} ·{' '}
-            {formatCents(data.subtotalCents, data.currency)} of goods
+            {`${plural(editedLines.length, 'line', 'lines')} · ${formatCents(
+              subtotalCents,
+              data.currency
+            )} of goods`}
           </Text>
         </div>
         <Button
           color="module"
-          disabled={number.trim() === '' || create.isPending}
+          disabled={number.trim() === '' || !linesUsable || create.isPending}
           onClick={() => {
             create.mutate(
               {
@@ -309,7 +362,22 @@ export function ReceiptBillPanel({
                 ...(toIso(billedAt) ? { billed_at: toIso(billedAt) } : {}),
                 ...(toIso(dueAt) ? { due_at: toIso(dueAt) } : {}),
                 tax_cents: taxCents,
-                shipping_cents: shippingCents,
+                freight_cents: freightCents,
+                // What the PAPER says, line by line. The endpoint has always
+                // taken this ("what the operator corrected the draft to") and
+                // nothing ever sent it, so every bill matched the delivery by
+                // construction and the check could not fail (issue 509).
+                lines: editedLines.map((line) => ({
+                  ...(line.purchaseOrderLineId
+                    ? { purchaseOrderLineId: line.purchaseOrderLineId }
+                    : {}),
+                  ...(line.variantId ? { variantId: line.variantId } : {}),
+                  description: line.description,
+                  quantity: line.quantity,
+                  unitCostCents: line.unitCostCents,
+                  amountCents: line.amountCents,
+                  ...(line.uomCode ? { uomCode: line.uomCode } : {}),
+                })),
               },
               {
                 onSuccess: (bill) => {

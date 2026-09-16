@@ -744,6 +744,7 @@ export type {
 export {
   listCountSchedules,
   getCountSchedule,
+  countScheduleCoverage,
   createCountSchedule,
   updateCountSchedule,
   deleteCountSchedule,
@@ -861,6 +862,7 @@ export {
   approveSupplierBill,
   acceptBillVariance,
   disputeSupplierBill,
+  settleBillQuery,
   recordBillPayment,
   cancelSupplierBill,
   // Receipt → bill (docs/146 Phase 10.10) — the path for a business with no

@@ -66,7 +66,7 @@ export interface PurchaseOrder {
   expectedArrivalAt: string | null;
   receivedAt: string | null;
   subtotalCents: number;
-  shippingCents: number;
+  freightCents: number;
   totalCents: number;
   lineCount: number;
   quantityOrdered: number;
@@ -145,7 +145,7 @@ export interface PurchaseOrderHeaderDraft {
   paymentTerms: string | null;
   reference: string | null;
   expectedArrivalAt: string | null;
-  shippingCents: number;
+  freightCents: number;
   notes: string | null;
 }
 
@@ -190,7 +190,7 @@ async function createPurchaseOrderRequest(
     ...(header.paymentTerms ? { paymentTerms: header.paymentTerms } : {}),
     ...(header.reference ? { reference: header.reference } : {}),
     ...(header.expectedArrivalAt ? { expectedArrivalAt: header.expectedArrivalAt } : {}),
-    shippingCents: header.shippingCents,
+    freightCents: header.freightCents,
     ...(header.notes ? { notes: header.notes } : {}),
     lines: lines.map(lineToInput),
   });
@@ -213,7 +213,7 @@ async function saveDraftPurchaseOrder(
     paymentTerms: header.paymentTerms,
     reference: header.reference,
     expectedArrivalAt: header.expectedArrivalAt,
-    shippingCents: header.shippingCents,
+    freightCents: header.freightCents,
     notes: header.notes,
   });
 

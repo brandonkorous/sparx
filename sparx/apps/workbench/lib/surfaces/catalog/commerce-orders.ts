@@ -67,7 +67,7 @@ export const ORDER_SURFACES: SurfaceDefinition[] = [
   },
   {
     key: 'commerce.cart.detail',
-    title: 'Cart',
+    title: 'Basket',
     module: 'commerce',
     icon: ShoppingCart,
     component: CartDetailSurface,

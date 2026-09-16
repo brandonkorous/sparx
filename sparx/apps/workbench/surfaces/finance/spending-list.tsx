@@ -53,6 +53,8 @@ import {
   useVendors,
   type Expense,
 } from './spend-data';
+import { quickCostProblem } from './quick-cost';
+import { todayStartUtc } from '../../lib/today';
 import { PERIOD_OPTIONS, rangeFor, type PeriodKey } from './period';
 import { billState, formatCents, formatDay, kindColor, sourceLabel } from './format';
 import { RowOpenHint } from '../../components/row-open-hint';
@@ -79,6 +81,10 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
  * receipts should not be asked about any of it.
  */
 
+/** Ties the line under the row to the button it explains, so a screen reader
+ *  reaching a disabled Record is told the same thing the screen shows. */
+const PROBLEM_ID = 'quick-cost-problem';
+
 function QuickEntry({
   categories,
   onOpenFull,
@@ -97,6 +103,9 @@ function QuickEntry({
   const amountCents = parseMoneyToCents(amount);
   const canSave =
     amountCents !== null && amountCents > 0 && description.trim() !== '' && categoryId !== '';
+  // Why Record is grey, in one sentence, or null. Read from the same three
+  // fields `canSave` reads, so the button and the line under it cannot disagree.
+  const problem = quickCostProblem({ amount, amountCents, description, categoryId });
 
   const submit = () => {
     if (!canSave || amountCents === null) return;
@@ -111,7 +120,7 @@ function QuickEntry({
         // The day the cost belongs to. Typing a receipt in on Tuesday for a
         // Saturday purchase is what the full pane is for; the common case is
         // today, and asking every time would cost more than it saves.
-        incurredAt: new Date().toISOString(),
+        incurredAt: todayStartUtc(),
         paidAt: null,
         dueAt: null,
         paymentMethod: null,
@@ -200,6 +209,7 @@ function QuickEntry({
             disabled={!canSave}
             loading={save.isPending}
             onClick={submit}
+            aria-describedby={problem ? PROBLEM_ID : undefined}
           >
             <Plus className="size-4" aria-hidden />
             Record
@@ -209,9 +219,9 @@ function QuickEntry({
           </Button>
         </div>
       </div>
-      {amount.trim() !== '' && amountCents === null ? (
-        <Text className="mt-2 text-sm">
-          That amount is not a number we can read. Try something like 42.50.
+      {problem ? (
+        <Text id={PROBLEM_ID} className="mt-2 text-sm">
+          {problem}
         </Text>
       ) : null}
     </Card>
@@ -425,7 +435,7 @@ export function SpendingListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Wallet className="size-6" aria-hidden />}
             title="Could not load your spending"
-            description="The server could not be reached. Nothing you have recorded is affected — try again in a moment."
+            description="The server could not be reached. Nothing you have recorded is affected. Try again in a moment."
             actions={
               <Button
                 size="sm"
@@ -483,7 +493,7 @@ export function SpendingListSurface({ ctx }: { ctx: SurfaceContext }) {
                     icon: <Receipt className="size-6" aria-hidden />,
                     title: 'Nothing recorded yet',
                     description:
-                      'Record what the business pays for — parts, wages, rent, software, fuel — and it will be counted against what you earn. Use the row above for a quick one, or open the full form for a bill with a due date and a receipt.',
+                      'Record what the business pays for (parts, wages, rent, software, fuel) and it will be counted against what you earn. Use the row above for a quick one, or open the full form for a bill with a due date and a receipt.',
                     actions: (
                       <Button size="sm" color="module" onClick={openNew}>
                         <Plus className="size-4" aria-hidden />

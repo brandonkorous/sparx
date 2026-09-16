@@ -201,7 +201,7 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
             <AlertTitle>This stock is still on sale</AlertTitle>
             <AlertDescription>
               Marking goods as somebody else’s takes them OUT of your inventory value and leaves
-              them fully sellable — which is the whole point of holding consignment. To stop
+              them fully sellable, which is the whole point of holding consignment. To stop
               something being sold, move it to a shelf that is not for sale instead.
             </AlertDescription>
           </AlertContent>
@@ -214,8 +214,8 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
             <AlertTitle>{plural(uncosted, 'line has', 'lines have')} no cost recorded</AlertTitle>
             <AlertDescription>
               Their value is shown as blank rather than as nothing, because a zero here would say
-              the owner gave them to you. Settlement will refuse to close a period containing them —
-              put a cost on those items first.
+              the owner gave them to you. Settlement will refuse to close a period containing them.
+              Put a cost on those items first.
             </AlertDescription>
           </AlertContent>
         </Alert>

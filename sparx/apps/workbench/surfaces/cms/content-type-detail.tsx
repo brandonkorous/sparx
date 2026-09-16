@@ -85,7 +85,7 @@ const TYPE_KEY_RE = /^[a-z][a-z0-9_]*$/;
 
 /** Every field type, named for what it DOES rather than its schema word. */
 const FIELD_TYPE_META: Record<FieldType, { label: string; hint: string }> = {
-  text: { label: 'Short text', hint: 'A single line — a title, a name, a heading.' },
+  text: { label: 'Short text', hint: 'A single line: a title, a name, a heading.' },
   long_text: { label: 'Long text', hint: 'Several lines of plain writing, with no formatting.' },
   rich_text: {
     label: 'Formatted text',
@@ -95,7 +95,7 @@ const FIELD_TYPE_META: Record<FieldType, { label: string; hint: string }> = {
     label: 'Web address piece',
     hint: 'The end of the page address, in lowercase letters and dashes.',
   },
-  number: { label: 'Number', hint: 'A figure — a price, a count, a rating.' },
+  number: { label: 'Number', hint: 'A figure: a price, a count, a rating.' },
   boolean: { label: 'Yes or no', hint: 'A single on/off switch.' },
   date: { label: 'Date', hint: 'A day, with no time.' },
   datetime: { label: 'Date and time', hint: 'A day and a time together.' },
@@ -104,13 +104,13 @@ const FIELD_TYPE_META: Record<FieldType, { label: string; hint: string }> = {
   email: { label: 'Email address', hint: 'A single email address.' },
   reference: {
     label: 'Link to other content',
-    hint: 'Points at another entry — a post to its author, a recipe to a chef.',
+    hint: 'Points at another entry: a post to its author, a recipe to a chef.',
   },
   asset: { label: 'Image or file', hint: 'Pick from your media library, or upload something.' },
   object: { label: 'Group', hint: 'A set of related fields bundled under one heading.' },
   repeater: {
     label: 'Repeating group',
-    hint: 'A group the writer can add over and over — ingredients, FAQs, steps.',
+    hint: 'A group the writer can add over and over: ingredients, FAQs, steps.',
   },
 };
 
@@ -445,7 +445,7 @@ function EditType({
       title: `Delete “${type.name}”?`,
       description:
         entryCount > 0
-          ? `${String(entryCount)} ${entryCount === 1 ? 'entry uses' : 'entries use'} this type. You cannot delete it until those are removed — archiving them is not enough. This cannot be undone.`
+          ? `${String(entryCount)} ${entryCount === 1 ? 'entry uses' : 'entries use'} this type. You cannot delete it until those are removed: archiving them is not enough. This cannot be undone.`
           : `This removes the “${type.name}” type and its fields for good. This cannot be undone.`,
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
@@ -688,7 +688,7 @@ function MetaForm({
               />
             }
           />
-          <FieldDescription>What you call several — shown in menus and headings.</FieldDescription>
+          <FieldDescription>What you call several: shown in menus and headings.</FieldDescription>
         </Field>
       </div>
 
@@ -713,7 +713,7 @@ function MetaForm({
         />
         <FieldDescription>
           {editableKey
-            ? 'A short internal name in lowercase letters, numbers and underscores. Filled in from the name — change it now if you like, it cannot be changed later.'
+            ? 'A short internal name in lowercase letters, numbers and underscores. Filled in from the name. Change it now if you like, it cannot be changed later.'
             : 'The internal name for this type. It is fixed once the type is created.'}
         </FieldDescription>
       </Field>
@@ -773,7 +773,7 @@ function MetaForm({
           }
         />
         <FieldDescription>
-          Where these appear on your site. Use {'{slug}'} for the part that changes per entry — e.g.
+          Where these appear on your site. Use {'{slug}'} for the part that changes per entry: e.g.
           /recipes/{'{slug}'}. Leave it empty if this content does not get its own page.
         </FieldDescription>
       </Field>
@@ -791,7 +791,7 @@ function MetaForm({
         <span className="flex flex-col gap-0.5">
           <Text as="span">Only one of these</Text>
           <Text as="span" className="text-sm">
-            Turn on for something there is only ever one of — an About page, your homepage, a set of
+            Turn on for something there is only ever one of: an About page, your homepage, a set of
             site-wide settings. Leave off for things you make many of.
           </Text>
         </span>
@@ -1173,7 +1173,7 @@ function FieldConfig({ field, depth, siblingKeys, typeOptions, onChange }: Field
             }
           />
           <FieldDescription>
-            The internal name — lowercase to start, then letters, numbers or underscores.
+            The internal name: lowercase to start, then letters, numbers or underscores.
           </FieldDescription>
         </Field>
       </div>
@@ -1359,7 +1359,7 @@ function TypeSpecificConfig({
                 patch({ sourceField: event.target.value || undefined });
               }}
             >
-              <option value="">Nothing — the writer types it</option>
+              <option value="">Nothing: the writer types it</option>
               {siblingKeys.map((key) => (
                 <option key={key} value={key}>
                   {key}
@@ -1427,7 +1427,7 @@ function TypeSpecificConfig({
                 patch({ integer: next });
               }}
             />
-            <Text as="span">Whole numbers only — no decimals</Text>
+            <Text as="span">Whole numbers only: no decimals</Text>
           </div>
         </>
       );
@@ -1595,8 +1595,8 @@ function TypeSpecificConfig({
               }
             />
             <FieldDescription>
-              The word for a single entry in the list — “Ingredient”, “Step”, “FAQ”. Shows on the
-              Add button.
+              The word for a single entry in the list: “Ingredient”, “Step”, “FAQ”. Shows on the Add
+              button.
             </FieldDescription>
           </Field>
           <div className="grid gap-4 @lg:grid-cols-2">

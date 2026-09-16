@@ -80,6 +80,14 @@ import { hasStateArt, StateArt } from './state-art';
 const GONE =
   'It has been deleted, or the address points at something that is not in this business. Nothing of yours has been lost.';
 
+/** What a pane says when the server ANSWERED and its answer was a failure.
+ *
+ *  Owned here rather than left to the caller for the same reason GONE is: every
+ *  caller's own sentence is written about the unreachable case, so a 5xx wearing
+ *  it tells a business owner to check a connection that is working perfectly. */
+const OUR_FAULT =
+  'Something went wrong at our end, not yours. Nothing you have recorded has changed. Trying again may work, and if it keeps failing the fault is ours to fix.';
+
 export function PaneLoadError({
   icon,
   module,
@@ -119,6 +127,11 @@ export function PaneLoadError({
    *   'missing'     — the record is gone (a 404). Retrying cannot help, and
    *                   offering it invites someone to press a button that will
    *                   fail every time; the way out is back to the list.
+   *   'failed'      — the server WAS reached and answered that it had failed
+   *                   (a 5xx). Retrying is still worth offering, because some
+   *                   5xx really are momentary — but the SENTENCE must not
+   *                   blame the connection, which is what sends somebody off to
+   *                   restart a router over a bug in our own code.
    *
    * The tone follows: error for a failure, warning for something that simply is
    * not there any more. A deleted record is not a fault, and painting it red
@@ -129,7 +142,7 @@ export function PaneLoadError({
    *
    * Pass `error` instead and this is worked out; pass this to overrule it.
    */
-  reason?: 'unreachable' | 'missing';
+  reason?: 'unreachable' | 'missing' | 'failed';
   /**
    * The query's error, so the reason above is READ rather than assumed.
    *
@@ -156,7 +169,9 @@ export function PaneLoadError({
    *  Rendered after the retry button, so retry stays the obvious move. */
   actions?: ReactNode;
 }) {
-  const missing = (reason ?? paneLoadReason(error)) === 'missing';
+  const resolved = reason ?? paneLoadReason(error);
+  const missing = resolved === 'missing';
+  const failed = resolved === 'failed';
   // Suppressed HERE rather than trusted to every call site: a retry against a
   // record that no longer exists fails every single time, and a button that
   // cannot work is worse than no button.
@@ -169,9 +184,14 @@ export function PaneLoadError({
   const shownTitle = missing
     ? (missingTitle ?? (noun ? `That ${noun} is no longer here` : title))
     : title;
+  // A caller that named its own `reason` has said which state it is in, so its
+  // words are its own. Everything else reached this branch by the error's
+  // status, and its `description` was written about the unreachable case.
   const shownDescription = missing
     ? (missingDescription ?? (noun ? GONE : description))
-    : description;
+    : failed && reason === undefined
+      ? OUR_FAULT
+      : description;
 
   return (
     <div className="flex h-full min-h-72 flex-col items-center justify-center gap-1 px-6 py-10">

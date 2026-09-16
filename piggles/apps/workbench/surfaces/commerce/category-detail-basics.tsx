@@ -89,7 +89,7 @@ export function CategoryBasics({
             (pages, groups, products) all print their real address; only this one
             printed one that does not exist. */}
         <FieldDescription>
-          The end of this category&apos;s page address — yoursite.com/category/
+          The end of this category&apos;s page address: yoursite.com/category/
           {effectiveHandle || '…'}.{' '}
           {isNew ? '' : 'Changing it breaks any link already shared to this page.'}
         </FieldDescription>
@@ -140,8 +140,8 @@ export function CategoryBasics({
           }
         />
         <FieldDescription>
-          Marks it as one to highlight — themes can show featured categories on the home page or in
-          a promoted menu.
+          Marks it as one to highlight: themes can show featured categories on the home page or in a
+          promoted menu.
         </FieldDescription>
       </Field>
     </FormSection>

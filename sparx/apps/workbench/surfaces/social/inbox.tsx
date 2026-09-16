@@ -37,7 +37,6 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useViewer } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   canCompose,
   catalogByPlatform,
@@ -132,7 +131,7 @@ function InboxRow({
             </Badge>
           </span>
           <span className="line-clamp-2 text-base break-words">
-            {item.text ?? <span className="italic">No words — just a rating.</span>}
+            {item.text ?? <span className="italic">No words, just a rating.</span>}
           </span>
           <span className="text-sm">
             {inboxKindLabel(item.kind)} on {item.targetName} · {platformLabel} ·{' '}
@@ -168,7 +167,7 @@ function ThreadMessage({ item }: { item: InboxItem }) {
         ) : null}
       </div>
       <Text className="whitespace-pre-wrap">
-        {item.text ?? <span className="italic">No words — just a rating.</span>}
+        {item.text ?? <span className="italic">No words, just a rating.</span>}
       </Text>
     </div>
   );
@@ -327,7 +326,7 @@ function Conversation({
 
 /* ── The surface ──────────────────────────────────────────────────────────── */
 
-export function SocialInboxSurface({ ctx }: { ctx: SurfaceContext }) {
+export function SocialInboxSurface() {
   const toast = useToast();
   const viewer = useViewer();
   const overview = useSocialOverview();
@@ -343,10 +342,6 @@ export function SocialInboxSurface({ ctx }: { ctx: SurfaceContext }) {
     () => catalogByPlatform(overview.data?.catalog ?? []),
     [overview.data]
   );
-
-  useEffect(() => {
-    ctx.setTitle('Inbox');
-  }, [ctx]);
 
   // Keep a selection that still exists in the current filter; otherwise fall to the
   // first row, so switching tabs lands on something rather than an empty right pane.

@@ -44,7 +44,7 @@ export function PaySection({
   const drop = async (id: string, label: string) => {
     const ok = await confirm({
       title: 'Remove this rate?',
-      description: `This deletes the ${label} rate outright. If they simply stopped earning it, set an end date instead — deleting it removes the ability to explain any cost already worked out from it.`,
+      description: `This deletes the ${label} rate outright. If they simply stopped earning it, set an end date instead: deleting it removes the ability to explain any cost already worked out from it.`,
       confirmLabel: 'Remove it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -69,7 +69,7 @@ export function PaySection({
             <AlertTitle>Only an account admin can see pay</AlertTitle>
             <AlertDescription>
               Rates, documents and commission are limited to admins and owners. This person may well
-              have a rate on file — you are not able to see it.
+              have a rate on file. You are not able to see it.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -83,7 +83,7 @@ export function PaySection({
   return (
     <FormSection
       title="What they're paid"
-      description="A raise is a new rate, not an edit — so what a job cost last March still explains itself."
+      description="A raise is a new rate, not an edit, so what a job cost last March still explains itself."
       action={
         adding ? null : (
           <Button
@@ -107,8 +107,8 @@ export function PaySection({
           <AlertContent>
             <AlertTitle>No pay rate on file</AlertTitle>
             <AlertDescription>
-              Until there is one, this person’s hours are counted but never costed — they show up as
-              unpriced on the timesheet rather than as free labour.
+              Until there is one, this person’s hours are counted but never costed. They show up as
+              unpriced on the timesheet rather than as free labor.
             </AlertDescription>
           </AlertContent>
         </Alert>

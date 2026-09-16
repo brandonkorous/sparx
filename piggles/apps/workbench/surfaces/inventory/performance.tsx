@@ -323,7 +323,7 @@ function GmroiCard({
           </Text>
           <Text className="text-sm">
             Average money tied up
-            {report.averageFromDailyRollup ? '' : ' — today’s figure, standing in'}
+            {report.averageFromDailyRollup ? '' : ', today’s figure, standing in'}
           </Text>
         </div>
       </div>
@@ -336,7 +336,7 @@ function GmroiCard({
               <th className="hidden text-right @md:table-cell">Sold</th>
               <th className="text-right whitespace-nowrap">Profit</th>
               <th className="hidden text-right @lg:table-cell">Margin</th>
-              <th className="text-right">Earned per £</th>
+              <th className="text-right">Earned per $1</th>
             </tr>
           </thead>
           <tbody>
@@ -570,7 +570,7 @@ function StockoutCard({
           </Heading>
           <Text className="text-sm">
             A run at zero counts once however long it lasted, so forty short gaps and one long one
-            read differently — the first is a re-ordering rhythm problem, the second a buying one.
+            read differently: the first is a re-ordering rhythm problem, the second a buying one.
           </Text>
         </div>
         <ExportButton reportKey="stockout_frequency" filters={filters} />
@@ -791,7 +791,7 @@ export function PerformanceReportsSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
           title="Could not work out your figures"
-          description="This is a problem reaching the server. Your stock and its history are unaffected — the figures just could not be worked out just now."
+          description="This is a problem reaching the server. Your stock and its history are unaffected: the figures just could not be worked out just now."
         />
       );
     }

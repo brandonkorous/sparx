@@ -42,7 +42,7 @@ const NAME_MAX = 120;
 
 export function draftProblem(draft: WebhookDraft): string | null {
   const name = draft.name.trim();
-  if (name === '') return 'Give this a short name so you can recognise it later.';
+  if (name === '') return 'Give this a short name so you can recognize it later.';
   if (name.length > NAME_MAX) {
     return `That name is too long. Shorten it to ${String(NAME_MAX)} characters or fewer.`;
   }

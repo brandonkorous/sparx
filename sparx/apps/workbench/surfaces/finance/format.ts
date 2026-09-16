@@ -27,6 +27,43 @@ export function formatCentsSigned(cents: number, currency = 'USD'): string {
   return cents < 0 ? `−${formatted}` : formatted;
 }
 
+/**
+ * UNSIGNED, for a figure whose direction is already in the words beside it.
+ *
+ * "You lost −$1,410.80" says the same thing three times: the word, the red,
+ * and the minus sign. Two of those agree and the third fights them, because in
+ * plain English losing a negative amount is a gain. The word is the clearest of
+ * the three, so the word keeps the job and the number drops the sign.
+ *
+ * This is NOT a rule about money in general. Where nothing beside a figure names
+ * the direction — a column of jobs, a line called "What the work made" — the sign
+ * is the only thing carrying it, and `formatCentsSigned` is the right one.
+ */
+export function formatCentsUnsigned(cents: number, currency = 'USD'): string {
+  return formatCents(Math.abs(cents), currency);
+}
+
+/**
+ * A bottom line as a person reads it: the WORD for which way it went, and the
+ * SIZE of it.
+ *
+ * Kept together because they are one decision. Split across a call site they
+ * drift, which is how the profit screen came to read "You lost −$1,410.80" in
+ * two places at once — see `formatCentsUnsigned` above for why that is wrong.
+ */
+export function profitOutcome(
+  cents: number,
+  currency: string,
+  words: { kept: string; lost: string }
+): { label: string; amount: string; lost: boolean } {
+  const lost = cents < 0;
+  return {
+    lost,
+    label: lost ? words.lost : words.kept,
+    amount: formatCentsUnsigned(cents, currency),
+  };
+}
+
 /** Compact above five figures, exact below — a $545.30 total rendered "$545.3"
  *  reads as a typo, but past $10k the cents stop being the point and width does. */
 export function formatMoneyCompact(amount: number, currency = 'USD'): string {
@@ -161,9 +198,37 @@ export const methodLabel = paymentMethodLabel;
 
 export type Tone = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 
-/** A payment's state, in plain words + its semantic color. Status is its own
- *  color axis (docs/23), independent of the finance module hue. */
-export function paymentState(status: string): { label: string; tone: Tone } {
+/**
+ * A payment's state, in plain words + its semantic color. Status is its own
+ * color axis (docs/23), independent of the finance module hue.
+ *
+ * TAKES THE MONEY, NOT JUST THE WORD. A refund is a row in ANOTHER table, and
+ * nothing rewrites `order_payments.status` when one lands — `recordRefund`
+ * updates the ORDER and the order's rollup and leaves the payment saying
+ * `captured` for ever. So a payment with every penny back read **Paid**, in
+ * success green, beside its own "−$170.00 back" line. Three of the four
+ * refunded payments on this platform were badged that way; the fourth says
+ * `refunded` only because a seed wrote the word directly.
+ *
+ * The numbers were already in the caller's hand — the row renders the refunded
+ * amount two lines under the badge. The badge simply was not looking at it.
+ *
+ * `refunded` and `amount` are REQUIRED, not defaulted, so a new caller has to
+ * decide rather than silently inherit the old blindness.
+ */
+export function paymentState(
+  status: string,
+  refunded: number,
+  amount: number
+): { label: string; tone: Tone } {
+  // Money that came back outranks the word, because the word cannot know. The
+  // api-rest list caps each payment's share at its own amount, so `>=` really
+  // is "all of it" and can never be an artifact of apportioning.
+  if (refunded > 0 && (status === 'captured' || status === 'refunded')) {
+    return refunded >= amount
+      ? { label: 'Refunded', tone: 'warning' }
+      : { label: 'Part refunded', tone: 'warning' };
+  }
   switch (status) {
     case 'captured':
       return { label: 'Paid', tone: 'success' };
@@ -232,11 +297,11 @@ export function kindLabel(kind: ExpenseKindName): string {
 export function kindHelp(kind: ExpenseKindName): string {
   switch (kind) {
     case 'cost_of_sale':
-      return 'Costs that only happen because you did the job — parts, materials, a subcontractor. These come off first.';
+      return 'Costs that only happen because you did the job: parts, materials, a subcontractor. These come off first.';
     case 'labor':
       return 'What you pay people. Wages, contractors on retainer, payroll costs.';
     default:
-      return 'The cost of being open whether or not you sell anything — rent, software, insurance, fuel, marketing.';
+      return 'The cost of being open whether or not you sell anything: rent, software, insurance, fuel, marketing.';
   }
 }
 
@@ -301,7 +366,7 @@ export function sourceLabel(source: string): string {
  * A margin rate as a percentage — or an em-dash when there is no rate.
  *
  * `null` means nobody could compute one (no revenue to divide by), and it must
- * never render as "0%": that would rank a job that took £80 of cost and earned
+ * never render as "0%": that would rank a job that took $80 of cost and earned
  * nothing alongside one that genuinely broke even.
  */
 export function formatRate(rate: number | null): string {

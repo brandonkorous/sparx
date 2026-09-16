@@ -30,8 +30,8 @@ export function TeamMemberRemovedEmail({ memberName, orgName }: TeamMemberRemove
         has been removed, so you&apos;ll no longer be able to sign in to that workspace.
       </EmailParagraph>
       <EmailParagraph>
-        If you think this was a mistake, reach out to whoever manages {orgName} — they can invite
-        you again.
+        If you think this was a mistake, reach out to whoever manages {orgName}. They can invite you
+        again.
       </EmailParagraph>
       <EmailFinePrint>Any other {platform} workspaces you belong to are unaffected.</EmailFinePrint>
     </PlatformEmailLayout>

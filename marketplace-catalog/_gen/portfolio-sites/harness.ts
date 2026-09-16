@@ -61,7 +61,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
  *  1.3.0 carries the chrome the composite has been emitting since issue 291 — the
  *  account link in the bar and the phone panel, and the legal links in the footer —
  *  which the committed bundles had been a release behind on (issue 313). */
-const BUNDLE_VERSION = '1.3.0';
+const BUNDLE_VERSION = '1.3.1';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -174,24 +174,24 @@ function portfolioSeo(
     const bn = spec.brand.businessName;
     const ind = spec.industry;
     const composed: Record<PortfolioPageKey, { title: string; description: string }> = {
-        home: { title: bn, description: `${bn} — ${ind.toLowerCase()}. Selected work, and how to get in touch.` },
+        home: { title: bn, description: `${bn}: ${ind.toLowerCase()}. Selected work, and how to get in touch.` },
         work: {
-            title: `Work — ${bn}`,
-            description: `Selected projects and case studies by ${bn} — the work, the thinking, and the outcome.`,
+            title: `Work: ${bn}`,
+            description: `Selected projects and case studies by ${bn}: the work, the thinking, and the outcome.`,
         },
         about: {
-            title: `About — ${bn}`,
-            description: `Who ${bn} is and how they work — background, approach, and the tools of the trade.`,
+            title: `About: ${bn}`,
+            description: `Who ${bn} is and how they work: background, approach, and the tools of the trade.`,
         },
         contact: {
-            title: `Contact — ${bn}`,
-            description: `Start a project with ${bn} — availability, what a good brief looks like, and where to reach them.`,
+            title: `Contact: ${bn}`,
+            description: `Start a project with ${bn}: availability, what a good brief looks like, and where to reach them.`,
         },
         // The project template is a record template — per-project title/description at runtime.
         // This page-level pair is only the studio fallback for the template itself.
         project: {
-            title: `Project — ${bn}`,
-            description: `A project by ${bn} — the brief, the process, and the result, in one case study.`,
+            title: `Project: ${bn}`,
+            description: `A project by ${bn}: the brief, the process, and the result, in one case study.`,
         },
     };
     const out = { ...composed };
@@ -212,7 +212,7 @@ function defaultWorkMasthead(): Node[] {
                             text: 'Selected work',
                         }),
                         el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                            text: 'A selection of recent projects. Each one opens to the full story — the brief, the work, and the result.',
+                            text: 'A selection of recent projects. Each one opens to the full story: the brief, the work, and the result.',
                         }),
                     ],
                 }),
@@ -232,7 +232,7 @@ function defaultAbout(spec: PortfolioSiteSpec): Node[] {
                             text: `About ${spec.brand.businessName}`,
                         }),
                         el('p', 'text-lg leading-relaxed text-base-content', {
-                            text: 'This is your story — who you are, what you make, and the work you want more of. Replace this with a few honest sentences; the people who find you here want to know the person behind the work.',
+                            text: 'This is your story, who you are, what you make, and the work you want more of. Replace this with a few honest sentences; the people who find you here want to know the person behind the work.',
                         }),
                     ],
                 }),
@@ -429,7 +429,7 @@ function manifestJson(opts: {
         requires: { modules: ['builder', 'cms', 'email'] },
         media: [
             { file: 'media/icon.png', kind: 'icon', alt: `${opts.name} icon` },
-            { file: 'media/preview.png', kind: 'preview', alt: `${opts.name} — home page preview` },
+            { file: 'media/preview.png', kind: 'preview', alt: `${opts.name}: home page preview` },
         ],
         author: { displayName: 'WizeWorks' },
         accent: opts.accent,
@@ -459,7 +459,7 @@ function portfolioEmails(_spec: PortfolioSiteSpec): Record<string, unknown>[] {
                 preheader: 'A quick hello, and where to see the work.',
                 heading: 'Hello, {{customer.firstName}}',
                 paragraphs: [
-                    'Thanks for subscribing to {{site.name}}. I’ll send the occasional note when there’s new work worth sharing — no noise, and never often.',
+                    'Thanks for subscribing to {{site.name}}. I’ll send the occasional note when there’s new work worth sharing: no noise, and never often.',
                 ],
                 highlight: {
                     title: 'Start with the selected work',

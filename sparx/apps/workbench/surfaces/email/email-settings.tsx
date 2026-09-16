@@ -28,6 +28,7 @@ import {
   Input,
   Loading,
   NativeSelect,
+  Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
@@ -35,7 +36,6 @@ import { Save, TriangleAlert } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   emailSettingsErrorMessage,
   useEmailSettings,
@@ -140,7 +140,7 @@ function TextField({
   );
 }
 
-export function EmailSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
+export function EmailSettingsSurface() {
   const toast = useToast();
   const settings = useEmailSettings();
   const domains = useSendingDomains();
@@ -152,10 +152,6 @@ export function EmailSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
     fromAddress: false,
     replyTo: false,
   });
-
-  useEffect(() => {
-    ctx.setTitle('Email settings');
-  }, [ctx]);
 
   // Seed once. Re-seeding on a background refetch would overwrite what someone is
   // part-way through typing.
@@ -232,7 +228,7 @@ export function EmailSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
           <AlertContent>
             <AlertTitle>Could not load your email settings</AlertTitle>
             <AlertDescription>
-              Nothing has been lost — this is a problem reaching the server, not with your saved
+              Nothing has been lost. This is a problem reaching the server, not with your saved
               settings.
             </AlertDescription>
           </AlertContent>
@@ -282,12 +278,29 @@ export function EmailSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
               title="Who your email comes from"
               description="This is what your customers see in their inbox, and where their replies go."
             >
+              {/* The card promises what a customer sees, and used to show only the
+                  boxes that FEED it. The server already sends the answer — the
+                  literal `From` header a send will carry, fallbacks and all — and
+                  nothing drew it, so the one way to find out was to open a
+                  broadcast (issue 455). */}
+              {data ? (
+                <Field>
+                  <FieldLabel>What your customers see now</FieldLabel>
+                  <Text className="font-medium">{data.resolvedFrom}</Text>
+                  <FieldDescription>
+                    {dirty
+                      ? 'Save to see how your changes read.'
+                      : 'Leave the boxes below blank and we use your site’s name and our shared address.'}
+                  </FieldDescription>
+                </Field>
+              ) : null}
+
               <TextField
                 label="Sender name"
                 value={form.fromName}
                 onChange={set('fromName')}
                 placeholder="Acme Supply"
-                description="The name shown in the inbox — usually your business name, not a person."
+                description="The name shown in the inbox, usually your business name, not a person."
               />
               <div className="grid gap-4 @lg:grid-cols-2">
                 <TextField
@@ -340,7 +353,7 @@ export function EmailSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
                     >
                       {domain.state === 'verified'
                         ? domain.domain
-                        : `${domain.domain} — not verified yet`}
+                        : `${domain.domain}: not verified yet`}
                     </option>
                   ))}
                 </NativeSelect>

@@ -73,7 +73,7 @@ const blueprintsDir = join(here, '..', '..', 'blueprints');
  *  1.4.0 carries the chrome the composite has been emitting since issue 291 — the
  *  account link in the bar and the phone panel, and the legal links in the footer —
  *  which the committed bundles had been a release behind on (issue 313). */
-const BUNDLE_VERSION = '1.4.0';
+const BUNDLE_VERSION = '1.4.1';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -178,21 +178,21 @@ function serviceSeo(
     const tag = spec.brand.tagline;
     const ind = spec.industry;
     const composed: Record<ServicePageKey, { title: string; description: string }> = {
-        home: { title: bn, description: `${tag} ${bn} — ${ind.toLowerCase()}. Book online.` },
+        home: { title: bn, description: `${tag} ${bn}: ${ind.toLowerCase()}. Book online.` },
         menu: {
-            title: `Menu — ${bn}`,
-            description: `See the full menu at ${bn} — dishes, drinks and prices — then reserve a table.`,
+            title: `Menu: ${bn}`,
+            description: `See the full menu at ${bn} (dishes, drinks and prices) then reserve a table.`,
         },
         book: {
-            title: `Book — ${bn}`,
+            title: `Book: ${bn}`,
             description: `See what ${bn} offers, with prices and how long each takes, and book your appointment online.`,
         },
         about: {
-            title: `About — ${bn}`,
+            title: `About: ${bn}`,
             description: `Who ${bn} is, what we do and the people behind the work.`,
         },
         contact: {
-            title: `Visit — ${bn}`,
+            title: `Visit: ${bn}`,
             description: `Where to find ${bn}, our hours, and how to reach us.`,
         },
     };
@@ -259,7 +259,7 @@ export function composeServiceSite(spec: ServiceSiteSpec): Record<string, unknow
             pageBody([
                 contactSection({
                     heading: 'Get in touch',
-                    intro: `Questions before you book? Send a note and ${spec.brand.businessName} will get back to you — usually the same day.`,
+                    intro: `Questions before you book? Send a note and ${spec.brand.businessName} will get back to you, usually the same day.`,
                     submitLabel: 'Send my request',
                     askPhone: true,
                     showAddress: false,
@@ -388,7 +388,7 @@ function manifestJson(opts: {
         requires: { modules: opts.requiresModules },
         media: [
             { file: 'media/icon.png', kind: 'icon', alt: `${opts.name} icon` },
-            { file: 'media/preview.png', kind: 'preview', alt: `${opts.name} — home page preview` },
+            { file: 'media/preview.png', kind: 'preview', alt: `${opts.name}: home page preview` },
         ],
         author: { displayName: 'WizeWorks' },
         accent: opts.accent,
@@ -539,7 +539,7 @@ function serviceEmails(_spec: ServiceSiteSpec): Record<string, unknown>[] {
             publish: false,
             doc: blueprintEmailDoc({
                 subject: 'Welcome to {{site.name}}',
-                preheader: 'So glad you found us — here’s where to start.',
+                preheader: 'So glad you found us: here’s where to start.',
                 heading: 'Welcome, {{customer.firstName}}',
                 paragraphs: [
                     'Thanks for choosing {{site.name}}. Whether this is your first visit or your fifth, we’re glad you’re here.',
@@ -547,11 +547,11 @@ function serviceEmails(_spec: ServiceSiteSpec): Record<string, unknown>[] {
                 features: [
                     {
                         title: 'Booking takes a minute',
-                        body: 'See live availability, pick the time that works for you, and you’re done — no phone tag.',
+                        body: 'See live availability, pick the time that works for you, and you’re done: no phone tag.',
                     },
                     {
                         title: 'It’s all in your account',
-                        body: 'Reschedule, cancel, or book again any time — your visits live in one place.',
+                        body: 'Reschedule, cancel, or book again any time. Your visits live in one place.',
                     },
                 ],
                 button: { label: 'Book an appointment', href: '{{site.url}}/book' },
@@ -1277,7 +1277,7 @@ function bookingPolicyBand(spec: ServiceSiteSpec): Node[] {
                                     text: 'Good to know',
                                 }),
                                 el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                                    text: 'What happens once you pick a time — and how to change it if something comes up.',
+                                    text: 'What happens once you pick a time, and how to change it if something comes up.',
                                 }),
                             ],
                         }),
@@ -1321,7 +1321,7 @@ function defaultAbout(spec: ServiceSiteSpec): Node {
                         text: `About ${spec.brand.businessName}`,
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'This is your story — who you are, the work you do, and why people keep coming back. Replace this with a few honest sentences; the people booking with you want to know the human behind it.',
+                        text: 'This is your story, who you are, the work you do, and why people keep coming back. Replace this with a few honest sentences; the people booking with you want to know the human behind it.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'Add photos, your team, and your hours from the builder. This page grows with you.',

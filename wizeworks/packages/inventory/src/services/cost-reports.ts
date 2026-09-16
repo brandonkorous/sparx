@@ -276,7 +276,7 @@ export async function priceVarianceReport(
           SUM(rl.quantity_received * COALESCE(rl.landed_unit_cost_cents, rl.unit_cost_cents))::bigint
             AS actual_cents,
           -- The standard is read at the LOCATION the goods landed in, because a
-          -- business can plan a different cost per site; the catalogue figure is
+          -- business can plan a different cost per site; the catalog figure is
           -- the fallback.
           MAX(COALESCE(lv.unit_cost_cents, v.cost_cents)) AS standard_unit_cost_cents,
           SUM(rl.quantity_received * COALESCE(lv.unit_cost_cents, v.cost_cents))::bigint

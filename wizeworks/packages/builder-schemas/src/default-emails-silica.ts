@@ -75,18 +75,18 @@ const welcomeCustomer = (): SectionNode[] => [
   copyBlock([
     heading('Welcome to {{site.name}}'),
     para(
-      'Hi {{customer.greeting}}, thanks for creating an account — we’re glad you’re here. Here’s what your account can do:'
+      'Hi {{customer.greeting}}, thanks for creating an account: we’re glad you’re here. Here’s what your account can do:'
     ),
   ]),
   moduleFeature(
     'commerce',
     'Shop the full collection',
-    'Browse everything at {{site.name}} and check out in seconds — your details are saved, so your next order is just a tap away.'
+    'Browse everything at {{site.name}} and check out in seconds. Your details are saved, so your next order is just a tap away.'
   ),
   moduleFeature(
     'scheduling',
     'Book online, anytime',
-    'Reserve a time that works for you and manage every booking from your account — no phone tag.'
+    'Reserve a time that works for you and manage every booking from your account: no phone tag.'
   ),
   moduleFeature(
     'b2b',
@@ -101,7 +101,7 @@ const welcomeCustomer = (): SectionNode[] => [
   featureList([
     {
       title: 'Everything in one place',
-      body: 'Your details and history are always a click away — sign in any time to pick up where you left off.',
+      body: 'Your details and history are always a click away. Sign in any time to pick up where you left off.',
     },
     {
       title: 'We’re here to help',
@@ -118,7 +118,7 @@ const welcomeCustomer = (): SectionNode[] => [
   }),
   copyBlock([
     button('Visit {{site.name}}', '{{site.url}}', 'center'),
-    text('We’re glad you’re here — welcome aboard.', { align: 'center' }),
+    text('We’re glad you’re here: welcome aboard.', { align: 'center' }),
   ]),
 ];
 
@@ -126,7 +126,7 @@ const winBack = (): SectionNode[] => [
   copyBlock([
     heading('It’s been a while'),
     para(
-      'We haven’t seen you at {{site.name}} in a bit, {{customer.greeting}}. There’s plenty new since your last visit — come take a look.'
+      'We haven’t seen you at {{site.name}} in a bit, {{customer.greeting}}. There’s plenty new since your last visit: come take a look.'
     ),
     button('See what’s new', '{{site.url}}', 'center'),
   ]),
@@ -152,7 +152,7 @@ const abandonedCart = (): SectionNode[] => [
   detailPanel([{ label: 'Cart total', value: '{{cart.total}}', emphasize: true }]),
   copyBlock([
     button('Complete your order', '{{cart.recoveryUrl}}', 'center'),
-    para('Items in your cart aren’t reserved — check out to make them yours.'),
+    para('Items in your cart aren’t reserved. Check out to make them yours.'),
   ]),
   // Marketing send (under the unsubscribe footer), so a cross-sell rail earns its place —
   // the mechanism that turns a saved cart into a bigger order, each card deep-linked.
@@ -204,7 +204,7 @@ const b2bAccountApproved = (): SectionNode[] => [
   copyBlock([
     heading('You’re approved'),
     para(
-      'Good news — {{b2bAccount.companyName}} has been approved for a wholesale account with {{site.name}}. You can sign in and order at your account pricing now.'
+      'Good news: {{b2bAccount.companyName}} has been approved for a wholesale account with {{site.name}}. You can sign in and order at your account pricing now.'
     ),
   ]),
   detailPanel(
@@ -243,7 +243,7 @@ const b2bQuoteExpiring = (): SectionNode[] => [
   copyBlock([
     heading('Your quote expires soon'),
     para(
-      'Heads-up — quote {{quote.number}} expires on {{quote.validUntil}}. Approve it before then to lock in your pricing.'
+      'Heads-up: quote {{quote.number}} expires on {{quote.validUntil}}. Approve it before then to lock in your pricing.'
     ),
   ]),
   detailPanel(
@@ -347,7 +347,7 @@ const invoicingOverdueFinal = (): SectionNode[] =>
 
 const invoicingReceipt = (): SectionNode[] => [
   copyBlock([
-    heading('Payment received — thank you!'),
+    heading('Payment received: thank you!'),
     para(
       'We’ve received your payment in full for invoice {{invoice.number}}. Here’s a summary for your records:'
     ),
@@ -367,7 +367,7 @@ const invoicingReceipt = (): SectionNode[] => [
 const orderConfirmation = (): SectionNode[] => [
   copyBlock([
     text('✓ Order confirmed', { size: 14, weight: 'semibold', colorRole: 'success' }),
-    heading('Thanks, {{customer.greeting}} — your order’s in.'),
+    heading('Thanks, {{customer.greeting}}. Your order’s in.'),
     para(
       'We’re getting order {{order.number}} ready. We’ll email you tracking the moment it ships.'
     ),
@@ -409,7 +409,7 @@ const orderConfirmation = (): SectionNode[] => [
 const shippingConfirmation = (): SectionNode[] => [
   copyBlock([
     heading('Your order is on its way'),
-    para('Good news, {{customer.greeting}} — order {{order.number}} has shipped.'),
+    para('Good news, {{customer.greeting}}: order {{order.number}} has shipped.'),
   ]),
   detailPanel(
     [
@@ -441,7 +441,7 @@ const orderDelivered = (): SectionNode[] => [
   copyBlock([
     heading('Your order was delivered'),
     para(
-      'Hi {{customer.greeting}} — your order {{order.number}} has been delivered. We hope it’s everything you expected.'
+      'Hi {{customer.greeting}}. Your order {{order.number}} has been delivered. We hope it’s everything you expected.'
     ),
   ]),
   detailPanel(
@@ -475,7 +475,7 @@ const orderCancelled = (): SectionNode[] => [
   copyBlock([
     heading('Your order was cancelled'),
     para(
-      'Hi {{customer.greeting}} — order {{order.number}} has been cancelled. Here’s a summary of what was cancelled:'
+      'Hi {{customer.greeting}}: order {{order.number}} has been cancelled. Here’s a summary of what was cancelled:'
     ),
   ]),
   detailPanel(
@@ -497,7 +497,7 @@ const orderCancelled = (): SectionNode[] => [
 const orderRefunded = (): SectionNode[] => [
   copyBlock([
     heading('Your refund is on the way'),
-    para('Hi {{customer.greeting}} — we’ve processed a refund for order {{order.number}}.'),
+    para('Hi {{customer.greeting}}: we’ve processed a refund for order {{order.number}}.'),
   ]),
   detailPanel(
     [
@@ -520,7 +520,7 @@ const paymentFailed = (): SectionNode[] => [
   copyBlock([
     heading('There was a problem with your payment'),
     para(
-      'Hi {{customer.greeting}} — we couldn’t process the payment for order {{order.number}}, so it’s on hold for now.'
+      'Hi {{customer.greeting}}. We couldn’t process the payment for order {{order.number}}, so it’s on hold for now.'
     ),
   ]),
   detailPanel(
@@ -532,7 +532,7 @@ const paymentFailed = (): SectionNode[] => [
   ),
   copyBlock([
     button('Update payment', '{{order.statusUrl}}', 'center'),
-    para('Update your payment details to complete your order — we’ll take it from there.'),
+    para('Update your payment details to complete your order: we’ll take it from there.'),
   ]),
 ];
 
@@ -545,7 +545,7 @@ const subscriptionConfirmed = (): SectionNode[] => [
   copyBlock([
     heading('Your subscription is active'),
     para(
-      'Hi {{customer.greeting}} — you’re all set. We’ll take care of the rest and send each order automatically.'
+      'Hi {{customer.greeting}}: you’re all set. We’ll take care of the rest and send each order automatically.'
     ),
   ]),
   detailPanel(
@@ -558,7 +558,7 @@ const subscriptionConfirmed = (): SectionNode[] => [
   ),
   copyBlock([
     button('Manage subscription', '{{subscription.manageUrl}}', 'center'),
-    para('Skip an order, change the delivery date, or cancel any time — it’s all in your account.'),
+    para('Skip an order, change the delivery date, or cancel any time: it’s all in your account.'),
   ]),
 ];
 
@@ -566,7 +566,7 @@ const subscriptionRenewed = (): SectionNode[] => [
   copyBlock([
     heading('Your subscription renewed'),
     para(
-      'Hi {{customer.greeting}} — your latest order is on its way. Here’s a summary for your records:'
+      'Hi {{customer.greeting}}. Your latest order is on its way. Here’s a summary for your records:'
     ),
   ]),
   detailPanel(
@@ -588,7 +588,7 @@ const subscriptionPaymentFailed = (): SectionNode[] => [
   copyBlock([
     heading('There was a problem with your subscription payment'),
     para(
-      'Hi {{customer.greeting}} — we couldn’t process the payment for your latest order, so it’s paused for now.'
+      'Hi {{customer.greeting}}. We couldn’t process the payment for your latest order, so it’s paused for now.'
     ),
   ]),
   detailPanel(
@@ -600,7 +600,7 @@ const subscriptionPaymentFailed = (): SectionNode[] => [
   ),
   copyBlock([
     button('Update payment', '{{subscription.manageUrl}}', 'center'),
-    para('Update your payment details and we’ll retry automatically — no need to reorder.'),
+    para('Update your payment details and we’ll retry automatically: no need to reorder.'),
   ]),
 ];
 
@@ -608,7 +608,7 @@ const subscriptionPaused = (): SectionNode[] => [
   copyBlock([
     heading('Your subscription is paused'),
     para(
-      'Hi {{customer.greeting}} — your subscription is on hold. You won’t be charged and no orders will ship until it resumes.'
+      'Hi {{customer.greeting}}. Your subscription is on hold. You won’t be charged and no orders will ship until it resumes.'
     ),
   ]),
   detailPanel(
@@ -633,7 +633,7 @@ const subscriptionResumed = (): SectionNode[] => [
   copyBlock([
     heading('Your subscription is active again'),
     para(
-      'Hi {{customer.greeting}} — welcome back. Your subscription has resumed and your next order is scheduled.'
+      'Hi {{customer.greeting}}: welcome back. Your subscription has resumed and your next order is scheduled.'
     ),
   ]),
   detailPanel(
@@ -651,7 +651,7 @@ const subscriptionCancelled = (): SectionNode[] => [
   copyBlock([
     heading('Your subscription was cancelled'),
     para(
-      'Hi {{customer.greeting}} — your subscription has been cancelled and no further orders will ship.'
+      'Hi {{customer.greeting}}. Your subscription has been cancelled and no further orders will ship.'
     ),
   ]),
   detailPanel(
@@ -679,7 +679,7 @@ const subscriptionAuthenticationRequired = (): SectionNode[] => [
   copyBlock([
     heading('Your bank needs you to confirm this payment'),
     para(
-      'Hi {{customer.greeting}} — your card is fine, but your bank asked us to check it’s really you before your next order goes through. It only takes a moment.'
+      'Hi {{customer.greeting}}. Your card is fine, but your bank asked us to check it’s really you before your next order goes through. It only takes a moment.'
     ),
   ]),
   detailPanel(
@@ -691,7 +691,7 @@ const subscriptionAuthenticationRequired = (): SectionNode[] => [
   ),
   copyBlock([
     button('Confirm payment', '{{subscription.confirmUrl}}', 'center'),
-    para('Once you confirm, your order ships as usual — nothing else to do.'),
+    para('Once you confirm, your order ships as usual. Nothing else to do.'),
   ]),
 ];
 
@@ -702,7 +702,7 @@ const subscriptionInvoice = (): SectionNode[] => [
   copyBlock([
     heading('Your repeat order is ready'),
     para(
-      'Hi {{customer.greeting}} — here’s the bill for your latest order. Once it’s paid we’ll get it on its way.'
+      'Hi {{customer.greeting}}: here’s the bill for your latest order. Once it’s paid we’ll get it on its way.'
     ),
   ]),
   detailPanel(
@@ -715,20 +715,25 @@ const subscriptionInvoice = (): SectionNode[] => [
   ),
   copyBlock([
     button('Pay now', '{{subscription.payUrl}}', 'center'),
-    para('Prefer to pay the way you usually do? That works too — just reply and let us know.'),
+    para('Prefer to pay the way you usually do? That works too. Just reply and let us know.'),
   ]),
 ];
 
 // ── Commerce: returns / RMA (docs/impl transactional-email §4 P3) ────────────
-// Triggered on `return.approved` / `return.received` / `return.refunded`; read the
-// `return` data source (status · outcome · refundAmount · refundMethod · labelUrl)
+// Triggered on `return.approved` / `return.received` / `return.refunded` /
+// `return.exchanged` / `return.denied`; read the `return` data source (status ·
+// outcome · refundAmount · refundMethod · labelUrl · replacement · deniedReason)
 // plus the `order` source for the order number.
+//
+// All FIVE, deliberately. A return has three endings — refunded, swapped, turned
+// down — and only the money one used to send anything, so a shopper who asked for
+// a different size, or who was told no, heard nothing at all (persona issue 448).
 
 const returnApproved = (): SectionNode[] => [
   copyBlock([
     heading('Your return is approved'),
     para(
-      'Hi {{customer.greeting}} — we’ve approved your return for order {{order.number}}. Here’s what happens next.'
+      'Hi {{customer.greeting}}: we’ve approved your return for order {{order.number}}. Here’s what happens next.'
     ),
   ]),
   detailPanel(
@@ -740,7 +745,7 @@ const returnApproved = (): SectionNode[] => [
   ),
   when('return.hasLabel', [button('Print your return label', '{{return.labelUrl}}', 'center')]),
   copyBlock([
-    para('Pack the items securely and send them back — we’ll take it from there once they arrive.'),
+    para('Pack the items securely and send them back: we’ll take it from there once they arrive.'),
   ]),
 ];
 
@@ -748,7 +753,7 @@ const returnReceived = (): SectionNode[] => [
   copyBlock([
     heading('We’ve received your return'),
     para(
-      'Hi {{customer.greeting}} — your return for order {{order.number}} is back with us. Thanks for sending it in.'
+      'Hi {{customer.greeting}}. Your return for order {{order.number}} is back with us. Thanks for sending it in.'
     ),
   ]),
   detailPanel(
@@ -767,7 +772,7 @@ const returnReceived = (): SectionNode[] => [
 const returnRefunded = (): SectionNode[] => [
   copyBlock([
     heading('Your refund is complete'),
-    para('Hi {{customer.greeting}} — we’ve refunded your return for order {{order.number}}.'),
+    para('Hi {{customer.greeting}}: we’ve refunded your return for order {{order.number}}.'),
   ]),
   detailPanel(
     [
@@ -783,6 +788,116 @@ const returnRefunded = (): SectionNode[] => [
   ]),
 ];
 
+// The swap going the other way. `returnReceived` above ends by promising "we'll
+// email you again the moment your exchange is on its way" — this is that email,
+// and until it existed the promise was kept for a refund and broken for every
+// swap (persona issue 448).
+//
+// The tracking rows carry `ref`, so they DROP when the shop settled the swap
+// before posting the parcel — which is the common case, and the case
+// `returnReplacementShipped` below exists to finish. A heading reading "Tracking
+// number" over a blank is worse than no row, because it tells the reader
+// something was meant to be there and went missing.
+const returnExchanged = (): SectionNode[] => [
+  copyBlock([
+    heading('Your replacement is on its way'),
+    para(
+      'Hi {{customer.greeting}}: thanks for your patience. We’ve sent out the replacement for order {{order.number}}.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Order', value: '{{order.number}}' },
+      { label: 'Sent to you', value: '{{return.replacement}}', emphasize: true },
+      {
+        label: 'Carrier',
+        value: '{{return.replacementCarrier}}',
+        ref: 'return.replacementCarrier',
+      },
+      {
+        label: 'Tracking number',
+        value: '{{return.replacementTracking}}',
+        emphasize: true,
+        ref: 'return.replacementTracking',
+      },
+    ],
+    { status: { label: '✓ On its way', role: 'success' } }
+  ),
+  when('return.replacementTrackingUrl', [
+    button('Track your replacement', '{{return.replacementTrackingUrl}}', 'center'),
+  ]),
+  copyBlock([
+    button('View your order', '{{return.manageUrl}}', 'center'),
+    para('Nothing more to pay. This is a straight swap for what you sent back.'),
+  ]),
+];
+
+// The tracking number, when it did not exist yet at the moment the swap was
+// settled. That is the ordinary way it goes: a shop decides what to send while
+// the customer is waiting, and the parcel goes out that afternoon.
+//
+// This never fires when the number WAS known at settle time — the email above
+// prints it and this one has nothing left to say. One email either way, never
+// two saying the same thing.
+const returnReplacementShipped = (): SectionNode[] => [
+  copyBlock([
+    heading('Here’s how to follow your replacement'),
+    para(
+      'Hi {{customer.greeting}}: the replacement for order {{order.number}} is in the post. You can follow it with the number below.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Order', value: '{{order.number}}' },
+      { label: 'Sent to you', value: '{{return.replacement}}', ref: 'return.replacement' },
+      {
+        label: 'Carrier',
+        value: '{{return.replacementCarrier}}',
+        ref: 'return.replacementCarrier',
+      },
+      {
+        label: 'Tracking number',
+        value: '{{return.replacementTracking}}',
+        emphasize: true,
+        ref: 'return.replacementTracking',
+      },
+    ],
+    { status: { label: 'In the post', role: 'info' } }
+  ),
+  when('return.replacementTrackingUrl', [
+    button('Track your replacement', '{{return.replacementTrackingUrl}}', 'center'),
+  ]),
+  copyBlock([
+    para('Tracking can take a few hours to show its first update after a parcel is handed over.'),
+  ]),
+];
+
+// The answer is no, and it is the one message a shop would otherwise have to
+// write by hand every time. The reason is the shop's OWN words, typed into the
+// "Turn down this return" box, which is why that box said "they are told the
+// reason you give here" long before anything told them (persona issue 448).
+const returnDenied = (): SectionNode[] => [
+  copyBlock([
+    heading('About your return request'),
+    para(
+      'Hi {{customer.greeting}}: we’ve looked at your request to send something back from order {{order.number}}, and we’re not able to take this one back.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Order', value: '{{order.number}}' },
+      { label: 'Why', value: '{{return.deniedReason}}', ref: 'return.deniedReason' },
+    ],
+    { status: { label: 'Not accepted', role: 'warning' } }
+  ),
+  copyBlock([
+    para('The item stays with you and nothing has been charged or refunded.'),
+    para(
+      'If you think we’ve got this wrong, just reply to this email and we’ll take another look.'
+    ),
+  ]),
+];
+
 // ── B2B: order approval outcomes (docs/impl transactional-email §4 P3) ────────
 // The buyer's pending order was approved (→ placed) or rejected (→ cancelled) by an
 // approver at their organization. Both read the `order` source.
@@ -791,7 +906,7 @@ const b2bOrderApproved = (): SectionNode[] => [
   copyBlock([
     heading('Your order is approved'),
     para(
-      'Hi {{customer.greeting}} — order {{order.number}} has been approved and is now being processed.'
+      'Hi {{customer.greeting}}: order {{order.number}} has been approved and is now being processed.'
     ),
   ]),
   detailPanel(
@@ -808,7 +923,7 @@ const b2bOrderRejected = (): SectionNode[] => [
   copyBlock([
     heading('Your order wasn’t approved'),
     para(
-      'Hi {{customer.greeting}} — order {{order.number}} wasn’t approved, so it hasn’t been placed.'
+      'Hi {{customer.greeting}}: order {{order.number}} wasn’t approved, so it hasn’t been placed.'
     ),
   ]),
   detailPanel(
@@ -864,7 +979,7 @@ const bookingBody = (
 const bookingConfirmation = (): SectionNode[] =>
   bookingBody(
     'Your booking is confirmed',
-    'Hi {{customer.greeting}} — you’re all set. Here are the details:',
+    'Hi {{customer.greeting}}: you’re all set. Here are the details:',
     'Manage booking',
     'Need to reschedule or cancel? You can manage this booking any time with the button above.',
     { label: '✓ Confirmed', role: 'success' }
@@ -873,7 +988,7 @@ const bookingConfirmation = (): SectionNode[] =>
 const bookingReminder = (): SectionNode[] =>
   bookingBody(
     'A reminder about your upcoming booking',
-    'Hi {{customer.greeting}} — a friendly reminder about your upcoming booking:',
+    'Hi {{customer.greeting}}: a friendly reminder about your upcoming booking:',
     'Manage booking',
     'Need to reschedule or cancel? You can manage this booking any time with the button above.',
     { label: 'Upcoming', role: 'info' }
@@ -882,7 +997,7 @@ const bookingReminder = (): SectionNode[] =>
 const bookingRescheduled = (): SectionNode[] =>
   bookingBody(
     'Your booking has been rescheduled',
-    'Hi {{customer.greeting}} — your booking has moved. Here are the new details:',
+    'Hi {{customer.greeting}}. Your booking has moved. Here are the new details:',
     'Manage booking',
     'Need to make another change? You can manage this booking any time with the button above.',
     { label: 'Rescheduled', role: 'warning' }
@@ -891,7 +1006,7 @@ const bookingRescheduled = (): SectionNode[] =>
 const bookingCancelled = (): SectionNode[] => [
   copyBlock([
     heading('Your booking was cancelled'),
-    para('Hi {{customer.greeting}} — your booking has been cancelled. Here’s what was cancelled:'),
+    para('Hi {{customer.greeting}}. Your booking has been cancelled. Here’s what was cancelled:'),
   ]),
   detailPanel(
     [
@@ -907,7 +1022,7 @@ const bookingCancelled = (): SectionNode[] => [
   ),
   copyBlock([
     button('Book another time', '{{booking.bookUrl}}', 'center'),
-    para('We’d love to see you again — book a new time whenever you’re ready.'),
+    para('We’d love to see you again: book a new time whenever you’re ready.'),
   ]),
 ];
 
@@ -923,7 +1038,7 @@ const bookingNotificationInternal = (): SectionNode[] => [
   ]),
   when('booking.pendingApproval', [
     para(
-      'This booking is a request awaiting your approval — confirm or decline it from your dashboard.'
+      'This booking is a request awaiting your approval. Confirm or decline it from your dashboard.'
     ),
   ]),
   // The booking facts, scannable at a glance — this is an operational alert, so the
@@ -957,7 +1072,7 @@ const waitlistOffer = (): SectionNode[] => [
   copyBlock([
     heading('A spot just opened up'),
     para(
-      'Hi {{customer.greeting}} — good news: a spot opened for {{waitlist.service}} in your requested window. Book now to claim it.'
+      'Hi {{customer.greeting}}: good news: a spot opened for {{waitlist.service}} in your requested window. Book now to claim it.'
     ),
   ]),
   detailPanel(
@@ -970,7 +1085,7 @@ const waitlistOffer = (): SectionNode[] => [
   ),
   copyBlock([
     button('Book your spot', '{{waitlist.bookUrl}}', 'center'),
-    para('Spots fill quickly — this one’s held just for you until the time above.'),
+    para('Spots fill quickly. This one’s held just for you until the time above.'),
   ]),
 ];
 
@@ -1010,6 +1125,9 @@ const SILICA_EMAIL_BODIES: Record<string, SectionNode[]> = {
   'return-approved': returnApproved(),
   'return-received': returnReceived(),
   'return-refunded': returnRefunded(),
+  'return-exchanged': returnExchanged(),
+  'return-replacement-shipped': returnReplacementShipped(),
+  'return-denied': returnDenied(),
   'b2b-order-approved': b2bOrderApproved(),
   'b2b-order-rejected': b2bOrderRejected(),
   'booking-confirmation': bookingConfirmation(),
@@ -1036,7 +1154,7 @@ export function silicaDefaultEmail(
   const body = SILICA_EMAIL_BODIES[key];
   if (!body) {
     throw new Error(
-      `default-emails-silica: no silica body authored for template "${key}" — add one to SILICA_EMAIL_BODIES.`
+      `default-emails-silica: no silica body authored for template "${key}". Add one to SILICA_EMAIL_BODIES.`
     );
   }
   return emailDoc(subject, preheader, body);

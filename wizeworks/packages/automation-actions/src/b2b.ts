@@ -101,14 +101,20 @@ export function installB2bActions(): void {
     // — net-terms AR converged off the legacy b2b_invoices header in Phase 8). An
     // open net-terms document past its due date is actionable. RLS scopes the
     // query to the tenant.
+    // CALENDAR days, in UTC, on both the age and the past-due test — the same
+    // rule `daysPastDue` applies everywhere else. Subtracting the timestamps
+    // instead counted elapsed 24-hour periods, so an invoice due yesterday
+    // afternoon was still "0 days past due" this morning and an account's credit
+    // hold landed a day late. `date - date` in Postgres is already whole days.
     const agg = await ctx.tx.$queryRaw<OverdueAgg[]>`
       SELECT company_id AS account_id,
-             MAX(GREATEST(0, EXTRACT(DAY FROM (now() - due_at))::int))::int AS max_days_past_due,
+             MAX(GREATEST(0, (now() AT TIME ZONE 'UTC')::date - (due_at AT TIME ZONE 'UTC')::date))::int AS max_days_past_due,
              COUNT(*)::int AS actionable_count
       FROM billing_documents
       WHERE company_id IS NOT NULL AND deleted_at IS NULL
         AND status IN ('unpaid', 'partial', 'overdue')
-        AND balance > 0 AND due_at IS NOT NULL AND due_at < now()
+        AND balance > 0 AND due_at IS NOT NULL
+        AND (due_at AT TIME ZONE 'UTC')::date < (now() AT TIME ZONE 'UTC')::date
       GROUP BY company_id
     `;
     const byAccount = new Map(agg.map((r) => [r.account_id, r]));
@@ -123,7 +129,7 @@ export function installB2bActions(): void {
     module: 'b2b',
     gates: [],
     manifestNote:
-      'Locked B2B dunning — internal account/invoice state transition + b2b.* notifications; global gates suffice',
+      'Locked B2B dunning: internal account/invoice state transition + b2b.* notifications; global gates suffice',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       const cfg = EscalateConfig.parse(effect.config);
       const accountId = requireEntityId(effect.fields, 'b2bAccount.id', 'b2b.escalate_overdue');

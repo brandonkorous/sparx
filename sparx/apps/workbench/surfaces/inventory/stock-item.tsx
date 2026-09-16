@@ -296,7 +296,7 @@ function CountForm({
         />
         <FieldDescription>
           {current
-            ? `We currently think there are ${plural(current.onHand, 'unit', 'units')} here. Put in what you actually counted — we work out the difference and record it.`
+            ? `We currently think there are ${plural(current.onHand, 'unit', 'units')} here. Put in what you actually counted. We work out the difference and record it.`
             : 'This has never been counted here. Put in what is on the shelf and your website starts keeping track of it.'}
         </FieldDescription>
       </Field>
@@ -528,7 +528,7 @@ function ManagementForm({
           }
         />
         <FieldDescription>
-          Units kept out of what shoppers can buy — a cushion so the last few on the shelf are never
+          Units kept out of what shoppers can buy: a cushion so the last few on the shelf are never
           sold out from under a customer standing in front of you. Zero offers everything.
         </FieldDescription>
       </Field>
@@ -540,8 +540,8 @@ function ManagementForm({
           <AlertContent>
             <AlertTitle>A reorder rule needs both numbers</AlertTitle>
             <AlertDescription>
-              Say when to warn you AND how many to order — a warning with no quantity cannot tell
-              you what to do about it. Clear both to have no rule at all.
+              Say when to warn you AND how many to order: a warning with no quantity cannot tell you
+              what to do about it. Clear both to have no rule at all.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -651,7 +651,7 @@ function LocationCard({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <Text className="text-sm">
           {level.reorderPoint === null
-            ? 'No reorder rule — nothing will warn you when this runs down.'
+            ? 'No reorder rule. Nothing will warn you when this runs down.'
             : `Warns at ${String(level.reorderPoint)}, then order ${String(
                 level.reorderQuantity ?? 0
               )}${
@@ -744,7 +744,7 @@ function BarcodesSection({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Text className="min-w-0 text-sm">
             Nothing scans as {sku ?? 'this item'} yet, so it has to be found by name every time.
-            sparx can create a real UPC for it — any scanner reads it, and it can never clash with a
+            sparx can create a real UPC for it: any scanner reads it, and it can never clash with a
             manufacturer&rsquo;s code.
           </Text>
           <Button
@@ -888,7 +888,7 @@ function HistorySection({ history }: { history: ReturnType<typeof useStockHistor
               </span>{' '}
               {movementReason(movement.reason)}
               {movement.warehouseName === null ? '' : ` at ${movement.warehouseName}`}
-              {movement.note === null ? '' : ` — ${movement.note}`}
+              {movement.note === null ? '' : ` (${movement.note})`}
             </Text>
             <Text className="text-sm">
               <Timestamp value={movement.createdAt} format="relative" />
@@ -983,7 +983,7 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
           description={
             gone
               ? 'It has been removed from your catalog. Its past orders and its stock history are unaffected.'
-              : 'This is a problem reaching the server. Your stock is unaffected — the numbers just could not be read just now.'
+              : 'This is a problem reaching the server. Your stock is unaffected: the numbers just could not be read just now.'
           }
           onRetry={() => {
             void item.refetch();
@@ -1157,7 +1157,7 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<Warehouse className="size-6" aria-hidden />}
               title="You have nowhere to keep stock yet"
-              description="Counts are always kept per place — a shop, a warehouse, a garage. Set up at least one and you can start recording how many of this you have."
+              description="Counts are always kept per place: a shop, a warehouse, a garage. Set up at least one and you can start recording how many of this you have."
               actions={
                 <Button
                   size="sm"
@@ -1175,7 +1175,7 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
               <AlertContent>
                 <AlertTitle>Nothing has been counted yet</AlertTitle>
                 <AlertDescription>
-                  Until you count it, your website sells this one without limit — nobody has told it
+                  Until you count it, your website sells this one without limit. Nobody has told it
                   there is a number. Record a count at any of your locations and it starts keeping
                   track: it comes off sale when it reaches zero, and back on when you bring more in.
                 </AlertDescription>

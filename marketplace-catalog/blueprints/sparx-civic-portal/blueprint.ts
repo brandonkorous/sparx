@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-civic-portal',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Civic Portal',
   summary:
-    'An accessibility-first portal for a city or public agency — a clear welcome band, a task-first services directory, a state-aware public-notices and alerts channel, a live news feed, and a light civic shop, in a white-ground deep-federal-blue theme tuned for AAA contrast. Modelled on the government/public-service archetype; shipped as the City of Rivermark. Ships a light shop (a city publication, two passes) to demonstrate content + commerce together.',
+    'An accessibility-first portal for a city or public agency: a clear welcome band, a task-first services directory, a state-aware public-notices and alerts channel, a live news feed, and a light civic shop, in a white-ground deep-federal-blue theme tuned for AAA contrast. Modelled on the government/public-service archetype; shipped as the City of Rivermark. Ships a light shop (a city publication, two passes) to demonstrate content + commerce together.',
   vertical: 'content',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

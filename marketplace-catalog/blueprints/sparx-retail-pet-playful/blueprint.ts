@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-pet-playful',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Pet Supplies (Playful)',
   summary:
-    'A complete, working shop for a bright, playful pet brand: a real catalogue of a pop-color webbing collar and matching lead, a reversible bandana, a mega toy bundle, a cloud nap bed, a squeaky-toy pack, a roll-up travel bowl, a treat-of-the-month box and a flexible membership, with categories, collections, a bespoke pet-shop PDP and a full merchandised home page. Loud, joyful theme — a bright ground, a punchy blue primary and a pop-coral accent. Shipped as Fetch Club.',
+    'A complete, working shop for a bright, playful pet brand: a real catalogue of a pop-color webbing collar and matching lead, a reversible bandana, a mega toy bundle, a cloud nap bed, a squeaky-toy pack, a roll-up travel bowl, a treat-of-the-month box and a flexible membership, with categories, collections, a bespoke pet-shop PDP and a full merchandised home page. Loud, joyful theme, a bright ground, a punchy blue primary and a pop-coral accent. Shipped as Fetch Club.',
   vertical: 'retail',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

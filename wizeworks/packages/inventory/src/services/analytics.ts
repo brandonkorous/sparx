@@ -13,6 +13,7 @@
 
 import { withTenant } from '@wizeworks/db';
 import type { ServiceContext } from '../errors';
+import { loadPlanningPolicy } from './planning-policy';
 
 const DEFAULT_CURRENCY = 'USD';
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -237,18 +238,27 @@ const BUCKET_ORDER: AgingBucket['bucket'][] = ['0-30', '31-60', '61-90', '90+', 
 
 /**
  * Aging by days-since-last-sale: on-hand value bucketed (0-30 / 31-60 / 61-90 /
- * 90+ / never sold), plus the highest-value dead-stock items (never sold OR not
- * sold in `deadStockDays`, default 90).
+ * 90+ / never sold), plus the highest-value dead-stock items.
+ *
+ * ── The window belongs to the tenant ──────────────────────────────────────
+ *
+ * `deadStockDays` defaults to whatever the owner set on Planning settings, not
+ * to a number this file keeps to itself. It used to default to 90 while the
+ * policy said 180, so the same shop was told two different things about the same
+ * stock by two screens, and the number it could actually SEE and change was the
+ * one being ignored. An explicit filter still wins — the endpoint takes one.
  */
 export async function agingReport(
   ctx: ServiceContext,
   filter: { warehouseId?: string; deadStockDays?: number; take?: number } = {}
 ): Promise<AgingReport> {
-  const deadStockDays = filter.deadStockDays ?? 90;
   const take = Math.min(filter.take ?? 50, 200);
   const warehouse = filter.warehouseId ?? null;
 
   return withTenant(ctx, async (tx) => {
+    const deadStockDays =
+      filter.deadStockDays ?? (await loadPlanningPolicy(tx, ctx.tenantId)).deadStockDays;
+
     const buckets = await tx.$queryRaw<BucketRow[]>`
       WITH last_sale AS (
         SELECT variant_id, warehouse_id, MAX(created_at) AS last_sale_at
@@ -279,11 +289,24 @@ export async function agingReport(
       FROM aged GROUP BY bucket
     `;
 
+    // ── "Never sold" needs a length of time before it is a finding ──────────
+    //
+    // The old filter was `last_sale_at IS NULL OR now() - last_sale_at > window`,
+    // so the window applied to every line that HAD sold and to none of the lines
+    // that had not. A delivery was dead stock the afternoon it landed, and a shop
+    // two weeks old was shown its whole catalogue under "gathering dust".
+    //
+    // A line with no sale is measured from its first movement, which is when the
+    // shop actually got it. When even that is unknown the age is unknown, the
+    // comparison is NULL, and the row is left out — which is the right answer,
+    // because nobody has established it has had any time to sell at all.
     const deadStock = await tx.$queryRaw<DeadStockRow[]>`
       WITH last_sale AS (
-        SELECT variant_id, warehouse_id, MAX(created_at) AS last_sale_at
+        SELECT variant_id, warehouse_id,
+               MAX(created_at) FILTER (WHERE reason = 'sale') AS last_sale_at,
+               MIN(created_at)                                AS first_movement_at
         FROM inventory_movements
-        WHERE tenant_id = ${ctx.tenantId}::uuid AND reason = 'sale'
+        WHERE tenant_id = ${ctx.tenantId}::uuid
         GROUP BY variant_id, warehouse_id
       )
       SELECT
@@ -301,7 +324,8 @@ export async function agingReport(
       LEFT JOIN last_sale ls ON ls.variant_id = l.variant_id AND ls.warehouse_id = l.warehouse_id
       WHERE l.tenant_id = ${ctx.tenantId}::uuid
         AND l.on_hand > 0
-        AND (ls.last_sale_at IS NULL OR now() - ls.last_sale_at > make_interval(days => ${deadStockDays}::int))
+        AND COALESCE(ls.last_sale_at, ls.first_movement_at)
+              < now() - make_interval(days => ${deadStockDays}::int)
         AND (${warehouse}::uuid IS NULL OR l.warehouse_id = ${warehouse}::uuid)
       ORDER BY "costCents" DESC
       LIMIT ${take}

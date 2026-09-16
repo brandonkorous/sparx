@@ -39,6 +39,7 @@ const FILTERS = [
   { value: 'received', label: 'Back with you', status: 'received' },
   { value: 'inspected', label: 'Ready to settle', status: 'inspected' },
   { value: 'refunded', label: 'Settled', status: 'refunded' },
+  { value: 'exchanged', label: 'Swapped', status: 'exchanged' },
   { value: 'denied', label: 'Turned down', status: 'denied' },
 ] as const satisfies readonly { value: string; label: string; status: ReturnStatus | undefined }[];
 
@@ -120,7 +121,7 @@ export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Undo2 className="size-6" aria-hidden />}
             title="Could not load your returns"
-            description="This is a problem reaching the server. Your returns are unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your returns are unaffected. Nothing has been lost."
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -150,7 +151,7 @@ export function ReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
             </thead>
             <tbody>
               {rows.map((row) => {
-                const state = returnState(row.status);
+                const state = returnState(row.status, row.preferredOutcome);
                 return (
                   <tr
                     key={row.id}

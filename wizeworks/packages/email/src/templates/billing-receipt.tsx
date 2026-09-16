@@ -71,7 +71,7 @@ export function BillingReceiptEmail({
 
   return (
     <PlatformEmailLayout
-      preview={`Payment received${periodLabel ? ` for ${periodLabel}` : ''} — thanks!`}
+      preview={`Payment received${periodLabel ? ` for ${periodLabel}` : ''}: thanks!`}
       mastheadRight={receiptNumber ? `RECEIPT · ${receiptNumber}` : 'RECEIPT'}
       footerLinks={
         platform.appUrl
@@ -89,8 +89,8 @@ export function BillingReceiptEmail({
     >
       <EmailDisplayHeading>Payment received</EmailDisplayHeading>
       <EmailParagraph>
-        Thanks{accountName ? `, ${accountName}` : ''} — your {platform.name} subscription is paid
-        and there is nothing you need to do.
+        Thanks{accountName ? `, ${accountName}` : ''}. Your {platform.name} subscription is paid and
+        there is nothing you need to do.
       </EmailParagraph>
 
       <EmailAmountHero

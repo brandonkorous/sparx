@@ -343,7 +343,7 @@ export function ReportScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="What gets sent"
-            description="Pick the report and give this a name you will recognise in your inbox."
+            description="Pick the report and give this a name you will recognize in your inbox."
           >
             <Field>
               <FieldLabel>Report</FieldLabel>
@@ -370,7 +370,7 @@ export function ReportScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               {selected ? <Text className="text-sm">{selected.description}</Text> : null}
               {!isNew ? (
                 <Text className="text-sm">
-                  The report cannot be swapped after the fact — the delivery history below is about
+                  The report cannot be swapped after the fact: the delivery history below is about
                   this one. Make a new schedule for a different report.
                 </Text>
               ) : null}
@@ -527,7 +527,7 @@ export function ReportScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 }}
               />
               <Text className="text-sm">
-                The hour above is local to this zone, and it follows the clocks — a 7am report stays
+                The hour above is local to this zone, and it follows the clocks: a 7am report stays
                 a 7am report through the summer.
               </Text>
             </Field>
@@ -564,7 +564,7 @@ export function ReportScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               />
               <Text className="text-sm">
                 {recipients.length === 0
-                  ? 'Nobody yet — a report with no recipient is not a schedule.'
+                  ? 'Nobody yet: a report with no recipient is not a schedule.'
                   : `${plural(recipients.length, 'person', 'people')} will get this.`}
               </Text>
             </Field>

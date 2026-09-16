@@ -212,7 +212,7 @@ function BestTimePanel() {
       {!data.confident ? (
         <Text className="px-4 py-3 text-sm">
           Not enough history yet to say. Once you have a few posts at different times of the week,
-          the times your audience actually shows up will appear here — worked out from your own
+          the times your audience actually shows up will appear here: worked out from your own
           results, not an industry average.
         </Text>
       ) : (
@@ -253,6 +253,10 @@ export function SocialInsightsSurface({ ctx }: { ctx: SurfaceContext }) {
     () => catalogByPlatform(overview.data?.catalog ?? []),
     [overview.data]
   );
+  // Only true once the list has ARRIVED. While it is loading nobody knows yet,
+  // and guessing 'nothing connected' would greet a shop with the wrong sentence
+  // on every cold open.
+  const nothingConnected = overview.isSuccess && overview.data.connections.length === 0;
 
   const data = insights.data;
   // Reach and views come from an extra platform scope; when nothing reported either
@@ -326,7 +330,17 @@ export function SocialInsightsSurface({ ctx }: { ctx: SurfaceContext }) {
               module={MODULE}
               icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
               title="No numbers yet"
-              description="Performance shows up here once your posts have been live for a while and the accounts report back. Open a post you have already sent and hit “Refresh numbers” to pull the latest."
+              // Two reasons for an empty chart and they need different sentences.
+              // The old one told everybody to "open a post you have already sent",
+              // which is an instruction for a thing that does not exist on a
+              // business that has not connected an account — the first person to
+              // open this screen, every time. `overview` was already fetched here
+              // for the avatars, so the answer was in this component's hand.
+              description={
+                nothingConnected
+                  ? 'Nothing is connected yet, so there is nothing to measure. Connect an account, post something, and how it did shows up here.'
+                  : 'Performance shows up here once your posts have been live for a while and the accounts report back. Open a post you have already sent and hit “Refresh numbers” to pull the latest.'
+              }
             />
           </Card>
         ) : data ? (

@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-vet-neighborhood',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Veterinary (Neighborhood)',
   summary:
-    'A warm, friendly neighborhood vet-clinic site — a caring teal palette, a coral accent and a clean warm-white ground. Installs a working booking flow: appointment types (wellness, vaccines, sick visits, dental, senior care), two vets and a tech you book by name, and exam rooms as resources so each visit reserves both a doctor and a room. Ships as "Cedar Paws Veterinary", a full-service clinic for dogs and cats.',
+    'A warm, friendly neighborhood vet-clinic site: a caring teal palette, a coral accent and a clean warm-white ground. Installs a working booking flow: appointment types (wellness, vaccines, sick visits, dental, senior care), two vets and a tech you book by name, and exam rooms as resources so each visit reserves both a doctor and a room. Ships as "Cedar Paws Veterinary", a full-service clinic for dogs and cats.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

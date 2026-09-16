@@ -3,9 +3,9 @@
   "category": "blueprint",
   "slug": "sparx-catalog-dense",
   "name": "Catalog Dense",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "tagline": "A dense, energetic template for high-volume apparel and fast-fashion catalogs.",
-  "description": "A high-volume, discount-forward storefront for a fast-fashion apparel shop — a full-bleed offer hero over relentless dense product grids, per-category rails and candy-loud promo bands, in a bright near-black-chrome theme with one sale-red accent. Modelled on the dense fast-fashion catalog archetype; shipped as Voltage.",
+  "description": "A high-volume, discount-forward storefront for a fast-fashion apparel shop: a full-bleed offer hero over relentless dense product grids, per-category rails and candy-loud promo bands, in a bright near-black-chrome theme with one sale-red accent. Modelled on the dense fast-fashion catalog archetype; shipped as Voltage.",
   "payload": "blueprint.ts",
   "facets": {
     "vertical": "retail",
@@ -27,7 +27,7 @@
     {
       "file": "media/preview.png",
       "kind": "preview",
-      "alt": "Catalog Dense — home page preview"
+      "alt": "Catalog Dense: home page preview"
     }
   ],
   "author": {

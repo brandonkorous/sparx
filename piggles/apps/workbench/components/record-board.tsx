@@ -263,7 +263,7 @@ export function RecordBoard<T>({
     onDragOver: ({ over }) => (over ? `Over ${nameOf(String(over.id))}.` : undefined),
     onDragEnd: ({ over }) =>
       over ? `Moved the ${noun} to ${nameOf(String(over.id))}.` : `Left the ${noun} where it was.`,
-    onDragCancel: () => `Cancelled. The ${noun} stayed where it was.`,
+    onDragCancel: () => `Canceled. The ${noun} stayed where it was.`,
   };
 
   function handleDragStart(event: DragStartEvent) {

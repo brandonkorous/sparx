@@ -27,7 +27,6 @@
 // expected. The access one is `info`: nothing is wrong, you are simply not the
 // audience.
 
-import { useEffect } from 'react';
 import { Button, EmptyState } from '@wizeworks/silicaui-react';
 import { Ban, HelpCircle, Lock, Building2, type LucideIcon } from 'lucide-react';
 import type { SurfaceContext } from '../lib/surfaces/registry';
@@ -66,8 +65,8 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
       tone: 'warning',
       title: name ? `${name} isn't switched on` : "That part of sparx isn't switched on",
       description: name
-        ? `This link opens something in ${name}, and this business isn't using ${name} yet. You can turn it on whenever you like — you only pay for the parts you use.`
-        : 'This link opens a part of sparx this business is not using yet. You can turn it on whenever you like — you only pay for the parts you use.',
+        ? `This link opens something in ${name}, and this business isn't using ${name} yet. You can turn it on whenever you like. You only pay for the parts you use.`
+        : 'This link opens a part of sparx this business is not using yet. You can turn it on whenever you like. You only pay for the parts you use.',
       action: { label: 'See what sparx can do', surface: 'platform.settings.modules' },
     };
   }
@@ -89,7 +88,7 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
       icon: Building2,
       tone: 'warning',
       title: 'That link is for a different business',
-      description: `The link says it belongs to “${detail}”, which isn't one of the businesses you can open — or it has been renamed since the link was written. Whoever sent it can send a fresh one.`,
+      description: `The link says it belongs to “${detail}”, which isn't one of the businesses you can open, or it has been renamed since the link was written. Whoever sent it can send a fresh one.`,
     };
   }
 
@@ -97,7 +96,7 @@ function explain(reason: UnresolvedReason, detail: string): Explanation {
     icon: HelpCircle,
     tone: 'warning',
     title: "That link doesn't open anything",
-    description: `Nothing in sparx lives at “${detail}”. The address may have been cut short on its way here — links sometimes break when they travel through a chat or an email — so it is worth asking for it again.`,
+    description: `Nothing in sparx lives at “${detail}”. The address may have been cut short on its way here (links sometimes break when they travel through a chat or an email) so it is worth asking for it again.`,
   };
 }
 
@@ -105,10 +104,6 @@ export function LinkUnresolvedSurface({ ctx }: { ctx: SurfaceContext }) {
   const reason = (ctx.params.reason ?? 'unknown-path') as UnresolvedReason;
   const detail = ctx.params.detail ?? '';
   const { icon: Icon, tone, title, description, action } = explain(reason, detail);
-
-  useEffect(() => {
-    ctx.setTitle('Link');
-  }, [ctx]);
 
   return (
     <div className="grid h-full place-items-center overflow-y-auto p-8">

@@ -36,7 +36,7 @@ export interface GoodsReceiptLine {
   lotNumber: string | null;
   movementId: string | null;
   /** What it really cost (docs/146 Phase 5). The invoice price in your own
-   *  currency, this line's share of the shipping and duty, and the two together.
+   *  currency, this line's share of the freight and duty, and the two together.
    *  Null on deliveries booked before extra costs could be recorded — there is
    *  no freight bill to find for those, and inventing one would be worse than
    *  the gap. */
@@ -216,7 +216,7 @@ export function receiptLineState(
   damaged = 0
 ): ReceiptLineState {
   if (received <= 0 && damaged > 0) {
-    return { label: 'All damaged — nothing added to stock', tone: 'danger' };
+    return { label: 'All damaged: nothing added to stock', tone: 'danger' };
   }
   if (received <= 0) return { label: 'Not receiving now', tone: 'neutral' };
   if (received === outstanding) return { label: 'Completes this line', tone: 'success' };

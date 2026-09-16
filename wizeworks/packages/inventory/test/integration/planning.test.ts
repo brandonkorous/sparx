@@ -104,6 +104,33 @@ describe('planning intelligence — DB-backed', () => {
     );
 
   /**
+   * Put stock in, at a cost, DATED in the past.
+   *
+   * The first movement on a line is when the shop actually got the item, and
+   * "nothing has ever sold from this" only means something with a length of time
+   * attached to it. A fixture that can only receive stock NOW cannot tell a line
+   * that has had a year to sell from one that arrived on Tuesday, which is
+   * exactly the distinction the dead-stock window exists to make.
+   */
+  const receiveAt = async (
+    f: InventoryFixture,
+    delta: number,
+    unitCostCents: number,
+    daysAgo: number
+  ) => {
+    const movement = await receive(f, delta, unitCostCents);
+    await withTenant(
+      ctx(),
+      (tx) =>
+        tx.$executeRaw`
+        UPDATE inventory_movements
+           SET created_at = now() - make_interval(days => ${daysAgo}::int)
+         WHERE id = ${movement.movementId}::uuid
+      `
+    );
+  };
+
+  /**
    * Write a demand movement DATED in the past.
    *
    * `applyMovement` stamps `created_at` itself, so the row is written and then
@@ -623,6 +650,30 @@ describe('planning intelligence — DB-backed', () => {
       const level = await levelOf(cheap.variantId, cheap.warehouseId);
       expect(level?.abcClass).toBe('A');
     });
+
+    it('separates a rank reached on a real zero from one reached on no cost at all', async () => {
+      const unpriced = await createInventoryFixture(tenantId);
+      await receive(unpriced, 6, 0);
+      // The shape a real catalogue arrives in: stock on the shelf, and nobody
+      // has said what it cost. Both classes land in C with a value of zero, and
+      // only one of the two is a finding about the item.
+      await withTenant(ctx(), async (tx) => {
+        await tx.$executeRaw`
+          UPDATE commerce_product_variants SET cost_cents = NULL WHERE id = ${unpriced.variantId}::uuid`;
+        await tx.$executeRaw`
+          UPDATE inventory_levels SET unit_cost_cents = NULL, avg_cost_cents = NULL
+           WHERE variant_id = ${unpriced.variantId}::uuid`;
+      });
+      await recomputeClassifications(ctx());
+
+      const { items } = await listClassifications(ctx(), { take: 250 });
+      const row = items.find((i) => i.variantId === unpriced.variantId);
+      expect(row?.abcClass).toBe('C');
+      expect(row?.annualUsageValueCents).toBe(0);
+      expect(row?.costKnown).toBe(false);
+      // And a priced line is not swept up with it, or the flag says nothing.
+      expect(items.find((i) => i.variantId === expensive.variantId)?.costKnown).toBe(true);
+    });
   });
 
   /* ── 7. Cycle-count schedules ───────────────────────────────────────────── */
@@ -746,9 +797,13 @@ describe('planning intelligence — DB-backed', () => {
       expect(row?.reasoning.length ?? 0).toBeGreaterThan(20);
     });
 
-    it('calls stock that has never sold dead, and says what to do about it', async () => {
+    it('calls stock that has never sold dead ONCE it has had the window to sell in', async () => {
       const dead = await createInventoryFixture(tenantId);
-      await receive(dead, 40, 2_500);
+      // Received well beyond the 180-day window, so "nothing has ever sold from
+      // this" is a finding rather than a fact about a new delivery. This fixture
+      // used to receive the stock NOW and expect it to be dead in the same
+      // breath, which is the bug rather than the rule.
+      await receiveAt(dead, 40, 2_500, 400);
       await recomputeDemandVelocity(ctx());
 
       const report = await slowMoverReport(ctx(), { take: 500 });
@@ -759,6 +814,35 @@ describe('planning intelligence — DB-backed', () => {
       expect(row?.excessValueCents).toBe(40 * 2_500);
       expect(row?.annualHoldingCostCents ?? 0).toBeGreaterThan(0);
       expect(row?.suggestedAction).toMatch(/discount|write it off|return/i);
+      // The sentence carries the length of time, because that is the whole
+      // difference between advice and a guess.
+      expect(row?.suggestedAction).toMatch(/in the \d+ days you have had it/);
+    });
+
+    it('does NOT call stock dead the fortnight it arrives', async () => {
+      const fresh = await createInventoryFixture(tenantId);
+      await receiveAt(fresh, 6, 3_000, 16);
+      await recomputeDemandVelocity(ctx());
+
+      const report = await slowMoverReport(ctx(), { take: 500 });
+      // The window is the owner's number and it applies to every line, including
+      // the ones that have never sold. Sixteen days into a shop, being told to
+      // discount, return or write off the stock that just landed is advice that
+      // costs money to follow.
+      expect(report.deadStockDays).toBe(180);
+      expect(report.rows.find((r) => r.variantId === fresh.variantId)).toBeUndefined();
+    });
+
+    it('cannot call anything dead before a pass has measured how long it has been held', async () => {
+      const unmeasured = await createInventoryFixture(tenantId);
+      await receiveAt(unmeasured, 9, 1_100, 900);
+      // Deliberately NO recomputeDemandVelocity: nothing is known about this
+      // line at all. How long it has had to sell is unknown, and unknown is not
+      // "long enough" — this is the state every brand-new tenant is in, and it
+      // is the state the "nothing has been checked yet" empty state is written
+      // for. It could never appear while an unmeasured line counted as dead.
+      const report = await slowMoverReport(ctx(), { take: 500 });
+      expect(report.rows.find((r) => r.variantId === unmeasured.variantId)).toBeUndefined();
     });
   });
 });

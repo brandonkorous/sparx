@@ -48,7 +48,6 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { buyingErrorMessage } from './suppliers-data';
 import {
   ALLOCATION_BASES,
@@ -68,17 +67,13 @@ interface Form {
   baseCurrency: string;
 }
 
-export function CostingSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
+export function CostingSettingsSurface() {
   const toast = useToast();
   const policy = useCostingPolicy();
   const savePolicy = useSaveCostingPolicy();
 
   const [form, setForm] = useState<Form | null>(null);
   const [baseline, setBaseline] = useState('');
-
-  useEffect(() => {
-    ctx.setTitle('How stock is valued');
-  }, [ctx]);
 
   // Seed once the record lands. Re-seeding on every refetch would throw away
   // whatever the user was in the middle of choosing.
@@ -161,7 +156,7 @@ export function CostingSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
             How your stock is valued
           </Heading>
           <Text>
-            The one setting behind every money figure you see about stock — what it is worth, what
+            The one setting behind every money figure you see about stock: what it is worth, what
             your goods cost you, and what your margin actually is.
           </Text>
         </div>
@@ -171,7 +166,7 @@ export function CostingSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
             <AlertContent>
               <AlertTitle>You are on the standard setting</AlertTitle>
               <AlertDescription>
-                Nobody has chosen here yet, so your stock is valued at average cost — which is the
+                Nobody has chosen here yet, so your stock is valued at average cost, which is the
                 right answer for most businesses. Change it only if your accountant has asked you
                 to.
               </AlertDescription>
@@ -216,7 +211,7 @@ export function CostingSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : null}
 
         <FormSection
-          title="Spreading shipping and duty"
+          title="Spreading freight and duty"
           description="When you record what it cost to get a delivery here, this is how it gets divided across the things that arrived. You can change it on any individual cost."
         >
           <Field>
@@ -262,7 +257,7 @@ export function CostingSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
               }
             />
             <FieldDescription>
-              A three-letter code — USD, GBP, EUR. Deliveries already booked keep the rate they were
+              A three-letter code: USD, GBP, EUR. Deliveries already booked keep the rate they were
               converted at.
             </FieldDescription>
           </Field>

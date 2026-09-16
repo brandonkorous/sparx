@@ -49,10 +49,10 @@ import content from './content.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx',
-  version: '1.6.0',
+  version: '1.6.1',
   name: 'Universal Starter',
   summary:
-    'A complete, multi-module starter — shop, journal, booking, and wholesale — in the Ember look. Install it, make it yours, and launch a polished working site in minutes.',
+    'A complete, multi-module starter (shop, journal, booking, and wholesale) in the Ember look. Install it, make it yours, and launch a polished working site in minutes.',
   vertical: 'retail',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],
@@ -66,7 +66,7 @@ const blueprint = {
   // avoids (piggles/docs/personas/issues/091, /165).
   brand: {
     businessName: 'Alder & Ash',
-    tagline: 'Everything you sell, publish, and book — in one place.',
+    tagline: 'Everything you sell, publish, and book: in one place.',
     colors: {
       primary: '#e04631', // Ember — the sparx brand primary
       primaryForeground: '#ffffff',
@@ -176,7 +176,7 @@ const blueprint = {
       {
         handle: 'goods',
         name: 'Goods',
-        description: 'Everyday goods — the whole shop in one place.',
+        description: 'Everyday goods: the whole shop in one place.',
         featured: true,
       },
     ],
@@ -209,7 +209,7 @@ const blueprint = {
         tags: ['notebook', 'everyday', 'dot-grid', 'stationery'],
         categoryHandles: ['goods'],
         collectionHandles: ['bestsellers'],
-        seoTitle: 'Field Notebook — pocket dot-grid notebook',
+        seoTitle: 'Field Notebook: pocket dot-grid notebook',
         seoDescription:
           'A pocket-size, lay-flat dot-grid notebook with 120 pages of bleed-resistant cream paper.',
         variants: [
@@ -228,7 +228,7 @@ const blueprint = {
         tags: ['tee', 'cotton', 'unisex', 'apparel'],
         categoryHandles: ['goods'],
         collectionHandles: ['bestsellers'],
-        seoTitle: 'Everyday Tee — mid-weight combed cotton',
+        seoTitle: 'Everyday Tee: mid-weight combed cotton',
         seoDescription:
           'A relaxed-fit, mid-weight combed-cotton tee with a collar that holds its shape.',
         variants: [
@@ -247,7 +247,7 @@ const blueprint = {
         tags: ['mug', 'enamel', 'camp', 'drinkware'],
         categoryHandles: ['goods'],
         collectionHandles: ['bestsellers'],
-        seoTitle: 'Enamel Mug — 12oz speckled camp mug',
+        seoTitle: 'Enamel Mug: 12oz speckled camp mug',
         seoDescription:
           'A 12oz speckled enamel-over-steel camp mug built for desk, trail, and campfire.',
         variants: [
@@ -266,7 +266,7 @@ const blueprint = {
         tags: ['tote', 'canvas', 'everyday', 'accessories'],
         categoryHandles: ['goods'],
         collectionHandles: ['bestsellers'],
-        seoTitle: 'Canvas Tote — heavy 12oz cotton tote bag',
+        seoTitle: 'Canvas Tote: heavy 12oz cotton tote bag',
         seoDescription:
           'A heavy 12oz cotton-canvas tote with box corners and shoulder-length handles.',
         variants: [
@@ -285,7 +285,7 @@ const blueprint = {
         tags: ['cap', 'adjustable', 'ripstop', 'apparel'],
         categoryHandles: ['goods'],
         collectionHandles: ['bestsellers'],
-        seoTitle: 'Ripstop Cap — packable six-panel cap',
+        seoTitle: 'Ripstop Cap: packable six-panel cap',
         seoDescription:
           'A lightweight, packable six-panel ripstop cap with a hand-bendable brim and adjustable strap.',
         variants: [
@@ -304,7 +304,7 @@ const blueprint = {
         tags: ['bottle', 'insulated', 'steel', 'drinkware', 'everyday'],
         categoryHandles: ['goods'],
         collectionHandles: ['bestsellers'],
-        seoTitle: 'Insulated Bottle — 17oz double-walled steel',
+        seoTitle: 'Insulated Bottle: 17oz double-walled steel',
         seoDescription:
           'A 17oz double-walled stainless bottle: cold for 24h, hot for 12h, leak-proof, matte finish.',
         variants: [
@@ -320,7 +320,7 @@ const blueprint = {
   // `sequences` block below references these two by name.
   emails: [
     { name: 'Welcome', doc: welcomeEmail, publish: false },
-    { name: 'Welcome — day 3', doc: welcomeEmail2, publish: false },
+    { name: 'Welcome: day 3', doc: welcomeEmail2, publish: false },
   ],
 
   // ── Sequences (a welcome journey, ready to turn on) ──────────────────────────
@@ -343,12 +343,12 @@ const blueprint = {
       exitOnPurchase: true,
       activate: false,
       steps: [
-        { emailName: 'Welcome', delaySeconds: 0, emailType: 'marketing', name: 'Day 0 — welcome' },
+        { emailName: 'Welcome', delaySeconds: 0, emailType: 'marketing', name: 'Day 0: welcome' },
         {
-          emailName: 'Welcome — day 3',
+          emailName: 'Welcome: day 3',
           delaySeconds: 259200,
           emailType: 'marketing',
-          name: 'Day 3 — places to start',
+          name: 'Day 3: places to start',
         },
       ],
     },

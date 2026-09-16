@@ -53,7 +53,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { CircleAlert, Lightbulb, PackageX, Sigma, Wand2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
-import { PANE_SHELL } from '../../components/pane-toolbar';
+import { PANE_SHELL, PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, stockErrorMessage } from './data';
 import {
@@ -120,7 +120,7 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
         data.title ?? data.sku ?? 'this item'
       } to ${data.computedReorderPoint}${
         data.currentReorderPoint === null ? '' : `, up from ${data.currentReorderPoint}`
-      }. It takes today's figure once — the level stays yours, and nothing changes it again unless you say so.`,
+      }. It takes today's figure once: the level stays yours, and nothing changes it again unless you say so.`,
       confirmLabel: 'Use it',
       cancelLabel: 'Leave it',
       color: 'module',
@@ -148,7 +148,7 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   return (
-    <div className={`${PANE_SHELL} overflow-y-auto`}>
+    <div className={PANE_SHELL_SCROLL}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex min-w-0 flex-col">
           <Heading level={2} className="truncate text-lg">
@@ -170,7 +170,7 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
           <StatValue>{data.currentReorderPoint ?? '—'}</StatValue>
           <StatDesc>
             {data.currentReorderPoint === null
-              ? 'No level set — nothing will warn you'
+              ? 'No level set: nothing will warn you'
               : data.isAutoManaged
                 ? 'Set automatically each night'
                 : 'Set by hand'}
@@ -204,7 +204,7 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
             </AlertTitle>
             <AlertDescription>
               Your level is left exactly as you set it. The figures below say where the difference
-              comes from — if the reasoning holds up, take it.
+              comes from: if the reasoning holds up, take it.
             </AlertDescription>
           </AlertContent>
           <Button
@@ -295,7 +295,7 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
           The arithmetic, with your numbers in it
         </Heading>
         <Text className="text-sm">
-          Nothing here is a black box. Check it on paper if you like — that is the point of showing
+          Nothing here is a black box. Check it on paper if you like. That is the point of showing
           it.
         </Text>
         <dl className="flex flex-col gap-2">
@@ -365,7 +365,7 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
             How long the supplier takes
           </Heading>
           <Text>
-            {data.leadTime.supplierName ?? 'The supplier'} — {data.leadTime.days} days
+            {data.leadTime.supplierName ?? 'The supplier'}: {data.leadTime.days} days
             {data.leadTime.stdDevDays > 0 ? `, give or take ${data.leadTime.stdDevDays}` : ''}.{' '}
             {leadTimeSourceLabel(data.leadTime.source)}
             {data.leadTime.sampleCount > 0
@@ -384,8 +384,8 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
                 <AlertDescription>
                   They say {data.leadTime.promisedDays} days and actually take {data.leadTime.days}
                   {data.leadTime.days > data.leadTime.promisedDays
-                    ? ' — which is why the level is higher than their quoted time would suggest.'
-                    : ' — they beat their own quote, so less spare cover is needed.'}
+                    ? ', which is why the level is higher than their quoted time would suggest.'
+                    : ', they beat their own quote, so less spare cover is needed.'}
                 </AlertDescription>
               </AlertContent>
             </Alert>

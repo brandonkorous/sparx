@@ -3,6 +3,7 @@
 //
 //   GET    /v1/inventory/count-schedules
 //   POST   /v1/inventory/count-schedules
+//   GET    /v1/inventory/count-schedules/coverage   — what a setup would cover
 //   GET    /v1/inventory/count-schedules/:id
 //   PATCH  /v1/inventory/count-schedules/:id
 //   DELETE /v1/inventory/count-schedules/:id
@@ -30,6 +31,16 @@ const ListQuery = z.object({
   include_inactive: queryBool.optional(),
 });
 
+// What a setup WOULD cover, asked while it is still being typed.
+const CoverageQuery = z.object({
+  warehouse_id: z.string().uuid(),
+  abc_class: z.enum(['A', 'B', 'C']).optional(),
+  // The form offers "narrow to one zone" and the generator honours it, so the
+  // coverage figure has to see it too, or it answers a wider question than the
+  // one being asked (issue 501).
+  zone_name: z.string().trim().min(1).optional(),
+});
+
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
 const inventoryScheduleRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/inventory/count-schedules', async (request, reply) => {
@@ -53,6 +64,23 @@ const inventoryScheduleRoutes: FastifyPluginAsync = async (app) => {
       request.body
     );
     return reply.status(201).send(ok(created));
+  });
+
+  // Registered BEFORE `/:id` — Fastify prefers a static segment, but keeping
+  // them adjacent in this order is what stops the next person moving one.
+  app.get('/v1/inventory/count-schedules/coverage', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'viewer');
+    const q = CoverageQuery.parse(request.query);
+    return reply.send(
+      ok(
+        await inventoryService.countScheduleCoverage(toInventoryContext(request), {
+          warehouseId: q.warehouse_id,
+          ...(q.abc_class ? { abcClass: q.abc_class } : {}),
+          ...(q.zone_name ? { zoneName: q.zone_name } : {}),
+        })
+      )
+    );
   });
 
   app.get('/v1/inventory/count-schedules/:id', async (request, reply) => {

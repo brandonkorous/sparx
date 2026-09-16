@@ -826,6 +826,298 @@ const mediaProjector: EntityProjector = {
 
 /** Universal projectors contributed by Commerce + CRM. The commerce-indexer
  *  registers these into its projector registry (reindex + event dispatch). */
+
+// ─── inventory: purchasing ─────────────────────────────────────
+//
+// Seven documents a warehouse refers to by NUMBER every day, none of which was
+// searchable until now (issue 508). Each carries the numbers and names AROUND
+// it in `keywords`, because a delivery is looked for by its supplier or by the
+// order it came from at least as often as by its own number.
+
+const supplierProjector: EntityProjector = {
+  entityType: 'supplier',
+  module: 'inventory',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.supplier.findMany({
+        where: { deletedAt: null },
+        select: { id: true },
+      });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const s = await tx.supplier.findFirst({ where: { id, deletedAt: null } });
+      if (!s) return null;
+      return {
+        id: universalId(ctx.tenantId, 'supplier', s.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'supplier',
+        module: 'inventory',
+        record_id: s.id,
+        title: s.name,
+        subtitle: s.code,
+        keywords: keywords([s.code, s.contactName, s.email, s.phone, s.city, s.region, s.country]),
+        status: s.isActive ? 'active' : 'inactive',
+        url: `/inventory/suppliers/${s.id}`,
+        created_at: epoch(s.createdAt),
+        updated_at: epoch(s.updatedAt),
+      };
+    }),
+};
+
+const purchaseOrderProjector: EntityProjector = {
+  entityType: 'purchase_order',
+  module: 'inventory',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.purchaseOrder.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const po = await tx.purchaseOrder.findFirst({
+        where: { id },
+        include: {
+          supplier: { select: { name: true, code: true } },
+          warehouse: { select: { name: true } },
+        },
+      });
+      if (!po) return null;
+      return {
+        id: universalId(ctx.tenantId, 'purchase_order', po.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'purchase_order',
+        module: 'inventory',
+        record_id: po.id,
+        title: po.number,
+        // The supplier, not the status. A list of order numbers all reading
+        // "submitted" tells nobody which one they are looking at.
+        subtitle: po.supplier?.name ?? undefined,
+        keywords: keywords([
+          po.supplier?.name,
+          po.supplier?.code,
+          po.warehouse?.name,
+          po.reference,
+          po.status,
+        ]),
+        status: po.status,
+        url: `/inventory/purchase-orders/${po.id}`,
+        created_at: epoch(po.createdAt),
+        updated_at: epoch(po.updatedAt),
+      };
+    }),
+};
+
+const goodsReceiptProjector: EntityProjector = {
+  entityType: 'goods_receipt',
+  module: 'inventory',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.goodsReceipt.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const r = await tx.goodsReceipt.findFirst({
+        where: { id },
+        include: {
+          purchaseOrder: {
+            select: { number: true, supplier: { select: { name: true, code: true } } },
+          },
+          warehouse: { select: { name: true } },
+        },
+      });
+      if (!r) return null;
+      return {
+        id: universalId(ctx.tenantId, 'goods_receipt', r.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'goods_receipt',
+        module: 'inventory',
+        record_id: r.id,
+        title: r.number,
+        subtitle: r.purchaseOrder?.supplier?.name ?? undefined,
+        // The ORDER number matters most here: a delivery is almost always
+        // looked for from the order it belongs to.
+        keywords: keywords([
+          r.purchaseOrder?.number,
+          r.purchaseOrder?.supplier?.name,
+          r.purchaseOrder?.supplier?.code,
+          r.warehouse?.name,
+          r.reference,
+          snippet(r.note, 200),
+        ]),
+        url: `/inventory/receiving/${r.id}`,
+        created_at: epoch(r.createdAt),
+        updated_at: epoch(r.createdAt),
+      };
+    }),
+};
+
+const supplierBillProjector: EntityProjector = {
+  entityType: 'supplier_bill',
+  module: 'inventory',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.supplierBill.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const b = await tx.supplierBill.findFirst({
+        where: { id },
+        include: {
+          supplier: { select: { name: true, code: true } },
+          purchaseOrder: { select: { number: true } },
+        },
+      });
+      if (!b) return null;
+      return {
+        id: universalId(ctx.tenantId, 'supplier_bill', b.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'supplier_bill',
+        module: 'inventory',
+        record_id: b.id,
+        // THEIR number, as printed on the paper. That is the only number
+        // anybody quotes back on the phone.
+        title: b.number,
+        subtitle: b.supplier?.name ?? undefined,
+        keywords: keywords([
+          b.supplier?.name,
+          b.supplier?.code,
+          b.purchaseOrder?.number,
+          b.status,
+          b.currency,
+        ]),
+        status: b.status,
+        url: `/inventory/supplier-bills/${b.id}`,
+        created_at: epoch(b.createdAt),
+        updated_at: epoch(b.updatedAt),
+      };
+    }),
+};
+
+const supplierReturnProjector: EntityProjector = {
+  entityType: 'supplier_return',
+  module: 'inventory',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.supplierReturn.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const r = await tx.supplierReturn.findFirst({
+        where: { id },
+        include: {
+          supplier: { select: { name: true, code: true } },
+          warehouse: { select: { name: true } },
+        },
+      });
+      if (!r) return null;
+      return {
+        id: universalId(ctx.tenantId, 'supplier_return', r.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'supplier_return',
+        module: 'inventory',
+        record_id: r.id,
+        title: r.number,
+        subtitle: r.supplier?.name ?? undefined,
+        // The RMA number is the one the supplier quotes back, so it has to be
+        // findable even though it is not the title.
+        keywords: keywords([
+          r.supplier?.name,
+          r.supplier?.code,
+          r.warehouse?.name,
+          r.rmaNumber,
+          r.reason,
+          r.status,
+        ]),
+        status: r.status,
+        url: `/inventory/supplier-returns/${r.id}`,
+        created_at: epoch(r.createdAt),
+        updated_at: epoch(r.updatedAt),
+      };
+    }),
+};
+
+const inventoryTransferProjector: EntityProjector = {
+  entityType: 'inventory_transfer',
+  module: 'inventory',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.inventoryTransfer.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const t = await tx.inventoryTransfer.findFirst({
+        where: { id },
+        include: {
+          fromWarehouse: { select: { name: true } },
+          toWarehouse: { select: { name: true } },
+        },
+      });
+      if (!t) return null;
+      return {
+        id: universalId(ctx.tenantId, 'inventory_transfer', t.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'inventory_transfer',
+        module: 'inventory',
+        record_id: t.id,
+        title: t.number,
+        // Where it went, in the words on the subtitle line, because that is the
+        // whole question anybody has about a transfer.
+        subtitle:
+          t.fromWarehouse && t.toWarehouse
+            ? `${t.fromWarehouse.name} to ${t.toWarehouse.name}`
+            : undefined,
+        keywords: keywords([
+          t.fromWarehouse?.name,
+          t.toWarehouse?.name,
+          t.status,
+          snippet(t.note, 200),
+        ]),
+        status: t.status,
+        url: `/inventory/transfers/${t.id}`,
+        created_at: epoch(t.createdAt),
+        updated_at: epoch(t.updatedAt),
+      };
+    }),
+};
+
+const inventoryCountProjector: EntityProjector = {
+  entityType: 'inventory_count',
+  module: 'inventory',
+  listIdsForTenant: (ctx: ProjectorContext) =>
+    withTenant(ctx, async (tx) => {
+      const rows = await tx.inventoryCount.findMany({ select: { id: true } });
+      return rows.map((r) => r.id);
+    }),
+  project: (ctx: ProjectorContext, id: string) =>
+    withTenant(ctx, async (tx): Promise<UniversalSearchDocument | null> => {
+      const c = await tx.inventoryCount.findFirst({
+        where: { id },
+        include: { warehouse: { select: { name: true } } },
+      });
+      if (!c) return null;
+      return {
+        id: universalId(ctx.tenantId, 'inventory_count', c.id),
+        tenant_id: ctx.tenantId,
+        entity_type: 'inventory_count',
+        module: 'inventory',
+        record_id: c.id,
+        title: c.number,
+        subtitle: c.warehouse?.name ?? undefined,
+        keywords: keywords([c.warehouse?.name, c.zoneName, c.type, c.scope, c.status]),
+        status: c.status,
+        url: `/inventory/counts/${c.id}`,
+        created_at: epoch(c.createdAt),
+        updated_at: epoch(c.updatedAt),
+      };
+    }),
+};
+
 export const commerceUniversalProjectors: EntityProjector[] = [
   // Phase 1 (shipped)
   warehouseProjector,
@@ -852,4 +1144,13 @@ export const commerceUniversalProjectors: EntityProjector[] = [
   siteProjector,
   contentEntryProjector,
   mediaProjector,
+  // Purchasing (issue 508). A warehouse refers to its own paperwork by number,
+  // and not one of these numbers used to find anything.
+  supplierProjector,
+  purchaseOrderProjector,
+  goodsReceiptProjector,
+  supplierBillProjector,
+  supplierReturnProjector,
+  inventoryTransferProjector,
+  inventoryCountProjector,
 ];

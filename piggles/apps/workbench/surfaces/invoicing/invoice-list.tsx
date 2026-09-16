@@ -64,7 +64,6 @@ type SortDir = 'asc' | 'desc';
 const STATUS_FILTERS = [
   { value: 'all', label: 'All' },
   { value: 'unpaid', label: invoiceState('unpaid').label },
-  { value: 'overdue', label: invoiceState('overdue').label },
   { value: 'partial', label: invoiceState('partial').label },
   { value: 'paid', label: invoiceState('paid').label },
 ] as const;
@@ -85,6 +84,18 @@ const SENT_FILTERS = [
   { value: 'true', label: 'Sent' },
 ] as const;
 
+// LATE IS A DATE, NOT A STATUS. `overdue` used to sit in the Status list above,
+// which made it look like the answer to "who is late" and it was not: the status
+// column is written when something is DONE to a document, and a due date passing
+// is nobody doing anything, so it went on saying `unpaid` or `partial` for ever
+// (issue 522). Asking the due date is a different question from asking the money
+// state, the way `sent` is, so it gets its own control rather than a word in
+// somebody else's list.
+const LATE_FILTERS = [
+  { value: 'all', label: 'All' },
+  { value: 'true', label: 'Late only' },
+] as const;
+
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
@@ -95,6 +106,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [sent, setSent] = useState('all');
+  const [late, setLate] = useState('all');
   // Due soonest first — the question a receivables list exists to answer, and
   // the reason the endpoint needed a real `order` param rather than the
   // platform's usual hardcoded 'desc'.
@@ -125,7 +137,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
     queryKey: [
       'invoicing',
       'documents',
-      { q: search, status: activeStatus, sent, sort: sort.key, dir: sort.dir, take, skip },
+      { q: search, status: activeStatus, sent, late, sort: sort.key, dir: sort.dir, take, skip },
     ],
     queryFn: () =>
       api
@@ -133,6 +145,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
           ...(search ? { q: search } : {}),
           ...(activeStatus === 'all' ? {} : { status: activeStatus }),
           ...(sent === 'all' ? {} : { sent }),
+          ...(late === 'all' ? {} : { pastDue: late }),
           sort_by: sort.key,
           order: sort.dir,
           take,
@@ -237,7 +250,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
           onClick: (event) => {
             ctx.open('invoicing.invoice.edit', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'New invoice — hold Shift to open alongside, Alt for a new window',
+          title: 'New invoice: hold Shift to open alongside, Alt for a new window',
         }}
         filters={[
           {
@@ -260,14 +273,39 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
             },
             options: SENT_FILTERS,
           },
+          {
+            label: 'Late',
+            key: 'pastDue',
+            value: late,
+            onValueChange: (next) => {
+              setLate(next ?? 'all');
+              resetWindow();
+            },
+            options: LATE_FILTERS,
+          },
         ]}
         // The sort is half the question here — "late, biggest balance first" is
         // a different list from "late, soonest due" — so it rides the snapshot.
         views={{
           target: '/invoicing/invoices',
-          params: { q: search, sort: `${sort.key}:${sort.dir}` },
+          // EVERY filter rides the snapshot, not just the search and the sort.
+          // A view that remembered the sort and forgot "late only" would reopen
+          // as the whole list in the right order, which looks like it worked.
+          // 'all' is left OUT rather than stored: `normalise()` keeps any
+          // non-empty value, so storing it would make "no filter" and "the All
+          // filter" two different saved views of the same list.
+          params: {
+            q: search,
+            sort: `${sort.key}:${sort.dir}`,
+            ...(status === 'all' ? {} : { status }),
+            ...(sent === 'all' ? {} : { sent }),
+            ...(late === 'all' ? {} : { pastDue: late }),
+          },
           onApply: (next) => {
             setSearch(next.q ?? '');
+            setStatus(next.status ?? 'all');
+            setSent(next.sent ?? 'all');
+            setLate(next.pastDue ?? 'all');
             const [key, dir] = (next.sort ?? '').split(':');
             setSort(
               key && (dir === 'asc' || dir === 'desc')
@@ -308,7 +346,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
         {error ? (
           <EmptyState
             title="Could not load invoices"
-            description="Something went wrong reaching the server. It may be temporary — try again in a moment."
+            description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
           />
         ) : isLoading ? (
           <PaneWaiting label="Loading invoices…" />

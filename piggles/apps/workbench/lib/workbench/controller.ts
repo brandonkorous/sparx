@@ -12,7 +12,7 @@
 
 import type { OpenOptions, OpenTarget } from '../surfaces/registry';
 import type { DetachedWindow, PaneHost, PaneHostCapabilities } from './pane-host';
-import { getSurface, titleFor } from '../surfaces/registry';
+import { getSurface, isOwnStaticTitle, titleFor } from '../surfaces/registry';
 import {
   createDescriptor,
   descriptorKey,
@@ -138,10 +138,24 @@ export class WorkbenchController {
     return this.host?.serialize() ?? null;
   }
 
-  /** Restores descriptors from a persisted layout, before dockview rebuilds the grid. */
+  /**
+   * Restores descriptors from a persisted layout, before dockview rebuilds the grid.
+   *
+   * A saved title that is only the surface's own name is DROPPED on the way in.
+   * The tab label is persisted, so a layout written before surfaces stopped
+   * naming themselves is still carrying words like "Inbox" for a screen this
+   * console calls "Comments and replies" — and nothing else would ever take them
+   * out, because the effect that used to hand them back on mount is gone. A
+   * rename must reach a layout somebody saved last year, not only a pane opened
+   * today. See `isOwnStaticTitle`; a record's name is untouched.
+   */
   hydrate(panes: Record<string, PaneDescriptor>): void {
     this.descriptors.clear();
-    for (const [id, descriptor] of Object.entries(panes)) this.descriptors.set(id, descriptor);
+    for (const [id, descriptor] of Object.entries(panes)) {
+      const stale =
+        descriptor.title !== undefined && isOwnStaticTitle(descriptor.surface, descriptor.title);
+      this.descriptors.set(id, stale ? { ...descriptor, title: undefined } : descriptor);
+    }
     this.restores += 1;
     this.emit();
   }
@@ -266,15 +280,27 @@ export class WorkbenchController {
   setTitle(paneId: string, title: string): void {
     const descriptor = this.descriptors.get(paneId);
     if (!descriptor) return;
+    // A surface names a RECORD here, never itself. `title` is the OPERATOR's
+    // rename (see PaneDescriptor.title) and it outranks the registry, so a
+    // surface handing back its own catalog name pins that tab to the platform's
+    // word — which is how "Comments and replies" was titled "Inbox" on the one
+    // screen a shop actually looks at.
+    //
+    // So an own-name is CLEARED rather than stored, which keeps the pane
+    // answering to the registry and lets one rename reach the tab with every
+    // other place at once. A layout SAVED with the old word is swept on the way
+    // in instead — see `hydrate`, which is where a stale one now dies.
+    const next = isOwnStaticTitle(descriptor.surface, title) ? undefined : title;
     // IDEMPOTENT, and it has to be. A surface renames itself from an effect
     // ("Invoice" ⇒ "INV-000004" once the record loads), so a setTitle that
     // always emits means: effect → emit → re-render → effect → emit. The dock
     // absorbed it because dockview's own setTitle no-ops on an unchanged title;
     // the stack emitted every time and the pane hit React's update-depth limit
     // instantly. Bailing here fixes it for every present and future host.
-    if (descriptor.title === title) return;
-    this.descriptors.set(paneId, { ...descriptor, title });
-    this.host?.setTitle(paneId, title);
+    if (descriptor.title === next) return;
+    const retitled: PaneDescriptor = { ...descriptor, title: next };
+    this.descriptors.set(paneId, retitled);
+    this.host?.setTitle(paneId, titleFor(retitled));
     this.emit();
   }
 

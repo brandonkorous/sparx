@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-pressurewash-commercial',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Pressure Washing (Commercial)',
   summary:
-    'A professional commercial exterior-cleaning site — a deep slate palette with a sharp amber accent, built around online booking. Property managers book a free site assessment, quote or service consultation in about a minute; three crew leads carry their own skills and hours as dispatchable resources. Leads with insured, scheduled service contracts from storefronts to fleets. Ships as "ProWash Exterior Cleaning", a commercial pressure-washing company.',
+    'A professional commercial exterior-cleaning site: a deep slate palette with a sharp amber accent, built around online booking. Property managers book a free site assessment, quote or service consultation in about a minute; three crew leads carry their own skills and hours as dispatchable resources. Leads with insured, scheduled service contracts from storefronts to fleets. Ships as "ProWash Exterior Cleaning", a commercial pressure-washing company.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

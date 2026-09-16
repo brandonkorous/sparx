@@ -59,12 +59,20 @@ function Losses({ ctx, q, currency }: Omit<BlockProps, 'data' | 'locationName'>)
 
 function Ageing({ ctx, q, currency, locationName }: Omit<BlockProps, 'data'>) {
   if (q.aging.isError) return <CouldNotWorkOut what="ageing" />;
-  if (!q.aging.data) return <InlineWaiting label="Working out ageing…" />;
+  if (!q.aging.data) return <InlineWaiting label="Working out aging…" />;
   const deadStock = q.aging.data.deadStock;
+  // Lines that have never sold at all. They are no longer counted as dead
+  // stock (they have not had the window to sell in), so the reassuring
+  // empty state has to know they exist rather than speak for them.
+  const neverSold = q.aging.data.buckets.find((b) => b.bucket === 'never')?.levels ?? 0;
 
   return (
     <>
       <AgeingCard report={q.aging.data} currency={currency} locationName={locationName} />
+      {/* "Everything has sold recently enough" is false for a shop where nothing
+          has sold at all — and after the dead-stock window started being applied
+          to never-sold lines too, that shop is exactly who lands here. The aging
+          buckets already count them. */}
       {deadStock.length > 0 ? (
         <DeadStockCard
           items={deadStock}
@@ -82,8 +90,11 @@ function Ageing({ ctx, q, currency, locationName }: Omit<BlockProps, 'data'>) {
           <AlertContent>
             <AlertTitle>Nothing is gathering dust</AlertTitle>
             <AlertDescription>
-              Everything you hold{locationName ? ` at ${locationName}` : ''} has sold recently
-              enough not to count as dead stock. That is money working, not sitting.
+              {neverSold > 0
+                ? `Nothing here has sat longer than your dead-stock window. ${neverSold} ${
+                    neverSold === 1 ? 'line has' : 'lines have'
+                  } not sold at all yet, which is not the same thing as dead. They have not had the time.`
+                : `Everything you hold${locationName ? ` at ${locationName}` : ''} has sold recently enough not to count as dead stock. That is money working, not sitting.`}
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -104,7 +115,7 @@ export function ReportsColumn({
   return (
     <div className={COLUMN}>
       <Text>
-        What your stock is worth, what is sitting still, and how fast it moves — the money side of
+        What your stock is worth, what is sitting still, and how fast it moves: the money side of
         what you hold.
       </Text>
 

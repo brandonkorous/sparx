@@ -135,7 +135,7 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<ClipboardList className="size-6" aria-hidden />}
           title="Could not load your counts"
-          description="This is a problem reaching the server. Your counts are unaffected — the list just could not be read just now."
+          description="This is a problem reaching the server. Your counts are unaffected: the list just could not be read just now."
         />
       );
     }
@@ -196,7 +196,7 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             const state = countState(count.status);
             // The difference value is only frozen once counting is done, so a
             // session still being counted shows a dash rather than a misleading
-            // "£0.00" that reads as "everything matched".
+            // "$0.00" that reads as "everything matched".
             const difference =
               count.status === 'counting' ? '—' : formatCents(count.varianceValueCents);
             return (

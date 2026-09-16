@@ -9,8 +9,8 @@ export function TwoQuestions() {
           You answer two questions. It arrives set up.
         </h2>
         <p className="mt-6 text-lg">
-          No empty workspace, no manual. What you pick changes what you see first &mdash; never what
-          you are allowed to have. Here are the two, and here is what they cost.
+          No empty workspace, no manual. What you pick changes what you see first, never what you
+          are allowed to have. Here are the two, and here is what they cost.
         </p>
       </div>
 

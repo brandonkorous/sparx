@@ -81,8 +81,8 @@ export function DetailSample({ name }: { name: string }) {
           Design that feels like {name}.
         </h3>
         <p className="max-w-[46ch] text-lg leading-relaxed">
-          A complete, considered look — color, type, spacing, and shape — ready to apply to your
-          whole site in one click.
+          A complete, considered look (color, type, spacing, and shape) ready to apply to your whole
+          site in one click.
         </p>
         <div className="flex gap-3 pt-1">
           <span className="bg-primary text-primary-content rounded-field px-6 py-3 font-semibold">
@@ -140,7 +140,7 @@ function CardSample({ name }: { name: string }) {
       <h4 className="tp-head text-2xl leading-tight font-bold tracking-tight">
         Feels like {name}.
       </h4>
-      <p className="text-sm leading-snug">A complete look — color, type, and shape.</p>
+      <p className="text-sm leading-snug">A complete look: color, type, and shape.</p>
       <div className="mt-1 flex gap-2">
         {[
           ['bg-primary', 'text-primary-content', 'Primary'],

@@ -158,7 +158,7 @@ export function StepDomain({
             <div className="min-w-0">
               <p className="truncate font-medium">{selected.domain}</p>
               <p className="text-sm">
-                Added — you are charged {money(selected.displayPrice)} when you publish.
+                Added. You are charged {money(selected.displayPrice)} when you publish.
               </p>
             </div>
           </div>
@@ -215,8 +215,8 @@ export function StepDomain({
       <div className="border-base-300 flex items-start gap-2.5 rounded-xl border px-4 py-3.5">
         <Icon glyph={faClock} className="mt-0.5 size-4 shrink-0" aria-hidden />
         <p className="text-sm">
-          A custom domain is the one optional paid add-on — you are charged only when you publish,
-          at the Launch step, never for signing up.
+          A custom domain is the one optional paid add-on. You are charged only when you publish, at
+          the Launch step, never for signing up.
         </p>
       </div>
 
@@ -226,8 +226,8 @@ export function StepDomain({
           Your site is live at{' '}
           <span className="font-medium">
             {slug}.{SITE_ZONE}
-          </span>{' '}
-          — just hit Continue. You can add a domain anytime from Settings.
+          </span>
+          . Just hit Continue. You can add a domain anytime from Settings.
         </p>
       </div>
     </div>
@@ -286,7 +286,7 @@ function TakenRow({ domain, lead = false }: { domain: string; lead?: boolean }) 
       <div className="min-w-0">
         <p className="truncate font-medium">{domain}</p>
         {lead ? (
-          <p className="mt-0.5 text-sm">Already registered — here are close ones you can grab.</p>
+          <p className="mt-0.5 text-sm">Already registered. Here are close ones you can grab.</p>
         ) : null}
       </div>
       <Badge color="neutral" variant="soft" size="sm">
@@ -394,7 +394,7 @@ function ContactPanel({
         <div className="min-w-0">
           <p className="font-medium">{target.domain}</p>
           <p className="text-sm">
-            You are not charged now — {money(total)} is billed when you publish.
+            You are not charged now: {money(total)} is billed when you publish.
           </p>
         </div>
       </div>
@@ -405,7 +405,7 @@ function ContactPanel({
           <NativeSelect value={String(years)} onChange={(e) => setYears(Number(e.target.value))}>
             {[1, 2, 3, 5].map((y) => (
               <option key={y} value={y}>
-                {y} year{y > 1 ? 's' : ''} —{' '}
+                {y} year{y > 1 ? 's' : ''}:{' '}
                 {money(target.displayPrice + target.renewalDisplayPrice * (y - 1))}
               </option>
             ))}
@@ -513,7 +513,7 @@ function ContactPanel({
           Back
         </Button>
         <Button color="module" className="flex-1" onClick={submit} disabled={propertyId === null}>
-          Use this domain — {money(total)} at launch
+          Use this domain: {money(total)} at launch
         </Button>
       </div>
     </div>

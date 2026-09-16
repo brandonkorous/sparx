@@ -57,7 +57,7 @@ export function EverythingIncluded() {
           lede={
             <>
               Each module is a deep product, not a checkbox. Together they ship{' '}
-              <b className="font-medium">{counts.live} capabilities</b> you can use today — with{' '}
+              <b className="font-medium">{counts.live} capabilities</b> you can use today, with{' '}
               {counts.building} more in build. Here&apos;s a taste.
             </>
           }
@@ -71,8 +71,8 @@ export function EverythingIncluded() {
               <span className="text-primary">+</span>
             </Display>
             <p className="text-md mt-3.5 mb-0">
-              shipped capabilities across {counts.modules} modules and the shared platform — one
-              data layer, one dashboard, one bill.
+              shipped capabilities across {counts.modules} modules and the shared platform. One data
+              layer, one dashboard, one bill.
             </p>
             <div className="mt-[26px]">
               <a href="/features">

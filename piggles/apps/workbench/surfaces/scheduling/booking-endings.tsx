@@ -51,7 +51,7 @@ export function BookingEndings({
     if (!(await confirmDialog(cancelAsk(booking, policy)))) return;
     cancel.mutate({ reason: null, waiveFee: false, notifyCustomer: true } as never, {
       onSuccess: () => {
-        onDone('Booking cancelled');
+        onDone('Booking canceled');
       },
     });
   };
@@ -82,7 +82,7 @@ export function BookingEndings({
         {/* The standing sentence takes the same branches as the dialog, so the
             screen never promises a message the dialog then withdraws. */}
         <Text className="text-sm">
-          Cancelling frees the slot. {cancelReach(booking)} It cannot be undone.
+          Canceling frees the slot. {cancelReach(booking)} It cannot be undone.
         </Text>
         <Button
           size="sm"

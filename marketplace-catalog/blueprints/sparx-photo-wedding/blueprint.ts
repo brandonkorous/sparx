@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-photo-wedding',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Wedding Photography',
   summary:
-    'An imagery-led wedding & engagement photography site — a warm, film-inspired palette of soft gold, cream and dusty rose over an elegant serif display, with golden-hour photography carrying every page. Installs a working booking flow: free consultations and paid sessions booked online, three photographers you reserve by name with their own hours, and a deposit policy for holding a wedding date. Ships as "Golden Hour Studio".',
+    'An imagery-led wedding & engagement photography site: a warm, film-inspired palette of soft gold, cream and dusty rose over an elegant serif display, with golden-hour photography carrying every page. Installs a working booking flow: free consultations and paid sessions booked online, three photographers you reserve by name with their own hours, and a deposit policy for holding a wedding date. Ships as "Golden Hour Studio".',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

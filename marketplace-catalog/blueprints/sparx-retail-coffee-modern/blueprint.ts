@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-retail-coffee-modern',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Coffee Roaster (Modern)',
   summary:
-    'A complete, working shop for a modern specialty coffee roaster: a real catalogue of single-origin bags, blends, a Swiss-water decaf, single-serve steep bags, brew gear and a flexible subscription, with categories, collections, a bespoke PDP and a sharp, product-forward home page. Bright, minimalist theme — a crisp near-white ground, one electric-orange accent, a clean grotesk display. Shipped as Meridian Coffee.',
+    'A complete, working shop for a modern specialty coffee roaster: a real catalogue of single-origin bags, blends, a Swiss-water decaf, single-serve steep bags, brew gear and a flexible subscription, with categories, collections, a bespoke PDP and a sharp, product-forward home page. Bright, minimalist theme, a crisp near-white ground, one electric-orange accent, a clean grotesk display. Shipped as Meridian Coffee.',
   vertical: 'retail',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

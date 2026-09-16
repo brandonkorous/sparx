@@ -28,9 +28,8 @@ export function LandingFinalCta() {
             <span className="text-primary">.</span>
           </Heading>
           <Text variant="lead" className="text-base-content max-w-xl">
-            Sign up free. Switch on the modules you need. Be live before the kettle boils — then
-            keep the site, the data, and the control for years. No card, no contract, no upgrade
-            lock-in.
+            Sign up free. Switch on the modules you need. Be live before the kettle boils, then keep
+            the site, the data, and the control for years. No card, no contract, no upgrade lock-in.
           </Text>
         </div>
 

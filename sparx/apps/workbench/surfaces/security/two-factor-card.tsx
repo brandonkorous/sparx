@@ -147,7 +147,7 @@ function BackupCodes({ codes }: { codes: string[] }) {
       </div>
       <Text className="text-sm">
         Each code signs you in once if you lose your phone. Keep them somewhere other than the phone
-        itself — printed, or in a password manager. We cannot show them to you again without your
+        itself: printed, or in a password manager. We cannot show them to you again without your
         password.
       </Text>
     </div>
@@ -365,7 +365,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
           <div className="flex items-start gap-3">
             <Smartphone className="mt-0.5 size-5 shrink-0" aria-hidden />
             <Text className="text-sm">
-              You will need a free authenticator app on your phone — Google Authenticator, Microsoft
+              You will need a free authenticator app on your phone: Google Authenticator, Microsoft
               Authenticator, and 1Password all work. It shows a 6-digit code that changes every 30
               seconds, and sparx asks for that code when you sign in.
             </Text>
@@ -400,7 +400,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
           ) : null}
           {knowsHowYouSignIn && !needsPassword ? (
             <Text className="text-sm">
-              You sign in without a password, so there is nothing to confirm here — carry on to set
+              You sign in without a password, so there is nothing to confirm here: carry on to set
               up your app.
             </Text>
           ) : null}
@@ -457,8 +457,8 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
           <BackupCodes codes={setup.backupCodes} />
 
           <Alert color="warning">
-            Save your backup codes before you continue — this is the only time they are shown
-            without your password.
+            Save your backup codes before you continue. This is the only time they are shown without
+            your password.
           </Alert>
 
           <div className="flex justify-end gap-2">
@@ -474,7 +474,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
                 setStep('verify');
               }}
             >
-              I have saved them — continue
+              I have saved them: continue
             </Button>
           </div>
         </div>

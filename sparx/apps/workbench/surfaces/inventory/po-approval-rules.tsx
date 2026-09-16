@@ -9,8 +9,8 @@
 //
 // By threshold, descending — which is the order the rules are actually APPLIED
 // in. When two rules both match an order they can disagree about who signs, and
-// the strictest threshold the order clears is the one that wins: a £20,000 order
-// routes to the £10,000 approver, not the £500 one. Sorting the list any other
+// the strictest threshold the order clears is the one that wins: a $20,000 order
+// routes to the $10,000 approver, not the $500 one. Sorting the list any other
 // way (alphabetically, by age) would show a precedence that is not the real one.
 
 import {
@@ -72,7 +72,7 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<ShieldCheck className="size-6" aria-hidden />}
           title="No spending limits set"
-          description="Every purchase order goes straight to the supplier the moment somebody sends it. Set a limit and orders over it wait for a named person to approve them first — the usual reason is a business where more than one person can buy."
+          description="Every purchase order goes straight to the supplier the moment somebody sends it. Set a limit and orders over it wait for a named person to approve them first: the usual reason is a business where more than one person can buy."
           actions={
             <Button
               color="module"

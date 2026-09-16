@@ -3,6 +3,7 @@ import Script from 'next/script';
 import { QueryProvider } from '@wizeworks/query/provider';
 import { ImperativeAlertDialogProvider, ToastProvider } from '@wizeworks/silicaui-react';
 import { PostHogProvider } from '../components/posthog-provider';
+import { ClippedTextReveal } from '@wizeworks/app-kit';
 import { CrashListeners } from '../components/crash-listeners';
 import { RootBoundary } from '../components/root-boundary';
 import { WriteFailureReporter } from '../components/write-failure-reporter';
@@ -97,6 +98,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   else can recover it. The matching "a new version shipped" notice
                   lives in the shell instead, since it needs the dirty state. */}
                 <CrashListeners />
+                {/* Makes clipped text readable. A table column that must not push
+                  its neighbours off the pane cuts long values with an ellipsis, and
+                  until this the cut-off part was reachable by no means at all: a
+                  purchase order read "Brass belt h…" for "Brass belt hardware,
+                  antique". 991 spans clip that way across the two consoles and 45.6%
+                  of product titles are longer than the column showing them, so it is
+                  fixed here as behavior rather than at 991 call sites. */}
+                <ClippedTextReveal />
               </ToastProvider>
             </PostHogProvider>
           </QueryProvider>

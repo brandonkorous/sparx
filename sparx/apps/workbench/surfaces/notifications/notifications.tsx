@@ -32,7 +32,6 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import { ModuleScope } from '../../components/module-scope';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   CHANNEL_OPTIONS,
   DIGEST_OPTIONS,
@@ -101,17 +100,13 @@ function CategoryRow({
   );
 }
 
-export function NotificationsSurface({ ctx }: { ctx: SurfaceContext }) {
+export function NotificationsSurface() {
   const toast = useToast();
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } =
     useNotificationPreferences();
   const save = useSaveNotificationPreferences();
 
   const [form, setForm] = useState<NotificationPreferences | null>(null);
-
-  useEffect(() => {
-    ctx.setTitle('Notifications');
-  }, [ctx]);
 
   // Seed once. A background refetch landing while someone is mid-change must not
   // wipe what they were choosing.
@@ -129,7 +124,7 @@ export function NotificationsSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <PaneLoadError
         title="Could not load your notification choices"
-        description="Nothing has changed — this is a problem reaching the server, not with your saved choices."
+        description="Nothing has changed. This is a problem reaching the server, not with your saved choices."
         onRetry={() => {
           void refetch();
         }}
@@ -206,7 +201,7 @@ export function NotificationsSurface({ ctx }: { ctx: SurfaceContext }) {
               </Heading>
               <Text>
                 Choose what sparx tells you about, and whether it reaches you by email or only in
-                your inbox here. These are your own choices — changing them affects nobody else on
+                your inbox here. These are your own choices: changing them affects nobody else on
                 the team.
               </Text>
             </div>
@@ -256,9 +251,9 @@ export function NotificationsSurface({ ctx }: { ctx: SurfaceContext }) {
             {/* Honesty about the messages a choice here cannot switch off. A
                 receipt or a security alert is not a preference — it is owed. */}
             <Text className="text-sm">
-              A few essential messages are always sent by email whatever you choose here — a
-              password reset, a receipt a customer is owed, or an urgent warning about your account
-              — because missing one would leave you or a customer stuck.
+              A few essential messages are always sent by email whatever you choose here (a password
+              reset, a receipt a customer is owed, or an urgent warning about your account) because
+              missing one would leave you or a customer stuck.
             </Text>
           </div>
         )}

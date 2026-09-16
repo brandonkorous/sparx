@@ -15,10 +15,10 @@ import emails from './emails.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-b2b-foodservice',
-  version: '1.5.0',
+  version: '1.5.1',
   name: 'Foodservice Wholesale',
   summary:
-    'A complete, working WHOLESALE shop for a foodservice supplier: a real trade catalogue sold by the case, sack and carton — bulk pantry, oils and staples, packaging and disposables — with pack qty + MOQ on every line, per-case trade prices, categories, collections and a bespoke trade PDP. Warm larder theme — cream ground, deep provisions-green, a copper accent. Shipped as The Larder Supply Co.',
+    'A complete, working WHOLESALE shop for a foodservice supplier: a real trade catalogue sold by the case, sack and carton, bulk pantry, oils and staples, packaging and disposables, with pack qty + MOQ on every line, per-case trade prices, categories, collections and a bespoke trade PDP. Warm larder theme, cream ground, deep provisions-green, a copper accent. Shipped as The Larder Supply Co.',
   vertical: 'b2b',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'commerce', 'cms', 'crm', 'email'],

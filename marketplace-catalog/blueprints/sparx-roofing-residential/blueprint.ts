@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-roofing-residential',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Roofing (Residential)',
   summary:
-    'A dependable residential-roofing site — a sturdy slate-blue palette with a warm amber accent and photo-led, honest reliability. Installs a working online booking flow: homeowners book a free inspection or replacement estimate and get a real time slot. Ships a full visit menu (inspection, repair, estimate, leak, gutters, maintenance, storm), three roofers as dispatchable staff with their own hours, and a standard visit policy. Ships as "Summit Roofing".',
+    'A dependable residential-roofing site: a sturdy slate-blue palette with a warm amber accent and photo-led, honest reliability. Installs a working online booking flow: homeowners book a free inspection or replacement estimate and get a real time slot. Ships a full visit menu (inspection, repair, estimate, leak, gutters, maintenance, storm), three roofers as dispatchable staff with their own hours, and a standard visit policy. Ships as "Summit Roofing".',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],

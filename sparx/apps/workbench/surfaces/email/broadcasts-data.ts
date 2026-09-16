@@ -108,7 +108,26 @@ export interface EmailSettings {
   fromName: string | null;
   fromAddress: string | null;
   replyTo: string | null;
+  /**
+   * The exact `From` header a send from this site will carry — the SAME string
+   * `buildTenantFrom` gives the mailer, resolved by the server rather than
+   * guessed again here.
+   *
+   * A console that re-derived the unconfigured fallback for itself named a bare
+   * `noreply@sparx.email` and dropped the sender NAME entirely, so an owner read
+   * one thing on screen and her customers received another. The sender name is
+   * the one part of an email a recipient actually reads, so it is not something
+   * a second implementation gets to have an opinion about.
+   */
+  resolvedFrom: string;
 }
+
+/** What this broadcast will look like in somebody's inbox, or the reason there
+ *  isn't one yet. `ready:false` names the missing piece rather than showing a
+ *  blank frame. */
+export type BroadcastPreview =
+  | { ready: false; reason: 'no-email' | 'not-published' | 'no-audience' }
+  | { ready: true; to: string; from: string; subject: string; html: string; text: string };
 
 /* ── Query keys ───────────────────────────────────────────────────────────── */
 
@@ -117,6 +136,7 @@ export const emailKeys = {
   broadcasts: ['email', 'broadcasts'] as const,
   broadcast: (id: string) => ['email', 'broadcast', id] as const,
   stats: (id: string) => ['email', 'broadcast', id, 'stats'] as const,
+  preview: (id: string) => ['email', 'broadcast', id, 'preview'] as const,
   estimate: (segmentId: string) => ['email', 'estimate', segmentId] as const,
   audiences: ['email', 'audiences'] as const,
   designed: ['email', 'designed'] as const,
@@ -153,6 +173,22 @@ export function useBroadcastStats(id: string, enabled: boolean) {
     queryFn: () => api.get<BroadcastStats>(`/v1/email/broadcasts/${id}/stats`),
     enabled: enabled && id !== 'new',
     placeholderData: (previous) => previous,
+  });
+}
+
+/** What this broadcast will look like when it arrives — the send itself,
+ *  rendered by the server for a real person out of its own audience.
+ *
+ *  Its own request rather than a field on the broadcast: it renders the whole
+ *  email, and a list of drafts has no business paying for that. */
+export function useBroadcastPreview(id: string, enabled: boolean) {
+  return useQuery({
+    queryKey: emailKeys.preview(id),
+    queryFn: () => api.get<BroadcastPreview>(`/v1/email/broadcasts/${id}/preview`),
+    enabled: enabled && id !== 'new',
+    // Never cached: the audience, the design and the sender can all move between
+    // looking and sending, and a stale preview is a preview of the wrong email.
+    staleTime: 0,
   });
 }
 
@@ -302,10 +338,7 @@ export function broadcastState(status: BroadcastStatus): { label: string; tone: 
 /** How the sending address will appear to a recipient — the same shape the send
  *  builds. Falls back to the shared sparx address when nothing is configured. */
 export function senderDisplay(settings: EmailSettings | undefined): string {
-  if (!settings?.fromAddress) return 'noreply@sparx.email';
-  return settings.fromName
-    ? `${settings.fromName} <${settings.fromAddress}>`
-    : settings.fromAddress;
+  return settings?.resolvedFrom ?? '';
 }
 
 /** Surface the server's own sentence for a 4xx — it names the exact problem (a

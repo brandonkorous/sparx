@@ -57,7 +57,7 @@ export interface PurchaseOrderDocumentData {
   shipTo: PurchaseOrderDocumentParty;
   lines: PurchaseOrderDocumentLine[];
   subtotalCents: number;
-  shippingCents: number;
+  freightCents: number;
   totalCents: number;
   notes: string | null;
 }
@@ -222,7 +222,7 @@ function totals(data: PurchaseOrderDocumentData): string {
   const row = (label: string, value: number, cls = '') =>
     `<tr class="${cls}"><td>${label}</td><td class="num">${money(value, data.currency)}</td></tr>`;
   const out = [row('Subtotal', data.subtotalCents)];
-  if (data.shippingCents > 0) out.push(row('Shipping', data.shippingCents));
+  if (data.freightCents > 0) out.push(row('Freight', data.freightCents));
   out.push(row('Total', data.totalCents, 'grand'));
   return `<div class="summary"><table class="totals">${out.join('')}</table></div>`;
 }
@@ -351,7 +351,7 @@ async function loadDocumentData(tx: TxClient, id: string): Promise<PurchaseOrder
       lineTotalCents: l.quantityOrdered * l.unitCostCents,
     })),
     subtotalCents: po.subtotalCents,
-    shippingCents: po.shippingCents,
+    freightCents: po.freightCents,
     totalCents: po.totalCents,
     notes: po.notes,
   };

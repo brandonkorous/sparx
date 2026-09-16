@@ -161,7 +161,7 @@ export function PhoneSystemConnectSurface({ ctx }: { ctx: SurfaceContext }) {
           <Text className="mt-1">
             {productCopy(
               'crm.phone.connectIntro',
-              'Piggles rings your own phone first, and when you pick up it dials the customer and joins the two of you. So the call happens on a real handset with a real signal — and Piggles still records who was called, when, and for how long.'
+              'Piggles rings your own phone first, and when you pick up it dials the customer and joins the two of you. So the call happens on a real handset with a real signal, and Piggles still records who was called, when, and for how long.'
             )}
           </Text>
 
@@ -194,7 +194,7 @@ export function PhoneSystemConnectSurface({ ctx }: { ctx: SurfaceContext }) {
               />
               {numberLooksWrong ? (
                 <FieldError>
-                  Include the country code and no spaces — a US number looks like +15550100000.
+                  Include the country code and no spaces: a US number looks like +15550100000.
                 </FieldError>
               ) : (
                 <FieldDescription>
@@ -242,8 +242,8 @@ export function PhoneSystemConnectSurface({ ctx }: { ctx: SurfaceContext }) {
                 }
               />
               <FieldDescription>
-                Next to the Account SID, behind a “show” link. This one IS a secret — treat it like
-                a password.
+                Next to the Account SID, behind a “show” link. This one IS a secret: treat it like a
+                password.
               </FieldDescription>
             </Field>
 
@@ -262,7 +262,7 @@ export function PhoneSystemConnectSurface({ ctx }: { ctx: SurfaceContext }) {
                         set('propertyId', event.currentTarget.value);
                       }}
                     >
-                      <option value={ALL_SITES}>Every site — this is my only phone line</option>
+                      <option value={ALL_SITES}>Every site, this is my only phone line</option>
                       {siteList.map((site) => (
                         <option key={site.id} value={site.id}>
                           {site.name}
@@ -300,7 +300,7 @@ export function PhoneSystemConnectSurface({ ctx }: { ctx: SurfaceContext }) {
             className="mt-2"
           >
             {draft.recordingEnabled
-              ? 'Recording calls is regulated, and the rules differ by where you and the customer each are — some places require you to tell them, others require their agreement first. Check what applies to you before you switch this on.'
+              ? 'Recording calls is regulated, and the rules differ by where you and the customer each are. Some places require you to tell them, others require their agreement first. Check what applies to you before you switch this on.'
               : productCopy(
                   'crm.phone.recording',
                   'Calls are not recorded. Piggles still logs who was called, when, and for how long.'

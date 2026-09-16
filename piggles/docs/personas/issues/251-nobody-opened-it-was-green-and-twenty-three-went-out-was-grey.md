@@ -8,6 +8,13 @@
 **Fixed:** 2026-08-26
 **Confirmed by:** P03 · Juniper Row · act 10 — the same six tiles, in dark: 23 in blue "On their way", both zeros plain
 
+> **2026-09-15 — this fix reached one of the two consoles.** The sparx workbench's
+> copy of this screen still had `tone="success"` written **literally** on Opened
+> and Clicked, so a zero wore the color of good news every time. It also printed
+> "0% **of delivered**" while delivered was zero, computing the share against what
+> went OUT. Both carried over in
+> [531](531-a-promise-about-the-next-few-minutes-twenty-days-late.md).
+
 ## What happened
 
 Scoring the pane after [246]'s fix, in dark. The six tiles read:

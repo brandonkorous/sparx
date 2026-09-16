@@ -49,6 +49,18 @@ export interface EmailSettings {
   physicalAddress: string | null;
   /** The verified sending domain to send through, or null for the shared default. */
   defaultSendingDomainId: string | null;
+  /**
+   * The exact `From` header a send from this site will carry — the SAME string
+   * `buildTenantFrom` gives the mailer, resolved by the server rather than
+   * guessed again here.
+   *
+   * A console that re-derived the unconfigured fallback for itself named a bare
+   * `noreply@sparx.email` and dropped the sender NAME entirely, so an owner read
+   * one thing on screen and her customers received another. The sender name is
+   * the one part of an email a recipient actually reads, so it is not something
+   * a second implementation gets to have an opinion about.
+   */
+  resolvedFrom: string;
 }
 
 /** The PATCH body — every field optional, only the provided ones change. Null

@@ -8,7 +8,7 @@
 // draft) is a real state change on the server, not throwaway work. Rejecting is
 // behind a confirm that names the post.
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -104,7 +104,7 @@ function ApprovalCard({
     approve.mutate(undefined, {
       onSuccess: (updated) => {
         toast.add({
-          title: updated.status === 'scheduled' ? 'Approved and scheduled' : 'Approved — going out',
+          title: updated.status === 'scheduled' ? 'Approved and scheduled' : 'Approved: going out',
           description:
             updated.status === 'scheduled' && updated.scheduledAt
               ? `It will post ${formatWhen(updated.scheduledAt)}.`
@@ -170,7 +170,7 @@ function ApprovalCard({
           <Text className="text-sm">
             {post.scheduledAt
               ? `Scheduled for ${formatWhen(post.scheduledAt)}`
-              : 'No time set — approving posts it now'}
+              : 'No time set: approving posts it now'}
             {post.source !== 'manual' ? ` · drafted automatically` : ''}
           </Text>
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -283,10 +283,6 @@ export function SocialApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
     () => catalogByPlatform(overview.data?.catalog ?? []),
     [overview.data]
   );
-
-  useEffect(() => {
-    ctx.setTitle('Approvals');
-  }, [ctx]);
 
   const openPost = (post: Post, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('social.composer', { id: post.id }, { target: targetFor(event) });

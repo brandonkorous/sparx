@@ -95,14 +95,14 @@ export function useOrderRisk(orderId: string) {
     const ok = await confirm({
       title: `Cancel order ${order.orderNumber}?`,
       description:
-        `This marks the order as cancelled for ${customerName(order.customer)} — ` +
+        `This marks the order as canceled for ${customerName(order.customer)}: ` +
         `${String(items.length)} ${items.length === 1 ? 'item' : 'items'} worth ` +
         `${formatMoney(order.total, currency)} will no longer be sent. ` +
         (order.amountPaid > 0
-          ? `${formatMoney(order.amountPaid, currency)} has already been paid and is NOT refunded by this — you refund that separately.`
+          ? `${formatMoney(order.amountPaid, currency)} has already been paid and is NOT refunded by this. You refund that separately.`
           : 'No money has come in, so there is nothing to refund.') +
         codeComesBack(order, true) +
-        ' A cancelled order cannot be reopened.',
+        ' A canceled order cannot be reopened.',
       confirmLabel: 'Cancel the order',
       cancelLabel: 'Leave it as it is',
       color: 'danger',
@@ -115,7 +115,7 @@ export function useOrderRisk(orderId: string) {
     await deferTick();
     cancel.mutate(undefined, {
       onSuccess: () => {
-        toast.add({ title: `Order ${order.orderNumber} cancelled`, type: 'success' });
+        toast.add({ title: `Order ${order.orderNumber} canceled`, type: 'success' });
       },
       onError: (error) => {
         toast.add({

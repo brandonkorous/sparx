@@ -248,22 +248,22 @@ export const BOOKING_TYPES: { value: BookingType; label: string; hint: string }[
   {
     value: 'appointment',
     label: 'Appointment',
-    hint: 'A one-to-one slot — a haircut, a consultation, a repair.',
+    hint: 'A one-to-one slot: a haircut, a consultation, a repair.',
   },
   {
     value: 'class',
     label: 'Class or group session',
-    hint: 'Several people book the same session — a yoga class, a workshop.',
+    hint: 'Several people book the same session: a yoga class, a workshop.',
   },
   {
     value: 'reservation',
     label: 'Reservation',
-    hint: 'A table or space held for a party — a restaurant booking.',
+    hint: 'A table or space held for a party: a restaurant booking.',
   },
   {
     value: 'rental',
     label: 'Rental or hire',
-    hint: 'Something hired out for a stretch of time — a bike, a kayak, a room.',
+    hint: 'Something hired out for a stretch of time: a bike, a kayak, a room.',
   },
 ];
 
@@ -286,7 +286,7 @@ export const ASSIGNMENT_STRATEGIES: {
   {
     value: 'round_robin',
     label: 'Share the work evenly',
-    hint: 'Bookings are spread across your team so no one is favoured.',
+    hint: 'Bookings are spread across your team so no one is favored.',
   },
   {
     value: 'collective',
@@ -578,17 +578,17 @@ export const RESOURCE_KINDS: { value: ResourceKind; label: string; hint: string 
   {
     value: 'table',
     label: 'A table',
-    hint: 'A table a party is seated at — with a size it can hold.',
+    hint: 'A table a party is seated at, with a size it can hold.',
   },
   {
     value: 'equipment',
     label: 'A machine or tool',
-    hint: 'A piece of equipment a booking needs — a chair, a bay, a machine.',
+    hint: 'A piece of equipment a booking needs: a chair, a bay, a machine.',
   },
   {
     value: 'asset',
     label: 'Something you hire out',
-    hint: 'A vehicle or item that is booked out for a time — a bike, a kayak.',
+    hint: 'A vehicle or item that is booked out for a time: a bike, a kayak.',
   },
 ];
 

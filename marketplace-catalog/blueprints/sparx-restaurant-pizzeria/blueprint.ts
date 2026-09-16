@@ -11,10 +11,10 @@ import assets from './assets.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx-restaurant-pizzeria',
-  version: '1.4.0',
+  version: '1.4.1',
   name: 'Pizzeria',
   summary:
-    'A complete, working site for a wood-fired pizzeria & trattoria: a real menu (antipasti, pizza, pasta, dolci, drinks) and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a cancellation policy) on the /reserve page. Warm terracotta theme — cream, tomato-brick red, a basil-green accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Forno.',
+    'A complete, working site for a wood-fired pizzeria & trattoria: a real menu (antipasti, pizza, pasta, dolci, drinks) and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a cancellation policy) on the /reserve page. Warm terracotta theme, cream, tomato-brick red, a basil-green accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Forno.',
   vertical: 'services',
   preview: 'media/preview.png',
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
